@@ -53,6 +53,14 @@ h3.span {
   color: #faebd7;
   z-index: 4;
 }
+.span1 {
+  font-size: 20px;
+  letter-spacing: 0.15rem;
+  font-family: "ROBOTO", sans-serif;
+  font-weight: 300;
+  color: #ffffff;
+  z-index: 4;
+}
 span:hover {
   color: #ff0266;
   font-weight: 500;
@@ -60,7 +68,7 @@ span:hover {
 
 a {
   text-decoration: none;
-  color: #ffffff;
+  color: #0dffe9;
 }
 
 .nav-container {
@@ -133,7 +141,7 @@ a {
 
   .nav h2,
   .slider h2 {
-    font-size: 3vw;
+    font-size: 30px;
   }
 
   .nav-tab {
@@ -167,7 +175,7 @@ a {
   z-index: 0;
 }
 .a: {
-color: #ffffff;
+color: #0dffe9;
 }
 .a:hover {
   color: #ff0266;
