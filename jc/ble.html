@@ -1,0 +1,224 @@
+<html lang="zh-cn">
+<meta charset="utf-8">
+<link rel="shortcut icon" type="image/x-icon" href="../logo.png" /> 
+<title>蓝牙双模使用教程</title>
+
+<style>
+table {
+  max-width: 1080px;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 8px;
+  text-align: left;
+  border:1px solid #e5e5e5;
+  font-size: 13px;
+}
+tr:hover {
+  background-color: #e7fffc;
+}
+.th1 {
+  background-color: #ddd;
+  width: 150px;
+  font-size: 18px;
+  text-align: center;
+}
+.th2 {
+  background-color: #ddd;
+  width: 200px;
+  font-size: 18px;
+  text-align: center;
+}
+.th3 {
+  background-color: #ddd;
+  max-width: 680px;
+  font-size: 18px;
+  text-align: center;
+}
+.h2{
+    padding: 3px;
+    background-color: #e7fffc;
+    padding-left: 30px;
+    border-radius: 0.5rem;
+    border: 0.05rem solid #448aff;
+}
+body{
+padding: 3px;
+line-height: 2;
+}
+.sm {
+  max-width: 1080px;
+  margin:auto;
+  }
+.sm1 {
+  max-width: 1020px;
+  margin:auto;
+  border: 0.05rem solid #448aff;
+  padding: 30px;
+  border-radius: 0.5rem;
+  background-color: #e7fffc;
+  }
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+@media only screen and (max-width: 600px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  th {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+  }
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+  }
+}
+</style>
+<div class="sm">
+<h2 class="h2">使用说明</h2>
+<table>
+  <thead>
+    <tr>
+      <th class="th1">功能</th>
+      <th class="th2">按键</th>
+      <th class="th3">功能说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td >休眠</td>
+      <td >Lshift+Rshift+P</td>
+      <td >手动进入休眠模式，按任意键可以唤醒。</td>
+    </tr>
+    <tr>
+      <td >关机</td>
+      <td >Lshift+Rshift+~或Backspace</td>
+      <td >手动进入关机模式。新版固件将ESC更换成了Backspace。
+关机后需要插入USB线 或 短按背部多功能按钮开机。
+长期不用或携带外出建议关机。</td>
+    </tr>
+    <tr>
+      <td >有线/无线状态切换</td>
+      <td >Lshift+Rshift+M</td>
+      <td >在USB有线和无线同时工作时，可以切换有线/无线连接模式。
+如未同时使用USB有线和无线，按键无效。</td>
+    </tr>
+    <tr>
+      <td >切换蓝牙设备</td>
+      <td >Lshift+Rshift+Q/W/E</td>
+      <td >可以在已配对的蓝牙设备/无线接收器之间进行切换，Q/W/E代表不同蓝牙连接通道</td>
+    </tr>
+    <tr>
+      <td >重启蓝牙广播</td>
+      <td >Lshift+Rshift+R</td>
+      <td >蓝牙模式：重新开启蓝牙广播，用于手动进行连接或切换设备后配对。</td>
+    </tr>
+    <tr>
+      <td >进入DFU</td>
+      <td >Lshift+Rshift+B</td>
+      <td >重启到DFU刷机模式。
+也可长按PCB背部多功能按钮4秒以上后松手重启到DFU刷机模式。</td>
+    </tr>
+    <tr>
+      <td >清空当前配对</td>
+      <td >Lshift+Rshift+O</td>
+      <td >蓝牙模式：清空当前蓝牙设备配对信息。仅清空当前设备，其余配对设备不会清空。</td>
+    </tr>
+    <tr>
+      <td >输出电量</td>
+      <td >Lshift+Rshift+H</td>
+      <td >通过键盘输出当前键盘剩余电量。输出N为检测未稳定，F为满电，数字为电量百分比。</td>
+    </tr>
+    <tr>
+      <td >状态灯开关</td>
+      <td >	Lshift+Rshift+L</td>
+      <td >无轴灯PCB/RGB轴灯PCB：开启或关闭状态指示灯显示（注：不包括键盘大小写等）。
+轴灯版PCB：使轴灯在轴灯模式和指示灯模式之间切换</td>
+    </tr>
+    <tr>
+      <td >多功能按钮</td>
+      <td >	PCB背部按钮属于多功能按钮</td>
+      <td >键盘正常模式下，按下1秒以上后（不超过3秒）松手键盘关机；
+按下4秒以上后（不超过9秒）松手键盘进入DFU刷机模式；
+按下10秒以上后松手，键盘将重置。
+关机状态短按一下开机。</td>
+    </tr>
+    <tr>
+      <td >启动按键</td>
+      <td >	Space+U</td>
+      <td >启用启动按键功能后，手动休眠后唤醒需按Space+U唤醒键盘。
+自动休眠时，不需要按启动按键，可任意键唤醒。</td>
+    </tr>
+    <tr>
+      <td >切换启动按键</td>
+      <td >	Lshift+Rshift+I</td>
+      <td >启用或禁用启动按键功能。
+启用启动按键功能后，手动休眠后唤醒需按Space+U唤醒键盘</td>
+    </tr>
+    <tr>
+      <td >切换默认层</td>
+      <td >	Lshift+Rshift+数字键</td>
+      <td >Lshift+Rshift+1切换默认层到第2层。
+Lshift+Rshift+0切换默认层到第1层。
+休眠或关机后唤醒自动恢复第1层为默认层</td>
+    </tr>
+    <tr>
+      <td >RGB调整颜色</td>
+      <td >A/S/D/F/C/V</td>
+      <td >轴灯版（轴灯模式下）为控制轴灯；非轴灯版为控制底灯
+同时按下Lshift+Rshift时按A/S/D/F/C/V，
+分别是增加饱和度、降低饱和度、增加亮度、降低亮度、增加色调、降低色调。</td>
+    </tr>
+    <tr>
+      <td >RGB灯效循环	</td>
+      <td >Lshift+Rshift+Z</td>
+      <td >RGB轴灯版为控制RGB轴灯在灯效之间循环
+轴灯版（轴灯模式下）为控制轴灯在常亮、呼吸、多彩变换之间循环
+非轴灯版为控制底灯在32种灯效之间循环</td>
+    </tr>
+    <tr>
+      <td >RGB灯开关	</td>
+      <td >	Lshift+Rshift+X</td>
+      <td >RGB轴灯版为RGB轴灯开关
+轴灯版（轴灯模式下）为轴灯开关
+非轴灯版为RGB底灯开关</td>
+    </tr>
+  </tbody>
+</table>    
+</div><br>
+<div class="sm">
+<div class="sm1">
+<span>
+<h3>配对蓝牙设备</h3>
+<h4>初次配对</h4>
+1.键盘上按下Lshift+Rshift+Q，切换到蓝牙通道1️⃣，然后再按下Lshift+Rshift+R开启广播；<br>
+2.在需要连接键盘的设备上搜索蓝牙键盘，搜索到相应蓝牙键盘名称后，将第一个设备配对到键盘蓝牙通道1️⃣（Q键）；<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)各个操作系统 配对蓝牙键盘 的方式请自行搜索相关文档<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)如果仅有一个蓝牙设备，可以配对到任意蓝牙通道，但是建议配对到蓝牙1️⃣<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)如不需要多设备切换，可不再配对设备到蓝牙通道2️⃣和蓝牙通道3️⃣<br>
+3.键盘上按下Lshift+Rshift+W，切换到蓝牙通道2️⃣，然后再按下Lshift+Rshift+R开启广播，再配对第二个设备到键盘蓝牙通道2️（W键 ）；<br>
+4.键盘上按下Lshift+Rshift+E，切换到蓝牙通道3️⃣，然后再按下Lshift+Rshift+R开启广播，再配对第三个设备到键盘蓝牙通道3️（E键 ）；<br>
+5.通过Lshift+Rshift+Q/W/E切换到不同的蓝牙通道，可在多个配对设备之间切换。<br></span>
+<h4>更换配对</h4>
+如需更换某个设备的配对，例：要重新配对一个设备到蓝牙通道2️⃣（W键 ）。<br>
+1.将W键配对的设备上的蓝牙键盘进行删除（如windows系统进入系统设备删除蓝牙键盘；Android系统进入设置-蓝牙后删除蓝牙键盘）；<br>
+2.键盘上按下Lshift+Rshift+W，切换到蓝牙通道2️⃣；<br>
+3.键盘上再按下Lshift+Rshift+O，删除蓝牙通道2️⃣配对的设备；<br>
+4.如有必要，按下Lshift+Rshift+R开启广播；<br>
+5.在需要配对键盘的设备上搜索蓝牙键盘，搜索到相应蓝牙键盘名称后，将新的设备配对到键盘蓝牙通道2️⃣（W键 ）<br>
+<h4><span><a class="a" href="./vial-jl.html" target="_blank">Vial-JL使用说明</a></span></h4>
+</div>
+</div>
