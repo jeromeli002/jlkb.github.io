@@ -1,7 +1,7 @@
 <html lang="zh-cn">
 <meta charset="utf-8">
 <link rel="shortcut icon" type="image/x-icon" href="../logo.png" /> 
-<title>蓝牙双模使用教程</title>
+<title>蓝牙双模固件</title>
 
 <style>
 table {
@@ -16,26 +16,33 @@ th, td {
   padding: 8px;
   text-align: left;
   border:1px solid #e5e5e5;
-  font-size: 13px;
+}
+.td{
+  text-align: center;
 }
 tr:hover {
   background-color: #e7fffc;
 }
-.th1 {
+.th0 {
   background-color: #ddd;
   width: 150px;
   font-size: 18px;
   text-align: center;
 }
+.th1 {
+  background-color: #ddd;
+  max-width: 300px;
+  font-size: 18px;
+  text-align: center;
+}
 .th2 {
   background-color: #ddd;
-  width: 200px;
   font-size: 18px;
   text-align: center;
 }
 .th3 {
   background-color: #ddd;
-  max-width: 680px;
+  width: 200px;
   font-size: 18px;
   text-align: center;
 }
@@ -45,6 +52,13 @@ tr:hover {
     padding-left: 30px;
     border-radius: 0.5rem;
     border: 0.05rem solid #448aff;
+}
+span{
+  color: red;
+}
+.img{
+max-height: 150px;
+max-width: 200px;
 }
 body{
 padding: 3px;
@@ -92,138 +106,95 @@ tr:nth-child(even) {
 }
 </style>
 <div class="sm">
-<h2 class="h2">使用说明</h2>
+<h2 class="h2">Vial-JL固件</h2>
 <table>
   <thead>
     <tr>
-      <th class="th1">功能</th>
-      <th class="th2">按键</th>
-      <th class="th3">功能说明</th>
+      <th class="th0">下载内容</th>
+      <th class="th1">键位参考图</th>
+      <th class="th2">固件说明</th>
+      <th class="th3">下载地址</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td >休眠</td>
-      <td >Lshift+Rshift+P</td>
-      <td >手动进入休眠模式，按任意键可以唤醒。</td>
+      <td class="td tda">K42E1</td>
+      <td class="td"><a href="img/42e1.png" target="_blank"><img class="img" src="img/42e1.png"></img></a></td>
+      <td>一个40%配列的42键小键盘，左上角可以选装旋钮，支持Rgb轴灯。全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">点我下载</a></td>
     </tr>
     <tr>
-      <td >关机</td>
-      <td >Lshift+Rshift+~或Backspace</td>
-      <td >手动进入关机模式。新版固件将ESC更换成了Backspace。
-关机后需要插入USB线 或 短按背部多功能按钮开机。
-长期不用或携带外出建议关机。</td>
+      <td class="td">K42J1</td>
+      <td class="td"><a href="img/42j1.png" target="_blank"><img class="img" src="img/42j1.png"></img></a></td>
+      <td>一个40%配列的42键小键盘，左上角可以选装旋钮，支持Rgb轴灯。分裂空格可选装摇杆或按键(摇杆可映射按键或做指点杆使用，做指点杆时不可自定义)，全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">映射按键</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="a" href="./files/mac0.7.zip" target="_blank">指点杆</a></td>
     </tr>
     <tr>
-      <td >有线/无线状态切换</td>
-      <td >Lshift+Rshift+M</td>
-      <td >在USB有线和无线同时工作时，可以切换有线/无线连接模式。
-如未同时使用USB有线和无线，按键无效。</td>
+      <td class="td">F12</td>
+      <td class="td"><a href="img/f12.png" target="_blank"><img class="img" src="img/f12.png"></img></a></td>
+      <td>1摇杆+1旋钮+12键，支持Rgb轴灯一全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">点我下载</a></td>
     </tr>
     <tr>
-      <td >切换蓝牙设备</td>
-      <td >Lshift+Rshift+Q/W/E</td>
-      <td >可以在已配对的蓝牙设备/无线接收器之间进行切换，Q/W/E代表不同蓝牙连接通道</td>
+      <td class="td">K26E6</td>
+      <td class="td"><a href="img/k26e6.png" target="_blank"><img class="img" src="img/k26e6.png"></img></a></td>
+      <td>26键+4旋钮+2旋钮/滚轮+摇杆的设计用键盘，可选加Oled屏幕，全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">点我下载</a></td>
     </tr>
     <tr>
-      <td >重启蓝牙广播</td>
-      <td >Lshift+Rshift+R</td>
-      <td >蓝牙模式：重新开启蓝牙广播，用于手动进行连接或切换设备后配对。</td>
+      <td class="td">JLbox</td>
+      <td class="td"><a href="img/jlbox.png" target="_blank"><img class="img" src="img/jlbox.png"></img></a></td>
+      <td>复刻Tourbox的键盘，做了一些变更增加了按键摇杆，全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">映射按键</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="a" href="./files/mac0.7.zip" target="_blank">指点杆</a></td>
     </tr>
     <tr>
-      <td >进入DFU</td>
-      <td >Lshift+Rshift+B</td>
-      <td >重启到DFU刷机模式。
-也可长按PCB背部多功能按钮4秒以上后松手重启到DFU刷机模式。</td>
+      <td class="td">MPad</td>
+      <td class="td"><a href="img/mpad.png" target="_blank"><img class="img" src="img/mpad.png"></img></a></td>
+      <td>数字区小键盘，左上角一个摇杆右上角一个旋钮。全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">点我下载</a></td>
     </tr>
     <tr>
-      <td >清空当前配对</td>
-      <td >Lshift+Rshift+O</td>
-      <td >蓝牙模式：清空当前蓝牙设备配对信息。仅清空当前设备，其余配对设备不会清空。</td>
+      <td class="td">K45E1</td>
+      <td class="td"><a href="img/k45.png" target="_blank"><img class="img" src="img/k45.png"></img></a></td>
+      <td>一个40%配列的45键小键盘，左上角可以选装旋钮，支持Rgb轴灯。全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">点我下载</a></td>
     </tr>
     <tr>
-      <td >输出电量</td>
-      <td >Lshift+Rshift+H</td>
-      <td >通过键盘输出当前键盘剩余电量。输出N为检测未稳定，F为满电，数字为电量百分比。</td>
+      <td class="td">K68E1</td>
+      <td class="td"><a href="img/k68.png" target="_blank"><img class="img" src="img/k68.png"></img></a></td>
+      <td>田子68键盘，右下角方向键边上可选装一个旋钮。全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">点我下载</a></td>
     </tr>
     <tr>
-      <td >状态灯开关</td>
-      <td >	Lshift+Rshift+L</td>
-      <td >无轴灯PCB/RGB轴灯PCB：开启或关闭状态指示灯显示（注：不包括键盘大小写等）。
-轴灯版PCB：使轴灯在轴灯模式和指示灯模式之间切换</td>
+      <td class="td">K16E3T1</td>
+      <td class="td"><a href="img/k16e3t1.png" target="_blank"><img class="img" src="img/k16e3t1.png"></img></a></td>
+      <td>16键+3旋钮+1摇杆，全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">映射按键</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="a" href="./files/mac0.7.zip" target="_blank">指点杆</a></td>
     </tr>
     <tr>
-      <td >多功能按钮</td>
-      <td >	PCB背部按钮属于多功能按钮</td>
-      <td >键盘正常模式下，按下1秒以上后（不超过3秒）松手键盘关机；
-按下4秒以上后（不超过9秒）松手键盘进入DFU刷机模式；
-按下10秒以上后松手，键盘将重置。
-关机状态短按一下开机。</td>
+      <td class="td">JLE2</td>
+      <td class="td"><a href="img/jle2.png" target="_blank"><img class="img" src="img/jle2.png"></img></a></td>
+      <td>uoge单摇杆或2旋钮小玩意儿，全部键、旋钮支持自定义，自动识别无需导入josn文件.</td>
+      <td class="td"><a class="a" href="./files/mac0.7.zip" target="_blank">映射按键</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="a" href="./files/mac0.7.zip" target="_blank">指点杆</a></td>
     </tr>
     <tr>
-      <td >启动按键</td>
-      <td >	Space+U</td>
-      <td >启用启动按键功能后，手动休眠后唤醒需按Space+U唤醒键盘。
-自动休眠时，不需要按启动按键，可任意键唤醒。</td>
+      <td class="td">更多</td>
+      <td class="td"><a href="img/tb.png" target="_blank"><img class="img" src="img/tb.png"></img></a></td>
+      <td>更多固件、定制设备、选购新设备请联系客服索取！</td>
+      <td class="td"><a class="a" href="https://jlkb.taobao.com" target="_blank">点我前往</a></td>
     </tr>
-    <tr>
-      <td >切换启动按键</td>
-      <td >	Lshift+Rshift+I</td>
-      <td >启用或禁用启动按键功能。
-启用启动按键功能后，手动休眠后唤醒需按Space+U唤醒键盘</td>
-    </tr>
-    <tr>
-      <td >切换默认层</td>
-      <td >	Lshift+Rshift+数字键</td>
-      <td >Lshift+Rshift+1切换默认层到第2层。
-Lshift+Rshift+0切换默认层到第1层。
-休眠或关机后唤醒自动恢复第1层为默认层</td>
-    </tr>
-    <tr>
-      <td >RGB调整颜色</td>
-      <td >A/S/D/F/C/V</td>
-      <td >轴灯版（轴灯模式下）为控制轴灯；非轴灯版为控制底灯
-同时按下Lshift+Rshift时按A/S/D/F/C/V，
-分别是增加饱和度、降低饱和度、增加亮度、降低亮度、增加色调、降低色调。</td>
-    </tr>
-    <tr>
-      <td >RGB灯效循环	</td>
-      <td >Lshift+Rshift+Z</td>
-      <td >RGB轴灯版为控制RGB轴灯在灯效之间循环
-轴灯版（轴灯模式下）为控制轴灯在常亮、呼吸、多彩变换之间循环
-非轴灯版为控制底灯在32种灯效之间循环</td>
-    </tr>
-    <tr>
-      <td >RGB灯开关	</td>
-      <td >	Lshift+Rshift+X</td>
-      <td >RGB轴灯版为RGB轴灯开关
-轴灯版（轴灯模式下）为轴灯开关
-非轴灯版为RGB底灯开关</td>
-    </tr>
+
   </tbody>
 </table>    
 </div><br>
 <div class="sm">
 <div class="sm1">
 <span>
-<h3>配对蓝牙设备</h3>
-<h4>初次配对</h4>
-1.键盘上按下Lshift+Rshift+Q，切换到蓝牙通道1️⃣，然后再按下Lshift+Rshift+R开启广播；<br>
-2.在需要连接键盘的设备上搜索蓝牙键盘，搜索到相应蓝牙键盘名称后，将第一个设备配对到键盘蓝牙通道1️⃣（Q键）；<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)各个操作系统 配对蓝牙键盘 的方式请自行搜索相关文档<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)如果仅有一个蓝牙设备，可以配对到任意蓝牙通道，但是建议配对到蓝牙1️⃣<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)如不需要多设备切换，可不再配对设备到蓝牙通道2️⃣和蓝牙通道3️⃣<br>
-3.键盘上按下Lshift+Rshift+W，切换到蓝牙通道2️⃣，然后再按下Lshift+Rshift+R开启广播，再配对第二个设备到键盘蓝牙通道2️（W键 ）；<br>
-4.键盘上按下Lshift+Rshift+E，切换到蓝牙通道3️⃣，然后再按下Lshift+Rshift+R开启广播，再配对第三个设备到键盘蓝牙通道3️（E键 ）；<br>
-5.通过Lshift+Rshift+Q/W/E切换到不同的蓝牙通道，可在多个配对设备之间切换。<br></span>
-<h4>更换配对</h4>
-如需更换某个设备的配对，例：要重新配对一个设备到蓝牙通道2️⃣（W键 ）。<br>
-1.将W键配对的设备上的蓝牙键盘进行删除（如windows系统进入系统设备删除蓝牙键盘；Android系统进入设置-蓝牙后删除蓝牙键盘）；<br>
-2.键盘上按下Lshift+Rshift+W，切换到蓝牙通道2️⃣；<br>
-3.键盘上再按下Lshift+Rshift+O，删除蓝牙通道2️⃣配对的设备；<br>
-4.如有必要，按下Lshift+Rshift+R开启广播；<br>
-5.在需要配对键盘的设备上搜索蓝牙键盘，搜索到相应蓝牙键盘名称后，将新的设备配对到键盘蓝牙通道2️⃣（W键 ）<br>
-<h4><span><a class="a" href="./vial-jl.html" target="_blank">Vial-JL使用说明</a><br>
+<h3>固件说明</h3>
+1.请选择对应的固件下载刷入.<br>
+2.不建议新手更新固件，没事不要瞎更新，刷错固件有变砖可能<br>
+4.固件更新教程就写了，新手不要瞎更新，大佬也不需要……<br>
+<h4><span><a class="a" href="./vial.html" target="_blank">Vial-JL固件</a><br>
 <a class="a" href="../index.html" target="_blank">返回主页</a><br>
 </span><h4>
 </div>
