@@ -1,7 +1,7 @@
 <html lang="zh-cn">
 <meta charset="utf-8">
 <link rel="shortcut icon" type="image/x-icon" href="../logo.png" /> 
-<title>Vial-JL简易教程</title>
+<title>Vial-JL使用说明</title>
 
 <style>
 table {
@@ -24,7 +24,10 @@ a{
 .a1{
     text-decoration: none;
     color: #1e1f26;
-    font-size: 25px;
+    line-height: 24px;
+}
+.a1:hover{
+    color: #fff;
 }
 img{
   max-width: 1000px;
@@ -82,14 +85,14 @@ tr:nth-child(even) {
 }
 .meun{
     position: fixed;
-    width: 70;
+    max-width: 250;
     background-color: #a7e0dd;
     border-radius: 0.5rem;
-    top: 50px;
-    padding: 20px;
+    top: 10px;
+    padding: 10px;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen 和 (max-width: 600px) {
   table, thead, tbody, th, td, tr {
     display: block;
   }
@@ -118,9 +121,37 @@ tr:nth-child(even) {
 
 <div class="meun">
 	<a class="a1" href="../" >主&nbsp;&nbsp;页</a><br>
-	<a class="a1" href="#top" >教&nbsp;&nbsp;程</a><br>
-	<a class="a1" href="#keycode" >键&nbsp;&nbsp;码</a><br>
-	<a class="a1" href="#down" >底&nbsp;&nbsp;部</a><br>
+	<a class="a1" href="#top" >使用说明</a><br>
+	<a class="a1" href="#down" >到&nbsp;&nbsp;底</a><br>
+	<a class="a1" href="#basic" >基础键</a><br>
+	<a class="a1" href="#Mouse" >鼠标键</a><br>
+	<a class="a1" href="#quantum" >QMK键</a><br>
+	<a class="a1" href="#Audio" >Audio键</a><br>
+	<a class="a1" href="#Shift" >Auto Shift</a><br>
+	<a class="a1" href="#Aurocorrect" >Autocorrect</a><br>
+	<a class="a1" href="#backe" >Backlighting</a><br>
+	<a class="a1" href="#ble" >蓝牙</a><br>
+	<a class="a1" href="#caps" >Caps Word</a><br>
+	<a class="a1" href="#dynamic" >Dynamic Macros</a><br>
+	<a class="a1" href="#crave" >Grave Escape</a><br>
+	<a class="a1" href="#joy" >摇杆</a><br>
+	<a class="a1" href="#key" >Key Lock</a><br>
+	<a class="a1" href="#layer" >切层键</a><br>
+	<a class="a1" href="#leader" >Leader Key</a><br>
+	<a class="a1" href="#midi" >MIDI键</a><br>
+	<a class="a1" href="#modfiiers" >Modifiers</a><br>
+	<a class="a1" href="#mod-tap" >Mod-Tap</a><br>
+	<a class="a1" href="#tapping" >Tapping Term Keys</a><br>
+	<a class="a1" href="#rgb-l" >RGB灯</a><br>
+	<a class="a1" href="#rgb-m" >RGB矩阵</a><br>
+	<a class="a1" href="#usa" >US ANSI Shifted Symbols</a><br>
+	<a class="a1" href="#one" >One Shot Keys</a><br>
+	<a class="a1" href="#pbs" >Programmable Button Supports</a><br>
+	<a class="a1" href="#repeat" >Repeat Key</a><br>
+	<a class="a1" href="#space" >Space Cadet</a><br>
+	<a class="a1" href="#swap" >Swap Hands</a><br>
+	<a class="a1" href="#nmicode" >Unicode Support</a><br>
+
 	</div>
 	
 <div class="sm" id="top">
@@ -129,8 +160,8 @@ tr:nth-child(even) {
 <div class="sm">
 <div class="sm1">
 <span>
-<h3>Vila-JL使用简易教程</h3>
-<span>自定义改键宏等简易教程更多详细教程请<a class="a" href="http://www.google.com/ncr" target="_blank">Google</a>或<a class="a" href="http://www.bing.com" target="_blank">bing</a>搜索Vial教程……</span>
+<h3>Vila-JL使用说明</h3>
+<span>自定义改键宏等使用说明更多详细教程请<a class="a" href="http://www.google.com/ncr" target="_blank">Google</a>或<a class="a" href="http://www.bing.com" target="_blank">bing</a>搜索Vial教程……</span>
 <h4>Vial-JL下载</h4>
 <span><a class="a" href="../index.html" target="_blank">前往下载</a>请下载对应版本Vial-JL，0.6和0.7.X不兼容……</span><br>
 <img src="./img/0.png"></img><br><br>
@@ -158,1358 +189,4176 @@ tr:nth-child(even) {
 <h3><a class="a" href="#top">&nbsp;&nbsp;返回教程</a></h3>
 <h2 class="h2">键值列表</h2>
 </div>
-<div class="sm2" id="keycode">
-			<table>
-					<tr>
-						<th>键&nbsp;值</th>
-						<th>简&nbsp;写</th>
-						<th>描&nbsp;述</th>
-						<th>Windows</th>
-						<th>macOS</th>
-						<th>Linux<sup>1</sup>
-						</th>
-					</tr>
-					<tr>
-						<td>KC_NO</td>
-						<td>XXXXXXX</td>
-						<td>空键值</td>
-						<td>
-							<i>N/A</i>
-						</td>
-						<td>
-							<i>N/A</i>
-						</td>
-						<td>
-							<i>N/A</i>
-						</td>
-					</tr>
-					<tr>
-						<td>KC_TRANSPARENT</td>
-						<td>KC_TRNS</code>, <code>_______</td>
-						<td>穿透键</td>
-						<td>
-							<i>N/A</i>
-						</td>
-						<td>
-							<i>N/A</i>
-						</td>
-						<td>
-							<i>N/A</i>
-						</td>
-					</tr>
-					<tr>
-						<td>KC_A</td>
-						<td>&nbsp;</td>
-						<td>a</code> 和 <code>A</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_B</td>
-						<td>&nbsp;</td>
-						<td>b</code> 和 <code>B</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_C</td>
-						<td>&nbsp;</td>
-						<td>c</code> 和 <code>C</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_D</td>
-						<td>&nbsp;</td>
-						<td>d</code> 和 <code>D</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_E</td>
-						<td>&nbsp;</td>
-						<td>e</code> 和 <code>E</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F</td>
-						<td>&nbsp;</td>
-						<td>f</code> 和 <code>F</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_G</td>
-						<td>&nbsp;</td>
-						<td>g</code> 和 <code>G</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_H</td>
-						<td>&nbsp;</td>
-						<td>h</code> 和 <code>H</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_I</td>
-						<td>&nbsp;</td>
-						<td>i</code> 和 <code>I</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_J</td>
-						<td>&nbsp;</td>
-						<td>j</code> 和 <code>J</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_K</td>
-						<td>&nbsp;</td>
-						<td>k</code> 和 <code>K</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_L</td>
-						<td>&nbsp;</td>
-						<td>l</code> 和 <code>L</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_M</td>
-						<td>&nbsp;</td>
-						<td>m</code> 和 <code>M</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_N</td>
-						<td>&nbsp;</td>
-						<td>n</code> 和 <code>N</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_O</td>
-						<td>&nbsp;</td>
-						<td>o</code> 和 <code>O</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_P</td>
-						<td>&nbsp;</td>
-						<td>p</code> 和 <code>P</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_Q</td>
-						<td>&nbsp;</td>
-						<td>q</code> 和 <code>Q</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_R</td>
-						<td>&nbsp;</td>
-						<td>r</code> 和 <code>R</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_S</td>
-						<td>&nbsp;</td>
-						<td>s</code> 和 <code>S</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_T</td>
-						<td>&nbsp;</td>
-						<td>t</code> 和 <code>T</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_U</td>
-						<td>&nbsp;</td>
-						<td>u</code> 和 <code>U</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_V</td>
-						<td>&nbsp;</td>
-						<td>v</code> 和 <code>V</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_W</td>
-						<td>&nbsp;</td>
-						<td>w</code> 和 <code>W</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_X</td>
-						<td>&nbsp;</td>
-						<td>x</code> 和 <code>X</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_Y</td>
-						<td>&nbsp;</td>
-						<td>y</code> 和 <code>Y</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_Z</td>
-						<td>&nbsp;</td>
-						<td>z</code> 和 <code>Z</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_1</td>
-						<td>&nbsp;</td>
-						<td>1</code> 和 <code>!</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_2</td>
-						<td>&nbsp;</td>
-						<td>2</code> 和 <code>@</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_3</td>
-						<td>&nbsp;</td>
-						<td>3</code> 和 <code>#</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_4</td>
-						<td>&nbsp;</td>
-						<td>4</code> 和 <code>$</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_5</td>
-						<td>&nbsp;</td>
-						<td>5</code> 和 <code>%</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_6</td>
-						<td>&nbsp;</td>
-						<td>6</code> 和 <code>^</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_7</td>
-						<td>&nbsp;</td>
-						<td>7</code> 和 <code>&amp;</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_8</td>
-						<td>&nbsp;</td>
-						<td>8</code> 和 <code>*</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_9</td>
-						<td>&nbsp;</td>
-						<td>9</code> 和 <code>(</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_0</td>
-						<td>&nbsp;</td>
-						<td>0</code> 和 <code>)</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_ENTER</td>
-						<td>KC_ENT</td>
-						<td>回车 (Enter)</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_ESCAPE</td>
-						<td>KC_ESC</td>
-						<td>ESC.Escape</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_BSPACE</td>
-						<td>KC_BSPC</td>
-						<td>删除 (Backspace)</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_TAB</td>
-						<td>&nbsp;</td>
-						<td>Tab</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SPACE</td>
-						<td>KC_SPC</td>
-						<td>空格键</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MINUS</td>
-						<td>KC_MINS</td>
-						<td>-</code> 和 <code>_</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_EQUAL</td>
-						<td>KC_EQL</td>
-						<td>=</code> 和 <code>+</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_LBRACKET</td>
-						<td>KC_LBRC</td>
-						<td>[</code> 和 <code>{</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_RBRACKET</td>
-						<td>KC_RBRC</td>
-						<td>]</code> 和 <code>}</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_BSLASH</td>
-						<td>KC_BSLS</td>
-						<td>\</code> 和 <code>\|</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_NONUS_HASH</td>
-						<td>KC_NUHS</td>
-						<td>Non-US <code>#</code> 和 <code>~</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SCOLON</td>
-						<td>KC_SCLN</td>
-						<td>;</code> 和 <code>:</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_QUOTE</td>
-						<td>KC_QUOT</td>
-						<td>'</code> 和 <code>"</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_GRAVE</td>
-						<td>KC_GRV</code>, <code>KC_ZKHK</td>
-						<td>`</code> 和 <code>~</code>, JIS Zenkaku/Hankaku
-						</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_COMMA</td>
-						<td>KC_COMM</td>
-						<td>,</code> 和 <code>&lt;</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_DOT</td>
-						<td>&nbsp;</td>
-						<td>.</code> 和 <code>&gt;</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SLASH</td>
-						<td>KC_SLSH</td>
-						<td>/</code> 和 <code>?</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_CAPSLOCK</td>
-						<td>KC_CLCK</code>, <code>KC_CAPS</td>
-						<td>Caps Lock</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F1</td>
-						<td>&nbsp;</td>
-						<td>F1</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F2</td>
-						<td>&nbsp;</td>
-						<td>F2</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F3</td>
-						<td>&nbsp;</td>
-						<td>F3</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F4</td>
-						<td>&nbsp;</td>
-						<td>F4</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F5</td>
-						<td>&nbsp;</td>
-						<td>F5</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F6</td>
-						<td>&nbsp;</td>
-						<td>F6</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F7</td>
-						<td>&nbsp;</td>
-						<td>F7</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F8</td>
-						<td>&nbsp;</td>
-						<td>F8</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F9</td>
-						<td>&nbsp;</td>
-						<td>F9</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F10</td>
-						<td>&nbsp;</td>
-						<td>F10</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F11</td>
-						<td>&nbsp;</td>
-						<td>F11</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F12</td>
-						<td>&nbsp;</td>
-						<td>F12</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_PSCREEN</td>
-						<td>KC_PSCR</td>
-						<td>Print Screen</td>
-						<td>✔</td>
-						<td>✔<sup>2</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SCROLLLOCK</td>
-						<td>KC_SLCK</code>, <code>KC_BRMD</td>
-						<td>Scroll Lock, 亮度降低 (macOS)</td>
-						<td>✔</td>
-						<td>✔<sup>2</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_PAUSE</td>
-						<td>KC_PAUS</code>, <code>KC_BRK</code>, <code>KC_BRMU</td>
-						<td>Pause, 亮度提升 (macOS)</td>
-						<td>✔</td>
-						<td>✔<sup>2</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_INSERT</td>
-						<td>KC_INS</td>
-						<td>Insert</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_HOME</td>
-						<td>&nbsp;</td>
-						<td>Home</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_PGUP</td>
-						<td>&nbsp;</td>
-						<td>Page Up</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_DELETE</td>
-						<td>KC_DEL</td>
-						<td>Forward Delete</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_END</td>
-						<td>&nbsp;</td>
-						<td>End</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_PGDOWN</td>
-						<td>KC_PGDN</td>
-						<td>Page Down</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_RIGHT</td>
-						<td>KC_RGHT</td>
-						<td>方向右</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_LEFT</td>
-						<td>&nbsp;</td>
-						<td>方向左</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_DOWN</td>
-						<td>&nbsp;</td>
-						<td>方向下</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_UP</td>
-						<td>&nbsp;</td>
-						<td>方向上</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_NUMLOCK</td>
-						<td>KC_NLCK</td>
-						<td>Number Lock</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_SLASH</td>
-						<td>KC_PSLS</td>
-						<td>小键盘 <code>/</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_ASTERISK</td>
-						<td>KC_PAST</td>
-						<td>小键盘 <code>*</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_MINUS</td>
-						<td>KC_PMNS</td>
-						<td>小键盘 <code>-</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_PLUS</td>
-						<td>KC_PPLS</td>
-						<td>小键盘 <code>+</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_ENTER</td>
-						<td>KC_PENT</td>
-						<td>小键盘 Enter</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_1</td>
-						<td>KC_P1</td>
-						<td>小键盘 <code>1</code> and End</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_2</td>
-						<td>KC_P2</td>
-						<td>小键盘 <code>2</code> and Down Arrow</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_3</td>
-						<td>KC_P3</td>
-						<td>小键盘 <code>3</code> and Page Down</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_4</td>
-						<td>KC_P4</td>
-						<td>小键盘 <code>4</code> and Left Arrow</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_5</td>
-						<td>KC_P5</td>
-						<td>小键盘 <code>5</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_6</td>
-						<td>KC_P6</td>
-						<td>小键盘 <code>6</code> and Right Arrow</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_7</td>
-						<td>KC_P7</td>
-						<td>小键盘 <code>7</code> and Home</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_8</td>
-						<td>KC_P8</td>
-						<td>小键盘 <code>8</code> and Up Arrow</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_9</td>
-						<td>KC_P9</td>
-						<td>小键盘 <code>9</code> and Page Up</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_0</td>
-						<td>KC_P0</td>
-						<td>小键盘 <code>0</code> and Insert</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_DOT</td>
-						<td>KC_PDOT</td>
-						<td>小键盘 <code>.</code> and Delete</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_NONUS_BSLASH</td>
-						<td>KC_NUBS</td>
-						<td>Non-US <code>\</code> 和 <code>\|</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_APPLICATION</td>
-						<td>KC_APP</td>
-						<td>应用见 (Windows下的菜单键)</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_POWER</td>
-						<td>&nbsp;</td>
-						<td>System Power</td>
-						<td>&nbsp;</td>
-						<td>✔<sup>3</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_KP_EQUAL</td>
-						<td>KC_PEQL</td>
-						<td>小键盘 <code>=</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F13</td>
-						<td>&nbsp;</td>
-						<td>F13</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F14</td>
-						<td>&nbsp;</td>
-						<td>F14</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F15</td>
-						<td>&nbsp;</td>
-						<td>F15</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F16</td>
-						<td>&nbsp;</td>
-						<td>F16</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F17</td>
-						<td>&nbsp;</td>
-						<td>F17</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F18</td>
-						<td>&nbsp;</td>
-						<td>F18</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F19</td>
-						<td>&nbsp;</td>
-						<td>F19</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F20</td>
-						<td>&nbsp;</td>
-						<td>F20</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F21</td>
-						<td>&nbsp;</td>
-						<td>F21</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F22</td>
-						<td>&nbsp;</td>
-						<td>F22</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F23</td>
-						<td>&nbsp;</td>
-						<td>F23</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_F24</td>
-						<td>&nbsp;</td>
-						<td>F24</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_EXECUTE</td>
-						<td>KC_EXEC</td>
-						<td>执行</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_HELP</td>
-						<td>&nbsp;</td>
-						<td>帮助</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MENU</td>
-						<td>&nbsp;</td>
-						<td>菜单</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SELECT</td>
-						<td>KC_SLCT</td>
-						<td>选择</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_STOP</td>
-						<td>&nbsp;</td>
-						<td>停止</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_AGAIN</td>
-						<td>KC_AGIN</td>
-						<td>重做</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_UNDO</td>
-						<td>&nbsp;</td>
-						<td>撤回</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_CUT</td>
-						<td>&nbsp;</td>
-						<td>剪切</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_COPY</td>
-						<td>&nbsp;</td>
-						<td>复制</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_PASTE</td>
-						<td>KC_PSTE</td>
-						<td>粘贴</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_FIND</td>
-						<td>&nbsp;</td>
-						<td>查找</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC__MUTE</td>
-						<td>&nbsp;</td>
-						<td>静音键</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC__VOLUP</td>
-						<td>&nbsp;</td>
-						<td>音量提升</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC__VOLDOWN</td>
-						<td>&nbsp;</td>
-						<td>音量降低</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_LOCKING_CAPS</td>
-						<td>KC_LCAP</td>
-						<td>Caps Lock</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-					</tr>
-					<tr>
-						<td>KC_LOCKING_NUM</td>
-						<td>KC_LNUM</td>
-						<td>Num Lock</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-					</tr>
-					<tr>
-						<td>KC_LOCKING_SCROLL</td>
-						<td>KC_LSCR</td>
-						<td>Scroll Lock</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-					</tr>
-					<tr>
-						<td>KC_KP_COMMA</td>
-						<td>KC_PCMM</td>
-						<td>小键盘 <code>,</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_LCTRL</td>
-						<td>KC_LCTL</td>
-						<td>左Ctrl Control</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_LSHIFT</td>
-						<td>KC_LSFT</td>
-						<td>左 Shift</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_LALT</td>
-						<td>KC_LOPT</td>
-						<td>左 Alt (Option)</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_LGUI</td>
-						<td>KC_LCMD</code>, <code>KC_LWIN</td>
-						<td>左 GUI (Windows/Command/Meta key)</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_RCTRL</td>
-						<td>KC_RCTL</td>
-						<td>右Ctrl Control</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_RSHIFT</td>
-						<td>KC_RSFT</td>
-						<td>右 Shift</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_RALT</td>
-						<td>KC_ROPT</code>, <code>KC_ALGR</td>
-						<td>右 Alt (Option/AltGr)</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_RGUI</td>
-						<td>KC_RCMD</code>, <code>KC_RWIN</td>
-						<td>右 GUI (Windows/Command/Meta key)</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SYSTEM_POWER</td>
-						<td>KC_PWR</td>
-						<td>系统关机</td>
-						<td>✔</td>
-						<td>✔<sup>3</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SYSTEM_SLEEP</td>
-						<td>KC_SLEP</td>
-						<td>系统睡眠</td>
-						<td>✔</td>
-						<td>✔<sup>3</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_SYSTEM_WAKE</td>
-						<td>KC_WAKE</td>
-						<td>系统休眠</td>
-						<td>&nbsp;</td>
-						<td>✔<sup>3</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_AUDIO_MUTE</td>
-						<td>KC_MUTE</td>
-						<td>静音</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_AUDIO_VOL_UP</td>
-						<td>KC_VOLU</td>
-						<td>音量+</td>
-						<td>✔</td>
-						<td>✔<sup>4</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_AUDIO_VOL_DOWN</td>
-						<td>KC_VOLD</td>
-						<td>音量-</td>
-						<td>✔</td>
-						<td>✔<sup>4</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MEDIA_NEXT_TRACK</td>
-						<td>KC_MNXT</td>
-						<td>下一曲</td>
-						<td>✔</td>
-						<td>✔<sup>5</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MEDIA_PREV_TRACK</td>
-						<td>KC_MPRV</td>
-						<td>上一曲</td>
-						<td>✔</td>
-						<td>✔<sup>5</sup>
-						</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MEDIA_STOP</td>
-						<td>KC_MSTP</td>
-						<td>停止</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MEDIA_PLAY_PAUSE</td>
-						<td>KC_MPLY</td>
-						<td>播放/暂停</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MEDIA_SELECT</td>
-						<td>KC_MSEL</td>
-						<td>打开 Media Player</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MEDIA_EJECT</td>
-						<td>KC_EJCT</td>
-						<td>弹出</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MAIL</td>
-						<td>&nbsp;</td>
-						<td>打开邮件</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_CALCULATOR</td>
-						<td>KC_CALC</td>
-						<td>打开计算器</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_MY_COMPUTER</td>
-						<td>KC_MYCM</td>
-						<td>打开计算机</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_WWW_SEARCH</td>
-						<td>KC_WSCH</td>
-						<td>浏览器-搜索</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_WWW_HOME</td>
-						<td>KC_WHOM</td>
-						<td>浏览器-主页</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_WWW_BACK</td>
-						<td>KC_WBAK</td>
-						<td>浏览器-返回</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_WWW_FORWARD</td>
-						<td>KC_WFWD</td>
-						<td>浏览器-前进</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_WWW_STOP</td>
-						<td>KC_WSTP</td>
-						<td>浏览器-停止</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_WWW_REFRESH</td>
-						<td>KC_WREF</td>
-						<td>浏览器-刷新</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_WWW_FAVORITES</td>
-						<td>KC_WFAV</td>
-						<td>浏览器-收藏</td>
-						<td>✔</td>
-						<td>&nbsp;</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_BRIGHTNESS_UP</td>
-						<td>KC_BRIU</td>
-						<td>亮度+</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-					<tr>
-						<td>KC_BRIGHTNESS_DOWN</td>
-						<td>KC_BRID</td>
-						<td>亮度-</td>
-						<td>✔</td>
-						<td>✔</td>
-						<td>✔</td>
-					</tr>
-			</table>
-		<p>
-			<sup>1. Linux中可以识别几乎所有键码，但是其键值绑定关系，系统决定</sup>
-			<br>
-		</p>
+<div class="sm2">
+
+<h4  id="basic">基础键码<h4>
+<table>
+<tr>
+<th>键&nbsp;值</th>
+<th>简&nbsp;写</th>
+<th>描&nbsp;述</th>
+<th>Windows</th>
+<th>macOS</th>
+<th>Linux<sup>1</sup>
+</th>
+</tr>
+<tr>
+<td>KC_NO</td>
+<td>XXXXXXX</td>
+<td>空键值</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_TRANSPARENT</td>
+<td>KC_TRNS, _______</td>
+<td>穿透键</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_A</td>
+<td></td>
+<td>a 和 A</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_B</td>
+<td></td>
+<td>b 和 B</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_C</td>
+<td></td>
+<td>c 和 C</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_D</td>
+<td></td>
+<td>d 和 D</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_E</td>
+<td></td>
+<td>e 和 E</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F</td>
+<td></td>
+<td>f 和 F</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_G</td>
+<td></td>
+<td>g 和 G</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_H</td>
+<td></td>
+<td>h 和 H</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_I</td>
+<td></td>
+<td>i 和 I</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_J</td>
+<td></td>
+<td>j 和 J</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_K</td>
+<td></td>
+<td>k 和 K</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_L</td>
+<td></td>
+<td>l 和 L</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_M</td>
+<td></td>
+<td>m 和 M</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_N</td>
+<td></td>
+<td>n 和 N</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_O</td>
+<td></td>
+<td>o 和 O</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_P</td>
+<td></td>
+<td>p 和 P</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_Q</td>
+<td></td>
+<td>q 和 Q</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_R</td>
+<td></td>
+<td>r 和 R</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_S</td>
+<td></td>
+<td>s 和 S</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_T</td>
+<td></td>
+<td>t 和 T</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_U</td>
+<td></td>
+<td>u 和 U</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_V</td>
+<td></td>
+<td>v 和 V</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_W</td>
+<td></td>
+<td>w 和 W</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_X</td>
+<td></td>
+<td>x 和 X</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_Y</td>
+<td></td>
+<td>y 和 Y</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_Z</td>
+<td></td>
+<td>z 和 Z</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_1</td>
+<td></td>
+<td>1 和 !</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_2</td>
+<td></td>
+<td>2 和 @</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_3</td>
+<td></td>
+<td>3 和 #</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_4</td>
+<td></td>
+<td>4 和 $</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_5</td>
+<td></td>
+<td>5 和 %</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_6</td>
+<td></td>
+<td>6 和 ^</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_7</td>
+<td></td>
+<td>7 和 &amp;</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_8</td>
+<td></td>
+<td>8 和 *</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_9</td>
+<td></td>
+<td>9 和 (</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_0</td>
+<td></td>
+<td>0 和 )</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_ENTER</td>
+<td>KC_ENT</td>
+<td>Return (Enter)</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_ESCAPE</td>
+<td>KC_ESC</td>
+<td>Escape</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_BACKSPACE</td>
+<td>KC_BSPC</td>
+<td>Delete (Backspace)</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_TAB</td>
+<td></td>
+<td>Tab</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SPACE</td>
+<td>KC_SPC</td>
+<td>Spacebar</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MINUS</td>
+<td>KC_MINS</td>
+<td>- 和 _</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_EQUAL</td>
+<td>KC_EQL</td>
+<td>=3D 和 +</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LEFT_BRACKET</td>
+<td>KC_LBRC</td>
+<td>[ 和 {</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_RIGHT_BRACKET</td>
+<td>KC_RBRC</td>
+<td>] 和 }</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_BACKSLASH</td>
+<td>KC_BSLS</td>
+<td>\ 和 |</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_NONUS_HASH</td>
+<td>KC_NUHS</td>
+<td>Non-US # 和 ~</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SEMICOLON</td>
+<td>KC_SCLN</td>
+<td>; 和 :</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_QUOTE</td>
+<td>KC_QUOT</td>
+<td>' 和 "</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_GRAVE</td>
+<td>KC_GRV</td>
+<td>` 和 ~</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_COMMA</td>
+<td>KC_COMM</td>
+<td>, 和 &lt;</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_DOT</td>
+<td></td>
+<td>. 和 &gt;</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SLASH</td>
+<td>KC_SLSH</td>
+<td>/ 和 ?</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_CAPS_LOCK</td>
+<td>KC_CAPS</td>
+<td>Caps Lock</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F1</td>
+<td></td>
+<td>F1</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F2</td>
+<td></td>
+<td>F2</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F3</td>
+<td></td>
+<td>F3</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F4</td>
+<td></td>
+<td>F4</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F5</td>
+<td></td>
+<td>F5</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F6</td>
+<td></td>
+<td>F6</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F7</td>
+<td></td>
+<td>F7</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F8</td>
+<td></td>
+<td>F8</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F9</td>
+<td></td>
+<td>F9</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F10</td>
+<td></td>
+<td>F10</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F11</td>
+<td></td>
+<td>F11</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F12</td>
+<td></td>
+<td>F12</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_PRINT_SCREEN</td>
+<td>KC_PSCR</td>
+<td>Print Screen</td>
+<td>✔</td>
+<td>✔<sup>2</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SCROLL_LOCK</td>
+<td>KC_SCRL, KC_BRMD</td>
+<td>Scroll Lock, Brightness Down (macOS)</td>
+<td>✔</td>
+<td>✔<sup>2</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_PAUSE</td>
+<td>KC_PAUS, KC_BRK, KC_BRMU</td>
+<td>Pause, Brightness Up (macOS)</td>
+<td>✔</td>
+<td>✔<sup>2</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_INSERT</td>
+<td>KC_INS</td>
+<td>Insert</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_HOME</td>
+<td></td>
+<td>Home</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_PAGE_UP</td>
+<td>KC_PGUP</td>
+<td>Page Up</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_DELETE</td>
+<td>KC_DEL</td>
+<td>Forward Delete</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_END</td>
+<td></td>
+<td>End</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_PAGE_DOWN</td>
+<td>KC_PGDN</td>
+<td>Page Down</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_RIGHT</td>
+<td>KC_RGHT</td>
+<td>Right Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LEFT</td>
+<td></td>
+<td>Left Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_DOWN</td>
+<td></td>
+<td>Down Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_UP</td>
+<td></td>
+<td>Up Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_NUM_LOCK</td>
+<td>KC_NUM</td>
+<td>Keypad Num Lock 和 Clear</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_SLASH</td>
+<td>KC_PSLS</td>
+<td>Keypad /</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_ASTERISK</td>
+<td>KC_PAST</td>
+<td>Keypad *</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_MINUS</td>
+<td>KC_PMNS</td>
+<td>Keypad -</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_PLUS</td>
+<td>KC_PPLS</td>
+<td>Keypad +</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_ENTER</td>
+<td>KC_PENT</td>
+<td>Keypad Enter</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_1</td>
+<td>KC_P1</td>
+<td>Keypad 1 和 End</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_2</td>
+<td>KC_P2</td>
+<td>Keypad 2 和 Down Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_3</td>
+<td>KC_P3</td>
+<td>Keypad 3 和 Page Down</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_4</td>
+<td>KC_P4</td>
+<td>Keypad 4 和 Left Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_5</td>
+<td>KC_P5</td>
+<td>Keypad 5</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_6</td>
+<td>KC_P6</td>
+<td>Keypad 6 和 Right Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_7</td>
+<td>KC_P7</td>
+<td>Keypad 7 和 Home</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_8</td>
+<td>KC_P8</td>
+<td>Keypad 8 和 Up Arrow</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_9</td>
+<td>KC_P9</td>
+<td>Keypad 9 和 Page Up</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_0</td>
+<td>KC_P0</td>
+<td>Keypad 0 和 Insert</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_DOT</td>
+<td>KC_PDOT</td>
+<td>Keypad . 和 Delete</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_NONUS_BACKSLASH</td>
+<td>KC_NUBS</td>
+<td>Non-US \ 和 |</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_APPLICATION</td>
+<td>KC_APP</td>
+<td>Application (Windows Context Menu Key)</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KB_POWER</td>
+<td></td>
+<td>System Power</td>
+<td></td>
+<td>✔<sup>3</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_EQUAL</td>
+<td>KC_PEQL</td>
+<td>Keypad =3D</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F13</td>
+<td></td>
+<td>F13</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F14</td>
+<td></td>
+<td>F14</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F15</td>
+<td></td>
+<td>F15</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F16</td>
+<td></td>
+<td>F16</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F17</td>
+<td></td>
+<td>F17</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F18</td>
+<td></td>
+<td>F18</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F19</td>
+<td></td>
+<td>F19</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F20</td>
+<td></td>
+<td>F20</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F21</td>
+<td></td>
+<td>F21</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F22</td>
+<td></td>
+<td>F22</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F23</td>
+<td></td>
+<td>F23</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_F24</td>
+<td></td>
+<td>F24</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_EXECUTE</td>
+<td>KC_EXEC</td>
+<td>Execute</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_HELP</td>
+<td></td>
+<td>Help</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MENU</td>
+<td></td>
+<td>Menu</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SELECT</td>
+<td>KC_SLCT</td>
+<td>Select</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_STOP</td>
+<td></td>
+<td>Stop</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_AGAIN</td>
+<td>KC_AGIN</td>
+<td>Again</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_UNDO</td>
+<td></td>
+<td>Undo</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_CUT</td>
+<td></td>
+<td>Cut</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_COPY</td>
+<td></td>
+<td>Copy</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_PASTE</td>
+<td>KC_PSTE</td>
+<td>Paste</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_FIND</td>
+<td></td>
+<td>Find</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KB_MUTE</td>
+<td></td>
+<td>Mute</td>
+<td></td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KB_VOLUME_UP</td>
+<td></td>
+<td>Volume Up</td>
+<td></td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KB_VOLUME_DOWN</td>
+<td></td>
+<td>Volume Down</td>
+<td></td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LOCKING_CAPS_LOCK</td>
+<td>KC_LCAP</td>
+<td>Locking Caps Lock</td>
+<td>✔</td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LOCKING_NUM_LOCK</td>
+<td>KC_LNUM</td>
+<td>Locking Num Lock</td>
+<td>✔</td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LOCKING_SCROLL_LOCK</td>
+<td>KC_LSCR</td>
+<td>Locking Scroll Lock</td>
+<td>✔</td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>KC_KP_COMMA</td>
+<td>KC_PCMM</td>
+<td>Keypad ,</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_KP_EQUAL_AS400</td>
+<td></td>
+<td>Keypad =3D on AS/400 keyboards</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_1</td>
+<td>KC_INT1</td>
+<td>International 1</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_2</td>
+<td>KC_INT2</td>
+<td>International 2</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_3</td>
+<td>KC_INT3</td>
+<td>International 3</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_4</td>
+<td>KC_INT4</td>
+<td>International 4</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_5</td>
+<td>KC_INT5</td>
+<td>International 5</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_6</td>
+<td>KC_INT6</td>
+<td>International 6</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_7</td>
+<td>KC_INT7</td>
+<td>International 7</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_8</td>
+<td>KC_INT8</td>
+<td>International 8</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_INTERNATIONAL_9</td>
+<td>KC_INT9</td>
+<td>International 9</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_1</td>
+<td>KC_LNG1</td>
+<td>Language 1</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_2</td>
+<td>KC_LNG2</td>
+<td>Language 2</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_3</td>
+<td>KC_LNG3</td>
+<td>Language 3</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_4</td>
+<td>KC_LNG4</td>
+<td>Language 4</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_5</td>
+<td>KC_LNG5</td>
+<td>Language 5</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_6</td>
+<td>KC_LNG6</td>
+<td>Language 6</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_7</td>
+<td>KC_LNG7</td>
+<td>Language 7</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_8</td>
+<td>KC_LNG8</td>
+<td>Language 8</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LANGUAGE_9</td>
+<td>KC_LNG9</td>
+<td>Language 9</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_ALTERNATE_ERASE</td>
+<td>KC_ERAS</td>
+<td>Alternate Erase</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_SYSTEM_REQUEST</td>
+<td>KC_SYRQ</td>
+<td>SysReq/Attention</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_CANCEL</td>
+<td>KC_CNCL</td>
+<td>Cancel</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_CLEAR</td>
+<td>KC_CLR</td>
+<td>Clear</td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_PRIOR</td>
+<td>KC_PRIR</td>
+<td>Prior</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_RETURN</td>
+<td>KC_RETN</td>
+<td>Return</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_SEPARATOR</td>
+<td>KC_SEPR</td>
+<td>Separator</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_OUT</td>
+<td></td>
+<td>Out</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_OPER</td>
+<td></td>
+<td>Oper</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_CLEAR_AGAIN</td>
+<td>KC_CLAG</td>
+<td>Clear/Again</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_CRSEL</td>
+<td>KC_CRSL</td>
+<td>CrSel/Props</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_EXSEL</td>
+<td>KC_EXSL</td>
+<td>ExSel</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LEFT_CTRL</td>
+<td>KC_LCTL</td>
+<td>Left Control</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LEFT_SHIFT</td>
+<td>KC_LSFT</td>
+<td>Left Shift</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LEFT_ALT</td>
+<td>KC_LALT, KC_LOPT</td>
+<td>Left Alt (Option)</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_LEFT_GUI</td>
+<td>KC_LGUI, KC_LCMD, KC_LWIN</td>
+<td>Left GUI (Windows/Command/Meta key)</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_RIGHT_CTRL</td>
+<td>KC_RCTL</td>
+<td>Right Control</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_RIGHT_SHIFT</td>
+<td>KC_RSFT</td>
+<td>Right Shift</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_RIGHT_ALT</td>
+<td>KC_RALT, KC_ROPT, KC_ALGR</td>
+<td>Right Alt (Option/AltGr)</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_RIGHT_GUI</td>
+<td>KC_RGUI, KC_RCMD, KC_RWIN</td>
+<td>Right GUI (Windows/Command/Meta key)</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SYSTEM_POWER</td>
+<td>KC_PWR</td>
+<td>System Power Down</td>
+<td>✔</td>
+<td>✔<sup>3</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SYSTEM_SLEEP</td>
+<td>KC_SLEP</td>
+<td>System Sleep</td>
+<td>✔</td>
+<td>✔<sup>3</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_SYSTEM_WAKE</td>
+<td>KC_WAKE</td>
+<td>System Wake</td>
+<td></td>
+<td>✔<sup>3</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_AUDIO_MUTE</td>
+<td>KC_MUTE</td>
+<td>Mute</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_AUDIO_VOL_UP</td>
+<td>KC_VOLU</td>
+<td>Volume Up</td>
+<td>✔</td>
+<td>✔<sup>4</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_AUDIO_VOL_DOWN</td>
+<td>KC_VOLD</td>
+<td>Volume Down</td>
+<td>✔</td>
+<td>✔<sup>4</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_NEXT_TRACK</td>
+<td>KC_MNXT</td>
+<td>Next Track</td>
+<td>✔</td>
+<td>✔<sup>5</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_PREV_TRACK</td>
+<td>KC_MPRV</td>
+<td>Previous Track</td>
+<td>✔</td>
+<td>✔<sup>5</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_STOP</td>
+<td>KC_MSTP</td>
+<td>Stop Track</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_PLAY_PAUSE</td>
+<td>KC_MPLY</td>
+<td>Play/Pause Track</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_SELECT</td>
+<td>KC_MSEL</td>
+<td>Launch Media Player</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_EJECT</td>
+<td>KC_EJCT</td>
+<td>Eject</td>
+<td></td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MAIL</td>
+<td></td>
+<td>Launch Mail</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_CALCULATOR</td>
+<td>KC_CALC</td>
+<td>Launch Calculator</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MY_COMPUTER</td>
+<td>KC_MYCM</td>
+<td>Launch My Computer</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_WWW_SEARCH</td>
+<td>KC_WSCH</td>
+<td>Browser Search</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_WWW_HOME</td>
+<td>KC_WHOM</td>
+<td>Browser Home</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_WWW_BACK</td>
+<td>KC_WBAK</td>
+<td>Browser Back</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_WWW_FORWARD</td>
+<td>KC_WFWD</td>
+<td>Browser Forward</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_WWW_STOP</td>
+<td>KC_WSTP</td>
+<td>Browser Stop</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_WWW_REFRESH</td>
+<td>KC_WREF</td>
+<td>Browser Refresh</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_WWW_FAVORITES</td>
+<td>KC_WFAV</td>
+<td>Browser Favorites</td>
+<td>✔</td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_FAST_FORWARD</td>
+<td>KC_MFFD</td>
+<td>Next Track</td>
+<td>✔</td>
+<td>✔<sup>5</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_MEDIA_REWIND</td>
+<td>KC_MRWD</td>
+<td>Previous Track</td>
+<td>✔<sup>6</sup></td>
+<td>✔<sup>5</sup></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_BRIGHTNESS_UP</td>
+<td>KC_BRIU</td>
+<td>Brightness Up</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_BRIGHTNESS_DOWN</td>
+<td>KC_BRID</td>
+<td>Brightness Down</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>KC_CONTROL_PANEL</td>
+<td>KC_CPNL</td>
+<td>Open Control Panel</td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_ASSISTANT</td>
+<td>KC_ASST</td>
+<td>Launch Context-Aware Assistant</td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>KC_MISSION_CONTROL</td>
+<td>KC_MCTL</td>
+<td>Open Mission Control</td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>KC_LAUNCHPAD</td>
+<td>KC_LPAD</td>
+<td>Open Launchpad</td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+</table>
+
+<p>
+<sup>
+1. Linux中可以识别几乎所有键码，但是其键值绑定关系，系统决定2. 视为F13-F15。<br>
+3. 必须按住约三秒，然后会显示提示。<br>
+4. 按住 Shift+Option 可以更精细地控制音量级别。<br>
+5. 点击时跳过 iTunes 中的整个曲目，按住时在当前曲目内搜索。<br>
+6. WMP 无法识别倒带键，但两者都会改变 VLC 中的播放速度。<br>
+</sup>
+<br>
+
+<h4  id="quantum">Quantum 键码<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>QK_BOOTLOADER</td>
+<td>QK_BOOT</td>
+<td>Put the keyboard into bootloader mode for flashing</td>
+</tr>
+<tr>
+<td>QK_DEBUG_TOGGLE</td>
+<td>DB_TOGG</td>
+<td>Toggle debug mode</td>
+</tr>
+<tr>
+<td>QK_CLEAR_EEPROM</td>
+<td>EE_CLR</td>
+<td>Reinitializes the keyboard=E2=80=99s EEPROM (persistent memory)</td>
+</tr>
+<tr>
+<td>QK_MAKE</td>
+<td></td>
+<td>Sends qmk compile -kb (keyboard) -km (keymap), or qm=
+k flash if shift is held. Puts keyboard into bootloader mode if shif=
+t &amp; control are held</td>
+</tr>
+<tr>
+<td>QK_REBOOT</td>
+<td>QK_RBT</td>
+<td>Resets the keyboard. Does not load the bootloader</td>
+</tr>
+</table>
+<br>
+
+<h4  id="Audio">Audio 键码<h4>
+<table>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>QK_AUDIO_ON</td>
+<td>AU_ON</td>
+<td>Turns on Audio Feature</td>
+</tr>
+<tr>
+<td>QK_AUDIO_OFF</td>
+<td>AU_OFF</td>
+<td>Turns off Audio Feature</td>
+</tr>
+<tr>
+<td>QK_AUDIO_TOGGLE</td>
+<td>AU_TOGG</td>
+<td>Toggles Audio state</td>
+</tr>
+<tr>
+<td>QK_AUDIO_CLICKY_TOGGLE</td>
+<td>CK_TOGG</td>
+<td>Toggles Audio clicky mode</td>
+</tr>
+<tr>
+<td>QK_AUDIO_CLICKY_ON</td>
+<td>CK_ON</td>
+<td>Turns on Audio clicky mode</td>
+</tr>
+<tr>
+<td>QK_AUDIO_CLICKY_OFF</td>
+<td>CK_OFF</td>
+<td>Turns on Audio clicky mode</td>
+</tr>
+<tr>
+<td>QK_AUDIO_CLICKY_UP</td>
+<td>CK_UP</td>
+<td>Increases frequency of the clicks</td>
+</tr>
+<tr>
+<td>QK_AUDIO_CLICKY_DOWN</td>
+<td>CK_DOWN</td>
+<td>Decreases frequency of the clicks</td>
+</tr>
+<tr>
+<td>QK_AUDIO_CLICKY_RESET</td>
+<td>CK_RST</td>
+<td>Resets frequency to default</td>
+</tr>
+<tr>
+<td>QK_MUSIC_ON</td>
+<td>MU_ON</td>
+<td>Turns on Music Mode</td>
+</tr>
+<tr>
+<td>QK_MUSIC_OFF</td>
+<td>MU_OFF</td>
+<td>Turns off Music Mode</td>
+</tr>
+<tr>
+<td>QK_MUSIC_TOGGLE</td>
+<td>MU_TOGG</td>
+<td>Toggles Music Mode</td>
+</tr>
+<tr>
+<td>QK_MUSIC_MODE_NEXT</td>
+<td>MU_NEXT</td>
+<td>Cycles through the music modes</td>
+</tr>
+<tr>
+<td>QK_AUDIO_VOICE_NEXT</td>
+<td>AU_NEXT</td>
+<td>Cycles through the audio voices</td>
+</tr>
+<tr>
+<td>QK_AUDIO_VOICE_PREVIOUS</td>
+<td>AU_PREV</td>
+<td>Cycles through the audio voices in reverse</td>
+</tr>
+</table>
+<br>
+
+<h4  id="Shift">Audio Shift<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>QK_AUTO_SHIFT_DOWN</td>
+<td>AS_DOWN</td>
+<td>Lower the Auto Shift timeout variable (down)</td>
+</tr>
+<tr>
+<td>QK_AUTO_SHIFT_UP</td>
+<td>AS_UP</td>
+<td>Raise the Auto Shift timeout variable (up)</td>
+</tr>
+<tr>
+<td>QK_AUTO_SHIFT_REPORT</td>
+<td>AS_RPT</td>
+<td>Report your current Auto Shift timeout value</td>
+</tr>
+<tr>
+<td>QK_AUTO_SHIFT_ON</td>
+<td>AS_ON</td>
+<td>Turns on the Auto Shift Function</td>
+</tr>
+<tr>
+<td>QK_AUTO_SHIFT_OFF</td>
+<td>AS_OFF</td>
+<td>Turns off the Auto Shift Function</td>
+</tr>
+<tr>
+<td>QK_AUTO_SHIFT_TOGGLE</td>
+<td>AS_TOGG</td>
+<td>Toggles the state of the Auto Shift feature</td>
+</tr>
+</table>
+<br>
+
+<h4  id="Aurocorrect">Aurocorrect<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>QK_AUTOCORRECT_ON</td>
+<td>AC_ON</td>
+<td>Turns on the Autocorrect feature.</td>
+</tr>
+<tr>
+<td>QK_AUTOCORRECT_OFF</td>
+<td>AC_OFF</td>
+<td>Turns off the Autocorrect feature.</td>
+</tr>
+<tr>
+<td>QK_AUTOCORRECT_TOGGLE</td>
+<td>AC_TOGG</td>
+<td>Toggles the status of the Autocorrect feature.</td>
+</tr>
+</table>
+<br>
+
+<h4  id="backe">背光灯<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>QK_BACKLIGHT_TOGGLE</td>
+<td>BL_TOGG</td>
+<td>Turn the backlight on or off</td>
+</tr>
+<tr>
+<td>QK_BACKLIGHT_STEP</td>
+<td>BL_STEP</td>
+<td>Cycle through backlight levels</td>
+</tr>
+<tr>
+<td>QK_BACKLIGHT_ON</td>
+<td>BL_ON</td>
+<td>Set the backlight to max brightness</td>
+</tr>
+<tr>
+<td>QK_BACKLIGHT_OFF</td>
+<td>BL_OFF</td>
+<td>Turn the backlight off</td>
+</tr>
+<tr>
+<td>QK_BACKLIGHT_UP</td>
+<td>BL_UP</td>
+<td>Increase the backlight level</td>
+</tr>
+<tr>
+<td>QK_BACKLIGHT_DOWN</td>
+<td>BL_DOWN</td>
+<td>Decrease the backlight level</td>
+</tr>
+<tr>
+<td>QK_BACKLIGHT_TOGGLE_BREATHING</td>
+<td>BL_BRTG</td>
+<td>Toggle backlight breathing</td>
+</tr>
+</table>
+<br>
+	
+<h4  id="ble">蓝牙<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_OUTPUT_AUTO</td>
+<td>OU_AUTO</td>
+<td>Automatically switch between USB and Bluetooth</td>
+</tr>
+<tr>
+<td>QK_OUTPUT_USB</td>
+<td>OU_USB</td>
+<td>USB only</td>
+</tr>
+<tr>
+<td>QK_OUTPUT_BLUETOOTH</td>
+<td>OU_BT</td>
+<td>Bluetooth only</td>
+</tr>
+</table>
+<br>
+
+<h4  id="caps">Caps Word<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_CAPS_WORD_TOGGLE</td>
+<td>CW_TOGG</td>
+<td>Toggles Caps Word</td>
+</tr>
+</table>
+<br>
+	
+<h4  id="dynamic">Dynamic Macros<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_DYNAMIC_MACRO_RECORD_START_1</td>
+<td>DM_REC1</td>
+<td>Start recording Macro 1</td>
+</tr>
+<tr>
+<td>QK_DYNAMIC_MACRO_RECORD_START_2</td>
+<td>DM_REC2</td>
+<td>Start recording Macro 2</td>
+</tr>
+<tr>
+<td>QK_DYNAMIC_MACRO_PLAY_1</td>
+<td>DM_PLY1</td>
+<td>Replay Macro 1</td>
+</tr>
+<tr>
+<td>QK_DYNAMIC_MACRO_PLAY_2</td>
+<td>DM_PLY2</td>
+<td>Replay Macro 2</td>
+</tr>
+<tr>
+<td>QK_DYNAMIC_MACRO_RECORD_STOP</td>
+<td>DM_RSTP</td>
+<td>Finish the macro that is currently being recorded.</td>
+</tr>
+</table>
+<br>
+	
+<h4  id="crave">Grave Wscape<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_GRAVE_ESCAPE</td>
+<td>QK_GESC</td>
+<td>Escape when pressed, ` when Shift or GUI are held</td>
+</tr>
+</table>
+<br>
+
+<h4  id="joy">摇杆<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_JOYSTICK_BUTTON_0</td>
+<td>JS_0</td>
+<td>Button 0</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_1</td>
+<td>JS_1</td>
+<td>Button 1</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_2</td>
+<td>JS_2</td>
+<td>Button 2</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_3</td>
+<td>JS_3</td>
+<td>Button 3</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_4</td>
+<td>JS_4</td>
+<td>Button 4</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_5</td>
+<td>JS_5</td>
+<td>Button 5</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_6</td>
+<td>JS_6</td>
+<td>Button 6</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_7</td>
+<td>JS_7</td>
+<td>Button 7</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_8</td>
+<td>JS_8</td>
+<td>Button 8</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_9</td>
+<td>JS_9</td>
+<td>Button 9</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_10</td>
+<td>JS_10</td>
+<td>Button 10</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_11</td>
+<td>JS_11</td>
+<td>Button 11</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_12</td>
+<td>JS_12</td>
+<td>Button 12</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_13</td>
+<td>JS_13</td>
+<td>Button 13</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_14</td>
+<td>JS_14</td>
+<td>Button 14</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_15</td>
+<td>JS_15</td>
+<td>Button 15</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_16</td>
+<td>JS_16</td>
+<td>Button 16</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_17</td>
+<td>JS_17</td>
+<td>Button 17</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_18</td>
+<td>JS_18</td>
+<td>Button 18</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_19</td>
+<td>JS_19</td>
+<td>Button 19</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_20</td>
+<td>JS_20</td>
+<td>Button 20</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_21</td>
+<td>JS_21</td>
+<td>Button 21</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_22</td>
+<td>JS_22</td>
+<td>Button 22</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_23</td>
+<td>JS_23</td>
+<td>Button 23</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_24</td>
+<td>JS_24</td>
+<td>Button 24</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_25</td>
+<td>JS_25</td>
+<td>Button 25</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_26</td>
+<td>JS_26</td>
+<td>Button 26</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_27</td>
+<td>JS_27</td>
+<td>Button 27</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_28</td>
+<td>JS_28</td>
+<td>Button 28</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_29</td>
+<td>JS_29</td>
+<td>Button 29</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_30</td>
+<td>JS_30</td>
+<td>Button 30</td>
+</tr>
+<tr>
+<td>QK_JOYSTICK_BUTTON_31</td>
+<td>JS_31</td>
+<td>Button 31</td>
+</tr>
+</table>
+<br>
+
+<h4  id="key">Key Lock<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_LOCK</td>
+<td>Hold down the next key pressed, until the key is pressed again</td>
+</tr>
+</table>
+<br>
+
+<h4  id="layer">切层键<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>DF(layer)</td>
+<td>Set the base (default) layer</td>
+</tr>
+<tr>
+<td>MO(layer)</td>
+<td>Momentarily turn on layer when pressed (requires KC_=
+TRNS on destination layer)</td>
+</tr>
+<tr>
+<td>OSL(layer)</td>
+<td>Momentarily activates layer until a key is pressed. See <a=
+ href=3D"https://docs.qmk.fm/#/one_shot_keys">One Shot Keys</a> for details=
+.</td>
+</tr>
+<tr>
+<td>LM(layer, mod)</td>
+<td>Momentarily turn on layer (like MO) with mod =
+active as well.  Where mod is a mods_bit.  Mods can be viewed =
+<a href=3D"https://docs.qmk.fm/#/mod_tap">here</a>.  Example Implementation=
+: LM(LAYER_1, MOD_LALT)</td>
+</tr>
+<tr>
+<td>LT(layer, kc)</td>
+<td>Turn on layer when held, kc when tapped</td>
+</tr>
+<tr>
+<td>TG(layer)</td>
+<td>Toggle layer on or off</td>
+</tr>
+<tr>
+<td>TO(layer)</td>
+<td>Turns on layer and turns off all other layers, except the =
+default layer</td>
+</tr>
+<tr>
+<td>TT(layer)</td>
+<td>Normally acts like MO unless it=E2=80=99s tapped multiple times, which =
+toggles layer on</td>
+</tr>
+</table>
+<br>
+
+<h4  id="leader">Leader键<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_LEAD</td>
+<td>Begins a leader sequence</td>
+</tr>
+</table>
+<br>
+
+<h4>Magic 键<h4>
+<table id="magic"><tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_MAGIC_SWAP_CONTROL_CAPS_LOCK</td>
+<td>CL_SWAP</td>
+<td>Swap Caps Lock and Left Control</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_CONTROL_CAPS_LOCK</td>
+<td>CL_NORM</td>
+<td>Unswap Caps Lock and Left Control</td>
+</tr>
+<tr>
+<td>QK_MAGIC_TOGGLE_CONTROL_CAPS_LOCK</td>
+<td>CL_TOGG</td>
+<td>Toggle Caps Lock and Left Control swap</td>
+</tr>
+<tr>
+<td>QK_MAGIC_CAPS_LOCK_AS_CONTROL_ON</td>
+<td>CL_CTRL</td>
+<td>Treat Caps Lock as Control</td>
+</tr>
+<tr>
+<td>QK_MAGIC_CAPS_LOCK_AS_CONTROL_OFF</td>
+<td>CL_CAPS</td>
+<td>Stop treating Caps Lock as Control</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_ESCAPE_CAPS_LOCK</td>
+<td>EC_SWAP</td>
+<td>Swap Caps Lock and Escape</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_ESCAPE_CAPS_LOCK</td>
+<td>EC_NORM</td>
+<td>Unswap Caps Lock and Escape</td>
+</tr>
+<tr>
+<td>QK_MAGIC_TOGGLE_ESCAPE_CAPS_LOCK</td>
+<td>EC_TOGG</td>
+<td>Toggle Caps Lock and Escape swap</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_LCTL_LGUI</td>
+<td>CG_LSWP</td>
+<td>Swap Left Control and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_LCTL_LGUI</td>
+<td>CG_LNRM</td>
+<td>Unswap Left Control and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_RCTL_RGUI</td>
+<td>CG_RSWP</td>
+<td>Swap Right Control and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_RCTL_RGUI</td>
+<td>CG_RNRM</td>
+<td>Unswap Right Control and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_CTL_GUI</td>
+<td>CG_SWAP</td>
+<td>Swap Control and GUI on both sides</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_CTL_GUI</td>
+<td>CG_NORM</td>
+<td>Unswap Control and GUI on both sides</td>
+</tr>
+<tr>
+<td>QK_MAGIC_TOGGLE_CTL_GUI</td>
+<td>CG_TOGG</td>
+<td>Toggle Control and GUI swap on both sides</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_LALT_LGUI</td>
+<td>AG_LSWP</td>
+<td>Swap Left Alt and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_LALT_LGUI</td>
+<td>AG_LNRM</td>
+<td>Unswap Left Alt and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_RALT_RGUI</td>
+<td>AG_RSWP</td>
+<td>Swap Right Alt and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_RALT_RGUI</td>
+<td>AG_RNRM</td>
+<td>Unswap Right Alt and GUI</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_ALT_GUI</td>
+<td>AG_SWAP</td>
+<td>Swap Alt and GUI on both sides</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_ALT_GUI</td>
+<td>AG_NORM</td>
+<td>Unswap Alt and GUI on both sides</td>
+</tr>
+<tr>
+<td>QK_MAGIC_TOGGLE_ALT_GUI</td>
+<td>AG_TOGG</td>
+<td>Toggle Alt and GUI swap on both sides</td>
+</tr>
+<tr>
+<td>QK_MAGIC_GUI_OFF</td>
+<td>GU_OFF</td>
+<td>Disable the GUI keys</td>
+</tr>
+<tr>
+<td>QK_MAGIC_GUI_ON</td>
+<td>GU_ON</td>
+<td>Enable the GUI keys</td>
+</tr>
+<tr>
+<td>QK_MAGIC_TOGGLE_GUI</td>
+<td>GU_TOGG</td>
+<td>Toggles the status of the GUI keys</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_GRAVE_ESC</td>
+<td>GE_SWAP</td>
+<td>Swap ` and Escape</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_GRAVE_ESC</td>
+<td>GE_NORM</td>
+<td>Unswap ` and Escape</td>
+</tr>
+<tr>
+<td>QK_MAGIC_SWAP_BACKSLASH_BACKSPACE</td>
+<td>BS_SWAP</td>
+<td>Swap \ and Backspace</td>
+</tr>
+<tr>
+<td>QK_MAGIC_UNSWAP_BACKSLASH_BACKSPACE</td>
+<td>BS_NORM</td>
+<td>Unswap \ and Backspace</td>
+</tr>
+<tr>
+<td>QK_MAGIC_TOGGLE_BACKSLASH_BACKSPACE</td>
+<td>BS_TOGG</td>
+<td>Toggle \ and Backspace swap state</td>
+</tr>
+<tr>
+<td>QK_MAGIC_NKRO_ON</td>
+<td>NK_ON</td>
+<td>Enable N-key rollover</td>
+</tr>
+<tr>
+<td>QK_MAGIC_NKRO_OFF</td>
+<td>NK_OFF</td>
+<td>Disable N-key rollover</td>
+</tr>
+<tr>
+<td>QK_MAGIC_TOGGLE_NKRO</td>
+<td>NK_TOGG</td>
+<td>Toggle N-key rollover</td>
+</tr>
+<tr>
+<td>QK_MAGIC_EE_HANDS_LEFT</td>
+<td>EH_LEFT</td>
+<td>Set the master half of a split keyboard as the left hand (for EE_=
+HANDS)</td>
+</tr>
+<tr>
+<td>QK_MAGIC_EE_HANDS_RIGHT</td>
+<td>EH_RGHT</td>
+<td>Set the master half of a split keyboard as the right hand (for EE=
+_HANDS)</td>
+</tr>
+</table>
+<br>
+
+<h4  id="midi">MIDI键码<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_MIDI_ON</td>
+<td>MI_ON</td>
+<td>Turn MIDI on</td>
+</tr>
+<tr>
+<td>QK_MIDI_OFF</td>
+<td>MI_OFF</td>
+<td>Turn MIDI off</td>
+</tr>
+<tr>
+<td>QK_MIDI_TOGGLE</td>
+<td>MI_TOGG</td>
+<td>Toggle MIDI enabled</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_0</td>
+<td>MI_C</td>
+<td>C octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_SHARP_0</td>
+<td>MI_Cs, MI_Db</td>
+<td>C=E2=99=AF/D=E2=99=AD octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_0</td>
+<td>MI_D</td>
+<td>D octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_SHARP_0</td>
+<td>MI_Ds, MI_Eb</td>
+<td>D=E2=99=AF/E=E2=99=AD octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_E_0</td>
+<td>MI_E</td>
+<td>E octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_0</td>
+<td>MI_F</td>
+<td>F octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_SHARP_0</td>
+<td>MI_Fs, MI_Gb</td>
+<td>F=E2=99=AF/G=E2=99=AD octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_0</td>
+<td>MI_G</td>
+<td>G octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_SHARP_0</td>
+<td>MI_Gs, MI_Ab</td>
+<td>G=E2=99=AF/A=E2=99=AD octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_0</td>
+<td>MI_A</td>
+<td>A octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_SHARP_0</td>
+<td>MI_As, MI_Bb</td>
+<td>A=E2=99=AF/B=E2=99=AD octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_B_0</td>
+<td>MI_B</td>
+<td>B octave 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_1</td>
+<td>MI_C1</td>
+<td>C octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_SHARP_1</td>
+<td>MI_Cs1, MI_Db1</td>
+<td>C=E2=99=AF/D=E2=99=AD octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_1</td>
+<td>MI_D1</td>
+<td>D octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_SHARP_1</td>
+<td>MI_Ds1, MI_Eb1</td>
+<td>D=E2=99=AF/E=E2=99=AD octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_E_1</td>
+<td>MI_E1</td>
+<td>E octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_1</td>
+<td>MI_F1</td>
+<td>F octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_SHARP_1</td>
+<td>MI_Fs1, MI_Gb1</td>
+<td>F=E2=99=AF/G=E2=99=AD octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_1</td>
+<td>MI_G1</td>
+<td>G octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_SHARP_1</td>
+<td>MI_Gs1, MI_Ab1</td>
+<td>G=E2=99=AF/A=E2=99=AD octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_1</td>
+<td>MI_A1</td>
+<td>A octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_SHARP_1</td>
+<td>MI_As1, MI_Bb1</td>
+<td>A=E2=99=AF/B=E2=99=AD octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_B_1</td>
+<td>MI_B1</td>
+<td>B octave 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_2</td>
+<td>MI_C2</td>
+<td>C octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_SHARP_2</td>
+<td>MI_Cs2, MI_Db2</td>
+<td>C=E2=99=AF/D=E2=99=AD octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_2</td>
+<td>MI_D2</td>
+<td>D octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_SHARP_2</td>
+<td>MI_Ds2, MI_Eb2</td>
+<td>D=E2=99=AF/E=E2=99=AD octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_E_2</td>
+<td>MI_E2</td>
+<td>E octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_2</td>
+<td>MI_F2</td>
+<td>F octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_SHARP_2</td>
+<td>MI_Fs2, MI_Gb2</td>
+<td>F=E2=99=AF/G=E2=99=AD octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_2</td>
+<td>MI_G2</td>
+<td>G octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_SHARP_2</td>
+<td>MI_Gs2, MI_Ab2</td>
+<td>G=E2=99=AF/A=E2=99=AD octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_2</td>
+<td>MI_A2</td>
+<td>A octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_SHARP_2</td>
+<td>MI_As2, MI_Bb2</td>
+<td>A=E2=99=AF/B=E2=99=AD octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_B_2</td>
+<td>MI_B2</td>
+<td>B octave 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_3</td>
+<td>MI_C3</td>
+<td>C octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_SHARP_3</td>
+<td>MI_Cs3, MI_Db3</td>
+<td>C=E2=99=AF/D=E2=99=AD octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_3</td>
+<td>MI_D3</td>
+<td>D octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_SHARP_3</td>
+<td>MI_Ds3, MI_Eb3</td>
+<td>D=E2=99=AF/E=E2=99=AD octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_E_3</td>
+<td>MI_E3</td>
+<td>E octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_3</td>
+<td>MI_F3</td>
+<td>F octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_SHARP_3</td>
+<td>MI_Fs3, MI_Gb3</td>
+<td>F=E2=99=AF/G=E2=99=AD octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_3</td>
+<td>MI_G3</td>
+<td>G octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_SHARP_3</td>
+<td>MI_Gs3, MI_Ab3</td>
+<td>G=E2=99=AF/A=E2=99=AD octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_3</td>
+<td>MI_A3</td>
+<td>A octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_SHARP_3</td>
+<td>MI_As3, MI_Bb3</td>
+<td>A=E2=99=AF/B=E2=99=AD octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_B_3</td>
+<td>MI_B3</td>
+<td>B octave 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_4</td>
+<td>MI_C4</td>
+<td>C octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_SHARP_4</td>
+<td>MI_Cs4, MI_Db4</td>
+<td>C=E2=99=AF/D=E2=99=AD octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_4</td>
+<td>MI_D4</td>
+<td>D octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_SHARP_4</td>
+<td>MI_Ds4, MI_Eb4</td>
+<td>D=E2=99=AF/E=E2=99=AD octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_E_4</td>
+<td>MI_E4</td>
+<td>E octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_4</td>
+<td>MI_F4</td>
+<td>F octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_SHARP_4</td>
+<td>MI_Fs4, MI_Gb4</td>
+<td>F=E2=99=AF/G=E2=99=AD octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_4</td>
+<td>MI_G4</td>
+<td>G octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_SHARP_4</td>
+<td>MI_Gs4, MI_Ab4</td>
+<td>G=E2=99=AF/A=E2=99=AD octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_4</td>
+<td>MI_A4</td>
+<td>A octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_SHARP_4</td>
+<td>MI_As4, MI_Bb4</td>
+<td>A=E2=99=AF/B=E2=99=AD octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_B_4</td>
+<td>MI_B4</td>
+<td>B octave 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_5</td>
+<td>MI_C5</td>
+<td>C octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_C_SHARP_5</td>
+<td>MI_Cs5, MI_Db5</td>
+<td>C=E2=99=AF/D=E2=99=AD octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_5</td>
+<td>MI_D5</td>
+<td>D octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_D_SHARP_5</td>
+<td>MI_Ds5, MI_Eb5</td>
+<td>D=E2=99=AF/E=E2=99=AD octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_E_5</td>
+<td>MI_E5</td>
+<td>E octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_5</td>
+<td>MI_F5</td>
+<td>F octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_F_SHARP_5</td>
+<td>MI_Fs5, MI_Gb5</td>
+<td>F=E2=99=AF/G=E2=99=AD octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_5</td>
+<td>MI_G5</td>
+<td>G octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_G_SHARP_5</td>
+<td>MI_Gs5, MI_Ab5</td>
+<td>G=E2=99=AF/A=E2=99=AD octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_5</td>
+<td>MI_A5</td>
+<td>A octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_A_SHARP_5</td>
+<td>MI_As5, MI_Bb5</td>
+<td>A=E2=99=AF/B=E2=99=AD octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_NOTE_B_5</td>
+<td>MI_B5</td>
+<td>B octave 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_N2</td>
+<td>MI_OCN2</td>
+<td>Set octave to -2</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_N1</td>
+<td>MI_OCN1</td>
+<td>Set octave to -1</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_0</td>
+<td>MI_OC0</td>
+<td>Set octave to 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_1</td>
+<td>MI_OC1</td>
+<td>Set octave to 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_2</td>
+<td>MI_OC2</td>
+<td>Set octave to 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_3</td>
+<td>MI_OC3</td>
+<td>Set octave to 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_4</td>
+<td>MI_OC4</td>
+<td>Set octave to 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_5</td>
+<td>MI_OC5</td>
+<td>Set octave to 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_6</td>
+<td>MI_OC6</td>
+<td>Set octave to 6</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_7</td>
+<td>MI_OC7</td>
+<td>Set octave to 7</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_DOWN</td>
+<td>MI_OCTD</td>
+<td>Move down an octave</td>
+</tr>
+<tr>
+<td>QK_MIDI_OCTAVE_UP</td>
+<td>MI_OCTU</td>
+<td>Move up an octave</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_N6</td>
+<td>MI_TRN6</td>
+<td>Set transposition to -6 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_N5</td>
+<td>MI_TRN5</td>
+<td>Set transposition to -5 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_N4</td>
+<td>MI_TRN4</td>
+<td>Set transposition to -4 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_N3</td>
+<td>MI_TRN3</td>
+<td>Set transposition to -3 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_N2</td>
+<td>MI_TRN2</td>
+<td>Set transposition to -2 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_N1</td>
+<td>MI_TRN1</td>
+<td>Set transposition to -1 semitone</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_0</td>
+<td>MI_TR0</td>
+<td>No transposition</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_1</td>
+<td>MI_TR1</td>
+<td>Set transposition to +1 semitone</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_2</td>
+<td>MI_TR2</td>
+<td>Set transposition to +2 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_3</td>
+<td>MI_TR3</td>
+<td>Set transposition to +3 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_4</td>
+<td>MI_TR4</td>
+<td>Set transposition to +4 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_5</td>
+<td>MI_TR5</td>
+<td>Set transposition to +5 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_6</td>
+<td>MI_TR6</td>
+<td>Set transposition to +6 semitones</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_DOWN</td>
+<td>MI_TRSD</td>
+<td>Decrease transposition</td>
+</tr>
+<tr>
+<td>QK_MIDI_TRANSPOSE_UP</td>
+<td>MI_TRSU</td>
+<td>Increase transposition</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_0</td>
+<td>MI_VL0</td>
+<td>Set velocity to 0</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_1</td>
+<td>MI_VL1</td>
+<td>Set velocity to 12</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_2</td>
+<td>MI_VL2</td>
+<td>Set velocity to 25</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_3</td>
+<td>MI_VL3</td>
+<td>Set velocity to 38</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_4</td>
+<td>MI_VL4</td>
+<td>Set velocity to 51</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_5</td>
+<td>MI_VL5</td>
+<td>Set velocity to 64</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_6</td>
+<td>MI_VL6</td>
+<td>Set velocity to 76</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_7</td>
+<td>MI_VL7</td>
+<td>Set velocity to 89</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_8</td>
+<td>MI_VL8</td>
+<td>Set velocity to 102</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_9</td>
+<td>MI_VL9</td>
+<td>Set velocity to 114</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_10</td>
+<td>MI_VL10</td>
+<td>Set velocity to 127</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_DOWN</td>
+<td>MI_VELD</td>
+<td>Decrease velocity</td>
+</tr>
+<tr>
+<td>QK_MIDI_VELOCITY_UP</td>
+<td>MI_VELU</td>
+<td>Increase velocity</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_1</td>
+<td>MI_CH1</td>
+<td>Set channel to 1</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_2</td>
+<td>MI_CH2</td>
+<td>Set channel to 2</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_3</td>
+<td>MI_CH3</td>
+<td>Set channel to 3</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_4</td>
+<td>MI_CH4</td>
+<td>Set channel to 4</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_5</td>
+<td>MI_CH5</td>
+<td>Set channel to 5</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_6</td>
+<td>MI_CH6</td>
+<td>Set channel to 6</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_7</td>
+<td>MI_CH7</td>
+<td>Set channel to 7</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_8</td>
+<td>MI_CH8</td>
+<td>Set channel to 8</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_9</td>
+<td>MI_CH9</td>
+<td>Set channel to 9</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_10</td>
+<td>MI_CH10</td>
+<td>Set channel to 10</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_11</td>
+<td>MI_CH11</td>
+<td>Set channel to 11</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_12</td>
+<td>MI_CH12</td>
+<td>Set channel to 12</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_13</td>
+<td>MI_CH13</td>
+<td>Set channel to 13</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_14</td>
+<td>MI_CH14</td>
+<td>Set channel to 14</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_15</td>
+<td>MI_CH15</td>
+<td>Set channel to 15</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_16</td>
+<td>MI_CH16</td>
+<td>Set channel to 16</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_DOWN</td>
+<td>MI_CHND</td>
+<td>Decrease channel</td>
+</tr>
+<tr>
+<td>QK_MIDI_CHANNEL_UP</td>
+<td>MI_CHNU</td>
+<td>Increase channel</td>
+</tr>
+<tr>
+<td>QK_MIDI_ALL_NOTES_OFF</td>
+<td>MI_AOFF</td>
+<td>Stop all notes</td>
+</tr>
+<tr>
+<td>QK_MIDI_SUSTAIN</td>
+<td>MI_SUST</td>
+<td>Sustain</td>
+</tr>
+<tr>
+<td>QK_MIDI_PORTAMENTO</td>
+<td>MI_PORT</td>
+<td>Portmento</td>
+</tr>
+<tr>
+<td>QK_MIDI_SOSTENUTO</td>
+<td>MI_SOST</td>
+<td>Sostenuto</td>
+</tr>
+<tr>
+<td>QK_MIDI_SOFT</td>
+<td>MI_SOFT</td>
+<td>Soft Pedal</td>
+</tr>
+<tr>
+<td>QK_MIDI_LEGATO</td>
+<td>MI_LEG</td>
+<td>Legato</td>
+</tr>
+<tr>
+<td>QK_MIDI_MODULATION</td>
+<td>MI_MOD</td>
+<td>Modulation</td>
+</tr>
+<tr>
+<td>QK_MIDI_MODULATION_SPEED_DOWN</td>
+<td>MI_MODD</td>
+<td>Decrease modulation speed</td>
+</tr>
+<tr>
+<td>QK_MIDI_MODULATION_SPEED_UP</td>
+<td>MI_MODU</td>
+<td>Increase modulation speed</td>
+</tr>
+<tr>
+<td>QK_MIDI_PITCH_BEND_DOWN</td>
+<td>MI_BNDD</td>
+<td>Bend pitch down</td>
+</tr>
+<tr>
+<td>QK_MIDI_PITCH_BEND_UP</td>
+<td>MI_BNDU</td>
+<td>Bend pitch up</td>
+</tr>
+</table>
+<br>
+
+<h4  id="Mouse">鼠标键<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>KC_MS_UP</td>
+<td>KC_MS_U</td>
+<td>Mouse Cursor Up</td>
+</tr>
+<tr>
+<td>KC_MS_DOWN</td>
+<td>KC_MS_D</td>
+<td>Mouse Cursor Down</td>
+</tr>
+<tr>
+<td>KC_MS_LEFT</td>
+<td>KC_MS_L</td>
+<td>Mouse Cursor Left</td>
+</tr>
+<tr>
+<td>KC_MS_RIGHT</td>
+<td>KC_MS_R</td>
+<td>Mouse Cursor Right</td>
+</tr>
+<tr>
+<td>KC_MS_BTN1</td>
+<td>KC_BTN1</td>
+<td>Mouse Button 1</td>
+</tr>
+<tr>
+<td>KC_MS_BTN2</td>
+<td>KC_BTN2</td>
+<td>Mouse Button 2</td>
+</tr>
+<tr>
+<td>KC_MS_BTN3</td>
+<td>KC_BTN3</td>
+<td>Mouse Button 3</td>
+</tr>
+<tr>
+<td>KC_MS_BTN4</td>
+<td>KC_BTN4</td>
+<td>Mouse Button 4</td>
+</tr>
+<tr>
+<td>KC_MS_BTN5</td>
+<td>KC_BTN5</td>
+<td>Mouse Button 5</td>
+</tr>
+<tr>
+<td>KC_MS_WH_UP</td>
+<td>KC_WH_U</td>
+<td>Mouse Wheel Up</td>
+</tr>
+<tr>
+<td>KC_MS_WH_DOWN</td>
+<td>KC_WH_D</td>
+<td>Mouse Wheel Down</td>
+</tr>
+<tr>
+<td>KC_MS_WH_LEFT</td>
+<td>KC_WH_L</td>
+<td>Mouse Wheel Left</td>
+</tr>
+<tr>
+<td>KC_MS_WH_RIGHT</td>
+<td>KC_WH_R</td>
+<td>Mouse Wheel Right</td>
+</tr>
+<tr>
+<td>KC_MS_ACCEL0</td>
+<td>KC_ACL0</td>
+<td>Set mouse acceleration to 0</td>
+</tr>
+<tr>
+<td>KC_MS_ACCEL1</td>
+<td>KC_ACL1</td>
+<td>Set mouse acceleration to 1</td>
+</tr>
+<tr>
+<td>KC_MS_ACCEL2</td>
+<td>KC_ACL2</td>
+<td>Set mouse acceleration to 2</td>
+</tr>
+</table>
+<br>
+
+<h4  id="modfiiers">Modifiers<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>LCTL(kc)</td>
+<td>C(kc)</td>
+<td>Hold Left Control and press kc</td>
+</tr>
+<tr>
+<td>LSFT(kc)</td>
+<td>S(kc)</td>
+<td>Hold Left Shift and press kc</td>
+</tr>
+<tr>
+<td>LALT(kc)</td>
+<td>A(kc), LOPT(kc)</td>
+<td>Hold Left Alt and press kc</td>
+</tr>
+<tr>
+<td>LGUI(kc)</td>
+<td>G(kc), LCMD(kc), LWIN(kc)</td>
+<td>Hold Left GUI and press kc</td>
+</tr>
+<tr>
+<td>RCTL(kc)</td>
+<td></td>
+<td>Hold Right Control and press kc</td>
+</tr>
+<tr>
+<td>RSFT(kc)</td>
+<td></td>
+<td>Hold Right Shift and press kc</td>
+</tr>
+<tr>
+<td>RALT(kc)</td>
+<td>ROPT(kc), ALGR(kc)</td>
+<td>Hold Right Alt (AltGr) and press kc</td>
+</tr>
+<tr>
+<td>RGUI(kc)</td>
+<td>RCMD(kc), RWIN(kc)</td>
+<td>Hold Right GUI and press kc</td>
+</tr>
+<tr>
+<td>LSG(kc)</td>
+<td>SGUI(kc), SCMD(kc), SWIN(kc)</td=
+>
+<td>Hold Left Shift and Left GUI and press kc</td>
+</tr>
+<tr>
+<td>LAG(kc)</td>
+<td></td>
+<td>Hold Left Alt and Left GUI and press kc</td>
+</tr>
+<tr>
+<td>RSG(kc)</td>
+<td></td>
+<td>Hold Right Shift and Right GUI and press kc</td>
+</tr>
+<tr>
+<td>RAG(kc)</td>
+<td></td>
+<td>Hold Right Alt and Right GUI and press kc</td>
+</tr>
+<tr>
+<td>LCA(kc)</td>
+<td></td>
+<td>Hold Left Control and Alt and press kc</td>
+</tr>
+<tr>
+<td>LSA(kc)</td>
+<td></td>
+<td>Hold Left Shift and Left Alt and press kc</td>
+</tr>
+<tr>
+<td>RSA(kc)</td>
+<td>SAGR(kc)</td>
+<td>Hold Right Shift and Right Alt (AltGr) and press kc</td>
+</tr>
+<tr>
+<td>RCS(kc)</td>
+<td></td>
+<td>Hold Right Control and Right Shift and press kc</td>
+</tr>
+<tr>
+<td>LCAG(kc)</td>
+<td></td>
+<td>Hold Left Control, Alt and GUI and press kc</td>
+</tr>
+<tr>
+<td>MEH(kc)</td>
+<td></td>
+<td>Hold Left Control, Shift and Alt and press kc</td>
+</tr>
+<tr>
+<td>HYPR(kc)</td>
+<td></td>
+<td>Hold Left Control, Shift, Alt and GUI and press kc</td>
+</tr>
+<tr>
+<td>KC_MEH</td>
+<td></td>
+<td>Left Control, Shift and Alt</td>
+</tr>
+<tr>
+<td>KC_HYPR</td>
+<td></td>
+<td>Left Control, Shift, Alt and GUI</td>
+</tr>
+</table>
+<br>
+
+<h4  id="mod-tap">Mod-Tap键<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>MT(mod, kc)</td>
+<td></td>
+<td>mod when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LCTL_T(kc)</td>
+<td>CTL_T(kc)</td>
+<td>Left Control when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LSFT_T(kc)</td>
+<td>SFT_T(kc)</td>
+<td>Left Shift when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LALT_T(kc)</td>
+<td>LOPT_T(kc), ALT_T(kc), OPT_T(kc)=
+</td>
+<td>Left Alt when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LGUI_T(kc)</td>
+<td>LCMD_T(kc), LWIN_T(kc), GUI_T(kc)</code=
+>, CMD_T(kc), WIN_T(kc)</td>
+<td>Left GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RCTL_T(kc)</td>
+<td></td>
+<td>Right Control when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RSFT_T(kc)</td>
+<td></td>
+<td>Right Shift when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RALT_T(kc)</td>
+<td>ROPT_T(kc), ALGR_T(kc)</td>
+<td>Right Alt (AltGr) when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RGUI_T(kc)</td>
+<td>RCMD_T(kc), RWIN_T(kc)</td>
+<td>Right GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LSG_T(kc)</td>
+<td>SGUI_T(kc), SCMD_T(kc), SWIN_T(kc)</cod=
+e></td>
+<td>Left Shift and GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LAG_T(kc)</td>
+<td></td>
+<td>Left Alt and GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RSG_T(kc)</td>
+<td></td>
+<td>Right Shift and GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RAG_T(kc)</td>
+<td></td>
+<td>Right Alt and GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LCA_T(kc)</td>
+<td></td>
+<td>Left Control and Alt when held, kc when tapped</td>
+</tr>
+<tr>
+<td>LSA_T(kc)</td>
+<td></td>
+<td>Left Shift and Left Alt when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RSA_T(kc)</td>
+<td>SAGR_T(kc)</td>
+<td>Right Shift and Right Alt (AltGr) when held, kc when tappe=
+d</td>
+</tr>
+<tr>
+<td>RCS_T(kc)</td>
+<td></td>
+<td>Right Control and Right Shift when held, kc when tapped</t=
+d>
+</tr>
+<tr>
+<td>LCAG_T(kc)</td>
+<td></td>
+<td>Left Control, Alt and GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>RCAG_T(kc)</td>
+<td></td>
+<td>Right Control, Alt and GUI when held, kc when tapped</td>
+</tr>
+<tr>
+<td>C_S_T(kc)</td>
+<td></td>
+<td>Left Control and Shift when held, kc when tapped</td>
+</tr>
+<tr>
+<td>MEH_T(kc)</td>
+<td></td>
+<td>Left Control, Shift and Alt when held, kc when tapped</td>
+</tr>
+<tr>
+<td>HYPR_T(kc)</td>
+<td>ALL_T(kc)</td>
+<td>Left Control, Shift, Alt and GUI when held, kc when tapped=
+ - more info <a href=3D"https://brettterpstra.com/2012/12/08/a-useful-caps-=
+lock-key/" target=3D"_blank" rel=3D"noopener">here</a></td>
+</tr>
+</table>
+<br>
+
+<h4  id="tapping">Tapping Term键<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_DYNAMIC_TAPPING_TERM_PRINT</td>
+<td>DT_PRNT</td>
+<td>Types the current tapping term, in milliseconds</td>
+</tr>
+<tr>
+<td>QK_DYNAMIC_TAPPING_TERM_UP</td>
+<td>DT_UP</td>
+<td>Increases the current tapping term by DYNAMIC_TAPPING_TERM_INCREM=
+ENTms (5ms by default)</td>
+</tr>
+<tr>
+<td>QK_DYNAMIC_TAPPING_TERM_DOWN</td>
+<td>DT_DOWN</td>
+<td>Decreases the current tapping term by DYNAMIC_TAPPING_TERM_INCREM=
+ENTms (5ms by default)</td>
+</tr>
+</table>
+<br>
+
+<h4  id="rgb-l">RGB灯键<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>RGB_TOG</td>
+<td></td>
+<td>Toggle RGB lighting on or off</td>
+</tr>
+<tr>
+<td>RGB_MODE_FORWARD</td>
+<td>RGB_MOD</td>
+<td>Cycle through modes, reverse direction when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_MODE_REVERSE</td>
+<td>RGB_RMOD</td>
+<td>Cycle through modes in reverse, forward direction when Shift is held</t=
+d>
+</tr>
+<tr>
+<td>RGB_HUI</td>
+<td></td>
+<td>Increase hue, decrease hue when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_HUD</td>
+<td></td>
+<td>Decrease hue, increase hue when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_SAI</td>
+<td></td>
+<td>Increase saturation, decrease saturation when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_SAD</td>
+<td></td>
+<td>Decrease saturation, increase saturation when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_VAI</td>
+<td></td>
+<td>Increase value (brightness), decrease value when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_VAD</td>
+<td></td>
+<td>Decrease value (brightness), increase value when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_MODE_PLAIN</td>
+<td>RGB_M_P </td>
+<td>Static (no animation) mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_BREATHE</td>
+<td>RGB_M_B</td>
+<td>Breathing animation mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_RAINBOW</td>
+<td>RGB_M_R</td>
+<td>Rainbow animation mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_SWIRL</td>
+<td>RGB_M_SW</td>
+<td>Swirl animation mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_SNAKE</td>
+<td>RGB_M_SN</td>
+<td>Snake animation mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_KNIGHT</td>
+<td>RGB_M_K</td>
+<td>=E2=80=9CKnight Rider=E2=80=9D animation mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_XMAS</td>
+<td>RGB_M_X</td>
+<td>Christmas animation mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_GRADIENT</td>
+<td>RGB_M_G</td>
+<td>Static gradient animation mode</td>
+</tr>
+<tr>
+<td>RGB_MODE_RGBTEST</td>
+<td>RGB_M_T</td>
+<td>Red,Green,Blue test animation mode</td>
+</tr>
+</table>
+<br>
+
+<h4  id="rgb-m">RGB矩阵灯<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>RGB_TOG</td>
+<td></td>
+<td>Toggle RGB lighting on or off</td>
+</tr>
+<tr>
+<td>RGB_MODE_FORWARD</td>
+<td>RGB_MOD</td>
+<td>Cycle through modes, reverse direction when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_MODE_REVERSE</td>
+<td>RGB_RMOD</td>
+<td>Cycle through modes in reverse, forward direction when Shift is held</t=
+d>
+</tr>
+<tr>
+<td>RGB_HUI</td>
+<td></td>
+<td>Increase hue, decrease hue when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_HUD</td>
+<td></td>
+<td>Decrease hue, increase hue when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_SAI</td>
+<td></td>
+<td>Increase saturation, decrease saturation when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_SAD</td>
+<td></td>
+<td>Decrease saturation, increase saturation when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_VAI</td>
+<td></td>
+<td>Increase value (brightness), decrease value when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_VAD</td>
+<td></td>
+<td>Decrease value (brightness), increase value when Shift is held</td>
+</tr>
+<tr>
+<td>RGB_SPI</td>
+<td></td>
+<td>Increase effect speed (does not support eeprom yet), decrease speed whe=
+n Shift is held</td>
+</tr>
+<tr>
+<td>RGB_SPD</td>
+<td></td>
+<td>Decrease effect speed (does not support eeprom yet), increase speed whe=
+n Shift is held</td>
+</tr>
+</table>
+<br>
+
+<h4  id="usa">US ANSI Shifted Symbols<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>KC_TILDE</td>
+<td>KC_TILD</td>
+<td>~</td>
+</tr>
+<tr>
+<td>KC_EXCLAIM</td>
+<td>KC_EXLM</td>
+<td>!</td>
+</tr>
+<tr>
+<td>KC_AT</td>
+<td></td>
+<td>@</td>
+</tr>
+<tr>
+<td>KC_HASH</td>
+<td></td>
+<td>#</td>
+</tr>
+<tr>
+<td>KC_DOLLAR</td>
+<td>KC_DLR</td>
+<td>$</td>
+</tr>
+<tr>
+<td>KC_PERCENT</td>
+<td>KC_PERC</td>
+<td>%</td>
+</tr>
+<tr>
+<td>KC_CIRCUMFLEX</td>
+<td>KC_CIRC</td>
+<td>^</td>
+</tr>
+<tr>
+<td>KC_AMPERSAND</td>
+<td>KC_AMPR</td>
+<td>&amp;</td>
+</tr>
+<tr>
+<td>KC_ASTERISK</td>
+<td>KC_ASTR</td>
+<td>*</td>
+</tr>
+<tr>
+<td>KC_LEFT_PAREN</td>
+<td>KC_LPRN</td>
+<td>(</td>
+</tr>
+<tr>
+<td>KC_RIGHT_PAREN</td>
+<td>KC_RPRN</td>
+<td>)</td>
+</tr>
+<tr>
+<td>KC_UNDERSCORE</td>
+<td>KC_UNDS</td>
+<td>_</td>
+</tr>
+<tr>
+<td>KC_PLUS</td>
+<td></td>
+<td>+</td>
+</tr>
+<tr>
+<td>KC_LEFT_CURLY_BRACE</td>
+<td>KC_LCBR</td>
+<td>{</td>
+</tr>
+<tr>
+<td>KC_RIGHT_CURLY_BRACE</td>
+<td>KC_RCBR</td>
+<td>}</td>
+</tr>
+<tr>
+<td>KC_PIPE</td>
+<td></td>
+<td>|</td>
+</tr>
+<tr>
+<td>KC_COLON</td>
+<td>KC_COLN</td>
+<td>:</td>
+</tr>
+<tr>
+<td>KC_DOUBLE_QUOTE</td>
+<td>KC_DQUO, KC_DQT</td>
+<td>"</td>
+</tr>
+<tr>
+<td>KC_LEFT_ANGLE_BRACKET</td>
+<td>KC_LABK, KC_LT</td>
+<td>&lt;</td>
+</tr>
+<tr>
+<td>KC_RIGHT_ANGLE_BRACKET</td>
+<td>KC_RABK, KC_GT</td>
+<td>&gt;</td>
+</tr>
+<tr>
+<td>KC_QUESTION</td>
+<td>KC_QUES</td>
+<td>?</td>
+</tr>
+</table>
+<br>
+
+<h4 id="one">One Shot Keys<h4>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>OSM(mod)</td>
+<td></td>
+<td>Hold mod for one keypress</td>
+</tr>
+<tr>
+<td>OSL(layer)</td>
+<td></td>
+<td>Switch to layer for one keypress</td>
+</tr>
+<tr>
+<td>QK_ONE_SHOT_TOGGLE</td>
+<td>OS_TOGG</td>
+<td>Toggles One Shot keys status</td>
+</tr>
+<tr>
+<td>QK_ONE_SHOT_ON</td>
+<td>OS_ON</td>
+<td>Turns One Shot keys on</td>
+</tr>
+<tr>
+<td>QK_ONE_SHOT_OFF</td>
+<td>OS_OFF</td>
+<td>Turns One Shot keys off</td>
+</tr>
+<br>
+
+<h4  id="pbs">Programmable Button Support<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_1</td>
+<td>PB_1</td>
+<td>Programmable button 1</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_2</td>
+<td>PB_2</td>
+<td>Programmable button 2</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_3</td>
+<td>PB_3</td>
+<td>Programmable button 3</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_4</td>
+<td>PB_4</td>
+<td>Programmable button 4</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_5</td>
+<td>PB_5</td>
+<td>Programmable button 5</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_6</td>
+<td>PB_6</td>
+<td>Programmable button 6</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_7</td>
+<td>PB_7</td>
+<td>Programmable button 7</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_8</td>
+<td>PB_8</td>
+<td>Programmable button 8</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_9</td>
+<td>PB_9</td>
+<td>Programmable button 9</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_10</td>
+<td>PB_10</td>
+<td>Programmable button 10</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_11</td>
+<td>PB_11</td>
+<td>Programmable button 11</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_12</td>
+<td>PB_12</td>
+<td>Programmable button 12</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_13</td>
+<td>PB_13</td>
+<td>Programmable button 13</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_14</td>
+<td>PB_14</td>
+<td>Programmable button 14</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_15</td>
+<td>PB_15</td>
+<td>Programmable button 15</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_16</td>
+<td>PB_16</td>
+<td>Programmable button 16</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_17</td>
+<td>PB_17</td>
+<td>Programmable button 17</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_18</td>
+<td>PB_18</td>
+<td>Programmable button 18</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_19</td>
+<td>PB_19</td>
+<td>Programmable button 19</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_20</td>
+<td>PB_20</td>
+<td>Programmable button 20</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_21</td>
+<td>PB_21</td>
+<td>Programmable button 21</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_22</td>
+<td>PB_22</td>
+<td>Programmable button 22</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_23</td>
+<td>PB_23</td>
+<td>Programmable button 23</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_24</td>
+<td>PB_24</td>
+<td>Programmable button 24</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_25</td>
+<td>PB_25</td>
+<td>Programmable button 25</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_26</td>
+<td>PB_26</td>
+<td>Programmable button 26</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_27</td>
+<td>PB_27</td>
+<td>Programmable button 27</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_28</td>
+<td>PB_28</td>
+<td>Programmable button 28</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_29</td>
+<td>PB_29</td>
+<td>Programmable button 29</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_30</td>
+<td>PB_30</td>
+<td>Programmable button 30</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_31</td>
+<td>PB_31</td>
+<td>Programmable button 31</td>
+</tr>
+<tr>
+<td>QK_PROGRAMMABLE_BUTTON_32</td>
+<td>PB_32</td>
+<td>Programmable button 32</td>
+</tr>
+</table>
+<br>
+
+<h4  id="repeat">Repeat Key<h4>
+<table>
+<tr>
+<th>Keycode</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_REPEAT_KEY</td>
+<td>QK_REP</td>
+<td>Repeat the last pressed key</td>
+</tr>
+<tr>
+<td>QK_ALT_REPEAT_KEY</td>
+<td>QK_AREP</td>
+<td>Perform alternate of the last key</td>
+</tr>
+</table>
+<br>
+
+<h4  id="space">Space Cadet<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>QK_SPACE_CADET_LEFT_CTRL_PARENTHESIS_OPEN</td>
+<td>SC_LCPO</td>
+<td>Left Control when held, ( when tapped</td>
+</tr>
+<tr>
+<td>QK_SPACE_CADET_RIGHT_CTRL_PARENTHESIS_CLOSE</td>
+<td>SC_RCPC</td>
+<td>Right Control when held, ) when tapped</td>
+</tr>
+<tr>
+<td>QK_SPACE_CADET_LEFT_SHIFT_PARENTHESIS_OPEN</td>
+<td>SC_LSPO</td>
+<td>Left Shift when held, ( when tapped</td>
+</tr>
+<tr>
+<td>QK_SPACE_CADET_RIGHT_SHIFT_PARENTHESIS_CLOSE</td>
+<td>SC_RSPC</td>
+<td>Right Shift when held, ) when tapped</td>
+</tr>
+<tr>
+<td>QK_SPACE_CADET_LEFT_ALT_PARENTHESIS_OPEN</td>
+<td>SC_LAPO</td>
+<td>Left Alt when held, ( when tapped</td>
+</tr>
+<tr>
+<td>QK_SPACE_CADET_RIGHT_ALT_PARENTHESIS_CLOSE</td>
+<td>SC_RAPC</td>
+<td>Right Alt when held, ) when tapped</td>
+</tr>
+<tr>
+<td>QK_SPACE_CADET_RIGHT_SHIFT_ENTER</td>
+<td>SC_SENT</td>
+<td>Right Shift when held, Enter when tapped</td>
+</tr>
+</table>
+<br>
+
+<h4  id="swap">Swap Hands<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>SH_T(kc)</td>
+<td></td>
+<td>Momentary swap when held, kc when tapped</td>
+</tr>
+<tr>
+<td>QK_SWAP_HANDS_ON</td>
+<td>SH_ON</td>
+<td>Turn on hand swap</td>
+</tr>
+<tr>
+<td>QK_SWAP_HANDS_OFF</td>
+<td>SH_OFF</td>
+<td>Turn off hand swap</td>
+</tr>
+<tr>
+<td>QK_SWAP_HANDS_MOMENTARY_ON</td>
+<td>SH_MON</td>
+<td>Turn on hand swap while held</td>
+</tr>
+<tr>
+<td>QK_SWAP_HANDS_MOMENTARY_OFF</td>
+<td>SH_MOFF</td>
+<td>Turn off hand swap while held</td>
+</tr>
+<tr>
+<td>QK_SWAP_HANDS_TOGGLE</td>
+<td>SH_TOGG</td>
+<td>Toggle hand swap</td>
+</tr>
+<tr>
+<td>QK_SWAP_HANDS_TAP_TOGGLE</td>
+<td>SH_TT</td>
+<td>Momentary swap when held, toggle when tapped</td>
+</tr>
+<tr>
+<td>QK_SWAP_HANDS_ONE_SHOT</td>
+<td>SH_OS</td>
+<td>Turn on hand swap while held or until next key press</td>
+</tr>
+</table>
+<br>
+
+<h4  id="nmicode">Unicode Support<h4>
+<table>
+<tr>
+<th>Key</th>
+<th>简写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tr>
+<td>UC(c)</td>
+<td></td>
+<td>Send Unicode code point c, up to 0x7FFF</td>
+</tr>
+<tr>
+<td>UM(i)</td>
+<td></td>
+<td>Send Unicode code point at index i in unicode_map</c=
+ode></td>
+</tr>
+<tr>
+<td>UP(i, j)</td>
+<td></td>
+<td>Send Unicode code point at index i, or j if S=
+hift/Caps is on</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_NEXT</td>
+<td>UC_NEXT</td>
+<td>Cycle through selected input modes</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_PREVIOUS</td>
+<td>UC_PREV</td>
+<td>Cycle through selected input modes in reverse</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_MACOS</td>
+<td>UC_MAC</td>
+<td>Switch to macOS input</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_LINUX</td>
+<td>UC_LINX</td>
+<td>Switch to Linux input</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_WINDOWS</td>
+<td>UC_WIN</td>
+<td>Switch to Windows input</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_BSD</td>
+<td>UC_BSD</td>
+<td>Switch to BSD input (not implemented)</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_WINCOMPOSE</td>
+<td>UC_WINC</td>
+<td>Switch to Windows input using WinCompose</td>
+</tr>
+<tr>
+<td>QK_UNICODE_MODE_EMACS</td>
+<td>UC_EMAC</td>
+<td>Switch to emacs (C-x-8 RET)</td>
+</tr>
+</table>
+<br>
+
+		
 <h4 id="down"><span><a class="a" href="./vial-jl.html">返回Vial-JL使用说明</a><br>
 <a class="a" href="../index.html" target="_blank">返回主页</a><br>
 </span><h4>
