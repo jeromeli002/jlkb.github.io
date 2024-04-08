@@ -1,0 +1,235 @@
+<html lang="zh-cn">
+<meta charset="utf-8">
+<link rel="shortcut icon" type="image/x-icon" href="../logo.png" /> 
+<title>固件更新教程JLKB</title>
+
+<style>
+table {
+  max-width: 1080px;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 8px;
+  text-align: left;
+  border:1px solid #e5e5e5;
+  font-size: 13px;
+}
+tr:hover {
+  background-color: #e7fffc;
+}
+a{
+  text-decoration: none;
+  color: #004eff;
+}
+.a1{
+    text-decoration: none;
+    color: #1e1f26;
+    font-size: 25px;
+}
+img{
+  max-width: 1000px;
+}
+.th1 {
+  background-color: #ddd;
+  width: 150px;
+  font-size: 18px;
+  text-align: center;
+}
+.th2 {
+  background-color: #ddd;
+  width: 200px;
+  font-size: 18px;
+  text-align: center;
+}
+.th3 {
+  background-color: #ddd;
+  max-width: 680px;
+  font-size: 18px;
+  text-align: center;
+}
+.h2{
+    padding: 3px;
+    background-color: #e7fffc;
+    padding-left: 30px;
+    border-radius: 0.5rem;
+    border: 0.05rem solid #448aff;
+}
+body{
+padding: 3px;
+line-height: 2;
+margin:auto;
+}
+.sm {
+  max-width: 1080px;
+  margin:auto;
+  }
+.sm1 {
+  max-width: 1020px;
+  margin:auto;
+  border: 0.05rem solid #448aff;
+  padding: 30px;
+  border-radius: 0.5rem;
+  background-color: #e7fffc;
+  }
+.sm2{
+  max-width: 1020px;
+  margin:auto;
+  border: 0.05rem solid #448aff;
+  padding: 30px;
+  border-radius: 0.5rem;
+  }
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+.diy{
+    border: 2px solid #67f0bb;
+    border-radius: 0.5rem;
+    padding: 7px;
+}
+@media only screen and (max-width: 600px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  th {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+  }
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+  }
+}
+</style>
+
+<div class="sm" id="top">
+<h2 class="h2">JLKB固件更新教程</h2>    
+</div><br>
+<div class="sm">
+<div class="sm1">
+<span>
+<h3>更新步骤</h3>
+
+<strong>将下载的<a target="_blank" href="https://jlkb.jlkb.top/files/tools.zip">固件更新工具</a>程序解压至任意目录后打开，第一次打开可能需要等待几十秒-3分钟不等，然后会出现安装驱动的提示，选择是即可安装驱动【若是错过此步骤，在顶部工具-安装驱动即可重新安装,驱动安装需要管理员权限】</strong>
+<br><br>
+
+<span style="color:red;font-size: 20px;">***注意：刷入固件会清空键盘配置，请提前备份存档***</span><br>
+<span>1.工具→安装驱动，安装完成后重启软件（首次使用需先安装驱动，右键选择管理员运行,以后不用此步骤）</span><br>
+<div class="diy"><img src="./img/gujian0.png"></img></div>&nbsp;
+<br>
+
+<span>2.选择对应的固件（刷入错误的固件有变砖的可能），然后勾选自动写入，如果没有勾选就手动点击写入</span><br>
+<div class="diy"><img src="./img/gujian2.png"></img></div>&nbsp;
+<br>
+
+<span>3.键盘设置复位键，然后按一下复位键（vial-JL里面设置，可到<a target="_blank" href="http://jlkb.jlkb.top">JLKB</a>下载）或按背面复位按钮进入DFU模式。<br>&nbsp;&nbsp;&nbsp;不出意外就会开始刷机了，如果上一步未勾选自动写入请手动点击写入。</span><br>
+<div class="diy"><img  style="max-width: 450px;" src="./img/gujian1.png"></img>&nbsp;&nbsp;&nbsp;<img style="max-width: 450px;" src="./img/gujian3.png"></img></div>&nbsp;
+<br>
+<span>4.更新完成厚重新插拔键盘或按背面的复位按钮重启键盘</span>
+
+<h4><span><a class="a" href="../index.html" target="_blank">返回主页</a><br>
+</span><h4></div>
+</div><br>
+
+<script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+       var watermark_txt = "JLKB" ;
+       watermark({"watermarl_element":"sm", "watermark_txt":watermark_txt});
+    });
+  
+    function watermark(settings) {
+        //默认设置
+        var defaultSettings={
+            watermarl_element:"body",
+            watermark_txt:"",
+            watermark_x:10,//水印起始位置x轴坐标
+            watermark_y:10,//水印起始位置Y轴坐标
+            watermark_rows:2000,//水印行数
+            watermark_cols:2000,//水印列数
+            watermark_x_space:50,//水印x轴间隔
+            watermark_y_space:50,//水印y轴间隔
+            watermark_color:'#ff0059',//水印字体颜色
+            watermark_alpha:0.05,//水印透明度
+            watermark_fontsize:'205px',//水印字体大小
+            watermark_font:'微软雅黑',//水印字体
+            watermark_width:500,//水印宽度
+            watermark_height:600,//水印长度
+            watermark_angle:45//水印倾斜度数
+        };
+        //采用配置项替换默认值，作用类似jquery.extend
+        if(arguments.length===1&&typeof arguments[0] ==="object" ) {
+            var src=arguments[0]||{};
+            for(key in src) {
+                if(src[key]&&defaultSettings[key]&&src[key]===defaultSettings[key]){
+                    continue;
+                } else if(src[key]){
+                    defaultSettings[key]=src[key];
+                }
+            }
+        }
+  
+        var oTemp = document.createDocumentFragment();
+  
+        var maskElement=document.getElementById(defaultSettings.watermarl_element) || document.body;
+        //获取页面最大宽度
+        var page_width = Math.max(maskElement.scrollWidth,maskElement.clientWidth);
+        //获取页面最大高度
+        var page_height = Math.max(maskElement.scrollHeight,maskElement.clientHeight,maskElement.scrollTop);
+        //水印数量自适应元素区域尺寸
+        defaultSettings.watermark_cols=Math.ceil(page_width/(defaultSettings.watermark_x_space+defaultSettings.watermark_width));
+        defaultSettings.watermark_rows=Math.ceil(page_height/(defaultSettings.watermark_y_space+defaultSettings.watermark_height));
+        var x;
+        var y;
+        for (var i = 0; i < defaultSettings.watermark_rows; i++) {
+            y = defaultSettings.watermark_y + (defaultSettings.watermark_y_space + defaultSettings.watermark_height) * i;
+            for (var j = 0; j < defaultSettings.watermark_cols; j++) {
+                x = defaultSettings.watermark_x + (defaultSettings.watermark_width + defaultSettings.watermark_x_space) * j;
+                var mask_div = document.createElement('div');
+                mask_div.id = 'mask_div' + i + j;
+                mask_div.className = 'mask_div';
+                //mask_div.appendChild(document.createTextNode(defaultSettings.watermark_txt));
+                mask_div.innerHTML=(defaultSettings.watermark_txt);
+                //设置水印div倾斜显示
+                mask_div.style.webkitTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.MozTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.msTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.visibility = "";
+                mask_div.style.position = "absolute";
+                mask_div.style.left = x + 'px';
+                mask_div.style.top = y + 'px';
+                mask_div.style.overflow = "hidden";
+                mask_div.style.zIndex = "1029"; // 9999
+                // pointer-events:none  让水印不遮挡页面的点击事件
+                mask_div.style.pointerEvents='none';
+                // 设置边框
+                // mask_div.style.border="solid #eee 1px";
+                // 兼容IE9以下的透明度设置
+                mask_div.style.filter="alpha(opacity=50)";
+                mask_div.style.opacity = defaultSettings.watermark_alpha;
+                mask_div.style.fontSize = defaultSettings.watermark_fontsize;
+                mask_div.style.fontFamily = defaultSettings.watermark_font;
+                mask_div.style.color = defaultSettings.watermark_color;
+                mask_div.style.textAlign = "center";
+                mask_div.style.width = defaultSettings.watermark_width + 'px';
+                mask_div.style.height = defaultSettings.watermark_height + 'px';
+                mask_div.style.display = "block";
+                oTemp.appendChild(mask_div);
+            };
+        };
+        maskElement.appendChild(oTemp);
+    }
+  
+</script>			
