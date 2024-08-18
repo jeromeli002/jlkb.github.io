@@ -20,6 +20,38 @@
 <script src="static/js/particles.min.js"></script>
 
 </head>
+
+<style>
+   table {
+      border-collapse: collapse;
+   }
+   .td{
+      background-color: #f2f5f2; 
+      text-align: center;
+      color: #5c5679;
+      font-size: 30px;
+   }
+   th, td {
+      border: 2px solid #dddddd;
+      text-align: left; 
+      padding: 8px;
+   }
+
+   th {
+      background-color: #f2f2f2;
+      color: red;
+   }
+
+   td {
+      color: #03dac6; 
+      font-size: 25px;
+      padding: 10px;
+      max-width: 250px;
+      text-align: center;
+   }
+   
+</style>
+
 <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false" onbeforecopy="return false" oncopy=document.selection.empty() onselect=document.selection.empty() >
 
 <section class="nav"id="home">
@@ -80,18 +112,36 @@
       <h1>下&nbsp;&nbsp;载</h1>
       <h2>自定义改键驱动下载……</h2>
       <h3 class="span1"><span>请选择对应版本，0.6和0.7.1版本互不兼容！</span></h3>
-      <h2><a class="a" href="./files/win0.6.zip" target="_blank">中文Win-0.6&nbsp;&nbsp;&nbsp;&nbsp;</a></h2>
-      <h2><a class="a" href="./files/winen0.6.zip" target="_blank">英文Win-0.6&nbsp;&nbsp;&nbsp;&nbsp;</a></h2>
-      <h2><a class="a" href="./files/mac0.6.zip" target="_blank">中文Mac-0.6&nbsp;&nbsp;&nbsp;</a></h2>
-      <h2><a class="a" href="./files/mac0.6en.zip" target="_blank">英文Mac-0.6&nbsp;&nbsp;&nbsp;</a></h2>
-      <h2><a class="a" href="./files/win0.7.zip" target="_blank">中文Win-0.7.1&nbsp;</a></h2>
-      <h2><a class="a" href="./files/winen0.7.zip" target="_blank">英文Win-0.7.1&nbsp;</a></h2>
-      <h2><a class="a" href="./files/mac0.7.zip" target="_blank">中文Mac-0.7.1</a></h2>
-      <h2><a class="a" href="./files/mac0.7en.zip" target="_blank">英文Mac-0.7.1</a></h2>
-      <h2><a class="a" href="./files/Ble.zip" target="_blank">蓝牙双模改建</a></h2>
-      <h2><a class="a" href="https://vial.rocks/" target="_blank">英文Web版&nbsp;&nbsp;&nbsp;&nbsp;</a></h2>
-      <h2><a class="a" href="./files/tools.zip" target="_blank">固件更新工具</a></h2>
-      <h2><p><a style="color: #03dac61a;" href="./box" target="_blank">3D打印外壳文件</a></p></h2><br>
+<br>
+<table>
+    <tr>     <!--第1行-->
+        <td class="td">Windows版</td>    <!--第1个-->
+        <td class="td">Mac版</td>    <!--第2个-->
+        <td class="td">其他下载</td>    <!--第3个-->
+    </tr>
+    <tr>     <!--第2行-->
+        <td><a class="a" href="./files/win0.6.zip" target="_blank">中文Win-0.6</a></td>    <!--第1个-->
+        <td><a class="a" href="./files/mac0.6.zip" target="_blank">中文Mac-0.6</a></td>     <!--第2个-->
+        <td><a class="a" href="./files/tools.zip" target="_blank">固件更新工具</a></td>     <!--第3个-->
+    </tr>
+    <tr>     <!--第3行-->
+        <td><a class="a" href="./files/winen0.6.zip" target="_blank">英文Win-0.6</a></td>    <!--第1个-->
+        <td><a class="a" href="./files/mac0.6en.zip" target="_blank">英文Mac-0.6</a></td>     <!--第2个-->
+        <td><a class="a" href="./files/Ble.zip" target="_blank">蓝牙双模改建</a></td>     <!--第3个-->
+    </tr>
+    <tr>     <!--第4行-->
+        <td><a class="a" href="./files/win0.7.zip" target="_blank">中文Win-0.7.1</a></td>    <!--第1个-->
+        <td><a class="a" href="./files/mac0.7.zip" target="_blank">中文Mac-0.7.1</td>    <!--第2个-->
+        <td><a class="a" href="https://vial.rocks/" target="_blank">英文Web版</a></td>    <!--第3个-->
+    </tr>
+    <tr>     <!--第5行-->
+        <td><a class="a" href="./files/winen0.7.zip" target="_blank">英文Win-0.7.1</a></td>    <!--第1个-->
+        <td><a class="a" href="./files/mac0.7en.zip" target="_blank">英文Mac-0.7.1</a></td>    <!--第2个-->
+        <td><p><a style="color: #03dac61a;" href="./box" target="_blank">3D打印外壳文件</a></p></td>    <!--第3个-->
+    </tr>
+</table>
+
+<br>
     </section>
     
     <section class="slider" id="tab-typescript">
