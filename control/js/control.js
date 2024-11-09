@@ -6,26 +6,14 @@ const filters = [{
 
 //设备信息表 定义设备数组及其供应商ID 和产品ID
 const devices = [
-    { name: 'BLE60 D', vendor: 0x4366, product: 0x0311 },
-    { name: 'Omega45 C&D', vendor: 0x4366, product: 0x0312 },
-    { name: 'Farad69 A', vendor: 0x4366, product: 0x0313 },
-    { name: 'Omega50 A', vendor: 0x4366, product: 0x0314 },
-    { name: 'BLE60 E', vendor: 0x4366, product: 0x0315 },
-    { name: 'Farad69 B', vendor: 0x4366, product: 0x0316 },
-    { name: 'Omega64', vendor: 0x4366, product: 0x0317 },
-    { name: 'Omega84', vendor: 0x4366, product: 0x0318 },
-    { name: 'Newhope64 A', vendor: 0x4366, product: 0x0319 },
-    { name: 'GTPAD', vendor: 0x4366, product: 0x031A },
-    { name: 'BLE60 F&G', vendor: 0x4366, product: 0x031B },
-    { name: 'Omega50 B&C', vendor: 0x4366, product: 0x031C },
-    { name: 'Farad69 C&D', vendor: 0x4366, product: 0x031D },
-    { name: 'Omega45 E&F', vendor: 0x4366, product: 0x031E },
-    { name: 'Planck A', vendor: 0x4366, product: 0x031F },
-    { name: 'Omega40 A', vendor: 0x4366, product: 0x0320 },
-    { name: 'Volta9', vendor: 0x4366, product: 0x0321 },
-    { name: 'Newhope64 B', vendor: 0x4366, product: 0x0322 },
-    { name: 'Planck B', vendor: 0x4366, product: 0x0323 },
-    { name: 'HAL67 A', vendor: 0x4366, product: 0x0324 },
+    { name: 'F12', vendor: 0x4367, product: 0x0501 },
+    { name: 'JLk16E4', vendor: 0x4367, product: 0x0502 },
+    { name: 'JLK24', vendor: 0x4367, product: 0x0503 },
+    { name: 'JLK42 A', vendor: 0x4367, product: 0x0504 },
+    { name: 'JLK42 B', vendor: 0x4367, product: 0x0505 },
+    { name: 'JLK45', vendor: 0x4367, product: 0x0506 },
+    { name: 'JLlPad', vendor: 0x4367, product: 0x057 },
+    { name: 'HAL67 A', vendor: 0x4367, product: 0x0508 },
 ];
 
 let refreshing = false;

@@ -4,7 +4,7 @@
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
-    "description": "Glab系列键盘在线控制面板",
+    "description": "键盘在线控制面板",
     "icons": [
       {
         "src": "app.png",
