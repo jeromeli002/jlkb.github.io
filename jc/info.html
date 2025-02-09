@@ -25,10 +25,9 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
-    h1, .label {
+    h1 {
       color: #2196f3;
       font-size: 1.8em;
-      font-weight: 600;
       margin-bottom: 20px;
     }
     textarea {
@@ -39,27 +38,6 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       background-color: #f9f9f9;
-      transition: border-color 0.3s;
-    }
-    textarea:focus {
-      border-color: #2196f3;
-      background-color: #fff;
-    }
-    button {
-      width: 250px;
-      padding: 14px;
-      font-size: 1.2em;
-      color: #fff;
-      background-color: #2196f3;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 20px auto;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    button:hover {
-      background-color: #1e88e5;
-      transform: scale(1.05);
     }
     .footer {
       font-size: 1em;
@@ -77,11 +55,10 @@
 <div class="wrapper">
   <h1>输入 Raw data数据</h1>
   <textarea id="input" placeholder="复制 www.keyboard-layout-editor.com 的Raw data数据到此处" rows="6"></textarea>
-  <button id="submit">转换</button>
-  <div class="label">输出格式:</div>
-  <textarea id="output" readonly placeholder="转换结果将在这里显示" rows="6"></textarea>
-  <div class="label">提取后的数据：</div>
+  <h1>Keyboard.json</h1>
   <textarea id="finalOutput" readonly placeholder="提取并格式化后的结果将显示在这里" rows="6"></textarea>
+  <h1>Vial.json</h1>
+  <textarea id="quotedLettersOutput" readonly placeholder="只有独立字母才加双引号，带反斜杠的字母不加" rows="6"></textarea>
 </div>
 
 <div class="footer">
@@ -90,18 +67,28 @@
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
-  $("#submit").on("click", function() {
-    $.ajax({
-      type: 'POST',
-      url: "https://api.qmk.fm/v1/converters/kle",
-      contentType: 'application/json',
-      data: JSON.stringify({ raw: $("#input").val() }),
-      dataType: 'text',
-      success: function(d) {
-        $("#output").val(d);
-        extractData(d);
-      }
-    });
+  $("#input").on("input", function() {
+    const inputValue = $(this).val();
+    if (inputValue.trim()) {
+      $.ajax({
+        type: 'POST',
+        url: "https://api.qmk.fm/v1/converters/kle",
+        contentType: 'application/json',
+        data: JSON.stringify({ raw: inputValue }),
+        dataType: 'text',
+        success: function(d) {
+          extractData(d);
+          addQuotesToLetters(inputValue);
+        },
+        error: function() {
+          $("#finalOutput").val('转换失败，请检查数据格式');
+          $("#quotedLettersOutput").val('');
+        }
+      });
+    } else {
+      $("#finalOutput").val('');
+      $("#quotedLettersOutput").val('');
+    }
   });
 
   function extractData(input) {
@@ -116,8 +103,14 @@
       }).join(',\n');
       $("#finalOutput").val(formattedOutput);
     } catch (error) {
-      $("#finalOutput").val('无效的 JSON 数据');
+      $("#finalOutput").val('无效的 JSON 数据，转换失败');
     }
+  }
+
+  function addQuotesToLetters(input) {
+    // 只对独立字母加引号，排除多字母组合和带有反斜杠的字母
+    const quoted = input.replace(/(?<!\\)\b([a-zA-Z])\b(?!\\)/g, (match) => `"${match}"`);
+    $("#quotedLettersOutput").val(quoted);
   }
 </script>
 
