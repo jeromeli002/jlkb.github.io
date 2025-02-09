@@ -1,67 +1,125 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JLKB</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    .wrapper {
+      width: 100%;
+      max-width: 800px;
+      background: #fff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h1, .label {
+      color: #2196f3;
+      font-size: 1.8em;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #f9f9f9;
+      transition: border-color 0.3s;
+    }
+    textarea:focus {
+      border-color: #2196f3;
+      background-color: #fff;
+    }
+    button {
+      width: 250px;
+      padding: 14px;
+      font-size: 1.2em;
+      color: #fff;
+      background-color: #2196f3;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 20px auto;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background-color: #1e88e5;
+      transform: scale(1.05);
+    }
+    .footer {
+      font-size: 1em;
+      color: #888;
+      margin-top: 40px;
+    }
+    .footer a {
+      color: #2196f3;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>info转换</title>
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-    <h1>info布局配置生成<h1>
-<section>
-<p><label>请输入配列数据:</label></p>
-<textarea id="input" style="height: 100px;"></textarea><br>
-<p><button id="submit">转换</button><br><br>
-<label>输出格式:</label></p>
-<textarea id="output"></textarea>
+<div class="wrapper">
+  <h1>输入 Raw data数据</h1>
+  <textarea id="input" placeholder="复制 www.keyboard-layout-editor.com 的Raw data数据到此处" rows="6"></textarea>
+  <button id="submit">转换</button>
+  <div class="label">输出格式:</div>
+  <textarea id="output" readonly placeholder="转换结果将在这里显示" rows="6"></textarea>
+  <div class="label">提取后的数据：</div>
+  <textarea id="finalOutput" readonly placeholder="提取并格式化后的结果将显示在这里" rows="6"></textarea>
+</div>
 
-<style>
-label{
-    padding: 20px;
-    font-size: 20px;
-}
-button {
-    padding: 10px;
-    font-size: 20px;
-    border-radius: 50px;
-    width: 150px;
-}
-button:hover {
-        background: #6adff1;
-}
-textarea {
-    width: 100%;
-    height: 300px;
-}
-.wrapper{
-    width: 900px;
-    text-align: center;
-    margin: auto;
-}
-</style>
+<div class="footer">
+  <p>&copy; 2025 <a href="https://jlkb.jlkb.top" target="_blank">JLKB</a>. 版权所有.</p>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
 <script>
-$("#submit").on("click", function() {
+  $("#submit").on("click", function() {
     $.ajax({
-        'type': 'POST',
-        'url': "https://api.qmk.fm/v1/converters/kle",
-        'contentType': 'application/json',
-        'data': JSON.stringify({raw: $("#input").val()}),
-        'dataType': 'text',
-        'success': function(d) {
-            console.log(d);
-          $("#output").val(d);
-        }
+      type: 'POST',
+      url: "https://api.qmk.fm/v1/converters/kle",
+      contentType: 'application/json',
+      data: JSON.stringify({ raw: $("#input").val() }),
+      dataType: 'text',
+      success: function(d) {
+        $("#output").val(d);
+        extractData(d);
+      }
     });
-});
+  });
+
+  function extractData(input) {
+    try {
+      const layout = JSON.parse(input).layouts.LAYOUT.layout;
+      let lastY = null;
+      const formattedOutput = layout.map(item => {
+        let output = `{"matrix":[${item.y},${item.x}],"x":${item.x},"y":${item.y}}`;
+        if (item.y !== lastY && lastY !== null) output = `\n${output}`;
+        lastY = item.y;
+        return output;
+      }).join(',\n');
+      $("#finalOutput").val(formattedOutput);
+    } catch (error) {
+      $("#finalOutput").val('无效的 JSON 数据');
+    }
+  }
 </script>
-      </section>
-    </div>
-  </body>
+
+</body>
 </html>
