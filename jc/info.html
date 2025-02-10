@@ -32,7 +32,6 @@
     }
     textarea {
       width: 100%;
-      padding: 12px;
       margin-bottom: 20px;
       font-size: 1.2em;
       border: 1px solid #ccc;
@@ -48,6 +47,31 @@
       color: #2196f3;
       text-decoration: none;
     }
+    .output-wrapper {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      margin-top: 20px;
+    }
+    .output-wrapper div {
+      width: 45%;
+    }
+    .output-wrapper textarea {
+      width: 100%;
+    }
+    .clear-btn {
+      background-color: #2196f3;
+      color: white;
+      font-size: 1.2em;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .clear-btn:hover {
+      background-color: #d32f2f;
+    }
   </style>
 </head>
 <body>
@@ -55,10 +79,28 @@
 <div class="wrapper">
   <h1>输入 Raw data数据</h1>
   <textarea id="input" placeholder="复制 www.keyboard-layout-editor.com 的Raw data数据到此处" rows="6"></textarea>
-  <h1>Keyboard.json</h1>
-  <textarea id="finalOutput" readonly placeholder="Keyboard.json文件使用" rows="6"></textarea>
-  <h1>Vial.json</h1>
-  <textarea id="quotedLettersOutput" readonly placeholder="vial.json文件使用" rows="6"></textarea>
+
+  <div class="output-wrapper">
+    <div>
+      <h1>Keyboard.json</h1>
+      <textarea id="finalOutput" placeholder="Keyboard.json文件使用" rows="6"></textarea>
+    </div>
+
+    <div>
+      <h1>Keymap.c</h1>
+      <textarea id="kcTrnsOutput" placeholder="Keymap.c文件使用" rows="6"></textarea>
+    </div>
+  </div>
+  
+  <div class="output-wrapper">
+    <div>
+      <h1>Vial.json</h1>
+      <textarea id="quotedLettersOutput" placeholder="vial.json文件使用" rows="6"></textarea>
+    </div>
+  </div>
+
+  <!-- 清空按钮 -->
+  <button class="clear-btn" id="clearBtn">清空</button>
 </div>
 
 <div class="footer">
@@ -79,15 +121,18 @@
         success: function(d) {
           extractData(d);
           addQuotesToLetters(inputValue);
+          convertToKC_TRNS(d);  // 调用修正后的函数处理 KC_TRNS 输出
         },
         error: function() {
           $("#finalOutput").val('转换失败，请检查数据格式');
           $("#quotedLettersOutput").val('');
+          $("#kcTrnsOutput").val('');
         }
       });
     } else {
       $("#finalOutput").val('');
       $("#quotedLettersOutput").val('');
+      $("#kcTrnsOutput").val('');
     }
   });
 
@@ -112,6 +157,30 @@
     const quoted = input.replace(/(?<!\\)\b([a-zA-Z])\b(?!\\)/g, (match) => `"${match}"`);
     $("#quotedLettersOutput").val(quoted);
   }
+
+  function convertToKC_TRNS(input) {
+    try {
+      const layout = JSON.parse(input).layouts.LAYOUT.layout;
+      let lastY = null;
+      const formattedOutput = layout.map(item => {
+        let output = `KC_TRNS`;
+        if (item.y !== lastY && lastY !== null) output = `\n${output}`;
+        lastY = item.y;
+        return output;
+      }).join(', ');
+      $("#kcTrnsOutput").val(formattedOutput);
+    } catch (error) {
+      $("#kcTrnsOutput").val('无效的 JSON 数据，转换失败');
+    }
+  }
+
+  // 清空按钮功能
+  $("#clearBtn").on("click", function() {
+    $("#input").val('');
+    $("#finalOutput").val('');
+    $("#kcTrnsOutput").val('');
+    $("#quotedLettersOutput").val('');
+  });
 </script>
 
 </body>
