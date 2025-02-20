@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置生成器</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 容器样式 */
+        .container {
+            display: flex;
+            gap: 2rem;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        /* 配置选项区域样式 */
+        .config-options {
+            flex: 1;
+        }
+
+        .config-options h2 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .config-options label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .config-options input[type="checkbox"] {
+            margin-right: 0.5rem;
+            transform: scale(1.1);
+        }
+
+        .config-options input[type="number"] {
+            margin-left: 0.5rem;
+            padding: 0.3rem 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 60px;
+            font-size: 0.9rem;
+        }
+
+        /* 配置输出区域样式 */
+        .config-output {
+            flex: 2;
+        }
+
+        .config-output h2 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .config-output button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .config-output button:hover {
+            background-color: #2980b9;
+        }
+
+        .config-output textarea {
+            width: 100%;
+            height: 300px;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="config-options">
+            <h2>配置选项</h2>
+            <label>
+                <input type="checkbox" id="CH_CFG_ST_TIMEDELTA" checked onchange="updateConfig(); toggleInput('CH_CFG_ST_TIMEDELTA')">
+                CH_CFG_ST_TIMEDELTA
+                <input type="number" id="CH_CFG_ST_TIMEDELTA_VALUE" value="0" oninput="updateConfig()">
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_CONDVARS_TIMEOUT" checked onchange="updateConfig()">
+                CH_CFG_USE_CONDVARS_TIMEOUT
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_ST_FREQUENCY" onchange="updateConfig(); toggleInput('CH_CFG_ST_FREQUENCY')">
+                CH_CFG_ST_FREQUENCY
+                <input type="number" id="CH_CFG_ST_FREQUENCY_VALUE" value="10000" oninput="updateConfig()">
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_TIME_QUANTUM" onchange="updateConfig(); toggleInput('CH_CFG_TIME_QUANTUM')">
+                CH_CFG_TIME_QUANTUM
+                <input type="number" id="CH_CFG_TIME_QUANTUM_VALUE" value="20" oninput="updateConfig()">
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_REGISTRY" onchange="updateConfig()">
+                CH_CFG_USE_REGISTRY
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_WAITEXIT" onchange="updateConfig()">
+                CH_CFG_USE_WAITEXIT
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_CONDVARS" onchange="updateConfig()">
+                CH_CFG_USE_CONDVARS
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_MESSAGES" onchange="updateConfig()">
+                CH_CFG_USE_MESSAGES
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_MAILBOXES" onchange="updateConfig()">
+                CH_CFG_USE_MAILBOXES
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_HEAP" onchange="updateConfig()">
+                CH_CFG_USE_HEAP
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_MEMPOOLS" onchange="updateConfig()">
+                CH_CFG_USE_MEMPOOLS
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_OBJ_FIFOS" onchange="updateConfig()">
+                CH_CFG_USE_OBJ_FIFOS
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_PIPES" onchange="updateConfig()">
+                CH_CFG_USE_PIPES
+            </label>
+            <label>
+                <input type="checkbox" id="CH_CFG_USE_DYNAMIC" onchange="updateConfig()">
+                CH_CFG_USE_DYNAMIC
+            </label>
+        </div>
+        <div class="config-output">
+            <h2>配置输出</h2>
+            <button onclick="downloadConfig()">下载</button>
+            <button onclick="copyConfig()">复制</button>
+            <button onclick="resetConfig()">重置</button>
+            <textarea id="config-textarea" readonly></textarea>
+        </div>
+    </div>
+    <script>
+        function updateConfig() {
+            let config = `#pragma once\n\n`;
+
+            if (document.getElementById('CH_CFG_ST_TIMEDELTA').checked) {
+                const value = document.getElementById('CH_CFG_ST_TIMEDELTA_VALUE').value;
+                config += `#define CH_CFG_ST_TIMEDELTA ${value}\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_CONDVARS_TIMEOUT').checked) {
+                config += `#define CH_CFG_USE_CONDVARS_TIMEOUT FALSE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_ST_FREQUENCY').checked) {
+                const value = document.getElementById('CH_CFG_ST_FREQUENCY_VALUE').value;
+                config += `#define CH_CFG_ST_FREQUENCY ${value}\n`;
+            }
+
+            if (document.getElementById('CH_CFG_TIME_QUANTUM').checked) {
+                const value = document.getElementById('CH_CFG_TIME_QUANTUM_VALUE').value;
+                config += `#define CH_CFG_TIME_QUANTUM ${value}\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_REGISTRY').checked) {
+                config += `#define CH_CFG_USE_REGISTRY TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_WAITEXIT').checked) {
+                config += `#define CH_CFG_USE_WAITEXIT TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_CONDVARS').checked) {
+                config += `#define CH_CFG_USE_CONDVARS TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_MESSAGES').checked) {
+                config += `#define CH_CFG_USE_MESSAGES TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_MAILBOXES').checked) {
+                config += `#define CH_CFG_USE_MAILBOXES TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_HEAP').checked) {
+                config += `#define CH_CFG_USE_HEAP TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_MEMPOOLS').checked) {
+                config += `#define CH_CFG_USE_MEMPOOLS TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_OBJ_FIFOS').checked) {
+                config += `#define CH_CFG_USE_OBJ_FIFOS TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_PIPES').checked) {
+                config += `#define CH_CFG_USE_PIPES TRUE\n`;
+            }
+
+            if (document.getElementById('CH_CFG_USE_DYNAMIC').checked) {
+                config += `#define CH_CFG_USE_DYNAMIC TRUE\n`;
+            }
+
+            config += `\n#include_next <chconf.h>`;
+
+            document.getElementById('config-textarea').value = config;
+        }
+
+        function downloadConfig() {
+            const config = document.getElementById('config-textarea').value;
+            const blob = new Blob([config], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chconf.h';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyConfig() {
+            const textarea = document.getElementById('config-textarea');
+            textarea.select();
+            document.execCommand('copy');
+        }
+
+        function resetConfig() {
+            document.getElementById('CH_CFG_ST_TIMEDELTA').checked = true;
+            document.getElementById('CH_CFG_USE_CONDVARS_TIMEOUT').checked = true;
+            document.getElementById('CH_CFG_ST_FREQUENCY').checked = false;
+            document.getElementById('CH_CFG_TIME_QUANTUM').checked = false;
+            document.getElementById('CH_CFG_USE_REGISTRY').checked = false;
+            document.getElementById('CH_CFG_USE_WAITEXIT').checked = false;
+            document.getElementById('CH_CFG_USE_CONDVARS').checked = false;
+            document.getElementById('CH_CFG_USE_MESSAGES').checked = false;
+            document.getElementById('CH_CFG_USE_MAILBOXES').checked = false;
+            document.getElementById('CH_CFG_USE_HEAP').checked = false;
+            document.getElementById('CH_CFG_USE_MEMPOOLS').checked = false;
+            document.getElementById('CH_CFG_USE_OBJ_FIFOS').checked = false;
+            document.getElementById('CH_CFG_USE_PIPES').checked = false;
+            document.getElementById('CH_CFG_USE_DYNAMIC').checked = false;
+
+            document.getElementById('CH_CFG_ST_TIMEDELTA_VALUE').value = 0;
+            document.getElementById('CH_CFG_ST_FREQUENCY_VALUE').value = 10000;
+            document.getElementById('CH_CFG_TIME_QUANTUM_VALUE').value = 20;
+
+            toggleInput('CH_CFG_ST_TIMEDELTA');
+            toggleInput('CH_CFG_ST_FREQUENCY');
+            toggleInput('CH_CFG_TIME_QUANTUM');
+
+            updateConfig();
+        }
+
+        function toggleInput(checkboxId) {
+            const checkbox = document.getElementById(checkboxId);
+            const inputId = checkboxId + '_VALUE';
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.disabled = !checkbox.checked;
+            }
+        }
+
+        // Initial update
+        updateConfig();
+        toggleInput('CH_CFG_ST_TIMEDELTA');
+        toggleInput('CH_CFG_ST_FREQUENCY');
+        toggleInput('CH_CFG_TIME_QUANTUM');
+    </script>
+</body>
+
+</html>
