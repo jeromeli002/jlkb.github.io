@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>键盘配置生成器</title>
+    <style>
+        body {
+            font-family: '思源黑体', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+      .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+      .config-form,.config-output {
+            width: 100%;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+      .config-form {
+            border-right: none;
+        }
+      .config-output {
+            background-color: #f1f3f5;
+            border-radius: 0 0 12px 12px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+      .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+      .form-group label {
+            display: inline-block;
+            margin-bottom: 0;
+            margin-right: 15px;
+            width: 100px;
+            /* text-align: right;  移除右对齐设置 */
+            flex-shrink: 0;
+            color: #495057;
+            font-weight: 500;
+        }
+      .form-group input[type="text"],
+      .form-group input[type="number"],
+      .form-group select,
+      .form-group textarea {
+            padding: 10px 12px;
+            box-sizing: border-box;
+            margin-right: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background-color: #ffffff;
+            color: #495057;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.2s ease;
+             appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -moz-appearance: none;
+        }
+
+        /* 调整通用文本输入框宽度为 200px */
+      .form-group input[type="text"] {
+            max-width: 160px; /* 设置文本输入框最大宽度为 200px */
+        }
+      .form-group1 input[type="text"] {
+            max-width: 60px; /* 设置文本输入框最大宽度为 60px */
+        }
+
+        /* RGB 配置、启动魔法配置和矩阵引脚 的数字输入框宽度调整为 60px */
+        #saturation_steps,
+        #brightness_steps,
+        #led_count,
+        #hue_steps,
+        #max_brightness,
+        #io_delay,
+        #bootmagic_matrix_row,
+        #bootmagic_matrix_col,
+      .matrix-input-group input[type="number"],
+      .encoder-group.form-group.encoder-inline-group > input[type="number"],
+       #rgb_matrix_led_flush_limit,
+        #rgb_matrix_led_process_limit,
+        .rgb-matrix-split-count-group input[type="number"] {
+            max-width: 60px; /* 设置特定数字输入框最大宽度为 60px */
+        }
+
+        /* 移除数字输入框的上下增减按钮 */
+      .form-group input[type="number"] {
+            appearance: textfield;
+            -webkit-appearance: textfield;
+            -moz-appearance: textfield;
+        }
+        .form-group input[type="number"]::-webkit-outer-spin-button,
+        .form-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+
+      .form-group input[type="text"]:focus,
+      .form-group input[type="number"]:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+            border-color: #80bdff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+
+      .form-group select {
+            background-repeat: no-repeat;
+            background-position-x: calc(100% - 15px);
+            background-position-y: 50%;
+            color: #495057;
+        }
+
+
+      .form-group textarea {
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            resize: vertical;
+            min-height: 120px;
+            width: 100%;
+            max-width: none;
+        }
+        h2 {
+            color: #343a40;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 6px;
+            font-weight: bold;
+        }
+        h3, h4 {
+            color: #495057;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+      .checkbox-group {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+      .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            margin-right: 20px;
+            color: #495057;
+        }
+      .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #ffffff;
+            border: 1.5px solid #ced4da;
+            border-radius: 3px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+      .checkbox-group input[type="checkbox"]:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+      .checkbox-group input[type="checkbox"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+        }
+
+      .checkbox-group input[type="checkbox"]:checked::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 35%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 6px;
+            height: 10px;
+            border-width: 2px;
+            border-style: solid;
+            border-color: #fff;
+            border-top-style: none;
+            border-left-style: none;
+            border-radius: 0;
+            background-color: transparent;
+        }
+
+
+      .button-group {
+            text-align: center;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+      .button-group button {
+            padding: 12px 25px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+      .button-group button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        /* 复制配置按钮特殊样式 */
+        #copyConfig {
+            background-color: #28a745; /* 绿色背景 */
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        #copyConfig:hover {
+            background-color: #1e7e34; /* Hover 状态更深绿色 */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+
+      .config-output h2 {
+            border-bottom: none;
+            color: #495057;
+        }
+      .hidden {
+            display: none;
+        }
+      .encoder-group,.cols-group,.rows-group {
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+       .group-header {
+            display: none;
+        }
+        #custom-processor-input, #custom-bootloader-input {
+             color: #495057;
+             max-width: 280px;
+        }
+      .matrix-input-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+      .matrix-input-group label {
+            width: auto;
+            text-align: left;
+            margin-right: 5px;
+            margin-bottom: 0;
+            color: #495057;
+        }
+      .matrix-input-group input[type="number"] {
+            margin-right: 3px;
+             color: #495057;
+             max-width: 60px; /* 矩阵输入框数字宽度调整为 60px */
+        }
+       .pin-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+      .pin-input-group input[type="text"] {
+            margin-right: 6px;
+            margin-bottom: 6px;
+            color: #495057;
+            max-width: 60px; /* 保持引脚输入框文本宽度 */
+        }
+       .encoder-button-group,.matrix-button-group {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-start;
+            margin-top: 12px;
+        }
+       .encoder-button-group button,.matrix-button-group button {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+             background-color: #e0e7ff;
+             color: #495057;
+             box-shadow: none;
+             display: flex; /* 启用 Flexbox */
+             align-items: center; /* 垂直居中对齐 */
+             justify-content: center; /* 水平居中对齐 */
+             gap: 5px; /* 图标和文字之间的间距 */
+         }
+       .encoder-button-group button:hover,.matrix-button-group button:hover {
+             background-color: #c7d2fe;
+             color: #343a40;
+             transform: translateY(-1px);
+             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+         }
+         /* 移除按钮特殊样式 */
+       .encoder-button-group button#removeEncoderButton,
+       .matrix-button-group button#removeColPinButton,
+       .matrix-button-group button#removeRowPinButton {
+            background-color: #ffcdd2; /* 移除按钮浅红色背景 */
+            color: #721c24; /* 移除按钮深红色文本 */
+         }
+
+       .encoder-button-group button#removeEncoderButton:hover,
+       .matrix-button-group button#removeColPinButton:hover,
+       .matrix-button-group button#removeRowPinButton:hover {
+            background-color: #f48fb1; /* Hover 状态移除按钮粉红色 */
+            color: #fff; /* Hover 状态移除按钮白色文本 */
+         }
+
+
+      .encoder-group {
+            border: none;
+            padding: 0;
+            margin-bottom: 12px;
+            border-radius: 0;
+            background-color: transparent;
+        }
+        /* 调整 Encoder 配置项水平布局 */
+      .encoder-group.form-group.encoder-inline-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+      .encoder-group.form-group.encoder-inline-group >.encoder-label {
+            width: auto;
+            min-width: 180px;
+            text-align: right;
+            margin-right: 15px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+      .encoder-group.form-group.encoder-inline-group > input[type="text"],
+      .encoder-group.form-group.encoder-inline-group > input[type="number"] {
+            padding: 8px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+             background-color: #ffffff;
+             color: #495057;
+             max-width: 80px; /* 保持 Encoder 输入框宽度 */
+        }
+
+        /* 新增的通用水平布局样式 */
+      .inline-form-group {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+      .inline-form-group >.form-group.inline-item {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /*  调整 Features Checkbox 布局 */
+      .checkbox-group.features-checkbox-group {
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 15px 30px;
+        }
+
+      .checkbox-group.features-checkbox-group label {
+            margin-right: 0;
+            margin-bottom: 8px;
+            width: auto;
+            flex-basis: auto;
+        }
+
+        /* 调整 Animations Checkbox 布局 */
+      .checkbox-group.animations-checkbox-group,
+      .checkbox-group.rgb-matrix-animations-checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+      .checkbox-group.animations-checkbox-group label,
+      .checkbox-group.rgb-matrix-animations-checkbox-group label {
+            margin-bottom: 0;
+            margin-right: 0;
+            width: auto;
+            flex-basis: auto;
+        }
+
+        /*  调整 Matrix 和 Bootmagic Matrix 的 matrix-input-group 样式 */
+      .matrix-input-group {
+            flex-wrap: nowrap;
+        }
+      .matrix-input-group label {
+            margin-right: 5px;
+            margin-bottom: 0;
+        }
+      .matrix-input-group input[type="number"] {
+            margin-right: 3px;
+             max-width: 60px; /* 矩阵输入框数字宽度调整为 60px */
+        }
+
+        /* 调整 checkbox 在水平布局中的对齐 */
+     .inline-form-group >.form-group.inline-item.checkbox-item {
+            align-items: center;
+            margin-left: 15px;
+            flex-grow: 0;
+        }
+         /* RGB 矩阵配置项样式 */
+       .rgb-matrix-split-count-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+             display: none; /* 隐藏分体数量配置组 */
+        }
+       .rgb-matrix-split-count-group label {
+            width: auto;
+            text-align: left;
+            margin-right: 5px;
+            margin-bottom: 0;
+            color: #495057;
+        }
+       .rgb-matrix-split-count-group input[type="number"] {
+            margin-right: 3px;
+             color: #495057;
+             max-width: 60px; /* RGB 矩阵分体数量输入框数字宽度调整为 60px */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="config-form">
+            <h2>键盘配置</h2>
+            <div class="inline-form-group">
+                <div class="form-group inline-item">
+                    <label for="keyboard_name">键盘名称:</label>
+                    <input type="text" id="keyboard_name" value="未成年键盘" oninput="generateConfig()">
+                </div>
+                <div class="form-group inline-item">
+                    <label for="manufacturer">制造商:</label>
+                    <input type="text" id="manufacturer" value="Gemini" oninput="generateConfig()">
+                </div>
+                <div class="form-group inline-item">
+                    <label for="url">官网:</label>
+                    <input type="text" id="url" value="www.gemini.com" oninput="generateConfig()">
+                </div>
+                <div class="form-group inline-item">
+                    <label for="maintainer">维护者:</label>
+                    <input type="text" id="maintainer" value="JJJJ" oninput="generateConfig()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="processor">处理器型号:</label>
+                <select id="processor" class="select-with-arrow" onchange="toggleCustomInput('processor'); generateConfig();">
+                    <option value="STM32F103">STM32F103</option>
+                    <option value="STM32F401">STM32F401</option>
+                    <option value="STM32F411">STM32F411</option>
+                    <option value="RP2040">RP2040</option>
+                    <option value="custom">自定义</option>
+                </select>
+                <input type="text" id="custom-processor-input" class="hidden" placeholder="自定义处理器型号" oninput="generateConfig()">
+            </div>
+            <div class="form-group">
+                <label for="bootloader">引导程序:</label>
+                <select id="bootloader" class="select-with-arrow" onchange="toggleCustomInput('bootloader'); generateConfig();">
+                    <option value="vibl">vibl</option>
+                    <option value="stm32-dfu">stm32-dfu</option>
+                    <option value="rp2040">rp2040</option>
+                    <option value="custom">自定义</option>
+                </select>
+                <input type="text" id="custom-bootloader-input" class="hidden" placeholder="自定义引导程序" oninput="generateConfig()">
+            </div>
+            <h3>USB 配置</h3>
+            <div class="inline-form-group"> <div class="form-group inline-item">
+                    <label for="vid">供应商ID:</label>
+                    <input type="text" id="vid" value="0xF00D" oninput="generateConfig()">
+                </div>
+                <div class="form-group inline-item">
+                    <label for="pid">产品ID:</label>
+                    <input type="text" id="pid" value="0x5001" oninput="generateConfig()">
+                </div>
+                <div class="form-group inline-item">
+                    <label for="device_version">设备版本:</label>
+                    <input type="text" id="device_version" value="0.0.1" oninput="generateConfig()">
+                </div>
+            </div>
+            <h3>功能特性</h3>
+            <div class="checkbox-group features-checkbox-group">
+                <label><input type="checkbox" id="bootmagic" checked onclick="toggleConfigSection('bootmagic', 'bootmagicConfigSection');generateConfig()">启动魔法</label>
+                <label><input type="checkbox" id="command" onclick="generateConfig()">命令功能</label>
+                <label><input type="checkbox" id="console" onclick="generateConfig()">控制台</label>
+                <label><input type="checkbox" id="extrakey" checked onclick="generateConfig()">额外按键</label>
+                <label><input type="checkbox" id="mousekey" checked onclick="generateConfig()">鼠标按键</label>
+                <label><input type="checkbox" id="nkro" checked onclick="generateConfig()">全键无冲</label>
+                <label><input type="checkbox" id="rgblight" checked onclick="toggleRGBFeatures('rgblight');toggleConfigSection('rgb_matrix', 'rgbMatrixConfigSection');generateConfig()">RGB灯效</label>
+                <label><input type="checkbox" id="rgb_matrix" onclick="toggleRGBFeatures('rgb_matrix');toggleConfigSection('rgb_matrix', 'rgbMatrixConfigSection'); generateConfig()">RGB矩阵</label>
+                <label><input type="checkbox" id="encoder_enable" onclick="toggleConfigSection('encoder_enable', 'encoderConfigSection');generateConfig()">旋钮</label>
+                <label><input type="checkbox" id="sleep_led" onclick="generateConfig()">睡眠指示灯</label>
+                <label><input type="checkbox" id="backlight" onclick="toggleConfigSection('backlight', 'backlightConfigSection');generateConfig()">背光</label>
+                <label><input type="checkbox" id="audio" onclick="toggleConfigSection('audio', 'audioConfigSection');generateConfig()">音频</label>
+                <label><input type="checkbox" id="dynamic_macro" onclick="generateConfig()">动态宏</label>
+                <label><input type="checkbox" id="joystick" onclick="generateConfig()">摇杆</label>
+            </div>
+
+            <div id="encoderConfigSection" class="hidden">
+                <h3>编码器 配置</h3>
+                <div id="encoders-container">
+                    </div>
+                <div class="encoder-button-group">
+                    <button type="button" onclick="addEncoder()">➕</button>
+                    <button type="button" onclick="removeEncoder()" id="removeEncoderButton">➖</button>
+                </div>
+            </div>
+
+            <div id="bootmagicConfigSection" class="hidden">
+                <h3>启动魔法 配置</h3>
+                <div class="inline-form-group">
+                    <div class="form-group inline-item">
+                        <label for="bootmagic_matrix">矩阵位置:</label>
+                        <div class="matrix-input-group">
+                            <label for="bootmagic_matrix_row">行</label>
+                            <input type="number" id="bootmagic_matrix_row" value="1" oninput="generateConfig()">
+                            <label for="bootmagic_matrix_col">列</label>
+                            <input type="number" id="bootmagic_matrix_col" value="3" oninput="generateConfig()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>指示灯 配置</h3>
+            <div class="inline-form-group">
+                <div class="form-group inline-item">
+                    <label for="caps_lock_pin">Caps Lock 引脚:</label>
+                    <input type="text" id="caps_lock_pin" placeholder="A0" oninput="generateConfig()">
+                </div>
+                <div class="form-group inline-item">
+                    <label for="num_lock_pin">Num Lock 引脚:</label>
+                    <input type="text" id="num_lock_pin" placeholder="A2" oninput="generateConfig()">
+                </div>
+                <div class="form-group inline-item">
+                    <label for="scroll_lock_pin">Scroll Lock 引脚:</label>
+                    <input type="text" id="scroll_lock_pin" placeholder="A1" oninput="generateConfig()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="on_state_button">引脚电平:</label>
+                <button type="button" id="on_state_button" data-state="1" onclick="toggleOnState()" style="padding: 10px 20px; border-radius: 6px; border: 1px solid #ced4da; background-color: #ffffff; color: #495057;">高</button>
+            </div>
+
+            <div id="rgbConfigSection" class="hidden">
+                <h3>RGB 灯光 配置</h3>
+                <div class="inline-form-group">
+                    <div class="form-group inline-item">
+                        <label for="saturation_steps">饱和度步数:</label>
+                        <input type="number" id="saturation_steps" value="8" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item">
+                        <label for="brightness_steps">亮度步数:</label>
+                        <input type="number" id="brightness_steps" value="8" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item">
+                        <label for="led_count">灯珠数量:</label>
+                        <input type="number" id="led_count" value="42" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item">
+                        <label for="hue_steps">色调步数:</label>
+                        <input type="number" id="hue_steps" value="8" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item">
+                        <label for="max_brightness">最大亮度:</label>
+                        <input type="number" id="max_brightness" value="250" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item checkbox-item">
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="sleep" checked onclick="generateConfig()">睡眠时关闭灯</label>
+                        </div>
+                    </div>
+                </div>
+                <h4>动画效果</h4>
+                <div class="checkbox-group animations-checkbox-group">
+                    <label><input type="checkbox" id="static_light" checked onclick="generateConfig()">静态灯光</label>
+                    <label><input type="checkbox" id="breathing" checked onclick="generateConfig()">呼吸灯</label>
+                    <label><input type="checkbox" id="rainbow_mood" checked onclick="generateConfig()">彩虹心情</label>
+                    <label><input type="checkbox" id="rainbow_swirl" checked onclick="generateConfig()">彩虹漩涡</label>
+                    <label><input type="checkbox" id="snake" checked onclick="generateConfig()">贪吃蛇</label>
+                    <label><input type="checkbox" id="knight" checked onclick="generateConfig()">骑士</label>
+                    <label><input type="checkbox" id="christmas" checked onclick="generateConfig()">圣诞节</label>
+                    <label><input type="checkbox" id="static_gradient" checked onclick="generateConfig()">静态渐变</label>
+                    <label><input type="checkbox" id="rgb_test" checked onclick="generateConfig()">RGB 测试</label>
+                    <label><input type="checkbox" id="alternating" checked onclick="generateConfig()">交替闪烁</label>
+                    <label><input type="checkbox" id="twinkle" checked onclick="generateConfig()">闪烁</label>
+                </div>
+            </div>
+
+            <div id="rgbMatrixConfigSection" class="hidden">
+                <h3>RGB 矩阵 配置</h3>
+                <div class="inline-form-group">
+                    <div class="form-group inline-item">
+                        <label for="rgb_matrix_driver">驱动:</label>
+                        <select id="rgb_matrix_driver" class="select-with-arrow" onchange="generateConfig()">
+                            <option value="ws2812">ws2812</option>
+                            <option value="none">none</option>
+                        </select>
+                    </div>
+                    <div class="form-group inline-item">
+                        <label for="rgb_matrix_led_flush_limit">LED Flush Limit:</label>
+                        <input type="number" id="rgb_matrix_led_flush_limit" value="33" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item">
+                        <label for="rgb_matrix_led_process_limit">LED Process Limit:</label>
+                        <input type="number" id="rgb_matrix_led_process_limit" value="10" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item checkbox-item">
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="rgb_matrix_sleep" checked onclick="generateConfig()">睡眠时关闭灯</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline-form-group">
+                    <div class="form-group inline-item">
+                        <label for="rgb_matrix_center_point">中心点:</label>
+                         <div class="matrix-input-group">
+                            <label for="rgb_matrix_center_point_x">X</label>
+                            <input type="number" id="rgb_matrix_center_point_x" value="81" oninput="generateConfig()">
+                            <label for="rgb_matrix_center_point_y">Y</label>
+                            <input type="number" id="rgb_matrix_center_point_y" value="28" oninput="generateConfig()">
+                        </div>
+                    </div>
+                    </div>  <h4>动画效果 (RGB Matrix)</h4>
+                <div class="checkbox-group rgb-matrix-animations-checkbox-group">
+                    <label><input type="checkbox" id="rgb_matrix_alphas_mods" checked onclick="generateConfig()">Alphas Mods</label>
+                    <label><input type="checkbox" id="rgb_matrix_gradient_up_down" checked onclick="generateConfig()">Gradient Up Down</label>
+                    <label><input type="checkbox" id="rgb_matrix_gradient_left_right" checked onclick="generateConfig()">Gradient Left Right</label>
+                    <label><input type="checkbox" id="rgb_matrix_breathing" checked onclick="generateConfig()">呼吸灯</label>
+                    <label><input type="checkbox" id="rgb_matrix_band_sat" checked onclick="generateConfig()">Band Sat</label>
+                    <label><input type="checkbox" id="rgb_matrix_band_val" checked onclick="generateConfig()">Band Val</label>
+                    <label><input type="checkbox" id="rgb_matrix_band_pinwheel_sat" checked onclick="generateConfig()">Band Pinwheel Sat</label>
+                    <label><input type="checkbox" id="rgb_matrix_band_pinwheel_val" checked onclick="generateConfig()">Band Pinwheel Val</label>
+                    <label><input type="checkbox" id="rgb_matrix_band_spiral_sat" checked onclick="generateConfig()">Band Spiral Sat</label>
+                    <label><input type="checkbox" id="rgb_matrix_band_spiral_val" checked onclick="generateConfig()">Band Spiral Val</label>
+                    <label><input type="checkbox" id="rgb_matrix_cycle_all" checked onclick="generateConfig()">Cycle All</label>
+                    <label><input type="checkbox" id="rgb_matrix_cycle_left_right" checked onclick="generateConfig()">Cycle Left Right</label>
+                    <label><input type="checkbox" id="rgb_matrix_cycle_up_down" checked onclick="generateConfig()">Cycle Up Down</label>
+                    <label><input type="checkbox" id="rgb_matrix_rainbow_moving_chevron" checked onclick="generateConfig()">Rainbow Moving Chevron</label>
+                    <label><input type="checkbox" id="rgb_matrix_cycle_out_in" checked onclick="generateConfig()">Cycle Out In</label>
+                    <label><input type="checkbox" id="rgb_matrix_cycle_out_in_dual" checked onclick="generateConfig()">Cycle Out In Dual</label>
+                    <label><input type="checkbox" id="rgb_matrix_cycle_pinwheel" checked onclick="generateConfig()">Cycle Pinwheel</label>
+                    <label><input type="checkbox" id="rgb_matrix_cycle_spiral" checked onclick="generateConfig()">Cycle Spiral</label>
+                    <label><input type="checkbox" id="rgb_matrix_dual_beacon" checked onclick="generateConfig()">Dual Beacon</label>
+                    <label><input type="checkbox" id="rgb_matrix_rainbow_beacon" checked onclick="generateConfig()">Rainbow Beacon</label>
+                    <label><input type="checkbox" id="rgb_matrix_rainbow_pinwheels" checked onclick="generateConfig()">Rainbow Pinwheels</label>
+                    <label><input type="checkbox" id="rgb_matrix_raindrops" checked onclick="generateConfig()">Raindrops</label>
+                    <label><input type="checkbox" id="rgb_matrix_jellybean_raindrops" checked onclick="generateConfig()">Jellybean Raindrops</label>
+                    <label><input type="checkbox" id="rgb_matrix_hue_breathing" checked onclick="generateConfig()">Hue Breathing</label>
+                    <label><input type="checkbox" id="rgb_matrix_hue_pendulum" checked onclick="generateConfig()">Hue Pendulum</label>
+                    <label><input type="checkbox" id="rgb_matrix_hue_wave" checked onclick="generateConfig()">Hue Wave</label>
+                    <label><input type="checkbox" id="rgb_matrix_pixel_rain" checked onclick="generateConfig()">Pixel Rain</label>
+                    <label><input type="checkbox" id="rgb_matrix_pixel_flow" checked onclick="generateConfig()">Pixel Flow</label>
+                    <label><input type="checkbox" id="rgb_matrix_pixel_fractal" checked onclick="generateConfig()">Pixel Fractal</label>
+                    <label><input type="checkbox" id="rgb_matrix_typing_heatmap" checked onclick="generateConfig()">Typing Heatmap</label>
+                    <label><input type="checkbox" id="rgb_matrix_digital_rain" checked onclick="generateConfig()">Digital Rain</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive_simple" checked onclick="generateConfig()">Solid Reactive Simple</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive" checked onclick="generateConfig()">Solid Reactive</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive_wide" checked onclick="generateConfig()">Solid Reactive Wide</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive_multiwide" checked onclick="generateConfig()">Solid Reactive Multiwide</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive_cross" checked onclick="generateConfig()">Solid Reactive Cross</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive_multicross" checked onclick="generateConfig()">Solid Reactive Multicross</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive_nexus" checked onclick="generateConfig()">Solid Reactive Nexus</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_reactive_multinexus" checked onclick="generateConfig()">Solid Reactive Multinexus</label>
+                    <label><input type="checkbox" id="rgb_matrix_splash" checked onclick="generateConfig()">Splash</label>
+                    <label><input type="checkbox" id="rgb_matrix_multisplash" checked onclick="generateConfig()">Multisplash</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_splash" checked onclick="generateConfig()">Solid Splash</label>
+                    <label><input type="checkbox" id="rgb_matrix_solid_multisplash" checked onclick="generateConfig()">Solid Multisplash</label>
+                </div>
+            </div>
+
+
+            <div id="backlightConfigSection" class="hidden">
+                <h3>背光 配置</h3>
+                <div class="inline-form-group">
+                    <div class="form-group inline-item">
+                        <label for="backlight_pin">引脚:</label>
+                        <input type="text" id="backlight_pin" value="D2" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item checkbox-item">
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="backlight_breathing" checked onclick="generateConfig()">呼吸灯效</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ws2812ConfigSection" class="hidden">
+                <h3>WS2812 配置</h3>
+                 <div class="inline-form-group">
+                    <div class="form-group inline-item">
+                        <label for="ws2812_pin">引脚:</label>
+                        <input type="text" id="ws2812_pin" value="B9" oninput="generateConfig()">
+                    </div>
+                    <div class="form-group inline-item checkbox-item">
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="ws2812_driver_pwm" onclick="generateConfig()">PWM驱动</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="audioConfigSection" class="hidden">
+                <h3>音频 配置</h3>
+                <div class="form-group">
+                    <label for="audio_driver">驱动:</label>
+                    <select id="audio_driver" class="select-with-arrow" onchange="generateConfig()">
+                        <option value="dac_additive">dac_additive</option>
+                        <option value="none">none</option>
+                    </select>
+                </div>
+                 <div class="form-group checkbox-item">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="audio_clicky" onclick="generateConfig()">Clicky 音效</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <h3>矩阵引脚</h3>
+             <div id="matrix-pins-container">
+                <div class="form-group">
+                    <label for="cols">列引脚:</label>
+                    <div id="cols-group-1" class="pin-input-group">
+                        <input type="text" id="cols" value="B4" placeholder="列引脚" oninput="generateConfig()">
+                    </div>
+                     <div class="matrix-button-group">
+                        <button type="button" onclick="addColPin()">➕</button>
+                        <button type="button" onclick="removeColPin()" id="removeColPinButton">➖</button>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="rows">行引脚:</label>
+                    <div id="rows-group-1"  class="pin-input-group">
+                        <input type="text" id="rows" value="B3" placeholder="行引脚" oninput="generateConfig()">
+                    </div>
+                    <div class="matrix-button-group">
+                        <button type="button" onclick="addRowPin()">➕</button>
+                        <button type="button" onclick="removeRowPin()" id="removeRowPinButton">➖</button>
+                    </div>
+                </div>
+                <div class="inline-form-group">
+                     <div class="form-group inline-item">
+                        <label for="io_delay">IO 延迟:</label>
+                        <input type="number" id="io_delay" value="5" oninput="generateConfig()">
+                    </div>
+                     <div class="form-group inline-item">
+                        <label for="diode_direction">二极管方向:</label>
+                        <select id="diode_direction" class="select-with-arrow" onchange="generateConfig()">
+                            <option value="COL2ROW">COL2ROW</option>
+                            <option value="ROW2COL">ROW2COL</option>
+                            <option value="AUTO">AUTO</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="button-group">
+                <button type="button" onclick="generateConfig(true)">生成配置</button>
+                <button type="button" id="copyConfig">复制配置代码 📋</button>
+                <button type="button" id="clearConfig">清空所有配置</button>
+            </div>
+        </div>
+        <div class="config-output">
+            <h2>生成结果</h2>
+            <div class="form-group">
+                <label for="json_output">JSON 配置:</label>
+                <textarea id="json_output" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let encoderCount = 0; // 初始化 encoderCount 为 0，默认没有编码器
+        function addEncoder() {
+            encoderCount++;
+            const encodersContainer = document.getElementById('encoders-container');
+            const encoderGroup = document.createElement('div');
+            encoderGroup.className = 'encoder-group';
+            encoderGroup.id = `encoder-group-${encoderCount}`;
+
+            encoderGroup.innerHTML = `
+                <div class="form-group encoder-inline-group">
+                    <label class="encoder-label">编码器 ${encoderCount}:</label>
+                    <input type="text" id="rotary${encoderCount}_pin_a" placeholder="A0" style="width: 50px; margin-right: 10px;" oninput="generateConfig()">
+                    <input type="text" id="rotary${encoderCount}_pin_b" placeholder="B0" style="width: 50px; margin-right: 10px;" oninput="generateConfig()">
+                    <input type="number" id="rotary${encoderCount}_resolution" value="4" placeholder="分辨率" style="width: 50px;" oninput="generateConfig()">
+                </div>
+            `;
+            encodersContainer.appendChild(encoderGroup);
+             updateEncoderButtons();
+             generateConfig(); // Update config after adding encoder
+        }
+
+        function removeEncoder() {
+            if (encoderCount > 0) { // 修改判断条件为 encoderCount > 0
+                const encodersContainer = document.getElementById('encoders-container');
+                encodersContainer.removeChild(encodersContainer.lastChild);
+                encoderCount--;
+                generateConfig(); // Manually trigger config update after removing encoder
+            }
+            updateEncoderButtons();
+        }
+
+        function updateEncoderButtons() {
+            const removeEncoderButton = document.getElementById('removeEncoderButton');
+            removeEncoderButton.disabled = encoderCount <= 0; // 修改禁用条件为 encoderCount <= 0
+        }
+
+
+        function addColPin() {
+            const colsGroup = document.getElementById('cols-group-1'); // Directly target cols-group-1
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.value = '';
+            newInput.oninput = generateConfig; // Add event listener for new input
+            colsGroup.appendChild(newInput);
+            updateMatrixPinButtons('col');
+            generateConfig(); // Update config after adding col pin
+        }
+
+        function removeColPin() {
+            const colsGroup = document.getElementById('cols-group-1');
+            if (colsGroup.children.length > 1) {
+                colsGroup.removeChild(colsGroup.lastChild);
+                generateConfig(); // Manually trigger config update after removing col pin
+            }
+            updateMatrixPinButtons('col');
+        }
+
+        function addRowPin() {
+            const rowsGroup = document.getElementById('rows-group-1'); // Directly target rows-group-1
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.value = '';
+            newInput.oninput = generateConfig; // Add event listener for new input
+            rowsGroup.appendChild(newInput);
+            updateMatrixPinButtons('row');
+            generateConfig(); // Update config after adding row pin
+        }
+
+        function removeRowPin() {
+            const rowsGroup = document.getElementById('rows-group-1');
+            if (rowsGroup.children.length > 1) {
+                rowsGroup.removeChild(rowsGroup.lastChild);
+                generateConfig(); // Manually trigger config update after removing row pin
+            }
+             updateMatrixPinButtons('row');
+        }
+
+        function updateMatrixPinButtons(type) {
+            let addButton, removeButton, group;
+            if (type === 'col') {
+                group = document.getElementById('cols-group-1');
+                removeButton = document.getElementById('removeColPinButton');
+            } else if (type === 'row') {
+                group = document.getElementById('rows-group-1');
+                removeButton = document.getElementById('removeRowPinButton');
+            }
+            removeButton.disabled = group.children.length <= 1;
+        }
+
+
+        function toggleCustomInput(inputType) {
+            const selectElement = document.getElementById(inputType);
+            const customInput = document.getElementById(`custom-${inputType}-input`);
+            if (selectElement.value === 'custom') {
+                customInput.classList.remove('hidden');
+            } else {
+                customInput.classList.add('hidden');
+            }
+        }
+
+        function toggleConfigSection(checkboxId, sectionId) {
+            const checkbox = document.getElementById(checkboxId);
+            const configSection = document.getElementById(sectionId);
+            if (configSection) { // 确保 sectionId 对应的元素存在
+                configSection.classList.toggle('hidden', !checkbox.checked);
+            }
+        }
+
+        function toggleRGBFeatures(featureId) {
+            const rgblightCheckbox = document.getElementById('rgblight');
+            const rgbMatrixCheckbox = document.getElementById('rgb_matrix');
+            const rgbConfigSection = document.getElementById('rgbConfigSection');
+            const ws2812ConfigSection = document.getElementById('ws2812ConfigSection');
+            const rgbMatrixConfigSection = document.getElementById('rgbMatrixConfigSection');
+
+            const isRGBEnabled = rgblightCheckbox.checked || rgbMatrixCheckbox.checked; // Check if either RGB feature is enabled
+
+            rgbConfigSection.classList.toggle('hidden', !isRGBEnabled); // Show if either is enabled
+            ws2812ConfigSection.classList.toggle('hidden', !isRGBEnabled); // Show if either is enabled
+            rgbMatrixConfigSection.classList.toggle('hidden', !rgbMatrixCheckbox.checked); // Only show if rgb_matrix is checked
+        }
+
+
+        function toggleOnState() {
+            const onStateButton = document.getElementById('on_state_button');
+            const currentState = onStateButton.getAttribute('data-state');
+            if (currentState === '1') {
+                onStateButton.textContent = '低';
+                onStateButton.setAttribute('data-state', '0');
+            } else {
+                onStateButton.textContent = '高';
+                onStateButton.setAttribute('data-state', '1');
+            }
+            generateConfig(); // 更新配置
+        }
+
+
+        function generateConfig(forceRefresh = false) {
+            const config = {
+                keyboard_name: document.getElementById("keyboard_name").value,
+                manufacturer: document.getElementById("manufacturer").value,
+                url: document.getElementById("url").value,
+                maintainer: document.getElementById("maintainer").value,
+                processor: document.getElementById("processor").value === 'custom'? document.getElementById("custom-processor-input").value:  document.getElementById("processor").value,
+                bootloader: document.getElementById("bootloader").value === 'custom'? document.getElementById("custom-bootloader-input").value: document.getElementById("bootloader").value,
+                usb: {
+                    vid: document.getElementById("vid").value,
+                    pid: document.getElementById("pid").value,
+                    device_version: document.getElementById("device_version").value
+                },
+                features: {
+                    bootmagic: document.getElementById("bootmagic").checked,
+                    command: document.getElementById("command").checked,
+                    console: document.getElementById("console").checked,
+                    extrakey: document.getElementById("extrakey").checked,
+                    mousekey: document.getElementById("mousekey").checked,
+                    nkro: document.getElementById("nkro").checked,
+                    rgblight: document.getElementById("rgblight").checked,
+                    rgb_matrix: document.getElementById("rgb_matrix").checked,
+                    encoder: document.getElementById("encoder_enable").checked,
+                    sleep_led: document.getElementById("sleep_led").checked,
+                    backlight: document.getElementById("backlight").checked,
+                    audio: document.getElementById("audio").checked,
+                    dynamic_macro: document.getElementById("dynamic_macro").checked,
+                    joystick: document.getElementById("joystick").checked
+                },
+                encoder: {
+                    rotary: []
+                },
+                indicators: {
+                    caps_lock: document.getElementById("caps_lock_pin").value,
+                    num_lock: document.getElementById("num_lock_pin").value,
+                    scroll_lock: document.getElementById("scroll_lock_pin").value,
+                    on_state: parseInt(document.getElementById("on_state_button").getAttribute('data-state'))
+                },
+                rgblight: (document.getElementById("rgblight").checked && !document.getElementById("rgb_matrix").checked) ? { // Condition updated to include rgb_matrix check
+                    saturation_steps: parseInt(document.getElementById("saturation_steps").value),
+                    brightness_steps: parseInt(document.getElementById("brightness_steps").value),
+                    led_count: parseInt(document.getElementById("led_count").value),
+                    hue_steps: parseInt(document.getElementById("hue_steps").value),
+                    max_brightness: parseInt(document.getElementById("max_brightness").value),
+                    sleep: document.getElementById("sleep").checked,
+                    animations: {
+                        static_light: document.getElementById("static_light").checked,
+                        breathing: document.getElementById("breathing").checked,
+                        rainbow_mood: document.getElementById("rainbow_mood").checked,
+                        rainbow_swirl: document.getElementById("rainbow_swirl").checked,
+                        snake: document.getElementById("snake").checked,
+                        knight: document.getElementById("knight").checked,
+                        christmas: document.getElementById("christmas").checked,
+                        static_gradient: document.getElementById("static_gradient").checked,
+                        rgb_test: document.getElementById("rgb_test").checked,
+                        alternating: document.getElementById("alternating").checked,
+                        twinkle: document.getElementById("twinkle").checked
+                    }
+                } : undefined,
+                rgb_matrix: document.getElementById("rgb_matrix").checked ? {
+                    driver: document.getElementById("rgb_matrix_driver").value,
+                    led_flush_limit:  parseInt(document.getElementById("rgb_matrix_led_flush_limit").value),
+                    led_process_limit: parseInt(document.getElementById("rgb_matrix_led_process_limit").value),
+                    sleep: document.getElementById("rgb_matrix_sleep").checked,
+                    center_point: [
+                        parseInt(document.getElementById("rgb_matrix_center_point_x").value),
+                        parseInt(document.getElementById("rgb_matrix_center_point_y").value)
+                    ],
+                    animations: {
+                        alphas_mods: document.getElementById("rgb_matrix_alphas_mods").checked,
+                        gradient_up_down: document.getElementById("rgb_matrix_gradient_up_down").checked,
+                        gradient_left_right: document.getElementById("rgb_matrix_gradient_left_right").checked,
+                        breathing: document.getElementById("rgb_matrix_breathing").checked,
+                        band_sat: document.getElementById("rgb_matrix_band_sat").checked,
+                        band_val: document.getElementById("rgb_matrix_band_val").checked,
+                        band_pinwheel_sat: document.getElementById("rgb_matrix_band_pinwheel_sat").checked,
+                        band_pinwheel_val: document.getElementById("rgb_matrix_band_pinwheel_val").checked,
+                        band_spiral_sat: document.getElementById("rgb_matrix_band_spiral_sat").checked,
+                        band_spiral_val: document.getElementById("rgb_matrix_band_spiral_val").checked,
+                        cycle_all: document.getElementById("rgb_matrix_cycle_all").checked,
+                        cycle_left_right: document.getElementById("rgb_matrix_cycle_left_right").checked,
+                        cycle_up_down: document.getElementById("rgb_matrix_cycle_up_down").checked,
+                        rainbow_moving_chevron: document.getElementById("rgb_matrix_rainbow_moving_chevron").checked,
+                        cycle_out_in: document.getElementById("rgb_matrix_cycle_out_in").checked,
+                        cycle_out_in_dual: document.getElementById("rgb_matrix_cycle_out_in_dual").checked,
+                        cycle_pinwheel: document.getElementById("rgb_matrix_cycle_pinwheel").checked,
+                        cycle_spiral: document.getElementById("rgb_matrix_cycle_spiral").checked,
+                        dual_beacon: document.getElementById("rgb_matrix_dual_beacon").checked,
+                        rainbow_beacon: document.getElementById("rgb_matrix_rainbow_beacon").checked,
+                        rainbow_pinwheels: document.getElementById("rgb_matrix_rainbow_pinwheels").checked,
+                        raindrops: document.getElementById("rgb_matrix_raindrops").checked,
+                        jellybean_raindrops: document.getElementById("rgb_matrix_jellybean_raindrops").checked,
+                        hue_breathing: document.getElementById("rgb_matrix_hue_breathing").checked,
+                        hue_pendulum: document.getElementById("rgb_matrix_hue_pendulum").checked,
+                        hue_wave: document.getElementById("rgb_matrix_hue_wave").checked,
+                        pixel_rain: document.getElementById("rgb_matrix_pixel_rain").checked,
+                        pixel_flow: document.getElementById("rgb_matrix_pixel_flow").checked,
+                        pixel_fractal: document.getElementById("rgb_matrix_pixel_fractal").checked,
+                        typing_heatmap: document.getElementById("rgb_matrix_typing_heatmap").checked,
+                        digital_rain: document.getElementById("rgb_matrix_digital_rain").checked,
+                        solid_reactive_simple: document.getElementById("rgb_matrix_solid_reactive_simple").checked,
+                        solid_reactive: document.getElementById("rgb_matrix_solid_reactive").checked,
+                        solid_reactive_wide: document.getElementById("rgb_matrix_solid_reactive_wide").checked,
+                        solid_reactive_multiwide: document.getElementById("rgb_matrix_solid_reactive_multiwide").checked,
+                        solid_reactive_cross: document.getElementById("rgb_matrix_solid_reactive_cross").checked,
+                        solid_reactive_multicross: document.getElementById("rgb_matrix_solid_reactive_multicross").checked,
+                        solid_reactive_nexus: document.getElementById("rgb_matrix_solid_reactive_nexus").checked,
+                        solid_reactive_multinexus: document.getElementById("rgb_matrix_solid_reactive_multinexus").checked,
+                        splash: document.getElementById("rgb_matrix_splash").checked,
+                        multisplash: document.getElementById("rgb_matrix_multisplash").checked,
+                        solid_splash: document.getElementById("rgb_matrix_solid_splash").checked,
+                        solid_multisplash: document.getElementById("rgb_matrix_solid_multisplash").checked
+                    }
+                } : undefined,
+                backlight: document.getElementById("backlight").checked ? { // Only include backlight config if backlight feature is enabled
+                    pin: document.getElementById("backlight_pin").value,
+                    breathing: document.getElementById("backlight_breathing").checked
+                } : undefined,
+                ws2812: (document.getElementById("rgblight").checked || document.getElementById("rgb_matrix").checked) ? { // Condition updated to include rgb_matrix check
+                    pin: document.getElementById("ws2812_pin").value,
+                    driver: document.getElementById("ws2812_driver_pwm").checked ? "pwm" : undefined // Conditionally add driver: pwm
+                } : undefined,
+                matrix_pins: {
+                    cols: Array.from(document.getElementById('cols-group-1').querySelectorAll('input')).map(input => input.value),
+                    rows: Array.from(document.getElementById('rows-group-1').querySelectorAll('input')).map(input => input.value),
+                    io_delay: parseInt(document.getElementById("io_delay").value),
+                    diode_direction: document.getElementById("diode_direction").value // 从矩阵引脚部分获取二极管方向
+                },
+                layouts: {
+                    LAYOUT:  [] // layout will be directly assigned here
+                },
+                bootmagic: {}, // bootmagic config will be added conditionally
+                audio: document.getElementById("audio").checked ? { // Conditionally add audio config
+                    default: {
+                        clicky: document.getElementById("audio_clicky").checked
+                    },
+                    driver: document.getElementById("audio_driver").value
+                } : undefined // Conditionally add audio config
+            };
+
+            // Generate layout from matrix pins
+            const colsInputs = Array.from(document.getElementById('cols-group-1').querySelectorAll('input'));
+            const rowsInputs = Array.from(document.getElementById('rows-group-1').querySelectorAll('input'));
+            const colsCount = colsInputs.length;
+            const rowsCount = rowsInputs.length;
+            let layoutArray = [];
+            for (let y = 0; y < rowsCount; y++) {
+                for (let x = 0; x < colsCount; x++) {
+                    layoutArray.push({ "matrix": [y, x], "x": x, "y": y });
+                }
+            }
+            config.layouts.LAYOUT = layoutArray; // Directly assign layoutArray to LAYOUT
+
+
+            // Collect encoder data
+            if (config.features.encoder) { // Only collect encoder data if encoder feature is enabled
+                config.encoder.rotary = []; // Ensure rotary array is initialized or reset
+                for (let i = 1; i <= encoderCount; i++) {
+                    const encoderGroup = document.getElementById(`encoder-group-${i}`);
+                    if (encoderGroup) { // Check if the encoder group exists
+                        config.encoder.rotary.push({
+                            pin_a: document.getElementById(`rotary${i}_pin_a`).value,
+                            pin_b: document.getElementById(`rotary${i}_pin_b`).value,
+                            resolution: parseInt(document.getElementById(`rotary${i}_resolution`).value)
+                        });
+                    }
+                }
+            } else {
+                config.encoder.rotary = []; // If encoder feature is disabled, ensure rotary array is empty
+            }
+
+            // Collect bootmagic data only if bootmagic feature is enabled
+            if (config.features.bootmagic) {
+                config.bootmagic.matrix = [
+                    parseInt(document.getElementById("bootmagic_matrix_row").value),
+                    parseInt(document.getElementById("bootmagic_matrix_col").value)
+                ];
+                // diode_direction is now collected from matrix_pins
+                // config.bootmagic.diode_direction = document.getElementById("diode_direction").value;
+            } else {
+                delete config.bootmagic; // Remove bootmagic config if feature is disabled
+            }
+
+            // Conditionally remove rgblight config if rgblight feature is not enabled or rgb_matrix is enabled
+            if (!config.features.rgblight || config.features.rgb_matrix) {
+                delete config.rgblight;
+            }
+             // Conditionally remove rgb_matrix config if rgb_matrix feature is not enabled
+            if (!config.features.rgb_matrix) {
+                delete config.rgb_matrix;
+            }
+            // Conditionally remove backlight config if backlight feature is not enabled
+            if (!config.features.backlight) {
+                delete config.backlight;
+            }
+            // Conditionally remove ws2812 config if rgblight feature is not enabled or rgb_matrix is enabled
+            if (!(document.getElementById("rgblight").checked || document.getElementById("rgb_matrix").checked)) {
+                delete config.ws2812;
+            }
+             // Conditionally remove audio config if audio feature is not enabled
+            if (!config.features.audio) {
+                delete config.audio;
+            }
+
+
+            const jsonOutput = document.getElementById("json_output");
+            jsonOutput.value = JSON.stringify(config, null, 4);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            generateConfig();
+            updateEncoderButtons();
+            updateMatrixPinButtons('col');
+            updateMatrixPinButtons('row');
+            toggleConfigSection('encoder_enable', 'encoderConfigSection'); // Set initial encoder config section visibility
+            toggleConfigSection('bootmagic', 'bootmagicConfigSection'); // Set initial bootmagic config section visibility
+            toggleConfigSection('rgblight', 'rgbConfigSection'); // Set initial RGB config section visibility
+            toggleConfigSection('backlight', 'backlightConfigSection'); // Set initial Backlight config section visibility
+            toggleConfigSection('ws2812ConfigSection', 'ws2812ConfigSection'); // Set initial WS2812 config section visibility
+            toggleConfigSection('rgb_matrix', 'rgbMatrixConfigSection'); // Set initial RGB Matrix config section visibility
+            toggleConfigSection('audio', 'audioConfigSection'); // Set initial Audio config section visibility <--- 新增，初始隐藏音频配置
+
+            // 复制配置按钮功能
+            const copyConfigButton = document.getElementById('copyConfig');
+            copyConfigButton.addEventListener('click', function() {
+                const configTextarea = document.getElementById('json_output');
+                configTextarea.select();
+                document.execCommand('copy');
+                alert('配置代码已复制到剪贴板！');
+            });
+
+             // 清空所有配置按钮功能
+            const clearConfigButton = document.getElementById('clearConfig');
+            clearConfigButton.addEventListener('click', function() {
+                if (confirm('确定要清空所有配置吗？')) {
+                    resetFormValues();
+                    generateConfig(); // 重新生成默认配置
+                    alert('所有配置已清空并重置为默认值！');
+                }
+            });
+        });
+
+        function resetFormValues() {
+            document.getElementById("keyboard_name").value = "未成年键盘42";
+            document.getElementById("manufacturer").value = "JLKB";
+            document.getElementById("url").value = "https://www.google.com/";
+            document.getElementById("maintainer").value = "JL";
+            document.getElementById("processor").value = "STM32F401";
+            toggleCustomInput('processor'); // 确保自定义输入框隐藏
+            document.getElementById("bootloader").value = "stm32-dfu";
+            toggleCustomInput('bootloader'); // 确保自定义输入框隐藏
+            document.getElementById("vid").value = "0xFEED";
+            document.getElementById("pid").value = "0x5009";
+            document.getElementById("device_version").value = "0.0.1";
+
+            document.getElementById("bootmagic").checked = true;
+            toggleConfigSection('bootmagic', 'bootmagicConfigSection'); // 隐藏启动魔法配置部分
+            document.getElementById("command").checked = false;
+            document.getElementById("console").checked = false;
+            document.getElementById("extrakey").checked = true;
+            document.getElementById("mousekey").checked = true;
+            document.getElementById("nkro").checked = true;
+            document.getElementById("rgblight").checked = true;
+            toggleConfigSection('rgblight', 'rgbConfigSection'); // 隐藏RGB灯光配置部分
+            toggleConfigSection('rgblight', 'ws2812ConfigSection'); // 隐藏WS2812配置部分  <--- 新增
+            document.getElementById("rgb_matrix").checked = false; // 默认不勾选 RGB矩阵 功能
+            toggleConfigSection('rgb_matrix', 'rgbMatrixConfigSection'); // 隐藏RGB矩阵配置部分
+            document.getElementById("encoder_enable").checked = false; // 默认不勾选 Encoder 功能
+            toggleConfigSection('encoder_enable', 'encoderConfigSection'); // 隐藏编码器配置部分
+            document.getElementById("sleep_led").checked = false;
+            document.getElementById("backlight").checked = false;
+            toggleConfigSection('backlight', 'backlightConfigSection'); // 隐藏背光配置部分
+            document.getElementById("audio").checked = false;
+            toggleConfigSection('audio', 'audioConfigSection'); // 隐藏音频配置部分  <--- 新增
+            document.getElementById("dynamic_macro").checked = false;
+            document.getElementById("joystick").checked = false;
+
+            document.getElementById("caps_lock_pin").value = ""; // 清空 Caps Lock 引脚输入框
+            document.getElementById("num_lock_pin").value = ""; // 清空 Num Lock 引脚输入框
+            document.getElementById("scroll_lock_pin").value = ""; // 清空 Scroll Lock 引脚输入框
+            document.getElementById("on_state_button").textContent = 'High'; // 重置 On State 按钮文本为 "High"
+            document.getElementById("on_state_button").setAttribute('data-state', '1'); // 重置 On State 状态为 "1"
+
+
+            // 清空并重置编码器
+            const encodersContainer = document.getElementById('encoders-container');
+            encodersContainer.innerHTML = ''; // 清空所有动态添加的编码器
+            encoderCount = 0; // 重置计数器
+
+
+            document.getElementById("saturation_steps").value = "8";
+            document.getElementById("brightness_steps").value = "8";
+            document.getElementById("led_count").value = "42";
+            document.getElementById("hue_steps").value = "8";
+            document.getElementById("max_brightness").value = "250";
+            document.getElementById("sleep").checked = true;
+
+            document.getElementById("static_light").checked = true;
+            document.getElementById("breathing").checked = true;
+            document.getElementById("rainbow_mood").checked = true;
+            document.getElementById("rainbow_swirl").checked = true;
+            document.getElementById("snake").checked = true;
+            document.getElementById("knight").checked = true;
+            document.getElementById("christmas").checked = true;
+            document.getElementById("static_gradient").checked = true;
+            document.getElementById("rgb_test").checked = true;
+            document.getElementById("alternating").checked = true;
+            document.getElementById("twinkle").checked = true;
+
+            document.getElementById("rgb_matrix_driver").value = "ws2812"; // RGB 矩阵驱动 默认值
+            document.getElementById("rgb_matrix_led_flush_limit").value = "33"; // RGB 矩阵 LED Flush Limit 默认值
+            document.getElementById("rgb_matrix_led_process_limit").value = "10"; // RGB 矩阵 LED Process Limit 默认值
+            document.getElementById("rgb_matrix_sleep").checked = true; // RGB 矩阵睡眠时关闭灯 默认勾选
+            document.getElementById("rgb_matrix_center_point_x").value = "81"; // RGB 矩阵中心点 X 默认值
+            document.getElementById("rgb_matrix_center_point_y").value = "28"; // RGB 矩阵中心点 Y 默认值
+            /* 移除分体数量默认值设置
+            document.getElementById("rgb_matrix_split_count_x").value = "78"; // RGB 矩阵分体数量 X 默认值
+            document.getElementById("rgb_matrix_split_count_y").value = "78"; // RGB 矩阵分体数量 Y 默认值
+            */
+
+            document.getElementById("rgb_matrix_alphas_mods").checked = true;
+            document.getElementById("rgb_matrix_gradient_up_down").checked = true;
+            document.getElementById("rgb_matrix_gradient_left_right").checked = true;
+            document.getElementById("rgb_matrix_breathing").checked = true;
+            document.getElementById("rgb_matrix_band_sat").checked = true;
+            document.getElementById("rgb_matrix_band_val").checked = true;
+            document.getElementById("rgb_matrix_band_pinwheel_sat").checked = true;
+            document.getElementById("rgb_matrix_band_pinwheel_val").checked = true;
+            document.getElementById("rgb_matrix_band_spiral_sat").checked = true;
+            document.getElementById("rgb_matrix_band_spiral_val").checked = true;
+            document.getElementById("rgb_matrix_cycle_all").checked = true;
+            document.getElementById("rgb_matrix_cycle_left_right").checked = true;
+            document.getElementById("rgb_matrix_cycle_up_down").checked = true;
+            document.getElementById("rgb_matrix_rainbow_moving_chevron").checked = true;
+            document.getElementById("rgb_matrix_cycle_out_in").checked = true;
+            document.getElementById("rgb_matrix_cycle_out_in_dual").checked = true;
+            document.getElementById("rgb_matrix_cycle_pinwheel").checked = true;
+            document.getElementById("rgb_matrix_cycle_spiral").checked = true;
+            document.getElementById("rgb_matrix_dual_beacon").checked = true;
+            document.getElementById("rgb_matrix_rainbow_beacon").checked = true;
+            document.getElementById("rgb_matrix_rainbow_pinwheels").checked = true;
+            document.getElementById("rgb_matrix_raindrops").checked = true;
+            document.getElementById("rgb_matrix_jellybean_raindrops").checked = true;
+            document.getElementById("rgb_matrix_hue_breathing").checked = true;
+            document.getElementById("rgb_matrix_hue_pendulum").checked = true;
+            document.getElementById("rgb_matrix_hue_wave").checked = true;
+            document.getElementById("rgb_matrix_pixel_rain").checked = true;
+            document.getElementById("rgb_matrix_pixel_flow").checked = true;
+            document.getElementById("rgb_matrix_pixel_fractal").checked = true;
+            document.getElementById("rgb_matrix_typing_heatmap").checked = true;
+            document.getElementById("rgb_matrix_digital_rain").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive_simple").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive_wide").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive_multiwide").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive_cross").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive_multicross").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive_nexus").checked = true;
+            document.getElementById("rgb_matrix_solid_reactive_multinexus").checked = true;
+            document.getElementById("rgb_matrix_splash").checked = true;
+            document.getElementById("rgb_matrix_multisplash").checked = true;
+            document.getElementById("rgb_matrix_solid_splash").checked = true;
+            document.getElementById("rgb_matrix_solid_multisplash").checked = true;
+
+
+            document.getElementById("ws2812_pin").value = "B9";
+            document.getElementById("backlight_pin").value = "D2"; // 背光引脚默认值
+            document.getElementById("backlight_breathing").checked = true; // 背光呼吸灯默认勾选
+            document.getElementById("ws2812_driver_pwm").checked = false; // WS2812 Driver PWM 默认不勾选  <--- 新增
+
+            document.getElementById("audio_driver").value = "dac_additive"; // 音频驱动 默认值 <--- 新增
+            document.getElementById("audio_clicky").checked = false; // Clicky 音效 默认不勾选  <--- 新增
+
+
+            // 清空并重置矩阵引脚
+            const colsGroup = document.getElementById('cols-group-1');
+            colsGroup.innerHTML = '<input type="text" id="cols" value="B4" placeholder="列引脚" oninput="generateConfig()">'; // 重置列引脚
+            const rowsGroup = document.getElementById('rows-group-1');
+            rowsGroup.innerHTML = '<input type="text" id="rows" value="B3" placeholder="行引脚" oninput="generateConfig()">'; // 重置行引脚
+            updateMatrixPinButtons('col');
+            updateMatrixPinButtons('row');
+
+
+            document.getElementById("io_delay").value = "5";
+            document.getElementById("diode_direction").value = "COL2ROW"; // 重置二极管方向为默认值
+            document.getElementById("bootmagic_matrix_row").value = "1";
+            document.getElementById("bootmagic_matrix_col").value = "3";
+        }
+
+
+    </script>
+</body>
+</html>

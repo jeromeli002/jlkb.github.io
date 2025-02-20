@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html  lang="zh-CN">
+<head>
+ <meta charset="UTF-8">
+<title>10 Tabs Webpage</title>
+<style>
+  /* 现代美化 CSS */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Nunito Sans', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .tab-container {
+    display: flex;
+    background-color: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    padding-left: 20px;
+  }
+
+  .tab-button {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 24px;
+    transition: color 0.3s ease, border-bottom-color 0.3s ease;
+    font-size: 16px;
+    color: #757575;
+    border-bottom: 2px solid transparent;
+  }
+
+  .tab-button:hover {
+    color: #546e7a;
+    background-color: #f9f9f9;
+  }
+
+  .tab-button.active {
+    color: #37474f;
+    border-bottom-color: #4fc3f7;
+    font-weight: 600;
+    background-color: #fff;
+  }
+
+  .tab-content {
+    display: none;
+    padding: 35px; /* 调整 padding 以适应 iframe，如果需要 */
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 58px); /* 减去 tab-container 的高度 (approx. 58px) */
+    overflow: hidden; /* 防止 iframe 内容超出 tab-content 区域 */
+  }
+
+  .tab-content iframe {
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Rules Tab Specific Styling - 现代化调整 */
+  #rules {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #rules-config-area {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start; /* 确保两列顶部对齐 */
+  }
+
+  #rules-config-options {
+    flex: 1; /* 使用 flex: 1 让列自适应宽度 */
+    flex-basis: 300px; /* 初始宽度，可以根据需要调整 */
+    max-width: 40%; /* 最大宽度，限制左列不会过宽 */
+    padding-right: 30px;
+    border-right: 1px solid #e8e8e8;
+  }
+
+  #rules-output-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 水平居中子元素 */
+  }
+
+
+  .config-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .config-item label {
+    margin-left: 10px;
+    color: #616161;
+    font-size: 1rem;
+  }
+
+  .config-item select,
+  .config-item input[type="text"],
+  .config-item input[type="number"] {
+    padding: 10px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-left: 15px;
+    color: #424242;
+    background-color: #fefefe;
+    transition: border-color 0.3s ease;
+  }
+
+  .config-item select:focus,
+  .config-item input[type="text"]:focus,
+  .config-item input[type="number"]:focus {
+    border-color: #4fc3f7;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+  }
+
+  #rules-text-output {
+    width: 100%;
+    font-family: 'Roboto Mono', monospace;
+    padding: 15px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    resize: vertical;
+    min-height: 250px;
+    margin-bottom: 15px;
+    background-color: #fefefe;
+    color: #37474f;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .output-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .output-buttons button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #4fc3f7;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+
+  .output-buttons button:hover {
+    background-color: #03a9f4;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .output-buttons button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+
+  .output-buttons button.reset-button {
+    background-color: #e57373;
+  }
+
+  .output-buttons button.reset-button:hover {
+    background-color: #f44336;
+  }
+
+  /* Other tab styles - customize if needed */
+  #keyboard { /* background-color: #f9fbe7; */ }
+  #config { /* background-color: #e3f2fd; */ }
+  #mcuconf { /* background-color: #f3e5f5; */ }
+  #halconf { /* background-color: #ffebee; */ }
+  #chonf { /* background-color: #f5f5f5; */ }
+  #map-rules { /* background-color: #fffde7; */ }
+  #map-config { /* background-color: #f0f4c3; */ }
+  #keymap { /* background-color: #e0f7fa; */ }
+  #vial { /* background-color: #f1f8e9; */ }
+
+  .tab-content h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #37474f;
+    font-weight: 700;
+  }
+
+  .tab-content h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #424242;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .tab-content p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #546e7a;
+  }
+
+  /* Checkbox 美化 */
+  .config-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 18px;
+    height: 18px;
+    background-color: #fff;
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .config-item input[type="checkbox"]:focus {
+    outline: none;
+    border-color: #4fc3f7;
+    box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+  }
+
+  .config-item input[type="checkbox"]:checked {
+    background-color: #4fc3f7;
+    border-color: #4fc3f7;
+  }
+
+  .config-item input[type="checkbox"]:checked::before {
+    content: '\2713';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+  }
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="tab-container">
+  <button class="tab-button" onclick="openTab(event, 'rules')" id="defaultOpen">Rules</button>
+  <button class="tab-button" onclick="openTab(event, 'keyboard')">Keyboard</button>
+  <button class="tab-button" onclick="openTab(event, 'config')">Config</button>
+  <button class="tab-button" onclick="openTab(event, 'mcuconf')">Mcuconf</button>
+  <button class="tab-button" onclick="openTab(event, 'halconf')">Halconf</button>
+  <button class="tab-button" onclick="openTab(event, 'chonf')">Chonf</button>
+  <button class="tab-button" onclick="openTab(event, 'map-rules')">Map-rules</button>
+  <button class="tab-button" onclick="openTab(event, 'map-config')">Map-config</button>
+  <button class="tab-button" onclick="openTab(event, 'keymap')">Keymap</button>
+  <button class="tab-button" onclick="openTab(event, 'vial')">Vial</button>
+</div>
+
+<div id="rules" class="tab-content">
+  <h3>rules.mk Configuration</h3>
+  <div id="rules-config-area">
+    <div id="rules-config-options">
+
+
+        <div class="config-item">
+          <input type="checkbox" id="jobs-checkbox" onchange="updateRulesText()">
+          <label for="jobs-checkbox">MAKEFLAGS= -j</label>
+          <input type="number" id="jobs-number" value="16" min="1" style="width: 70px;" onchange="updateRulesText()" disabled>
+        </div>
+
+        <div class="config-item">
+          <input type="checkbox" id="mcu-checkbox" onchange="updateRulesText()">
+          <label for="mcu-checkbox">MCU =</label>
+          <select id="mcu-select" onchange="updateRulesText()" disabled>
+            <option value="STM32F103">STM32F103</option>
+            <option value="STM32F411">STM32F411</option>
+            <option value="other">Other</option>
+          </select>
+          <input type="text" id="mcu-other" placeholder="Enter MCU" style="display: none;" onchange="updateRulesText()">
+        </div>
+
+        <div class="config-item">
+          <input type="checkbox" id="bootloader-checkbox" onchange="updateRulesText()">
+          <label for="bootloader-checkbox">BOOTLOADER =</label>
+          <select id="bootloader-select" onchange="updateRulesText()" disabled>
+            <option value="vibl">vibl</option>
+            <option value="qmk-dfu">qmk-dfu</option>
+            <option value="other">Other</option>
+          </select>
+          <input type="text" id="bootloader-other" placeholder="Enter Bootloader" style="display: none;" onchange="updateRulesText()">
+        </div>
+
+
+        <div class="config-item">
+          <input type="checkbox" id="audio-checkbox" onchange="updateRulesText()">
+          <label for="audio-checkbox">AUDIO_SUPPORTED = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="backlight-supported-checkbox" onchange="updateRulesText()">
+          <label for="backlight-supported-checkbox">BACKLIGHT_SUPPORTED = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="bootmagic-checkbox" onchange="updateRulesText()">
+          <label for="bootmagic-checkbox">BOOTMAGIC_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="shared-ep-checkbox" onchange="updateRulesText()">
+          <label for="shared-ep-checkbox">KEYBOARD_SHARED_EP = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="mousekey-checkbox" onchange="updateRulesText()">
+          <label for="mousekey-checkbox">MOUSEKEY_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="extrakey-checkbox" onchange="updateRulesText()">
+          <label for="extrakey-checkbox">EXTRAKEY_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="console-checkbox" onchange="updateRulesText()">
+          <label for="console-checkbox">CONSOLE_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="command-checkbox" onchange="updateRulesText()">
+          <label for="command-checkbox">COMMAND_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="sleep-led-checkbox" onchange="updateRulesText()">
+          <label for="sleep-led-checkbox">SLEEP_LED_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="nkro-checkbox" onchange="updateRulesText()">
+          <label for="nkro-checkbox">NKRO_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="backlight-enable-checkbox" onchange="updateRulesText()">
+          <label for="backlight-enable-checkbox">BACKLIGHT_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="encoder-checkbox" onchange="updateRulesText()">
+          <label for="encoder-checkbox">ENCODER_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="encoder-map-checkbox" onchange="updateRulesText()">
+          <label for="encoder-map-checkbox">ENCODER_MAP_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="audio-enable-checkbox" onchange="updateRulesText()">
+          <label for="audio-enable-checkbox">AUDIO_ENABLE = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="split-keyboard-checkbox" onchange="updateRulesText()">
+          <label for="split-keyboard-checkbox">SPLIT_KEYBOARD = yes</label>
+        </div>
+        <div class="config-item">
+          <input type="checkbox" id="rgblight-checkbox" onchange="updateRulesText()">
+          <label for="rgblight-checkbox">RGBLIGHT_ENABLE ?= yes</label>
+        </div>
+         <div class="config-item">
+          <input type="checkbox" id="dynamic-macro-checkbox" onchange="updateRulesText()">
+          <label for="dynamic-macro-checkbox">DYNAMIC_MACRO_ENABLE = yes</label>
+        </div>
+         <div class="config-item">
+          <input type="checkbox" id="cortex-wfi-checkbox" onchange="updateRulesText()">
+          <label for="cortex-wfi-checkbox">OPT_DEFS += -DCORTEX_ENABLE_WFI_IDLE=TRUE</label>
+        </div>
+         <div class="config-item">
+          <input type="checkbox" id="programmable-button-checkbox" onchange="updateRulesText()">
+          <label for="programmable-button-checkbox">PROGRAMMABLE_BUTTON_ENABLE = yes</label>
+        </div>
+         <div class="config-item">
+          <input type="checkbox" id="lto-checkbox" onchange="updateRulesText()">
+          <label for="lto-checkbox">EXTRAFLAGS+=-flto</label>
+        </div>
+    </div>
+
+    <div id="rules-output-area">
+      <h4>Generated rules.mk</h4>
+      <div class="output-buttons">
+        <button onclick="downloadRules()">Download</button>
+        <button onclick="copyRules()">Copy</button>
+        <button class="reset-button" onclick="resetRules()">Reset</button>
+      </div>
+      <textarea id="rules-text-output" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<div id="keyboard" class="tab-content" data-loaded="false">
+  <iframe src="keyboard.html"></iframe>
+    </div>
+</div>
+
+<div id="config" class="tab-content" data-loaded="false">
+  <iframe src="config.html"></iframe>
+</div>
+
+<div id="mcuconf" class="tab-content" data-loaded="false">
+  <iframe src="mcu.html"></iframe>
+    </div>
+</div>
+
+<div id="halconf" class="tab-content" data-loaded="false">
+  <iframe src="hal.html"></iframe>
+    </div>
+</div>
+
+<div id="chonf" class="tab-content" data-loaded="false">
+  <iframe src="chconf.html"></iframe>
+    </div>
+</div>
+
+<div id="map-rules" class="tab-content" data-loaded="false">
+  <iframe src="map-rules.html"></iframe>
+    </div>
+</div>
+
+<div id="map-config" class="tab-content" data-loaded="false">
+  <iframe src="map-config.html"></iframe>
+    </div>
+</div>
+
+<div id="keymap" class="tab-content" data-loaded="false">
+  <iframe src="keymap.html"></iframe>
+    </div>
+</div>
+
+<div id="vial" class="tab-content" data-loaded="false">
+  <iframe src="vial.html"></iframe>
+    </div>
+</div>
+
+<script>
+function openTab(evt, tabName) {
+  var i, tabcontent, tabbuttons;
+  tabcontent = document.getElementsByClassName("tab-content");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tabbuttons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabbuttons.length; i++) {
+    tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+
+  // No need to load external HTML for "config" tab anymore, iframe handles it
+  // For other tabs, keep the loading logic if needed, or remove data-loaded and fetch if not used.
+  if (tabName !== 'config') { // Keep for other tabs if you still want dynamic loading
+      const contentDiv = document.getElementById(tabName + '-content');
+      if (contentDiv && contentDiv.dataset.loaded === "false") {
+        fetch(tabName + '.html')
+          .then(response => response.text())
+          .then(html => {
+            contentDiv.innerHTML = html;
+            contentDiv.dataset.loaded = "true"; // 标记为已加载
+          })
+          .catch(error => {
+            contentDiv.innerHTML = '<p>Failed to load content.</p>';
+            console.error('Error loading ' + tabName + '.html:', error);
+          });
+      }
+  }
+}
+
+document.getElementById("defaultOpen").click();
+
+const jobsCheckbox = document.getElementById('jobs-checkbox');
+const jobsNumberInput = document.getElementById('jobs-number');
+const mcuSelect = document.getElementById('mcu-select');
+const mcuOtherInput = document.getElementById('mcu-other');
+const bootloaderSelect = document.getElementById('bootloader-select');
+const bootloaderOtherInput = document.getElementById('bootloader-other');
+const mcuCheckbox = document.getElementById('mcu-checkbox');
+const bootloaderCheckbox = document.getElementById('bootloader-checkbox');
+
+
+mcuSelect.addEventListener('change', function() {
+  if (mcuSelect.value === 'other') {
+    mcuOtherInput.style.display = 'inline-block';
+  } else {
+    mcuOtherInput.style.display = 'none';
+  }
+  updateRulesText();
+});
+
+bootloaderSelect.addEventListener('change', function() {
+  if (bootloaderSelect.value === 'other') {
+    bootloaderOtherInput.style.display = 'inline-block';
+  } else {
+    bootloaderOtherInput.style.display = 'none';
+  }
+  updateRulesText();
+});
+
+jobsCheckbox.addEventListener('change', function() {
+    jobsNumberInput.disabled = !jobsCheckbox.checked;
+    updateRulesText();
+});
+mcuCheckbox.addEventListener('change', function() {
+    mcuSelect.disabled = !mcuCheckbox.checked;
+    if (!mcuCheckbox.checked) {
+        mcuOtherInput.style.display = 'none';
+        mcuSelect.value = 'STM32F103'; // Reset MCU select if unchecked
+        mcuOtherInput.value = ''; // Clear other input
+    }
+    updateRulesText();
+});
+
+bootloaderCheckbox.addEventListener('change', function() {
+    bootloaderSelect.disabled = !bootloaderCheckbox.checked;
+     if (!bootloaderCheckbox.checked) {
+        bootloaderOtherInput.style.display = 'none';
+        bootloaderSelect.value = 'vibl'; // Reset Bootloader select if unchecked
+        bootloaderOtherInput.value = ''; // Clear other input
+    }
+    updateRulesText();
+});
+
+
+function updateRulesText() {
+  let rulesText = "";
+
+  if (jobsCheckbox.checked) {
+    rulesText += `MAKEFLAGS= -j${jobsNumberInput.value}  # 设置并行编译的作业数\n`;
+  }
+
+  if (mcuCheckbox.checked) {
+      const selectedMcu = mcuSelect.value === 'other' ? mcuOtherInput.value : mcuSelect.value;
+      if (selectedMcu) {
+          rulesText += `\nMCU = ${selectedMcu}  # 指定使用的微控制器\n`;
+      }
+  }
+
+
+  if (bootloaderCheckbox.checked) {
+      const selectedBootloader = bootloaderSelect.value === 'other' ? bootloaderOtherInput.value : bootloaderSelect.value;
+      if (selectedBootloader) {
+          rulesText += `BOOTLOADER = ${selectedBootloader}    # 生成 vfw 固件 (当前使用 ${selectedBootloader} 引导)\n`;
+      }
+  }
+
+
+  const features = [];
+  if (document.getElementById('audio-checkbox').checked) features.push("AUDIO_SUPPORTED = yes");
+  if (document.getElementById('backlight-supported-checkbox').checked) features.push("BACKLIGHT_SUPPORTED = yes");
+  if (document.getElementById('bootmagic-checkbox').checked) features.push("BOOTMAGIC_ENABLE = yes");
+  if (document.getElementById('shared-ep-checkbox').checked) features.push("KEYBOARD_SHARED_EP = yes");
+  if (document.getElementById('mousekey-checkbox').checked) features.push("MOUSEKEY_ENABLE = yes");
+  if (document.getElementById('extrakey-checkbox').checked) features.push("EXTRAKEY_ENABLE = yes");
+  if (document.getElementById('console-checkbox').checked) features.push("CONSOLE_ENABLE = yes");
+  if (document.getElementById('command-checkbox').checked) features.push("COMMAND_ENABLE = yes");
+  if (document.getElementById('sleep-led-checkbox').checked) features.push("SLEEP_LED_ENABLE = yes");
+  if (document.getElementById('nkro-checkbox').checked) features.push("NKRO_ENABLE = yes");
+  if (document.getElementById('backlight-enable-checkbox').checked) features.push("BACKLIGHT_ENABLE = yes");
+  if (document.getElementById('encoder-checkbox').checked) features.push("ENCODER_ENABLE = yes");
+  if (document.getElementById('encoder-map-checkbox').checked) features.push("ENCODER_MAP_ENABLE = yes");
+  if (document.getElementById('audio-enable-checkbox').checked) features.push("AUDIO_ENABLE = yes");
+  if (document.getElementById('split-keyboard-checkbox').checked) features.push("SPLIT_KEYBOARD = yes");
+  if (document.getElementById('rgblight-checkbox').checked) features.push("RGBLIGHT_ENABLE ?= yes");
+  if (document.getElementById('dynamic-macro-checkbox').checked) features.push("DYNAMIC_MACRO_ENABLE = yes");
+  if (document.getElementById('cortex-wfi-checkbox').checked) features.push("OPT_DEFS += -DCORTEX_ENABLE_WFI_IDLE=TRUE");
+  if (document.getElementById('programmable-button-checkbox').checked) features.push("PROGRAMMABLE_BUTTON_ENABLE = yes");
+  if (document.getElementById('lto-checkbox').checked) features.push("EXTRAFLAGS+=-flto");
+
+
+  if (features.length > 0) {
+    rulesText += "\n# Features\n" + features.join("\n") + "\n";
+  }
+
+
+  document.getElementById('rules-text-output').value = rulesText;
+}
+
+function downloadRules() {
+  const text = document.getElementById('rules-text-output').value;
+  const filename = "rules.mk";
+  const element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+function copyRules() {
+  const text = document.getElementById('rules-text-output').value;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('rules.mk content copied to clipboard!'); // Optional: Alert to confirm copy
+  }, (err) => {
+    console.error('Failed to copy text: ', err); // Optional: Error handling
+    alert('Failed to copy rules.mk content to clipboard.');
+  });
+}
+
+function resetRules() {
+  if (confirm('Are you sure you want to reset all configurations?')) {
+    jobsCheckbox.checked = false;
+    jobsNumberInput.value = 16;
+    jobsNumberInput.disabled = true;
+    mcuCheckbox.checked = false;
+    mcuSelect.disabled = true;
+    mcuSelect.value = 'STM32F103';
+    mcuOtherInput.value = '';
+    mcuOtherInput.style.display = 'none';
+    bootloaderCheckbox.checked = false;
+    bootloaderSelect.disabled = true;
+    bootloaderSelect.value = 'vibl';
+    bootloaderOtherInput.value = '';
+    bootloaderOtherInput.style.display = 'none';
+
+
+    document.getElementById('audio-checkbox').checked = false;
+    document.getElementById('backlight-supported-checkbox').checked = false;
+    document.getElementById('bootmagic-checkbox').checked = false;
+    document.getElementById('shared-ep-checkbox').checked = false;
+    document.getElementById('mousekey-checkbox').checked = false;
+    document.getElementById('extrakey-checkbox').checked = false;
+    document.getElementById('console-checkbox').checked = false;
+    document.getElementById('command-checkbox').checked = false;
+    document.getElementById('sleep-led-checkbox').checked = false;
+    document.getElementById('nkro-checkbox').checked = false;
+    document.getElementById('backlight-enable-checkbox').checked = false;
+    document.getElementById('encoder-checkbox').checked = false;
+    document.getElementById('encoder-map-checkbox').checked = false;
+    document.getElementById('audio-enable-checkbox').checked = false;
+    document.getElementById('split-keyboard-checkbox').checked = false;
+    document.getElementById('rgblight-checkbox').checked = false;
+    document.getElementById('dynamic-macro-checkbox').checked = false;
+    document.getElementById('cortex-wfi-checkbox').checked = false;
+    document.getElementById('programmable-button-checkbox').checked = false;
+    document.getElementById('lto-checkbox').checked = false;
+
+
+    updateRulesText(); // Update text area to reflect reset state
+  }
+}
+
+
+// Initial update to set default text
+updateRulesText();
+
+</script>
+
+</body>
+</html>

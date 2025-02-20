@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAL 配置生成器</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+            background-color: #f4f8f9;
+            color: #333;
+            line-height: 1.6;
+            display: flex; /* Enable flexbox on body for overall layout control */
+            flex-direction: column; /* Stack elements vertically in body */
+            align-items: center; /* Center content horizontally in body */
+        }
+
+        h1 {
+            color: #42a5f5;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+            width: 95%; /* Make tab-content responsive to viewport width */
+            max-width: 1200px; /* Limit maximum width on larger screens if needed */
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap; /* Allow controls and textarea to wrap on smaller screens */
+        }
+
+        .controls {
+            flex-basis: 300px; /* Keep controls at a reasonable base width */
+            flex-grow: 1; /* Allow controls to grow if space is available */
+            flex-shrink: 1; /* Allow controls to shrink if needed */
+            min-width: 200px; /* Minimum width for controls */
+        }
+
+        .checkbox-group {
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 400;
+            color: #555;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 1.5px solid #9cb2ba;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            vertical-align: middle;
+            transition: border-color 0.3s;
+        }
+
+        .checkbox-group input[type="checkbox"]:focus {
+            outline: none;
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
+        }
+
+        .checkbox-group input[type="checkbox"]:checked {
+            background-color: #42a5f5;
+            border-color: #42a5f5;
+        }
+
+        .checkbox-group input[type="checkbox"]:checked::before {
+            content: '\2713';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #fff;
+        }
+
+        textarea {
+            width: 100%; /* Textarea takes full width of its container */
+            height: 400px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: 'Menlo', monospace;
+            white-space: pre-wrap;
+            border: 1.5px solid #d9d9d9;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            color: #333;
+            flex-grow: 2; /* Allow textarea to take up more space */
+            min-width: 300px; /* Minimum width for textarea */
+        }
+
+        .buttons {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        button {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            background-color: #42a5f5;
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-left: 15px;
+        }
+
+        button:hover {
+            background-color: #64b5f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        button:active {
+            background-color: #1e88e5;
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Menlo&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>HAL 配置生成器</h1>
+
+    <div class="tab-content">
+        <div id="halconf" class="tab-pane active">
+            <div class="container">
+                <div class="controls">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="pwmCheckbox" onchange="updateConfig()"> PWM</label><br>
+                        <label><input type="checkbox" id="adcCheckbox" onchange="updateConfig()"> ADC</label><br>
+                        <label><input type="checkbox" id="i2cCheckbox" onchange="updateConfig()"> I2C</label><br>
+                        <label><input type="checkbox" id="serialCheckbox" onchange="updateConfig()"> SERIAL</label><br>
+                        <label><input type="checkbox" id="spiCheckbox" onchange="updateConfig()"> SPI</label><br>
+                    </div>
+                </div>
+                <div>
+                    <div class="buttons">
+                        <button onclick="downloadConfig()">下载</button>
+                        <button onclick="copyConfig()">复制</button>
+                        <button onclick="resetConfig()">重置</button>
+                    </div>
+                    <textarea id="configText" readonly>#pragma once
+
+#include_next <halconf.h></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateConfig() {
+            let configText = document.getElementById("configText");
+            let pwmCheckbox = document.getElementById("pwmCheckbox");
+            let adcCheckbox = document.getElementById("adcCheckbox");
+            let i2cCheckbox = document.getElementById("i2cCheckbox");
+            let serialCheckbox = document.getElementById("serialCheckbox");
+            let spiCheckbox = document.getElementById("spiCheckbox");
+
+            let baseText = `#pragma once\n\n#include_next <halconf.h>`;
+            let defineText = "";
+
+            if (pwmCheckbox.checked) {
+                defineText += `#define HAL_USE_PWM TRUE\n`;
+            }
+            if (adcCheckbox.checked) {
+                defineText += `#define HAL_USE_ADC TRUE\n`;
+            }
+            if (i2cCheckbox.checked) {
+                defineText += `#define HAL_USE_I2C TRUE\n`;
+            }
+            if (serialCheckbox.checked) {
+                defineText += `#define HAL_USE_SERIAL TRUE\n`;
+            }
+            if (spiCheckbox.checked) {
+                defineText += `#define HAL_USE_SPI TRUE\n`;
+            }
+
+            configText.value = baseText + (defineText ? "\n" + defineText : "");
+        }
+
+        function downloadConfig() {
+            let configText = document.getElementById("configText").value;
+            let filename = "halconf.h";
+            let element = document.createElement('a');
+
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(configText));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function copyConfig() {
+            let configText = document.getElementById("configText");
+            configText.select();
+            document.execCommand("copy");
+            alert("配置已复制到剪贴板!");
+        }
+
+        function resetConfig() {
+            document.getElementById("pwmCheckbox").checked = false;
+            document.getElementById("adcCheckbox").checked = false;
+            document.getElementById("i2cCheckbox").checked = false;
+            document.getElementById("serialCheckbox").checked = false;
+            document.getElementById("spiCheckbox").checked = false;
+            document.getElementById("configText").value = `#pragma once\n\n#include_next <halconf.h>`;
+        }
+
+        updateConfig(); // Initial update on page load
+    </script>
+</body>
+</html>

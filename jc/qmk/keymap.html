@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Keymap.c Generator</title>
+<style>
+body {
+    font-family: 'Roboto', sans-serif; /* Modern font */
+    display: flex;
+    padding: 30px; /* Increased padding */
+    background-color: #f8f9fa; /* Light background */
+    color: #343a40; /* Darker text for contrast */
+}
+
+.left-panel {
+    width: 350px; /* Slightly wider panel */
+    margin-right: 30px; /* Increased margin */
+    padding: 25px;
+    background-color: #fff; /* White panel background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+.right-panel {
+    flex: 1;
+    padding: 25px;
+    background-color: #fff; /* White panel background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+}
+
+h2, h3, h4 {
+    color: #495057; /* Slightly darker headings */
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+textarea {
+    width: 100%;
+    height: 500px;
+    font-family: monospace;
+    padding: 12px; /* Increased padding */
+    box-sizing: border-box;
+    border: 1px solid #ced4da; /* Bootstrap-like border */
+    border-radius: 6px; /* Rounded corners for textarea */
+    resize: vertical;
+    background-color: #f8f9fa; /* Light textarea background */
+    color: #495057;
+}
+
+.checkbox-group {
+    margin-bottom: 20px; /* Increased margin */
+}
+
+.checkbox-group label {
+    display: block;
+    margin-bottom: 8px; /* Increased margin */
+    color: #495057;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.button-group {
+    margin-bottom: 20px; /* Increased margin */
+    display: flex; /* Use flexbox for button group */
+    gap: 10px; /* Spacing between buttons */
+}
+
+.button-group button {
+    padding: 10px 20px; /* Increased padding */
+    cursor: pointer;
+    border: none;
+    border-radius: 6px; /* Rounded corners for buttons */
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.button-group button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+.code-section {
+    margin-bottom: 20px; /* Increased margin */
+    padding: 20px; /* Increased padding */
+    border: 1px solid #e0e0e0; /* Lighter border */
+    border-radius: 7px;
+    background-color: #fefefe; /* Very light grey background */
+}
+
+.code-section h3 {
+    margin-bottom: 15px; /* Increased margin */
+    color: #6c757d; /* Muted heading color */
+}
+
+.input-group {
+    margin-bottom: 15px; /* Increased margin */
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px; /* Increased margin */
+    color: #495057;
+}
+
+.input-group input[type="text"],
+.input-group textarea,
+.input-group input[type="number"],
+.input-group select {
+    width: calc(100% - 24px);
+    padding: 10px; /* Increased padding */
+    box-sizing: border-box;
+    margin-bottom: 8px; /* Increased margin */
+    border: 1px solid #ced4da; /* Bootstrap-like border */
+    border-radius: 6px; /* Rounded corners for inputs */
+    background-color: #fff; /* White input background */
+    color: #495057;
+}
+
+.input-group textarea {
+    font-family: monospace;
+    height: 120px; /* Slightly taller textarea */
+    resize: vertical;
+}
+
+.joystick-settings,
+.custom-keycodes-section,
+.layer-indicator-settings,
+.encoder-settings {
+    border: 1px solid #e0e0e0; /* Consistent border style */
+    border-radius: 7px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fefefe;
+}
+
+.joystick-settings h3,
+.custom-keycodes-section h3,
+.layer-indicator-settings h3,
+.encoder-settings h3 {
+    color: #6c757d;
+    margin-bottom: 15px;
+}
+
+
+.joystick-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px; /* Increased margin */
+}
+
+.joystick-row label {
+    margin-right: 15px; /* Increased margin */
+    color: #495057;
+    width: 100px; /* Fixed width for labels */
+    text-align: right; /* Align label text to the right */
+}
+
+.joystick-row input[type="text"] {
+    width: 50px; /* Adjusted width to 50px */
+    padding: 10px;
+    box-sizing: border-box;
+    margin-right: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    text-align: center; /* Center text in joystick input */
+}
+
+.joystick-row button {
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    background-color: #6c757d; /* Muted button color */
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.joystick-row button:hover {
+    background-color: #5a6268; /* Darker shade on hover */
+}
+
+
+.keycode-input-group,
+.layer-row,
+.encoder-input-group {
+    border: 1px solid #e0e0e0;
+    padding: 15px; /* Increased padding */
+    margin-bottom: 15px; /* Increased margin */
+    background-color: #fff;
+    border-radius: 7px;
+}
+
+.keycode-input-group-header,
+.layer-row-header,
+.encoder-input-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px; /* Increased margin */
+}
+
+.keycode-input-group-header h4,
+.layer-row-header h4,
+.encoder-input-group-header h4 {
+    margin: 0;
+    color: #545b62; /* Slightly darker header text */
+}
+
+.remove-keycode-button,
+.remove-encoder-button {
+    padding: 8px 12px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #dc3545; /* Danger button color */
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.remove-keycode-button:hover,
+.remove-encoder-button:hover {
+    background-color: #c82333; /* Darker shade on hover */
+}
+
+
+.layer-segment-inputs {
+    display: flex;
+    gap: 15px; /* Spacing between layer inputs */
+}
+
+.layer-input-group {
+    margin-right: 0; /* Reset right margin */
+    flex: 1; /* Distribute space evenly */
+}
+
+.layer-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.layer-input-group input[type="number"],
+.layer-input-group select {
+    width: calc(100% - 24px);
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    color: #495057;
+    background-color: #fff;
+    /* Hover effect for dropdown options */
+
+}
+
+.layer-input-group select option {
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.layer-input-group select option:hover {
+    background-color: #e9ecef; /* Light grey hover background */
+}
+
+
+.encoder-action-select option.duplicate-option {
+    color: grey;
+}
+
+/* Modern Font Import - Roboto from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+/* Specific colors for HSV options - Example colors, adjust as needed */
+.layer-input-group select option[value="HSV_AZURE"]:hover { background-color: azure; }
+.layer-input-group select option[value="HSV_BLUE"]:hover { background-color: blue; color: white; }
+.layer-input-group select option[value="HSV_CHARTREUSE"]:hover { background-color: chartreuse; }
+.layer-input-group select option[value="HSV_CYAN"]:hover { background-color: cyan; }
+.layer-input-group select option[value="HSV_FUCHSIA"]:hover { background-color: fuchsia; }
+.layer-input-group select option[value="HSV_GREEN"]:hover { background-color: green; color: white; }
+.layer-input-group select option[value="HSV_LIME"]:hover { background-color: lime; }
+.layer-input-group select option[value="HSV_MAGENTA"]:hover { background-color: magenta; }
+.layer-input-group select option[value="HSV_MAROON"]:hover { background-color: maroon; color: white; }
+.layer-input-group select option[value="HSV_NAVY"]:hover { background-color: navy; color: white; }
+.layer-input-group select option[value="HSV_OLIVE"]:hover { background-color: olive; }
+.layer-input-group select option[value="HSV_ORANGE"]:hover { background-color: orange; }
+.layer-input-group select option[value="HSV_PURPLE"]:hover { background-color: purple; color: white; }
+.layer-input-group select option[value="HSV_RED"]:hover { background-color: red; color: white; }
+.layer-input-group select option[value="HSV_SILVER"]:hover { background-color: silver; }
+.layer-input-group select option[value="HSV_TEAL"]:hover { background-color: teal; color: white; }
+.layer-input-group select option[value="HSV_TURQUOISE"]:hover { background-color: turquoise; }
+.layer-input-group select option[value="HSV_VIOLET"]:hover { background-color: violet; }
+.layer-input-group select option[value="HSV_WHITE"]:hover { background-color: white; color: black; }
+.layer-input-group select option[value="HSV_YELLOW"]:hover { background-color: yellow; }
+
+
+</style>
+</head>
+<body>
+
+<div class="left-panel">
+    <h2>Options</h2>
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="joystick_key_checkbox" onchange="updateCode()"> 映射按键</label>
+        <label><input type="checkbox" id="debug_interface_checkbox" onchange="updateCode()"> 调试接口</label>
+        <label><input type="checkbox" id="new_keycodes_checkbox" onchange="toggleCustomKeycodesSection();updateCode()"> 新增按键</label>
+    </div>
+
+    <div class="code-section custom-keycodes-section" id="customKeycodesSection" style="display: none;">
+        <h3>新增按键</h3>
+        <div id="customKeycodesInputs">
+        </div>
+        <button type="button" onclick="addCustomKeycodeInput()">添加新增按键</button>
+        <p>PS: 键名第一行是LAYERS_DOWN = QK_KB_0, 第二行开始直接写键名即可, 代码那里直接写按下后执行的代码</p>
+    </div>
+
+    <div class="code-section" style="display: block;">
+        <h3>矩阵按键</h3>
+        <div class="input-group">
+            <label for="matrix_rows">Rows:</label>
+            <input type="number" id="matrix_rows" value="3" onchange="updateCode()">
+        </div>
+        <div class="input-group">
+            <label for="matrix_cols">Cols:</label>
+            <input type="number" id="matrix_cols" value="3" onchange="updateCode()">
+        </div>
+    </div>
+
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="encoder_checkbox" onchange="toggleEncoderSettings();updateCode()"> 编码器</label>
+        <label><input type="checkbox" id="layer_indicator_checkbox" onchange="toggleLayerIndicatorSettings();updateCode()"> 层指示灯</label>
+        <label><input type="checkbox" id="joystick_config_checkbox" onchange="toggleJoystickSettings();updateCode()"> 摇杆</label>
+    </div>
+
+    <div class="code-section encoder-settings" id="encoderSettingsSection" style="display: none;">
+        <h3>编码器设置</h3>
+        <div id="encoderInputs">
+        </div>
+        <button type="button" onclick="addEncoderInput()">添加编码器</button>
+    </div>
+
+    <div class="code-section layer-indicator-settings" id="layerIndicatorSettingsSection" style="display: none;">
+        <h3>层指示灯设置</h3>
+        <div class="input-group">
+            <label for="highest_layer">最高层数 (1-15):</label>
+            <input type="number" id="highest_layer" value="3" min="1" max="15" onchange="updateLayerRows()">
+        </div>
+        <div class="input-group">
+            <label for="default_layer">默认层数 (0-based):</label>
+            <input type="number" id="default_layer" value="0" onchange="updateCode()">
+        </div>
+        <div id="layerRows">
+        </div>
+        <p>PS: 最高层数默认3层, 默认层数是0层</p>
+    </div>
+
+    <div class="code-section joystick-settings" id="joystickSettingsSection" style="display: none;">
+        <h3>摇杆</h3>
+        <div class="joystick-row">
+            <label for="joystick_pin_a">摇杆 1 引脚:</label>
+            <input type="text" id="joystick_pin_a" value="A2" onchange="updateCode()">
+            <button type="button" onclick="swapJoystickValues('joystick_values_a')">切换</button>
+            <input type="hidden" id="joystick_values_a" value="1023, 512, 0">
+        </div>
+        <div class="joystick-row">
+            <label for="joystick_pin_b">摇杆 2 引脚:</label>
+            <input type="text" id="joystick_pin_b" value="A1" onchange="updateCode()">
+            <button type="button" onclick="swapJoystickValues('joystick_values_b')">切换</button>
+            <input type="hidden" id="joystick_values_b" value="1023, 512, 0">
+        </div>
+        <p>PS: 切换按钮可以切换摇杆最小值、中间值、最大值</p>
+    </div>
+</div>
+
+<div class="right-panel">
+    <div class="button-group">
+        <button onclick="downloadCode()">下载</button>
+        <button onclick="copyCode()">复制</button>
+        <button onclick="resetCode()">重置</button>
+    </div>
+    <textarea id="codeTextarea" placeholder="Generated keymap.c code will appear here..."></textarea>
+</div>
+
+<script>
+let keycodeIndex = 0; // Start index for custom keycodes
+let layerRowIndex = 0; // Start index for layer rows
+let encoderIndex = 0; // Start index for encoder inputs
+
+const hsvColors = ['HSV_AZURE', 'HSV_BLUE', 'HSV_CHARTREUSE', 'HSV_CYAN', 'HSV_FUCHSIA', 'HSV_GREEN', 'HSV_LIME', 'HSV_MAGENTA', 'HSV_MAROON', 'HSV_NAVY', 'HSV_OLIVE', 'HSV_ORANGE', 'HSV_PURPLE', 'HSV_RED', 'HSV_SILVER', 'HSV_TEAL', 'HSV_TURQUOISE', 'HSV_VIOLET', 'HSV_WHITE', 'HSV_YELLOW'];
+const encoderActions = [
+    "KC_MS_WH_UP", "KC_MS_WH_DOWN", "KC_VOLD", "KC_VOLU", "RGB_HUD", "RGB_HUI", "RGB_SAD", "RGB_SAI"
+];
+
+
+function updateCode() {
+    let code = `#include QMK_KEYBOARD_H\n`;
+
+    if (document.getElementById('joystick_key_checkbox').checked) {
+        code += `//映射按键\n#include "joystick_key.c"\n`;
+    }
+
+    if (document.getElementById('debug_interface_checkbox').checked) {
+        code += `//调试接口\nvoid board_init(void) {\n\tAFIO->MAPR = (AFIO->MAPR & ~AFIO_MAPR_SWJ_CFG_Msk) | AFIO_MAPR_SWJ_CFG_DISABLE;\n}\n`;
+    }
+
+    if (document.getElementById('new_keycodes_checkbox').checked) {
+        code += `//新增按键\nenum custom_keycodes {\n`;
+
+        const keycodeInputs = document.querySelectorAll('#customKeycodesInputs .keycode-input-group');
+        keycodeInputs.forEach((inputGroup, index) => {
+            const keyNameInput = inputGroup.querySelector('input[type="text"]');
+            let keyName = keyNameInput.value.trim();
+            if (index === 0 && keyName) {
+                keyName = keyName + " = QK_KB_0";
+            }
+            if (keyName) {
+                code += `\t${keyName},\n`;
+            }
+        });
+        code = code.trimEnd(); //remove trailing newline
+        code = code.slice(0, -1); //remove trailing comma if any
+        code += `\n};\n\n#define HIGHEST_LAYER ${parseInt(document.getElementById('highest_layer').value) || 3} //最高层数 0开始算起默认3(1-15层)\nstatic uint8_t current_layer = ${parseInt(document.getElementById('default_layer').value) || 0}; //默认0层开始\n`;
+    } else {
+        code += `#define HIGHEST_LAYER ${parseInt(document.getElementById('highest_layer').value) || 3} //最高层数 0开始算起默认3(1-15层)\nstatic uint8_t current_layer = ${parseInt(document.getElementById('default_layer').value) || 0}; //默认0层开始\n`;
+    }
+
+
+    const matrixRows = parseInt(document.getElementById('matrix_rows').value) || 3;
+    const matrixCols = parseInt(document.getElementById('matrix_cols').value) || 3;
+    if (matrixRows > 0 && matrixCols > 0) {
+        code += `//矩阵按键\nconst uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {\n`;
+        for (let i = 0; i < 2; i++) { // Generate two layers
+            code += `\tLAYOUT(\n`;
+            for (let row = 0; row < matrixRows; row++) {
+                code += `\t\t`;
+                for (let col = 0; col < matrixCols; col++) {
+                    code += `KC_TRNS, `;
+                }
+                code = code.slice(0, -2); // Remove trailing comma and space
+                code += `,\n`;
+            }
+            code = code.slice(0, -2); // Remove trailing comma and newline
+            code += `),\n\n`;
+        }
+        code = code.slice(0, -3); // Remove trailing comma, newline and newline
+        code += `\n};\n`;
+    }
+
+    if (document.getElementById('encoder_checkbox').checked) {
+        code += `//编码器\n#if defined(ENCODER_MAP_ENABLE)\nconst uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {\n\t[0] = {\n`; // Start of layer 0 encoder map
+        const encoderInputs = document.querySelectorAll('#encoderInputs .encoder-input-group');
+        encoderInputs.forEach((inputGroup, index) => {
+            code += `\t\tENCODER_CCW_CW(KC_A, KC_B),\n`; // Use KC_A and KC_B for Layer0
+        });
+        code = code.trimEnd();
+        code = code.slice(0, -1);
+        code += `\n\t},\n\t[1] = {\n`; // Start of layer 1 encoder map
+        encoderInputs.forEach((inputGroup, index) => {
+             code += `\t\tENCODER_CCW_CW(KC_A, KC_B),\n`; // Use KC_A and KC_B for Layer1
+        });
+        code = code.trimEnd();
+        code = code.slice(0, -1);
+        code += `\n\t},\n\n\t// \t\t\t\t\t 旋钮 1 \t\t\t\t\t\t\t\t\t\t\t旋钮 2 \t\t\t\t\t\t\n};\n#endif\n`;
+    }
+
+
+    if (document.getElementById('new_keycodes_checkbox').checked) {
+        code += `// 新增按键\nbool process_record_user(uint16_t keycode, keyrecord_t *record) {\n\t// 下一层\n\tswitch (keycode) {\n`;
+
+        const keycodeInputs = document.querySelectorAll('#customKeycodesInputs .keycode-input-group');
+        keycodeInputs.forEach(inputGroup => {
+            const keyName = inputGroup.querySelector('input[type="text"]').value.trim();
+            const keyCode = inputGroup.querySelector('textarea').value.trim();
+            if (keyName && keyCode) {
+                code += `\n\t\tcase ${keyName.split('=')[0].trim()}:\n${keyCode}\n\t\treturn false;\n\n`;
+            }
+        });
+
+        code += `\t  // 下一个自定义键\n\t\tdefault:\n\t\t\treturn true;\n\t}\n}\n\n\t\n`;
+    }
+
+    if (document.getElementById('layer_indicator_checkbox').checked) {
+        code += `// 层指示灯\n`;
+        const layerRows = document.querySelectorAll('#layerRows .layer-row');
+        layerRows.forEach((row, index) => {
+            const startSegment = row.querySelector('input[type="number"][data-type="start"]').value;
+            const endSegment = row.querySelector('input[type="number"][data-type="end"]').value;
+            const color = row.querySelector('select').value;
+            code += `const rgblight_segment_t PROGMEM my_layer${index}_layer[] = RGBLIGHT_LAYER_SEGMENTS(\n\t\t{${startSegment},${endSegment}, ${color}}\n);\n`;
+        });
+
+        const highestLayer = parseInt(document.getElementById('highest_layer').value) || 3;
+        code += `\nconst rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(\n`;
+        for (let i = 0; i <= highestLayer; i++) {
+            code += `\t\tmy_layer${i}_layer, // Layer ${i}\n`;
+        }
+        code = code.trimEnd();
+        code += `\n);\n\nvoid keyboard_post_init_user(void) {\n\trgblight_layers = my_rgb_layers;\n}\nlayer_state_t layer_state_set_user(layer_state_t state) {\n\tfor (int i = 0; i <= ${highestLayer}; i++) {\n\t\trgblight_set_layer_state(i, layer_state_cmp(state, i));\n\t}\n\treturn state;\n}\n`;
+    }
+
+
+    if (document.getElementById('joystick_config_checkbox').checked) {
+        const joystickValuesA = document.getElementById('joystick_values_a').value.split(',').join(', ');
+        const joystickValuesB = document.getElementById('joystick_values_b').value.split(', ').join(', ');
+        code += `//摇杆\njoystick_config_t joystick_axes[JOYSTICK_AXIS_COUNT] = {\n\t[0] = JOYSTICK_AXIS_IN(${document.getElementById('joystick_pin_a').value}, ${joystickValuesA}),\n\t[1] = JOYSTICK_AXIS_IN(${document.getElementById('joystick_pin_b').value}, ${joystickValuesB})\n\n};\n`;
+    }
+
+    document.getElementById('codeTextarea').value = code;
+}
+
+function downloadCode() {
+    const text = document.getElementById('codeTextarea').value;
+    const filename = "keymap.c";
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+function copyCode() {
+    const textarea = document.getElementById('codeTextarea');
+    textarea.select();
+    document.execCommand('copy');
+    alert('Code copied to clipboard!');
+}
+
+function resetCode() {
+    document.getElementById('codeTextarea').value = "";
+    resetCustomKeycodesSection();
+    resetLayerIndicatorSection();
+    resetEncoderSection();
+
+    // Reset checkboxes
+    document.getElementById('joystick_key_checkbox').checked = false;
+    document.getElementById('debug_interface_checkbox').checked = false;
+    document.getElementById('new_keycodes_checkbox').checked = false;
+    document.getElementById('encoder_checkbox').checked = false;
+    document.getElementById('layer_indicator_checkbox').checked = false;
+    document.getElementById('joystick_config_checkbox').checked = false;
+
+    // Reset input fields to default values
+    document.getElementById('matrix_rows').value = '3';
+    document.getElementById('matrix_cols').value = '3';
+    document.getElementById('highest_layer').value = '3';
+    document.getElementById('default_layer').value = '0';
+    document.getElementById('joystick_pin_a').value = 'A2';
+    document.getElementById('joystick_pin_b').value = 'A1';
+    document.getElementById('joystick_values_a').value = '1023, 512, 0';
+    document.getElementById('joystick_values_b').value = '1023, 512, 0';
+
+
+    // Update visibility of sections based on checkbox states
+    toggleCustomKeycodesSection();
+    toggleLayerIndicatorSettings();
+    toggleJoystickSettings();
+    toggleEncoderSettings();
+
+    updateCode();
+}
+
+function swapJoystickValues(inputId) {
+    const valuesInput = document.getElementById(inputId);
+    const values = valuesInput.value.split(',').map(v => v.trim());
+    const swappedValues = [values[2], values[1], values[0]].join(', ');
+    valuesInput.value = swappedValues;
+    updateCode(); // Update code after swapping
+}
+
+function toggleJoystickSettings() {
+    const joystickSettingsSection = document.getElementById('joystickSettingsSection');
+    const joystickCheckbox = document.getElementById('joystick_config_checkbox');
+    if (joystickCheckbox.checked) {
+        joystickSettingsSection.style.display = 'block';
+    } else {
+        joystickSettingsSection.style.display = 'none';
+    }
+}
+
+function toggleCustomKeycodesSection() {
+    const customKeycodesSection = document.getElementById('customKeycodesSection');
+    const newKeycodesCheckbox = document.getElementById('new_keycodes_checkbox');
+    const customKeycodesInputs = document.getElementById('customKeycodesInputs');
+    if (newKeycodesCheckbox.checked) {
+        customKeycodesSection.style.display = 'block';
+        if (customKeycodesInputs.children.length === 0) {
+            // Add default keycodes if section is enabled and empty
+            addDefaultCustomKeycodes();
+        }
+    } else {
+        customKeycodesSection.style.display = 'none';
+        customKeycodesInputs.innerHTML = ''; // Clear custom keycodes inputs when unchecked
+    }
+    updateCode(); // Update code based on visibility
+}
+
+function resetCustomKeycodesSection() {
+    const customKeycodesInputs = document.getElementById('customKeycodesInputs');
+    customKeycodesInputs.innerHTML = ''; // Clear existing inputs
+    addDefaultCustomKeycodes(); // Add default keycodes
+}
+
+function addDefaultCustomKeycodes() {
+    const defaultKeycodes = [
+        { name: 'LAYERS_DOWN', code: `\t\tif(record->event.pressed) {\n\t\t if (current_layer == HIGHEST_LAYER){\n\t\t\t current_layer=0;\n\t\t } else {\n\t\t\t current_layer++;\n\t\t }\n\t\t layer_clear();\n\t\t layer_on(current_layer);\n\t\t}` },
+        { name: 'LAYERS_UP', code: `\t\tif(record->event.pressed) {\n\t\t if (current_layer == 0){\n\t\t\t current_layer=HIGHEST_LAYER;\n\t\t } else {\n\t\t\t current_layer--;\n\t\t }\n\t\t layer_clear();\n\t\t layer_on(current_layer);\n\t\t}` },
+        { name: 'jltb', code: `\t\tif (record->event.pressed) {\n\t\t\t\t SEND_STRING(SS_DOWN(X_LGUI) SS_TAP(X_R) SS_UP(X_LGUI) SS_DELAY(100) "https://jlkb.taobao.com" SS_TAP(X_ENTER) SS_TAP(X_ENTER));\n\t\t }` },
+        { name: 'jld6u7', code: `\t\tif (record->event.pressed) {\n\t\t\t\ttap_code16(keymap_key_to_keycode(6, record->event.key));\n\t\t\t}else {\n\t\t\t\ttap_code16(keymap_key_to_keycode(7, record->event.key));\t\n\t\t\t}` }
+    ];
+
+    const customKeycodesInputs = document.getElementById('customKeycodesInputs');
+    defaultKeycodes.forEach((keycode, index) => {
+        keycodeIndex++;
+        const newInputGroup = document.createElement('div');
+        newInputGroup.className = 'keycode-input-group';
+        newInputGroup.innerHTML = `
+            <div class="keycode-input-group-header">
+                <h4>自定义按键 ${keycodeIndex}</h4>
+                <button type="button" class="remove-keycode-button" onclick="removeCustomKeycodeInput(this.parentNode.parentNode)">减少</button>
+            </div>
+            <div class="input-group">
+                <label for="keycode_name_${keycodeIndex}">键名:</label>
+                <input type="text" id="keycode_name_${keycodeIndex}" data-index="${keycodeIndex}" value="${keycode.name}" onchange="updateCode()" ${index === 0 ? 'value="LAYERS_DOWN = QK_KB_0"' : `value="${keycode.name}"`}>
+            </div>
+            <div class="input-group">
+                <label for="keycode_code_${keycodeIndex}">代码:</label>
+                <textarea id="keycode_code_${keycodeIndex}" data-index="${keycodeIndex}" onchange="updateCode()">${keycode.code}</textarea>
+            </div>
+        `;
+        customKeycodesInputs.appendChild(newInputGroup);
+    });
+    keycodeIndex = defaultKeycodes.length; // Update index counter after adding defaults
+}
+
+
+function addCustomKeycodeInput() {
+    keycodeIndex++;
+    const customKeycodesInputs = document.getElementById('customKeycodesInputs');
+    const newInputGroup = document.createElement('div');
+    newInputGroup.className = 'keycode-input-group';
+    newInputGroup.innerHTML = `
+        <div class="keycode-input-group-header">
+            <h4>自定义按键 ${keycodeIndex}</h4>
+            <button type="button" class="remove-keycode-button" onclick="removeCustomKeycodeInput(this.parentNode.parentNode)">减少</button>
+        </div>
+        <div class="input-group">
+            <label for="keycode_name_${keycodeIndex}">键名:</label>
+            <input type="text" id="keycode_name_${keycodeIndex}" data-index="${keycodeIndex}" onchange="updateCode()">
+        </div>
+        <div class="input-group">
+            <label for="keycode_code_${keycodeIndex}">代码:</label>
+            <textarea id="keycode_code_${keycodeIndex}" data-index="${keycodeIndex}" onchange="updateCode()"></textarea>
+        </div>
+    `;
+    customKeycodesInputs.appendChild(newInputGroup);
+    updateCode(); // Update code after adding input
+}
+
+function removeCustomKeycodeInput(element) {
+    const customKeycodesInputs = document.getElementById('customKeycodesInputs');
+    if (customKeycodesInputs.children.length <= 1) {
+        alert('At least one custom keycode must remain.');
+        return;
+    }
+    element.remove();
+    updateCustomKeycodeIndices(); // Re-index custom keycodes
+    updateCode(); // Update code after removing input
+}
+
+function updateCustomKeycodeIndices() {
+    const keycodeInputs = document.querySelectorAll('#customKeycodesInputs .keycode-input-group');
+    keycodeIndex = 0; // Reset index counter
+    keycodeInputs.forEach((inputGroup) => {
+        keycodeIndex++;
+        const header = inputGroup.querySelector('.keycode-input-group-header h4');
+        header.textContent = `自定义按键 ${keycodeIndex}`; // Update header text
+    });
+}
+
+
+function toggleLayerIndicatorSettings() {
+    const layerIndicatorSettingsSection = document.getElementById('layerIndicatorSettingsSection');
+    const layerIndicatorCheckbox = document.getElementById('layer_indicator_checkbox');
+    if (layerIndicatorCheckbox.checked) {
+        layerIndicatorSettingsSection.style.display = 'block';
+        updateLayerRows(); // Generate layer rows when enabled
+    } else {
+        layerIndicatorSettingsSection.style.display = 'none';
+        document.getElementById('layerRows').innerHTML = ''; // Clear layer rows when disabled
+        updateCode(); // Update code to remove layer indicator code
+    }
+}
+
+function resetLayerIndicatorSection() {
+    const layerRowsDiv = document.getElementById('layerRows');
+    layerRowsDiv.innerHTML = ''; // Clear existing layer rows
+    updateLayerRows(); // Generate layer rows based on highest layer input
+}
+
+function updateLayerRows() {
+    const layerRowsDiv = document.getElementById('layerRows');
+    layerRowsDiv.innerHTML = ''; // Clear existing rows
+    let highestLayer = parseInt(document.getElementById('highest_layer').value) || 3;
+    highestLayer = Math.max(1, Math.min(highestLayer, 15)); // Constrain highestLayer between 1 and 15
+    document.getElementById('highest_layer').value = highestLayer; // Update input value to reflect constraint
+
+    for (let i = 0; i <= highestLayer; i++) {
+        const newLayerRow = document.createElement('div');
+        newLayerRow.className = 'layer-row';
+        newLayerRow.innerHTML = `
+            <div class="layer-row-header">
+                <h4>层指示灯 ${i + 1}</h4>
+            </div>
+            <div class="layer-segment-inputs">
+                <div class="layer-input-group">
+                    <label for="start_segment_${i}">开始段:</label>
+                    <input type="number" id="start_segment_${i}" data-index="${i}" data-type="start" value="0" onchange="updateCode()">
+                </div>
+                <div class="layer-input-group">
+                    <label for="end_segment_${i}">结束段:</label>
+                    <input type="number" id="end_segment_${i}" data-index="${i}" data-type="end" value="1" onchange="updateCode()">
+                </div>
+                <div class="layer-input-group">
+                    <label for="hsv_color_${i}">颜色:</label>
+                    <select id="hsv_color_${i}" data-index="${i}" onchange="updateCode()">
+                        ${hsvColors.map(color => `<option value="${color}" style="background-color: ${color.toLowerCase().replace('hsv_', '')}; color: ${['hsv_white', 'hsv_silver', 'hsv_yellow'].includes(color.toLowerCase()) ? 'black' : 'white'};">${color}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+        `;
+        layerRowsDiv.appendChild(newLayerRow);
+    }
+    layerRowIndex = highestLayer + 1; // Update layerRowIndex to reflect current rows
+    updateCode(); // Update code after adding rows
+}
+
+function toggleEncoderSettings() {
+    const encoderSettingsSection = document.getElementById('encoderSettingsSection');
+    const encoderCheckbox = document.getElementById('encoder_checkbox');
+    const encoderInputs = document.getElementById('encoderInputs');
+    if (encoderCheckbox.checked) {
+        encoderSettingsSection.style.display = 'block';
+        if (encoderInputs.children.length === 0) {
+            addEncoderInput(); // Add default encoder input if section is enabled and empty
+        }
+    } else {
+        encoderSettingsSection.style.display = 'none';
+        encoderInputs.innerHTML = ''; // Clear encoder inputs when unchecked
+    }
+    updateCode(); // Update code based on visibility
+}
+
+function resetEncoderSection() {
+    const encoderInputs = document.getElementById('encoderInputs');
+    encoderInputs.innerHTML = ''; // Clear existing encoder inputs
+    toggleEncoderSettings(); // Reset to default encoder input if encoder checkbox is checked
+}
+
+
+function addEncoderInput() {
+    encoderIndex++;
+    const encoderInputsDiv = document.getElementById('encoderInputs');
+    const newEncoderInputGroup = document.createElement('div');
+    newEncoderInputGroup.className = 'encoder-input-group';
+    newEncoderInputGroup.innerHTML = `
+        <div class="encoder-input-group-header">
+            <h4>编码器 ${encoderIndex}</h4>
+            <button type="button" class="remove-encoder-button" onclick="removeEncoderInput(this.parentNode.parentNode)">删减</button>
+        </div>
+    `;
+    encoderInputsDiv.appendChild(newEncoderInputGroup);
+    updateCode();
+}
+
+
+function removeEncoderInput(element) {
+    const encoderInputsDiv = document.getElementById('encoderInputs');
+    if (encoderInputsDiv.children.length <= 1) {
+        alert('At least one encoder must remain.');
+        return;
+    }
+    element.remove();
+    updateEncoderIndices(); // Re-index encoders
+    updateCode();
+}
+
+function updateEncoderIndices() {
+    const encoderInputs = document.querySelectorAll('#encoderInputs .encoder-input-group');
+    encoderIndex = 0; // Reset index counter
+    encoderInputs.forEach((inputGroup) => {
+        encoderIndex++;
+        const header = inputGroup.querySelector('.encoder-input-group-header h4');
+        header.textContent = `编码器 ${encoderIndex}`; // Update header text
+    });
+}
+
+
+function updateEncoderActions(changedSelect) { // This function is no longer used but kept for potential future use
+    const selectedValue = changedSelect.value;
+    const encoderGroup = changedSelect.closest('.encoder-input-group');
+    const selectElements = encoderGroup.querySelectorAll('.encoder-action-select');
+
+    selectElements.forEach(select => {
+        if (select !== changedSelect) {
+            Array.from(select.options).forEach(option => {
+                if (option.value === selectedValue) {
+                    option.classList.add('duplicate-option');
+                } else {
+                    option.classList.remove('duplicate-option');
+                }
+            });
+        }
+    });
+    updateCode();
+}
+
+
+// Initial code update and settings visibility on page load
+updateCode();
+toggleJoystickSettings();
+toggleCustomKeycodesSection();
+toggleLayerIndicatorSettings();
+toggleEncoderSettings();
+resetCustomKeycodesSection();
+resetLayerIndicatorSection();
+resetEncoderSection();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mcuconf.h 生成器</title>
+    <style>
+        /* 浅色系现代科技感 CSS */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; /* 浅灰色背景 */
+            color: #343a40; /* 深灰色文字 */
+            display: flex;
+            padding: 2rem;
+            justify-content: center; /* 页面居中 */
+        }
+
+        .container {
+            display: flex;
+            width: 90%; /* 调整容器宽度 */
+            max-width: 1000px; /* 减小最大宽度 */
+            background-color: #fff; /* 白色容器背景 */
+            border-radius: 0.5rem; /* 圆角 */
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05); /*  হালকা ছায়া */
+            overflow: hidden; /* 确保圆角 */
+        }
+
+        .config-panel {
+            width: 350px; /* 减小配置面板宽度 */
+            padding: 1.5rem; /* 减小 padding */
+            border-right: 1px solid #eee; /* 分割线 */
+        }
+
+        .output-panel {
+            flex: 1;
+            padding: 1.5rem; /* 减小 padding */
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #007bff; /* 蓝色标题 */
+            margin-top: 0;
+            margin-bottom: 1rem; /* 减小 margin-bottom */
+            font-weight: 600; /* 标题加粗 */
+            font-size: 1.5rem; /* 减小标题字体大小 */
+        }
+
+        .config-group {
+            margin-bottom: 1rem; /* 减小 margin-bottom */
+            padding: 1rem; /* 减小 padding */
+            border: 1px solid #eee;
+            border-radius: 0.3rem;
+            background-color: #fefefe; /* 配置组浅白色背景 */
+        }
+
+        .config-group h3 {
+            margin-top: 0;
+            margin-bottom: 0.75rem; /* 减小 margin-bottom */
+            color: #495057; /* 组标题颜色 */
+            font-weight: 500;
+            font-size: 1rem; /* 减小组标题字体大小 */
+        }
+
+
+        .config-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem; /* 减小 margin-bottom */
+        }
+
+        .config-item label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0; /* 去除 label 默认 margin-bottom */
+            font-size: 0.9rem; /* 减小配置项字体大小 */
+        }
+
+
+        .config-item label input[type="checkbox"] {
+            margin-right: 0.5rem;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1rem;
+            height: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            background-color: #fff;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+        }
+
+        .config-item label input[type="checkbox"]:checked::before {
+            content: '\2713'; /* Unicode 勾选符号 */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        .config-item label input[type="checkbox"]:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .config-item label input[type="text"] {
+            padding: 0.4rem 0.6rem; /* 减小 padding */
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+            color: #495057;
+            width: 50px; /* 设置输入框宽度为 50px */
+            height: 1.5rem; /* 调整输入框高度 */
+        }
+
+        .controls {
+            margin-top: 1rem; /* 减小 margin-top */
+            text-align: right;
+        }
+
+        .controls button {
+            padding: 0.5rem 0.8rem; /* 减小 padding */
+            cursor: pointer;
+            margin-left: 0.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            color: #fff;
+            background-color: #007bff; /* 蓝色按钮 */
+            transition: background-color 0.3s ease;
+            font-size: 0.85rem; /* 减小按钮字体大小 */
+        }
+
+        .controls button:hover {
+            background-color: #0056b3; /* 深蓝色 hover 效果 */
+        }
+
+        .output-buttons {
+            margin-bottom: 1rem; /* 减小 margin-bottom */
+            text-align: right;
+        }
+
+        .output-buttons button {
+            padding: 0.6rem 1rem; /* 减小 padding */
+            margin-right: 0.5rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 0.25rem;
+            color: #fff;
+            background-color: #28a745; /* 绿色按钮 */
+            transition: background-color 0.3s ease;
+            font-size: 0.85rem; /* 减小按钮字体大小 */
+        }
+
+        .output-buttons button:last-child {
+            margin-right: 0;
+        }
+
+        .output-buttons button:hover {
+            background-color: #1e7e34; /* 深绿色 hover 效果 */
+        }
+
+        textarea {
+            height: 350px; /* 减小 textarea 高度 */
+            padding: 0.8rem; /* 减小 padding */
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0.85rem; /* 减小 textarea 字体大小 */
+            color: #495057;
+            background-color: #f8f9fa; /* 文本框浅灰色背景 */
+            resize: vertical; /* 允许垂直方向调整大小 */
+            flex: 1; /* 文本框宽度自适应 */
+            min-width: 0; /* 确保在 flex 容器中可以收缩到最小 */
+        }
+        .suffix {
+            margin-left: 0.3rem;
+            margin-right: 0.3rem;
+            color: #6c757d; /* 后缀文字颜色 */
+            font-size: 0.85rem; /* 减小后缀字体大小 */
+        }
+        .config-group .config-items-container { display: block; } /* 默认显示配置项 */
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="config-panel">
+            <h1>mcuconf 配置</h1>
+            <div id="config-options">
+
+                <div class="config-group">
+                    <h3>PWM 配置</h3>
+                    <div class="config-items-container">
+                        <div class="config-item">
+                            <label>
+                                <input type="checkbox" data-config-prefix="PWM_USE_TIM" data-config-suffix="1"> PWM_USE_TIM
+                                <span class="suffix">1</span>
+                                <input type="text" data-param-suffix="1" placeholder="TIM1" disabled>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button onclick="addItem(this)">增加</button>
+                        <button onclick="removeItem(this)">减少</button>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>I2C 配置</h3>
+                    <div class="config-items-container">
+                        <div class="config-item">
+                            <label>
+                                <input type="checkbox" data-config-prefix="I2C_USE_I2C" data-config-suffix="1"> I2C_USE_I2C
+                                <span class="suffix">1</span>
+                                <input type="text" data-param-suffix="1" placeholder="I2C1" disabled>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button onclick="addItem(this)">增加</button>
+                        <button onclick="removeItem(this)">减少</button>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>ADC 配置</h3>
+                    <div class="config-items-container">
+                        <div class="config-item">
+                            <label>
+                                <input type="checkbox" data-config-prefix="ADC_USE_ADC" data-config-suffix="1"> ADC_USE_ADC
+                                <span class="suffix">1</span>
+                                <input type="text" data-param-suffix="1" placeholder="ADC1" disabled>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button onclick="addItem(this)">增加</button>
+                        <button onclick="removeItem(this)">减少</button>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>SERIAL 配置</h3>
+                    <div class="config-items-container">
+                        <div class="config-item">
+                            <label>
+                                <input type="checkbox" data-config-prefix="SERIAL_USE_USART" data-config-suffix="1"> SERIAL_USE_USART
+                                <span class="suffix">1</span>
+                                <input type="text" data-param-suffix="1" placeholder="USART1" disabled>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button onclick="addItem(this)">增加</button>
+                        <button onclick="removeItem(this)">减少</button>
+                    </div>
+                </div>
+
+                 <div class="config-group">
+                    <h3>SPI 配置</h3>
+                    <div class="config-items-container">
+                        <div class="config-item">
+                            <label>
+                                <input type="checkbox" data-config-prefix="SPI_USE_SPI" data-config-suffix="1"> SPI_USE_SPI
+                                <span class="suffix">1</span>
+                                <input type="text" data-param-suffix="1" placeholder="SPI1" disabled>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button onclick="addItem(this)">增加</button>
+                        <button onclick="removeItem(this)">减少</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <h1>生成结果</h1>
+            <div class="output-buttons">
+                <button onclick="downloadConfig()">下载</button>
+                <button onclick="copyConfig()">复制</button>
+                <button onclick="resetConfig()">重置</button>
+            </div>
+            <textarea id="output-text" placeholder="生成的配置将显示在这里"></textarea>
+        </div>
+    </div>
+
+    <script>
+        function updateOutput() {
+            let outputText = `#pragma once\n\n#include_next <mcuconf.h>\n\n`;
+            document.querySelectorAll('.config-group').forEach(group => {
+                group.querySelectorAll('.config-item').forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox.checked) {
+                        const paramValue = item.querySelector('input[type="text"]').value.trim();
+                        let configName = checkbox.dataset.configPrefix + checkbox.dataset.configSuffix;
+                        if (paramValue) configName = checkbox.dataset.configPrefix + paramValue;
+                        outputText += `#undef ${configName}\n#define ${configName} TRUE\n\n`;
+                    }
+                });
+            });
+            document.getElementById('output-text').value = outputText;
+        }
+
+        function addItem(button) {
+            const itemsContainer = button.closest('.config-group').querySelector('.config-items-container');
+            const firstItem = itemsContainer.querySelector('.config-item').cloneNode(true);
+            const checkbox = firstItem.querySelector('input[type="checkbox"]');
+            const paramInput = firstItem.querySelector('input[type="text"]');
+            const suffixSpan = firstItem.querySelector('.suffix');
+            checkbox.checked = false;
+            paramInput.value = '';
+            paramInput.disabled = true;
+            suffixSpan.textContent = '1';
+            checkbox.dataset.configSuffix = '1';
+            paramInput.dataset.paramSuffix = '1';
+            itemsContainer.appendChild(firstItem);
+            updateOutput();
+        }
+
+        function removeItem(button) {
+            const itemsContainer = button.closest('.config-group').querySelector('.config-items-container');
+            if (itemsContainer.children.length > 1) {
+                itemsContainer.lastElementChild.remove();
+                updateOutput();
+            } else alert("至少保留一个配置项。");
+        }
+
+        function downloadConfig() {
+            const text = document.getElementById('output-text').value;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "mcuconf.h";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyConfig() {
+            navigator.clipboard.writeText(document.getElementById('output-text').value).then(() => alert('配置内容已复制到剪贴板！')).catch(err => {
+                console.error('复制失败: ', err);
+                alert('复制失败，请手动复制。');
+            });
+        }
+
+        function resetConfig() {
+            if (confirm('确定重置？')) {
+                document.querySelectorAll('.config-group').forEach((group) => {
+                    const itemsContainer = group.querySelector('.config-items-container');
+                    const firstItem = itemsContainer.querySelector('.config-item');
+                    const checkbox = firstItem.querySelector('input[type="checkbox"]');
+                    const paramInput = firstItem.querySelector('input[type="text"]');
+                    const suffixSpan = firstItem.querySelector('.suffix');
+                    checkbox.checked = false;
+                    paramInput.value = '';
+                    paramInput.disabled = true;
+                    suffixSpan.textContent = '1';
+                    checkbox.dataset.configSuffix = '1';
+                    paramInput.dataset.paramSuffix = '1';
+                    while (itemsContainer.children.length > 1) itemsContainer.lastElementChild.remove();
+                });
+                document.getElementById('output-text').value = `#pragma once\n\n#include_next <mcuconf.h>\n\n`;
+                updateOutput();
+            }
+        }
+
+        document.addEventListener('change', e => {
+            if (e.target.type === 'checkbox') {
+                e.target.nextElementSibling.nextElementSibling.disabled = !e.target.checked;
+                updateOutput();
+            }
+        });
+
+        document.addEventListener('input', e => {
+            if (e.target.type === 'text') {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                e.target.previousElementSibling.textContent = e.target.value || e.target.dataset.paramSuffix;
+                updateOutput();
+            }
+        });
+
+        // 初始化输出
+        updateOutput();
+
+    </script>
+</body>
+</html>

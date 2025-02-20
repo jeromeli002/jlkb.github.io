@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>配置生成器</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .config-section {
+            margin-right: 20px;
+            padding: 30px;
+            border-right: 1px solid #eee;
+        }
+        .checkbox-section, .input-section {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-section label, .input-section label {
+            display: inline-block;
+            margin-bottom: 0;
+            margin-right: 10px;
+            color: #495057;
+            font-weight: 500;
+            width: auto;
+        }
+        .checkbox-section input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        .input-section input, .input-section textarea {
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            transition: border-color 0.2s ease-in-out;
+            flex-grow: 1;
+            margin-bottom: 0;
+            margin-right: 5px; /* Space between inputs and buttons */
+            min-width: 50px; /* Minimum width to prevent collapsing */
+        }
+        /* Special width for VIAL_KEYBOARD_UID input */
+        #vial-keyboard-uid {
+            width: auto; /* Adjust width based on content */
+            min-width: 200px; /* Minimum width for VIAL_KEYBOARD_UID */
+        }
+        /* Input fields in mapping buttons config section */
+        #mapping-buttons-config .input-section input {
+            width: 60px; /* Fixed width for these specific inputs */
+            flex-grow: 0; /* Do not grow for these inputs */
+        }
+
+        .input-section input:focus, .input-section textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group button {
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+            font-size: 0.8rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            margin-left: 5px;
+        }
+
+        .input-group button:hover {
+            background-color: #5a6268;
+        }
+
+
+        #output-section {
+            padding: 30px;
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #output-section > div {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #output-section button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #output-section button:hover {
+            background-color: #0056b3;
+        }
+        #config-output {
+            width: 100%;
+            height: 600px;
+            box-sizing: border-box;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background-color: #fff;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            resize: vertical; /* Allow vertical resizing */
+        }
+        h2 {
+            color: #495057;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .hidden {
+            display: none;
+        }
+        .config-title {
+            text-align: center;
+            color: #495057;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="config-section">
+    <h2 class="config-title">配置选项</h2>
+    <h2>功能选择</h2>
+    <div class="checkbox-section">
+        <label><input type="checkbox" id="game-joystick"> 游戏摇杆</label><br>
+        <label><input type="checkbox" id="mapping-buttons"> 映射按键</label><br>
+        <label><input type="checkbox" id="pointing-stick"> 指点杆</label>
+    </div>
+
+    <h2>通用配置</h2>
+    <div class="input-section">
+        <label for="vial-keyboard-uid">VIAL_KEYBOARD_UID (16进制数组):</label>
+        <input type="text" id="vial-keyboard-uid" value="{0x2E, 0x4D, 0xC1, 0xC9, 0xEF, 0xC3, 0xD6, 0x42}">
+    </div>
+    <div class="input-section">
+        <label for="vial-unlock-combo-rows">VIAL_UNLOCK_COMBO_ROWS (行):</label>
+        <input type="text" id="vial-unlock-combo-rows" value="{ 0, 0 }">
+    </div>
+    <div class="input-section">
+        <label for="vial-unlock-combo-cols">VIAL_UNLOCK_COMBO_COLS (列):</label>
+        <input type="text" id="vial-unlock-combo-cols" value="{ 0, 2 }">
+    </div>
+
+    <div id="game-joystick-config" class="hidden">
+        <h2>游戏摇杆配置</h2>
+        <div class="input-section">
+            <label for="joystick-axis-resolution">轴分辨率:</label>
+            <input type="number" id="joystick-axis-resolution" value="10">
+        </div>
+        <div class="input-section">
+            <label for="joystick-axis-count">轴数量 (最大6 最小0):</label>
+            <input type="number" id="joystick-axis-count" value="2" min="0" max="6">
+        </div>
+        <div class="input-section">
+            <label for="joystick-button-count">按钮数 (最大32 最小0):</label>
+            <input type="number" id="joystick-button-count" value="32" min="0" max="32">
+        </div>
+    </div>
+
+    <div id="mapping-buttons-config" class="hidden">
+        <h2>映射按键配置</h2>
+        <div class="input-section">
+            <label for="joystick-actuation">触发点 (0-511):</label>
+            <input type="number" id="joystick-actuation" value="256" min="0" max="511">
+        </div>
+        <div class="input-section">
+            <label for="joystick-hysteresis">滞后量:</label>
+            <input type="number" id="joystick-hysteresis" value="50">
+        </div>
+
+        <div class="input-section">
+            <label for="joystick-key-x-pin">X轴引脚:</label>
+            <div class="input-group" data-input-group="joystick-key-x-pin">
+                <input type="text" class="joystick-key-x-pin-input" value="A1">
+                <button type="button" class="add-input" data-target="joystick-key-x-pin">增加</button>
+                <button type="button" class="remove-input" data-target="joystick-key-x-pin">删减</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="joystick-key-y-pin">Y轴引脚:</label>
+            <div class="input-group" data-input-group="joystick-key-y-pin">
+                <input type="text" class="joystick-key-y-pin-input" value="A2">
+                <button type="button" class="add-input" data-target="joystick-key-y-pin">增加</button>
+                <button type="button" class="remove-input" data-target="joystick-key-y-pin">删减</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="joystick-key-px-pos">X轴正向高电平:</label>
+            <div class="input-group" data-input-group="joystick-key-px-pos">
+                <input type="text" class="joystick-key-px-pos-input" value="{1, 1}">
+                <button type="button" class="add-input" data-target="joystick-key-px-pos">增加</button>
+                <button type="button" class="remove-input" data-target="joystick-key-px-pos">删减</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="joystick-key-nx-pos">X轴负向低电平:</label>
+            <div class="input-group" data-input-group="joystick-key-nx-pos">
+                <input type="text" class="joystick-key-nx-pos-input" value="{1, 2}">
+                <button type="button" class="add-input" data-target="joystick-key-nx-pos">增加</button>
+                <button type="button" class="remove-input" data-target="joystick-key-nx-pos">删减</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="joystick-key-py-pos">Y轴正向高电平:</label>
+            <div class="input-group" data-input-group="joystick-key-py-pos">
+                <input type="text" class="joystick-key-py-pos-input" value="{2, 0}">
+                <button type="button" class="add-input" data-target="joystick-key-py-pos">增加</button>
+                <button type="button" class="remove-input" data-target="joystick-key-py-pos">删减</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="joystick-key-ny-pos">Y轴负向低电平:</label>
+            <div class="input-group" data-input-group="joystick-key-ny-pos">
+                <input type="text" class="joystick-key-ny-pos-input" value="{2, 1}">
+                <button type="button" class="add-input" data-target="joystick-key-ny-pos">增加</button>
+                <button type="button" class="remove-input" data-target="joystick-key-ny-pos">删减</button>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <label for="mapping-joystick-button-count">摇杆按键数 (Max 32):</label>
+            <input type="number" id="mapping-joystick-button-count" value="0" min="0" max="32">
+        </div>
+        <div class="input-section">
+            <label for="mapping-joystick-axis-count">每个摇杆轴数量 (Max 6: X, Y, Z, Rx, Ry, Rz):</label>
+            <input type="number" id="mapping-joystick-axis-count" value="2" min="0" max="6">
+        </div>
+    </div>
+
+    <div id="pointing-stick-config" class="hidden">
+        <h2>指点杆配置</h2>
+        <div class="input-section">
+            <label for="analog-joystick-x-axis-pin">X轴引脚 (上拉 X轴右移):</label>
+            <input type="text" id="analog-joystick-x-axis-pin" value="A2">
+        </div>
+        <div class="input-section">
+            <label for="analog-joystick-y-axis-pin">Y轴引脚 (上拉 Y轴下移):</label>
+            <input type="text" id="analog-joystick-y-axis-pin" value="A1">
+        </div>
+        <div class="input-section">
+            <label><input type="checkbox" id="analog-joystick-click-pin-checkbox"> 点击引脚</label>
+            <input type="text" id="analog-joystick-click-pin" value="B1" class="hidden">
+        </div>
+        <div class="input-section">
+            <label><input type="checkbox" id="rotation-270"> 旋转270度</label>
+        </div>
+        <div class="input-section">
+            <label><input type="checkbox" id="invert-x"> 反转X轴</label>
+        </div>
+        <div class="input-section">
+            <label><input type="checkbox" id="invert-y"> 反转Y轴</label>
+        </div>
+    </div>
+</div>
+
+<div id="output-section">
+    <div>
+        <button id="download-button">下载</button>
+        <button id="copy-button">复制</button>
+        <button id="reset-button">重置</button>
+    </div>
+    <textarea id="config-output"></textarea>
+</div>
+
+<script>
+    const configSections = ['game-joystick', 'mapping-buttons', 'pointing-stick'];
+    const configCheckboxes = configSections.map(id => document.getElementById(id));
+    const configDivs = configSections.map(id => document.getElementById(id + '-config'));
+
+    const vialKeyboardUidInput = document.getElementById('vial-keyboard-uid');
+    const vialUnlockComboRowsInput = document.getElementById('vial-unlock-combo-rows');
+    const vialUnlockComboColsInput = document.getElementById('vial-unlock-combo-cols');
+
+    const joystickAxisResolutionInput = document.getElementById('joystick-axis-resolution');
+    const joystickAxisCountInput = document.getElementById('joystick-axis-count');
+    const joystickButtonCountInput = document.getElementById('joystick-button-count');
+
+    const joystickActuationInput = document.getElementById('joystick-actuation');
+    const joystickHysteresisInput = document.getElementById('joystick-hysteresis');
+
+
+    const mappingJoystickButtonCountInput = document.getElementById('mapping-joystick-button-count');
+    const mappingJoystickAxisCountInput = document.getElementById('mapping-joystick-axis-count');
+
+    const analogJoystickXAxisPinInput = document.getElementById('analog-joystick-x-axis-pin');
+    const analogJoystickYAxisPinInput = document.getElementById('analog-joystick-y-axis-pin');
+    const analogJoystickClickPinCheckbox = document.getElementById('analog-joystick-click-pin-checkbox');
+    const analogJoystickClickPinInput = document.getElementById('analog-joystick-click-pin');
+    const pointingDeviceRotation270Checkbox = document.getElementById('rotation-270');
+    const pointingDeviceInvertXCheckbox = document.getElementById('invert-x');
+    const pointingDeviceInvertYCheckbox = document.getElementById('invert-y');
+
+    const configOutput = document.getElementById('config-output');
+
+    function updateConfig() {
+        let configText =
+            `#define VIAL_KEYBOARD_UID ${vialKeyboardUidInput.value}\n` +
+            `#define VIAL_UNLOCK_COMBO_ROWS ${vialUnlockComboRowsInput.value}\n` +
+            `#define VIAL_UNLOCK_COMBO_COLS ${vialUnlockComboColsInput.value}\n\n`;
+
+        if (configCheckboxes[0].checked) {
+            configText += '// 游戏摇杆\n' +
+                `#define JOYSTICK_AXIS_RESOLUTION ${joystickAxisResolutionInput.value}\n` +
+                `#define JOYSTICK_AXIS_COUNT ${joystickAxisCountInput.value}\n` +
+                `#define JOYSTICK_BUTTON_COUNT ${joystickButtonCountInput.value}\n\n`;
+        }
+
+        if (configCheckboxes[1].checked) {
+            configText += '// 映射按键\n' +
+                `#define JOYSTICK_ACTUATION ${joystickActuationInput.value}\n` +
+                `#define JOYSTICK_HYSTERESIS ${joystickHysteresisInput.value}\n` +
+                `#define JOYSTICK_KEY_X_PIN  {${getInputValues('joystick-key-x-pin').join(', ')}}\n` +
+                `#define JOYSTICK_KEY_Y_PIN  {${getInputValues('joystick-key-y-pin').join(', ')}}\n` +
+                `#define JOYSTICK_KEY_PX_POS {${getInputValues('joystick-key-px-pos').join(', ')}}\n` +
+                `#define JOYSTICK_KEY_NX_POS {${getInputValues('joystick-key-nx-pos').join(', ')}}\n` +
+                `#define JOYSTICK_KEY_PY_POS {${getInputValues('joystick-key-py-pos').join(', ')}}\n` +
+                `#define JOYSTICK_KEY_NY_POS {${getInputValues('joystick-key-ny-pos').join(', ')}}\n` +
+                `#define JOYSTICK_BUTTON_COUNT ${mappingJoystickButtonCountInput.value}\n` +
+                `#define JOYSTICK_AXIS_COUNT ${mappingJoystickAxisCountInput.value} //轴数量X/Y轴\n\n`;
+        }
+
+        if (configCheckboxes[2].checked) {
+            configText += '/*指点杆*/\n' +
+                `#define ANALOG_JOYSTICK_X_AXIS_PIN ${analogJoystickXAxisPinInput.value}\n` +
+                `#define ANALOG_JOYSTICK_Y_AXIS_PIN ${analogJoystickYAxisPinInput.value}\n`;
+            if (analogJoystickClickPinCheckbox.checked) {
+                configText += `#define ANALOG_JOYSTICK_CLICK_PIN ${analogJoystickClickPinInput.value}\n`;
+            }
+            if (pointingDeviceRotation270Checkbox.checked) configText += `#define POINTING_DEVICE_ROTATION_270\n`;
+            if (pointingDeviceInvertXCheckbox.checked) configText += `#define POINTING_DEVICE_INVERT_X\n`;
+            if (pointingDeviceInvertYCheckbox.checked) configText += `#define POINTING_DEVICE_INVERT_Y\n`;
+            configText += '\n';
+        }
+
+        configOutput.value = configText;
+    }
+
+    function parseConfig() {
+        const configText = configOutput.value;
+        const lines = configText.split('\n');
+
+        lines.forEach(line => {
+            if (line.startsWith('#define ')) {
+                const parts = line.substring(8).split(' ', 2);
+                if (parts.length === 2) {
+                    const macroName = parts[0];
+                    const macroValue = parts[1];
+
+                    switch (macroName) {
+                        case 'VIAL_KEYBOARD_UID':
+                            vialKeyboardUidInput.value = macroValue;
+                            break;
+                        case 'VIAL_UNLOCK_COMBO_ROWS':
+                            vialUnlockComboRowsInput.value = macroValue;
+                            break;
+                        case 'VIAL_UNLOCK_COMBO_COLS':
+                            vialUnlockComboColsInput.value = macroValue;
+                            break;
+                        case 'JOYSTICK_AXIS_RESOLUTION':
+                            joystickAxisResolutionInput.value = macroValue;
+                            break;
+                        case 'JOYSTICK_AXIS_COUNT':
+                            joystickAxisCountInput.value = macroValue;
+                            break;
+                        case 'JOYSTICK_BUTTON_COUNT':
+                            joystickButtonCountInput.value = macroValue;
+                            break;
+                        case 'JOYSTICK_ACTUATION':
+                            joystickActuationInput.value = macroValue;
+                            break;
+                        case 'JOYSTICK_HYSTERESIS':
+                            joystickHysteresisInput.value = macroValue;
+                            break;
+                        case 'JOYSTICK_KEY_X_PIN':
+                            setInputValues('joystick-key-x-pin', macroValue);
+                            break;
+                        case 'JOYSTICK_KEY_Y_PIN':
+                            setInputValues('joystick-key-y-pin', macroValue);
+                            break;
+                        case 'JOYSTICK_KEY_PX_POS':
+                            setInputValues('joystick-key-px-pos', macroValue);
+                            break;
+                        case 'JOYSTICK_KEY_NX_POS':
+                            setInputValues('joystick-key-nx-pos', macroValue);
+                            break;
+                        case 'JOYSTICK_KEY_PY_POS':
+                            setInputValues('joystick-key-py-pos', macroValue);
+                            break;
+                        case 'JOYSTICK_KEY_NY_POS':
+                            setInputValues('joystick-key-ny-pos', macroValue);
+                            break;
+                        case 'JOYSTICK_BUTTON_COUNT':
+                            mappingJoystickButtonCountInput.value = macroValue;
+                            break;
+                        case 'JOYSTICK_AXIS_COUNT':
+                            mappingJoystickAxisCountInput.value = macroValue;
+                            break;
+                        case 'ANALOG_JOYSTICK_X_AXIS_PIN':
+                            analogJoystickXAxisPinInput.value = macroValue;
+                            break;
+                        case 'ANALOG_JOYSTICK_Y_AXIS_PIN':
+                            analogJoystickYAxisPinInput.value = macroValue;
+                            break;
+                        case 'ANALOG_JOYSTICK_CLICK_PIN':
+                            analogJoystickClickPinInput.value = macroValue;
+                            analogJoystickClickPinCheckbox.checked = true;
+                            analogJoystickClickPinInput.classList.remove('hidden');
+                            break;
+                        case 'POINTING_DEVICE_ROTATION_270':
+                            pointingDeviceRotation270Checkbox.checked = true;
+                            break;
+                        case 'POINTING_DEVICE_INVERT_X':
+                            pointingDeviceInvertXCheckbox.checked = true;
+                            break;
+                        case 'POINTING_DEVICE_INVERT_Y':
+                            pointingDeviceInvertYCheckbox.checked = true;
+                            break;
+                    }
+                }
+            }
+        });
+        updateConfig();
+    }
+
+
+    function getInputValues(targetClass) {
+        return Array.from(document.querySelectorAll(`.${targetClass}-input`)).map(input => input.value);
+    }
+
+    function setInputValues(targetClass, macroValue) {
+        const inputGroup = document.querySelector(`.input-group[data-input-group='${targetClass}']`);
+        if (!inputGroup) return;
+
+        // Clear existing inputs except the first one
+        const existingInputs = inputGroup.querySelectorAll(`.${targetClass}-input`);
+        for (let i = 1; i < existingInputs.length; i++) {
+            inputGroup.removeChild(existingInputs[i]);
+        }
+        existingInputs[0].value = ''; // Clear the first input
+
+        if (macroValue.startsWith('{') && macroValue.endsWith('}')) {
+            const values = macroValue.slice(1, macroValue.length - 1).split(',').map(v => v.trim());
+            existingInputs[0].value = values[0] || '';
+
+            for (let i = 1; i < values.length; i++) {
+                if (values[i]) {
+                    const newInput = document.createElement('input');
+                    newInput.type = 'text';
+                    newInput.classList.add(`${targetClass}-input`);
+                    newInput.style.width = '60px';
+                    newInput.style.marginRight = '5px';
+                    newInput.value = values[i];
+                    inputGroup.insertBefore(newInput, inputGroup.querySelector('.add-input'));
+                }
+            }
+        }
+    }
+
+
+    configCheckboxes.forEach((checkbox, index) => {
+        checkbox.addEventListener('change', () => {
+            configDivs[index].classList.toggle('hidden', !checkbox.checked);
+            updateConfig();
+        });
+    });
+
+    analogJoystickClickPinCheckbox.addEventListener('change', () => {
+        analogJoystickClickPinInput.classList.toggle('hidden', !analogJoystickClickPinCheckbox.checked);
+        updateConfig();
+    });
+
+    document.querySelectorAll('.config-section input, .config-section checkbox').forEach(input => {
+        input.addEventListener('input', updateConfig);
+        input.addEventListener('change', updateConfig);
+    });
+
+    document.querySelectorAll('#game-joystick-config input').forEach(input => {
+        input.addEventListener('input', updateConfig);
+        input.addEventListener('change', updateConfig);
+    });
+
+     document.querySelectorAll('#config-section > h2:nth-of-type(2) + div.input-section input').forEach(input => {
+        input.addEventListener('input', updateConfig);
+        input.addEventListener('change', updateConfig);
+    });
+
+    document.querySelectorAll('#pointing-stick-config input').forEach(input => {
+        input.addEventListener('input', updateConfig);
+        input.addEventListener('change', updateConfig);
+    });
+
+    document.querySelectorAll('#mapping-buttons-config input').forEach(input => {
+        input.addEventListener('input', updateConfig);
+        input.addEventListener('change', updateConfig);
+    });
+
+
+    configOutput.addEventListener('input', parseConfig);
+
+    const downloadButton = document.getElementById('download-button');
+    const copyButton = document.getElementById('copy-button');
+    const resetButton = document.getElementById('reset-button');
+
+    downloadButton.addEventListener('click', () => {
+        const blob = new Blob([configOutput.value], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = Object.assign(document.createElement('a'), {
+            href: url,
+            download: 'config.c'
+        });
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(downloadLink);
+    });
+
+    copyButton.addEventListener('click', () => {
+        configOutput.select();
+        document.execCommand('copy');
+        alert('配置已复制到剪贴板！');
+    });
+
+    resetButton.addEventListener('click', () => {
+        configCheckboxes.forEach((checkbox, index) => {
+            checkbox.checked = false;
+            configDivs[index].classList.add('hidden');
+        });
+
+        analogJoystickClickPinCheckbox.checked = false;
+        analogJoystickClickPinInput.classList.add('hidden');
+
+
+        vialKeyboardUidInput.value = '{0x2E, 0x4D, 0xC1, 0xC9, 0xEF, 0xC3, 0xD6, 0x42}';
+        vialUnlockComboRowsInput.value = '{ 0, 0 }';
+        vialUnlockComboColsInput.value = '{ 0, 2 }';
+
+        joystickAxisResolutionInput.value = '10';
+        joystickAxisCountInput.value = '2';
+        joystickButtonCountInput.value = '32';
+
+        joystickActuationInput.value = '256';
+        joystickHysteresisInput.value = '50';
+
+        resetInputGroup('joystick-key-x-pin', 'A1');
+        resetInputGroup('joystick-key-y-pin', 'A2');
+        resetInputGroup('joystick-key-px-pos', '{1, 1}');
+        resetInputGroup('joystick-key-nx-pos', '{1, 2}');
+        resetInputGroup('joystick-key-py-pos', '{2, 0}');
+        resetInputGroup('joystick-key-ny-pos', '{2, 1}');
+
+
+        mappingJoystickButtonCountInput.value = '0';
+        mappingJoystickAxisCountInput.value = '2';
+
+        analogJoystickXAxisPinInput.value = 'A2';
+        analogJoystickYAxisPinInput.value = 'A1';
+        analogJoystickClickPinInput.value = 'B1';
+        pointingDeviceRotation270Checkbox.checked = false;
+        pointingDeviceInvertXCheckbox.checked = false;
+        pointingDeviceInvertYCheckbox.checked = false;
+
+        updateConfig();
+    });
+
+    function resetInputGroup(targetClass, defaultValue) {
+        const inputGroup = document.querySelector(`.input-group[data-input-group='${targetClass}']`);
+        inputGroup.innerHTML = `
+            <input type="text" class="${targetClass}-input" value="${defaultValue}">
+            <button type="button" class="add-input" data-target="${targetClass}">增加</button>
+            <button type="button" class="remove-input" data-target="${targetClass}">删减</button>
+        `;
+    }
+
+
+    document.querySelector('#mapping-buttons-config').addEventListener('click', function(event) {
+        if (event.target.classList.contains('add-input')) {
+            const targetClass = event.target.dataset.target;
+            const inputGroup = event.target.parentNode;
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.classList.add(`${targetClass}-input`);
+            newInput.style.width = '60px';
+            newInput.style.marginRight = '5px';
+            inputGroup.insertBefore(newInput, event.target);
+            updateConfig();
+             // Add event listener to the newly created input for live updates
+            newInput.addEventListener('input', updateConfig);
+            newInput.addEventListener('change', updateConfig);
+        } else if (event.target.classList.contains('remove-input')) {
+            const targetClass = event.target.dataset.target;
+            const inputGroup = event.target.parentNode;
+            const inputs = inputGroup.querySelectorAll(`.${targetClass}-input`);
+            if (inputs.length > 1) {
+                inputGroup.removeChild(inputs[inputs.length - 1]);
+                updateConfig();
+            }
+        }
+    });
+
+
+    updateConfig();
+</script>
+
+</body>
+</html>

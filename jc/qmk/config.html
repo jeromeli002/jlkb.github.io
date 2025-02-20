@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>QMK Config Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .options {
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .code-area {
+            flex: 1;
+        }
+        .option-item {
+            margin-bottom: 10px;
+        }
+        .option-item label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        textarea {
+            width: 100%;
+            height: 500px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: scroll;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            color: #212529;
+            font-size: 14px;
+        }
+        .buttons {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            margin: 0 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #layerCountInput, #commandKeysInput , #macroCountInput{
+            width: 80px; /* 设置宽度为 80px */
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+        .hidden {
+            display: none;
+        }
+        .rgblayers-dependent, #layerCountInput, #commandKeysInput , #macroCountInput{
+            margin-left: 20px;
+        }
+         #macroCountInput {
+            margin-left: 8px; /* 调整宏数量输入框的左边距 */
+        }
+
+        #macroCountEnable {
+            margin-right: 0; /* 移除宏数量复选框的右边距 */
+        }
+         .option-item label {
+            display: flex;
+            align-items: baseline; /* 修改对齐方式为 baseline */
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QMK Config Generator</h1>
+    <div class="container">
+        <div class="options">
+             <div class="option-item">
+                <label>
+                    <input type="checkbox" id="macroCountEnable" style="margin-right: 0;"> 宏数量
+                    <input type="number" id="macroCountInput" value="32" min="0" max="128" class="hidden">
+                </label>
+            </div>
+            <div class="option-item">
+                <label><input type="checkbox" id="rgblayers"> 层指示灯</label>
+            </div>
+            <div class="option-item hidden rgblayers-dependent">
+                <label><input type="checkbox" id="rgblayersOverrideOff"> 关闭RGB时覆盖层颜色</label>
+            </div>
+            <div class="option-item hidden rgblayers-dependent">
+                <label><input type="checkbox" id="rgblayerBlink"> 层闪烁</label>
+            </div>
+            <div class="option-item">
+                <label><input type="checkbox" id="dynamicKeymapLayerCountEnable"> 动态层数</label>
+                <input type="number" id="layerCountInput" value="16" min="1" max="16" class="hidden">
+            </div>
+            <div class="option-item">
+                <label><input type="checkbox" id="lockingSupportEnable"> 锁定支持</label>
+            </div>
+            <div class="option-item">
+                <label><input type="checkbox" id="lockingResyncEnable"> 锁定重新同步</label>
+            </div>
+             <div class="option-item">
+                <label><input type="checkbox" id="commandKeyEnable"> 自定义 Command 按键组合</label>
+                <input type="text" id="commandKeysInput" value="MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)" class="hidden">
+            </div>
+        </div>
+        <div class="code-area">
+            <div class="buttons">
+                <button id="downloadButton">下载</button>
+                <button id="copyButton">复制</button>
+                <button id="resetButton">重置</button>
+            </div>
+            <textarea id="codeOutput" readonly>#pragma once
+
+// QMK宏数量，最多128个
+#define DYNAMIC_KEYMAP_MACRO_COUNT 32
+
+/* 层指示灯 */
+// #define RGBLIGHT_LAYERS
+// #define RGBLIGHT_MAX_LAYERS 4
+// #define RGBLIGHT_LAYERS_OVERRIDE_RGB_OFF
+// #define RGBLIGHT_LAYER_BLINK
+
+/* 层数 */
+// #define DYNAMIC_KEYMAP_LAYER_COUNT 16
+
+/* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
+// #define LOCKING_SUPPORT_ENABLE
+
+/* Locking resynchronize hack */
+// #define LOCKING_RESYNC_ENABLE
+
+/* key combination for command */
+// #define IS_COMMAND() ( \
+//     keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)) \
+// )</textarea>
+        </div>
+    </div>
+
+    <script>
+        const codeOutputTextarea = document.getElementById('codeOutput');
+        const rgblayersCheckbox = document.getElementById('rgblayers');
+        const rgblayersDependentOptions = document.querySelectorAll('.rgblayers-dependent');
+        const rgblayersOverrideOffCheckbox = document.getElementById('rgblayersOverrideOff');
+        const rgblayerBlinkCheckbox = document.getElementById('rgblayerBlink');
+        const dynamicKeymapLayerCountEnableCheckbox = document.getElementById('dynamicKeymapLayerCountEnable');
+        const layerCountInput = document.getElementById('layerCountInput');
+        const lockingSupportEnableCheckbox = document.getElementById('lockingSupportEnable');
+        const lockingResyncEnableCheckbox = document.getElementById('lockingResyncEnable');
+        const commandKeyEnableCheckbox = document.getElementById('commandKeyEnable');
+        const commandKeysInput = document.getElementById('commandKeysInput');
+        const macroCountEnableCheckbox = document.getElementById('macroCountEnable');
+        const macroCountInput = document.getElementById('macroCountInput');
+
+
+        function generateCode() {
+            let code = `#pragma once
+
+`;
+             if (macroCountEnableCheckbox.checked) {
+                code += `// QMK宏数量，最多128个\n#define DYNAMIC_KEYMAP_MACRO_COUNT ${macroCountInput.value}\n\n`;
+            }
+
+
+            code += `/* 层指示灯 */\n`;
+            if (rgblayersCheckbox.checked) {
+                code += `#define RGBLIGHT_LAYERS\n#define RGBLIGHT_MAX_LAYERS ${dynamicKeymapLayerCountEnableCheckbox.checked ? layerCountInput.value : 4}\n`;
+                if (rgblayersOverrideOffCheckbox.checked) code += `#define RGBLIGHT_LAYERS_OVERRIDE_RGB_OFF\n`;
+                if (rgblayerBlinkCheckbox.checked) code += `#define RGBLIGHT_LAYER_BLINK\n`;
+            }
+
+
+            code += `\n/* 层数 */\n`;
+            if (dynamicKeymapLayerCountEnableCheckbox.checked) code += `#define DYNAMIC_KEYMAP_LAYER_COUNT ${layerCountInput.value}\n`;
+
+
+            code += `\n/* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */\n`;
+            if (lockingSupportEnableCheckbox.checked) code += `#define LOCKING_SUPPORT_ENABLE\n`;
+
+
+            code += `\n/* Locking resynchronize hack */\n`;
+            if (lockingResyncEnableCheckbox.checked) code += `#define LOCKING_RESYNC_ENABLE\n`;
+
+
+             code += `\n/* key combination for command */\n`;
+            if (commandKeyEnableCheckbox.checked) {
+                code += `#define IS_COMMAND() ( \\\n    keyboard_report->mods == (${commandKeysInput.value}) \\\n)\n`;
+            }
+
+
+            codeOutputTextarea.value = code;
+        }
+
+        rgblayersCheckbox.addEventListener('change', function() {
+            rgblayersDependentOptions.forEach(option => option.classList.toggle('hidden', !rgblayersCheckbox.checked));
+            generateCode();
+        });
+
+        rgblayersOverrideOffCheckbox.addEventListener('change', generateCode);
+        rgblayerBlinkCheckbox.addEventListener('change', generateCode);
+        lockingSupportEnableCheckbox.addEventListener('change', generateCode);
+        lockingResyncEnableCheckbox.addEventListener('change', generateCode);
+        commandKeyEnableCheckbox.addEventListener('change', function() {
+            commandKeysInput.classList.toggle('hidden', !commandKeyEnableCheckbox.checked);
+             generateCode();
+        });
+        commandKeysInput.addEventListener('input', generateCode);
+        dynamicKeymapLayerCountEnableCheckbox.addEventListener('change', function() {
+            layerCountInput.classList.toggle('hidden', !dynamicKeymapLayerCountEnableCheckbox.checked);
+            generateCode();
+        });
+        layerCountInput.addEventListener('input', generateCode);
+        macroCountEnableCheckbox.addEventListener('change', function() {
+            macroCountInput.classList.toggle('hidden', !macroCountEnableCheckbox.checked);
+            generateCode();
+        });
+        macroCountInput.addEventListener('input', generateCode);
+
+
+        document.getElementById('downloadButton').addEventListener('click', () => {
+            const blob = new Blob([codeOutputTextarea.value], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "config.h";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('copyButton').addEventListener('click', () => {
+            codeOutputTextarea.select();
+            document.execCommand('copy');
+            alert('代码已复制到剪贴板！');
+        });
+
+        document.getElementById('resetButton').addEventListener('click', () => {
+            rgblayersCheckbox.checked = false;
+            rgblayersDependentOptions.forEach(option => option.classList.add('hidden'));
+            rgblayersOverrideOffCheckbox.checked = false;
+            rgblayerBlinkCheckbox.checked = false;
+            dynamicKeymapLayerCountEnableCheckbox.checked = false;
+            layerCountInput.classList.add('hidden');
+            layerCountInput.value = "16";
+            lockingSupportEnableCheckbox.checked = false;
+            lockingResyncEnableCheckbox.checked = false;
+            commandKeyEnableCheckbox.checked = false;
+            commandKeysInput.classList.add('hidden');
+            commandKeysInput.value = "MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)";
+            macroCountEnableCheckbox.checked = false;
+            macroCountInput.classList.add('hidden');
+            macroCountInput.value = "32";
+            generateCode();
+        });
+
+        generateCode();
+        macroCountInput.classList.add('hidden'); // 初始化隐藏宏数量输入框
+        rgblayersDependentOptions.forEach(option => option.classList.add('hidden'));
+    </script>
+</body>
+</html>

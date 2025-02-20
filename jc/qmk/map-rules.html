@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>rules.mk 生成器</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    background-color: #f8f9fa;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+}
+
+.left-panel {
+    width: 320px;
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.07);
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.right-panel {
+    flex: 1;
+    padding: 30px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h2 {
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 28px;
+}
+
+textarea {
+    width: 100%;
+    height: 380px;
+    padding: 15px;
+    box-sizing: border-box;
+    margin-bottom: 25px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 15px;
+    color: #495057;
+    line-height: 1.6;
+}
+
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 12px 25px;
+    margin-right: 15px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    background-color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 17px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.driver-select {
+    display: none;
+    margin-top: 12px;
+}
+
+.driver-select.show {
+    display: block;
+}
+
+.other-input {
+    display: none;
+    margin-top: 8px;
+}
+
+.other-input.show {
+    display: block;
+}
+
+.driver-option {
+    margin-left: 25px;
+    margin-top: 8px;
+}
+
+label {
+    font-size: 18px;
+    margin-bottom: 10px;
+    display: block;
+    color: #495057;
+}
+
+input[type="checkbox"], select, input[type="text"] {
+    margin-right: 10px;
+    vertical-align: middle;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 16px;
+    color: #495057;
+}
+
+select, input[type="text"] {
+    width: calc(100% - 35px);
+    margin-top: 8px;
+    box-sizing: border-box;
+}
+
+/* 响应式设计，小屏幕优化 */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    .left-panel, .right-panel {
+        width: auto;
+        margin: 10px;
+        padding: 20px;
+    }
+    .left-panel {
+         margin-bottom: 0;
+    }
+    .right-panel {
+        margin-top: 0;
+    }
+    button {
+        margin-bottom: 10px;
+        margin-right: 5px;
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+    h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    textarea {
+        height: 300px;
+        font-size: 14px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+    label, input[type="checkbox"], select, input[type="text"] {
+        font-size: 15px;
+    }
+    .right-panel {
+        align-items: stretch;
+    }
+    .button-container {
+        justify-content: space-around;
+    }
+    button {
+        margin-right: 0;
+        margin-left: 5px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="left-panel">
+    <h2>选项</h2>
+    <div>
+        <label><input type="checkbox" id="via_enable" checked> 启用 VIA</label>
+    </div>
+    <div>
+        <label><input type="checkbox" id="vial_enable" checked> 启用 VIAL</label>
+    </div>
+    <div>
+        <label><input type="checkbox" id="qmk_settings_enable" checked> 启用 QMK 设置</label>
+    </div>
+    <div>
+        <label><input type="checkbox" id="vial_insecure_enable" checked> 启用 VIAL 不安全模式</label>
+    </div>
+    <div>
+        <label><input type="checkbox" id="radial_controller_enable" checked> 启用 径向控制器</label>
+    </div>
+    <div>
+        <label><input type="checkbox" id="via_custom_keycode_enable" checked> 启用 VIA 自定义键码</label>
+    </div>
+    <div>
+        <label><input type="checkbox" id="lto_enable"> 启用 LTO</label>
+    </div>
+    <div>
+        <label><input type="checkbox" id="joystick_enable"> 启用 摇杆</label>
+        <div id="joystick_driver_select" class="driver-select driver-option">
+            <label><input type="checkbox" id="joystick_driver_enable"> 启用 摇杆驱动</label>
+            <div id="joystick_driver_options" class="driver-select">
+                <select id="joystick_driver_dropdown">
+                    <option value="analog">模拟</option>
+                    <option value="digital">数字</option>
+                    <option value="none">无</option>
+                    <option value="other">其他</option>
+                </select>
+                <input type="text" id="joystick_driver_other" class="other-input" placeholder="自定义驱动">
+            </div>
+        </div>
+    </div>
+    <div>
+        <label><input type="checkbox" id="pointing_device_enable"> 启用 指点设备</label>
+        <div id="pointing_device_driver_select" class="driver-select driver-option">
+             <label><input type="checkbox" id="pointing_device_driver_enable"> 启用 指点设备驱动</label>
+            <div id="pointing_device_driver_options" class="driver-select">
+                <select id="pointing_device_driver_dropdown">
+                    <option value="analog_joystick">模拟摇杆</option>
+                    <option value="trackball">轨迹球</option>
+                    <option value="trackpoint">轨迹点</option>
+                    <option value="none">无</option>
+                    <option value="other">其他</option>
+                </select>
+                <input type="text" id="pointing_device_driver_other" class="other-input" placeholder="自定义驱动">
+            </div>
+        </div>
+    </div>
+    <div>
+        <label><input type="checkbox" id="vpath_enable"> 启用 VPATH 路径</label>
+    </div>
+</div>
+
+<div class="right-panel">
+    <h2>rules.mk 内容</h2>
+    <div class="button-container">
+        <button id="downloadBtn">下载</button>
+        <button id="copyBtn">复制</button>
+        <button id="resetBtn">重置</button>
+    </div>
+    <textarea id="outputCode" readonly></textarea>
+</div>
+
+<script>
+const viaEnableCheckbox = document.getElementById('via_enable');
+const vialEnableCheckbox = document.getElementById('vial_enable');
+const qmkSettingsEnableCheckbox = document.getElementById('qmk_settings_enable');
+const vialInsecureEnableCheckbox = document.getElementById('vial_insecure_enable');
+const radialControllerEnableCheckbox = document.getElementById('radial_controller_enable');
+const viaCustomKeyCodeEnableCheckbox = document.getElementById('via_custom_keycode_enable'); // 获取 VIA 自定义键码 checkbox
+// 设置默认勾选
+viaEnableCheckbox.checked = true;
+vialEnableCheckbox.checked = true;
+qmkSettingsEnableCheckbox.checked = true;
+vialInsecureEnableCheckbox.checked = true;
+radialControllerEnableCheckbox.checked = true;
+viaCustomKeyCodeEnableCheckbox.checked = true; // 默认勾选 VIA 自定义键码
+
+
+const ltoEnableCheckbox = document.getElementById('lto_enable');
+const joystickEnableCheckbox = document.getElementById('joystick_enable');
+const pointingDeviceEnableCheckbox = document.getElementById('pointing_device_enable');
+const vpathEnableCheckbox = document.getElementById('vpath_enable');
+
+const joystickDriverCheckboxDiv = document.getElementById('joystick_driver_select');
+const joystickDriverEnableCheckbox = document.getElementById('joystick_driver_enable');
+const joystickDriverOptionsDiv = document.getElementById('joystick_driver_options');
+const joystickDriverDropdown = document.getElementById('joystick_driver_dropdown');
+const joystickDriverOtherInput = document.getElementById('joystick_driver_other');
+
+const pointingDeviceDriverCheckboxDiv = document.getElementById('pointing_device_driver_select');
+const pointingDeviceDriverEnableCheckbox = document.getElementById('pointing_device_driver_enable');
+const pointingDeviceDriverOptionsDiv = document.getElementById('pointing_device_driver_options');
+const pointingDeviceDriverDropdown = document.getElementById('pointing_device_driver_dropdown');
+const pointingDeviceDriverOtherInput = document.getElementById('pointing_device_driver_other');
+
+
+const outputCodeTextarea = document.getElementById('outputCode');
+const downloadBtn = document.getElementById('downloadBtn');
+const copyBtn = document.getElementById('copyBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+function generateCode() {
+    let code = '';
+    if (viaEnableCheckbox.checked) {
+        code += 'VIA_ENABLE = yes\n';
+    }
+    if (vialEnableCheckbox.checked) {
+        code += 'VIAL_ENABLE = yes\n';
+    }
+    if (qmkSettingsEnableCheckbox.checked) {
+        code += 'QMK_SETTINGS_ENABLE = yes\n';
+    }
+    if (vialInsecureEnableCheckbox.checked) {
+        code += 'VIAL_INSECURE_ENABLE = yes\n';
+    }
+    if (radialControllerEnableCheckbox.checked) {
+        code += 'RADIAL_CONTROLLER_ENABLE = yes\n';
+    }
+    if (viaCustomKeyCodeEnableCheckbox.checked) {
+        code += 'VIA_CUSTOM_KEYCODE_ENABLE = yes\n';
+    }
+    if (ltoEnableCheckbox.checked) {
+        code += 'LTO_ENABLE = yes\n';
+    }
+    if (joystickEnableCheckbox.checked) {
+        code += 'JOYSTICK_ENABLE = yes\n';
+        if (joystickDriverEnableCheckbox.checked) {
+            const driverValue = joystickDriverDropdown.value;
+            if (driverValue === 'other') {
+                code += `JOYSTICK_DRIVER = ${joystickDriverOtherInput.value}\n`;
+            } else {
+                code += `JOYSTICK_DRIVER = ${driverValue}\n`;
+            }
+        }
+    }
+    if (pointingDeviceEnableCheckbox.checked) {
+        code += 'POINTING_DEVICE_ENABLE = yes\n';
+        if (pointingDeviceDriverEnableCheckbox.checked) {
+            const driverValue = pointingDeviceDriverDropdown.value;
+            if (driverValue === 'other') {
+                code += `POINTING_DEVICE_DRIVER = ${pointingDeviceDriverOtherInput.value}\n`;
+            } else {
+                code += `POINTING_DEVICE_DRIVER = ${driverValue}\n`;
+            }
+        }
+    }
+    if (vpathEnableCheckbox.checked) {
+        code += 'VPATH += $(TOP_DIR)/keyboards/jlkb/jllab/\n';
+    }
+    outputCodeTextarea.value = code;
+}
+
+viaEnableCheckbox.addEventListener('change', generateCode);
+vialEnableCheckbox.addEventListener('change', generateCode);
+qmkSettingsEnableCheckbox.addEventListener('change', generateCode);
+vialInsecureEnableCheckbox.addEventListener('change', generateCode);
+radialControllerEnableCheckbox.addEventListener('change', generateCode);
+viaCustomKeyCodeEnableCheckbox.addEventListener('change', generateCode); // 添加 VIA 自定义键码 checkbox 事件监听
+ltoEnableCheckbox.addEventListener('change', generateCode);
+
+
+joystickEnableCheckbox.addEventListener('change', function() {
+    if (joystickEnableCheckbox.checked) {
+        joystickDriverCheckboxDiv.classList.add('show');
+    } else {
+        joystickDriverCheckboxDiv.classList.remove('show');
+        joystickDriverEnableCheckbox.checked = false;
+        joystickDriverOptionsDiv.classList.remove('show');
+    }
+    generateCode();
+});
+
+joystickDriverEnableCheckbox.addEventListener('change', function() {
+    if (joystickDriverEnableCheckbox.checked && joystickEnableCheckbox.checked) {
+        joystickDriverOptionsDiv.classList.add('show');
+    } else {
+        joystickDriverOptionsDiv.classList.remove('show');
+    }
+    generateCode();
+});
+
+
+pointingDeviceEnableCheckbox.addEventListener('change', function() {
+    if (pointingDeviceEnableCheckbox.checked) {
+        pointingDeviceDriverCheckboxDiv.classList.add('show');
+    } else {
+        pointingDeviceDriverCheckboxDiv.classList.remove('show');
+        pointingDeviceDriverEnableCheckbox.checked = false;
+        pointingDeviceDriverOptionsDiv.classList.remove('show');
+    }
+    generateCode();
+});
+
+pointingDeviceDriverEnableCheckbox.addEventListener('change', function() {
+    if (pointingDeviceDriverEnableCheckbox.checked && pointingDeviceEnableCheckbox.checked) {
+        pointingDeviceDriverOptionsDiv.classList.add('show');
+    } else {
+        pointingDeviceDriverOptionsDiv.classList.remove('show');
+    }
+    generateCode();
+});
+
+
+vpathEnableCheckbox.addEventListener('change', generateCode);
+
+joystickDriverDropdown.addEventListener('change', function() {
+    if (joystickDriverDropdown.value === 'other') {
+        joystickDriverOtherInput.classList.add('show');
+    } else {
+        joystickDriverOtherInput.classList.remove('show');
+    }
+    generateCode();
+});
+
+pointingDeviceDriverDropdown.addEventListener('change', function() {
+    if (pointingDeviceDriverDropdown.value === 'other') {
+        pointingDeviceDriverOtherInput.classList.add('show');
+    } else {
+        pointingDeviceDriverOtherInput.classList.remove('show');
+    }
+    generateCode();
+});
+
+
+downloadBtn.addEventListener('click', function() {
+    const text = outputCodeTextarea.value;
+    const filename = 'rules.mk';
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+copyBtn.addEventListener('click', function() {
+    outputCodeTextarea.select();
+    document.execCommand('copy');
+});
+
+resetBtn.addEventListener('click', function() {
+    viaEnableCheckbox.checked = true;
+    vialEnableCheckbox.checked = true;
+    qmkSettingsEnableCheckbox.checked = true;
+    vialInsecureEnableCheckbox.checked = true;
+    radialControllerEnableCheckbox.checked = true;
+    viaCustomKeyCodeEnableCheckbox.checked = true; // 重置时默认勾选 VIA 自定义键码
+
+    ltoEnableCheckbox.checked = false;
+    joystickEnableCheckbox.checked = false;
+    pointingDeviceEnableCheckbox.checked = false;
+    vpathEnableCheckbox.checked = false;
+
+    joystickDriverCheckboxDiv.classList.remove('show');
+    joystickDriverEnableCheckbox.checked = false;
+    joystickDriverOptionsDiv.classList.remove('show');
+    joystickDriverDropdown.value = 'analog';
+    joystickDriverOtherInput.value = '';
+    joystickDriverOtherInput.classList.remove('show');
+
+    pointingDeviceDriverCheckboxDiv.classList.remove('show');
+    pointingDeviceDriverEnableCheckbox.checked = false;
+    pointingDeviceDriverOptionsDiv.classList.remove('show');
+    pointingDeviceDriverDropdown.value = 'analog_joystick';
+    pointingDeviceDriverOtherInput.value = '';
+    pointingDeviceDriverOtherInput.classList.remove('show');
+
+
+    generateCode();
+});
+
+generateCode(); // Initial code generation
+</script>
+
+</body>
+</html>
