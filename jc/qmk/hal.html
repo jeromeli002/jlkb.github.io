@@ -8,74 +8,62 @@
         body {
             font-family: 'Roboto', sans-serif;
             margin: 20px;
-            background-color: #f4f8f9;
+            background-color: #f4f6f9;
             color: #333;
             line-height: 1.6;
-            display: flex; /* Enable flexbox on body for overall layout control */
-            flex-direction: column; /* Stack elements vertically in body */
-            align-items: center; /* Center content horizontally in body */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h1 {
             color: #42a5f5;
             text-align: center;
-            margin-bottom: 25px;
-            font-weight: 500;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 30px;
+            letter-spacing: 1px;
         }
 
         .tab-content {
-            background-color: #fff;
+            background-color: #ffffff;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border: 1px solid #e0e0e0;
-            width: 95%; /* Make tab-content responsive to viewport width */
-            max-width: 1200px; /* Limit maximum width on larger screens if needed */
-        }
-
-        .container {
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1100px;
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap; /* Allow controls and textarea to wrap on smaller screens */
+            justify-content: space-between;
         }
 
         .controls {
-            flex-basis: 300px; /* Keep controls at a reasonable base width */
-            flex-grow: 1; /* Allow controls to grow if space is available */
-            flex-shrink: 1; /* Allow controls to shrink if needed */
-            min-width: 200px; /* Minimum width for controls */
+            width: 250px;
+            margin-right: 30px;
         }
 
         .checkbox-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Adjusted margin for smaller spacing */
         }
 
         .checkbox-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 400;
+            display: flex; /* Using flexbox to align text and checkbox horizontally */
+            align-items: center;
+            margin-bottom: 10px; /* Reduced space between checkboxes */
+            font-weight: 500;
             color: #555;
+            font-size: 16px;
         }
 
         .checkbox-group input[type="checkbox"] {
             appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             background-color: #fff;
-            border: 1.5px solid #9cb2ba;
-            border-radius: 4px;
+            border: 2px solid #9cb2ba;
+            border-radius: 6px;
             cursor: pointer;
-            position: relative;
-            vertical-align: middle;
-            transition: border-color 0.3s;
-        }
-
-        .checkbox-group input[type="checkbox"]:focus {
-            outline: none;
-            border-color: #42a5f5;
-            box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
+            margin-right: 10px; /* Space between checkbox and label */
+            transition: border-color 0.3s, background-color 0.3s;
         }
 
         .checkbox-group input[type="checkbox"]:checked {
@@ -93,52 +81,70 @@
             color: #fff;
         }
 
-        textarea {
-            width: 100%; /* Textarea takes full width of its container */
-            height: 400px;
-            padding: 15px;
-            box-sizing: border-box;
-            font-family: 'Menlo', monospace;
-            white-space: pre-wrap;
-            border: 1.5px solid #d9d9d9;
-            border-radius: 8px;
-            resize: vertical;
-            font-size: 14px;
-            background-color: #f9f9f9;
-            color: #333;
-            flex-grow: 2; /* Allow textarea to take up more space */
-            min-width: 300px; /* Minimum width for textarea */
+        .textarea-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .buttons {
-            margin-top: 20px;
-            text-align: right;
+            margin-bottom: 20px; /* Added margin to space out buttons from textarea */
+            display: flex;
+            justify-content: center;
+            gap: 15px;
         }
 
         button {
-            padding: 12px 25px;
-            cursor: pointer;
-            border-radius: 8px;
-            border: none;
+            padding: 12px 26px;
             background-color: #42a5f5;
             color: white;
-            font-size: 15px;
-            font-weight: 500;
-            transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            margin-left: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         button:hover {
             background-color: #64b5f6;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
         }
 
         button:active {
             background-color: #1e88e5;
             transform: translateY(0);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 16px;
+            box-sizing: border-box;
+            font-family: 'Menlo', monospace;
+            font-size: 15px;
+            background-color: #f0f0f0;
+            color: #333;
+            border-radius: 10px;
+            border: 1px solid #dcdcdc;
+            resize: vertical;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+
+        textarea:focus {
+            box-shadow: 0 4px 12px rgba(66, 165, 245, 0.2);
+            border-color: #42a5f5;
+            outline: none;
+        }
+
+        .checkbox-group input[type="checkbox"]:focus {
+            outline: none;
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Menlo&display=swap" rel="stylesheet">
@@ -147,28 +153,25 @@
     <h1>HAL 配置生成器</h1>
 
     <div class="tab-content">
-        <div id="halconf" class="tab-pane active">
-            <div class="container">
-                <div class="controls">
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="pwmCheckbox" onchange="updateConfig()"> PWM</label><br>
-                        <label><input type="checkbox" id="adcCheckbox" onchange="updateConfig()"> ADC</label><br>
-                        <label><input type="checkbox" id="i2cCheckbox" onchange="updateConfig()"> I2C</label><br>
-                        <label><input type="checkbox" id="serialCheckbox" onchange="updateConfig()"> SERIAL</label><br>
-                        <label><input type="checkbox" id="spiCheckbox" onchange="updateConfig()"> SPI</label><br>
-                    </div>
-                </div>
-                <div>
-                    <div class="buttons">
-                        <button onclick="downloadConfig()">下载</button>
-                        <button onclick="copyConfig()">复制</button>
-                        <button onclick="resetConfig()">重置</button>
-                    </div>
-                    <textarea id="configText" readonly>#pragma once
+        <div class="controls">
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="pwmCheckbox" onchange="updateConfig()"> PWM</label>
+                <label><input type="checkbox" id="adcCheckbox" onchange="updateConfig()"> ADC</label>
+                <label><input type="checkbox" id="i2cCheckbox" onchange="updateConfig()"> I2C</label>
+                <label><input type="checkbox" id="serialCheckbox" onchange="updateConfig()"> SERIAL</label>
+                <label><input type="checkbox" id="spiCheckbox" onchange="updateConfig()"> SPI</label>
+            </div>
+        </div>
+
+        <div class="textarea-container">
+            <div class="buttons">
+                <button onclick="downloadConfig()">下载</button>
+                <button onclick="copyConfig()">复制</button>
+                <button onclick="resetConfig()">重置</button>
+            </div>
+            <textarea id="configText" readonly>#pragma once
 
 #include_next <halconf.h></textarea>
-                </div>
-            </div>
         </div>
     </div>
 

@@ -84,24 +84,8 @@ function openTab(evt, tabName) {
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", ""); // 移除激活状态
     }
-    document.getElementById(tabName).style.display = "block"; // 显示选中的标签页内容
+    document.getElementById(tabName).style.display = "flex"; // 显示选中的标签页内容
     evt.currentTarget.className += " active"; // 为选中的标签页按钮添加激活状态
-
-    // 根据tabName更新顶栏状态
-    /* switch (tabName) {
-        case 'Tab1':
-            updateHeaderStatus('fas fa-cog', 'Tab 1 Active');
-            break;
-        case 'Tab2':
-            updateHeaderStatus('fas fa-signal', 'Tab 2 Active');
-            break;
-        case 'Tab3':
-            updateHeaderStatus('fas fa-trophy', 'Tab 3 Active');
-            break;
-        case 'Tab4':
-            updateHeaderStatus('fas fa-inbox', 'Tab 4 Active');
-            break;
-    } */
 }
 
 // 切换主题的函数
@@ -134,6 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+document.getElementsByClassName("tablinks")[0].click();
 
 // 更新头部状态的函数
 function updateHeaderStatus(iconid, textid, iconClass, text) {
@@ -158,6 +143,16 @@ async function default_status() {
     updateHeaderStatus('device-icon', 'device-text', 'fas fa-sign-out-alt', '设备名称');
 }
 
+//将设备为默认状态
+async function default_device_info() {
+    document.getElementById('device_name').innerHTML = "";
+    document.getElementById('device_ver').innerHTML = "";
+    document.getElementById('device_mac').innerHTML = "";
+    document.getElementById('firmware_ver').innerHTML = "";
+    document.getElementById('firmware_date').innerHTML = "";
+    document.getElementById('firmware_date').setAttribute('title', "");
+}
+
 function consolelog(Logtxt, ...args) {
     if (Logenable) {
         console.log(Logtxt, ...args);
@@ -166,11 +161,7 @@ function consolelog(Logtxt, ...args) {
 
 //=======================================================================监听器部分=====================
 document.addEventListener('DOMContentLoaded', async () => {
-    // 默认打开第一个标签页
-    var firstTabLink = document.getElementsByClassName("tablinks")[0];
-    if (firstTabLink) {
-        firstTabLink.click();
-    }
+
     //==========================获取元素====================
     document.getElementsByName('grantdevice')[0].addEventListener('click', GrantDevice); //授权设备
     document.getElementsByName('systemoff')[0].addEventListener('click', SYSTEMOFF); //授权设备
@@ -354,13 +345,13 @@ function findSingleOneBit(data) {
     return 0; // 如果没有找到1，返回-1
 }
 
-function getDeviceName(vendorId, productId) {
+function getDeviceName(vendorId, productId, versionID) {
     for (const device of devices) {
-        if (device.vendor === vendorId && device.product === productId) {
+        if (device.vendor === vendorId && device.product === productId && device.version === versionID) {
             return device.name;
         }
     }
-    return 'X Device';
+    return 'UNKNOW';
 }
 
 //发送数据处理函数：获取键盘信息
@@ -423,10 +414,11 @@ async function Check_Opend() {
         refreshing = false;
         //恢复状态栏
         default_status();
+        default_device_info();
         consolelog("No Device Connected");
     }
 }
-
+//============================================================================页面更新=========================================================
 //刷新数据任务
 async function update_statebar(inputdata) {
     if (inputdata[0] == 0) {
@@ -466,7 +458,8 @@ async function update_statebar(inputdata) {
         }
         const vendorId = parseInt("0x" + ("0" + inputdata[3].toString(16)).slice(-2) + ("0" + inputdata[2].toString(16)).slice(-2));
         const productId = parseInt("0x" + ("0" + inputdata[5].toString(16)).slice(-2) + ("0" + inputdata[4].toString(16)).slice(-2));
-        const deviceName = getDeviceName(vendorId, productId);
+        const versionID =parseInt("0x" + ("0" + inputdata[6].toString(16)).slice(-2))
+        const deviceName = getDeviceName(vendorId, productId, versionID);
 
         updateHeaderStatus('', 'mode-text', '', mode_info);
         updateHeaderStatus('device-icon', 'device-text', 'fas fa-sign-in-alt', deviceName);
@@ -476,6 +469,30 @@ async function update_statebar(inputdata) {
             layer = (findSingleOneBit(inputdata[21] | inputdata[22]) + 1);
             showNotification('激活层更改', '当前激活层为层' + layer);
         }
+        update_device_info(inputdata);
+    } else if (inputdata[0] == 0x05) {  //收到键盘接收出错错误的数据包
+        GetKeyboardInfo();             //立刻重新获取键盘信息
+    }
+}
+
+async function update_device_info(inputdata) {
+    if (inputdata[0] == 0) {
+        var builddata = parseInt("0x" + ("0" + inputdata[15].toString(16)).slice(-2) + ("0" + inputdata[14].toString(16)).slice(-2) + ("0" + inputdata[13].toString(16)).slice(-2) + ("0" + inputdata[12].toString(16)).slice(-2)).toString(10);
+        var newDate = new Date();
+        newDate.setTime(builddata * 1000);
+        var formattedDate = newDate.getFullYear() + '/' + (newDate.getMonth() + 1).toString().padStart(2, '0') + '/' + newDate.getDate().toString().padStart(2, '0');
+        const vendorId = parseInt("0x" + ("0" + inputdata[3].toString(16)).slice(-2) + ("0" + inputdata[2].toString(16)).slice(-2));
+        const productId = parseInt("0x" + ("0" + inputdata[5].toString(16)).slice(-2) + ("0" + inputdata[4].toString(16)).slice(-2));
+        const versionID =parseInt("0x" + ("0" + inputdata[6].toString(16)).slice(-2))
+        const deviceName = getDeviceName(vendorId, productId, versionID);
+        const firmwarever = (("0" + inputdata[11].toString(16)).slice(-2) + ("0" + inputdata[10].toString(16)).slice(-2) + ("0" + inputdata[9].toString(16)).slice(-2) + ("0" + inputdata[8].toString(16)).slice(-2));
+
+
+        document.getElementById('device_name').innerHTML = deviceName;
+        document.getElementById('device_mac').innerHTML = ("0" + inputdata[28].toString(16).toUpperCase()).slice(-2) + ":" + ("0" + inputdata[27].toString(16).toUpperCase()).slice(-2) + ":" + ("0" + inputdata[26].toString(16).toUpperCase()).slice(-2) + ":" + ("0" + inputdata[25].toString(16).toUpperCase()).slice(-2) ;
+        document.getElementById('firmware_ver').innerHTML = firmwarever.toUpperCase();
+        document.getElementById('firmware_date').innerHTML = formattedDate;
+        document.getElementById('firmware_date').setAttribute('title', newDate.toLocaleString());
     } else if (inputdata[0] == 0x05) {  //收到键盘接收出错错误的数据包
         GetKeyboardInfo();             //立刻重新获取键盘信息
     }

@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html  lang="zh-CN">
+<html>
 <head>
- <meta charset="UTF-8">
 <title>JLKB</title>
 <style>
-  /*  CSS */
+  /* 浅色动画效果 CSS */
   body, html {
     margin: 0;
     padding: 0;
     height: 100%;
     font-family: 'Nunito Sans', sans-serif;
-    background-color: #f8f9fa;
+    background-color: #f8f9fa; /* 浅灰色背景 */
     color: #343a40;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -18,10 +17,16 @@
 
   .tab-container {
     display: flex;
-    background-color: #fff;
-    border-bottom: 1px solid #e8e8e8;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    background-color: #fff; /* 标签栏白色背景 */
+    border-bottom: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
     padding-left: 20px;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    position: relative; /*  为底部滑块定位 */
   }
 
   .tab-button {
@@ -29,33 +34,67 @@
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 24px;
-    transition: color 0.3s ease, border-bottom-color 0.3s ease;
-    font-size: 16px;
+    padding: 12px 20px;
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease; /*  加入 transform 过渡 */
+    font-size: 15px;
     color: #757575;
     border-bottom: 2px solid transparent;
+    border-radius: 6px 6px 0 0;
+    margin-right: 5px;
+    margin-left: 5px;
+    position: relative; /*  为 hover 时的背景渐变定位 */
+    overflow: hidden;   /*  裁剪 hover 渐变效果 */
   }
 
   .tab-button:hover {
-    color: #546e7a;
-    background-color: #f9f9f9;
+    color: #37474f;
+    /* background-color: #f0f0f0;  原本的 hover 背景色 */
+    background-color: #f8f8f8; /*  hover 背景色，更浅淡 */
+    transform: translateY(-2px); /*  hover 时按钮轻微上浮 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /*  hover 时增加轻微阴影 */
   }
 
   .tab-button.active {
-    color: #37474f;
-    border-bottom-color: #4fc3f7;
+    color: #fff;
+    border-bottom-color: transparent;
     font-weight: 600;
-    background-color: #fff;
+    /* background-color: #4fc3f7;  原本的选中背景色 */
+    background-color: #4dd0e1; /*  选中标签背景色 -  更柔和的浅蓝色 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: background-color 0.5s ease; /*  背景色平滑过渡 */
   }
 
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px; /*  底部滑块高度 */
+    background-color: #4dd0e1; /*  滑块颜色与选中背景色一致 */
+    border-radius: 3px 3px 0 0; /*  滑块顶部圆角 */
+    transform: translateY(100%); /*  初始状态滑块隐藏在底部 */
+    transition: transform 0.4s ease; /*  滑块出现动画 */
+    transform-origin: bottom center; /*  滑块动画基点 */
+  }
+
+  .tab-button.active.show-slider::after {
+    transform: translateY(0); /*  选中时滑块滑出 */
+  }
+ .iframe {
+    border: none;
+    width: 100%;
+    height: 100%;
+}
   .tab-content {
-    display: none;
-    padding: 35px; /* 调整 padding 以适应 iframe，如果需要 */
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 58px); /* 减去 tab-container 的高度 (approx. 58px) */
-    overflow: hidden; /* 防止 iframe 内容超出 tab-content 区域 */
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tab-content.show {
+    display: flex; /*  显示内容区域 */
+    opacity: 1;   /*  完全不透明，显示 */
   }
 
   .tab-content iframe {
@@ -64,22 +103,31 @@
     height: 100%;
   }
 
-  /* Rules Tab Specific Styling - 现代化调整 */
+  /* Rules Tab Specific Styling - 现代化调整 and Floating Effect */
   #rules {
     display: flex;
     flex-direction: column;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    border-radius: 8px;
+    margin: 20px auto;
+    padding: 35px;
+    width: fit-content;
+    max-width: 95%;
+    min-width: 800px;
   }
 
   #rules-config-area {
     display: flex;
     gap: 30px;
-    align-items: flex-start; /* 确保两列顶部对齐 */
+    align-items: flex-start;
   }
 
   #rules-config-options {
-    flex: 1; /* 使用 flex: 1 让列自适应宽度 */
-    flex-basis: 300px; /* 初始宽度，可以根据需要调整 */
-    max-width: 40%; /* 最大宽度，限制左列不会过宽 */
+    flex: 1;
+    flex-basis: 300px;
+    max-width: 40%;
     padding-right: 30px;
     border-right: 1px solid #e8e8e8;
   }
@@ -88,14 +136,14 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center; /* 水平居中子元素 */
+    align-items: center;
   }
 
 
   .config-item {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 12px;
   }
 
   .config-item label {
@@ -266,7 +314,7 @@
 </div>
 
 <div id="rules" class="tab-content">
-  <h3>rules.mk Configuration</h3>
+  <h3>rules.mk 配置生成</h3>
   <div id="rules-config-area">
     <div id="rules-config-options">
 
@@ -383,11 +431,10 @@
     </div>
 
     <div id="rules-output-area">
-      <h4>Generated rules.mk</h4>
       <div class="output-buttons">
-        <button onclick="downloadRules()">Download</button>
-        <button onclick="copyRules()">Copy</button>
-        <button class="reset-button" onclick="resetRules()">Reset</button>
+        <button onclick="downloadRules()">下 载</button>
+        <button onclick="copyRules()">复 制</button>
+        <button class="reset-button" onclick="resetRules()">重 置</button>
       </div>
       <textarea id="rules-text-output" readonly></textarea>
     </div>
@@ -395,47 +442,39 @@
 </div>
 
 <div id="keyboard" class="tab-content" data-loaded="false">
-  <iframe src="keyboard.html"></iframe>
-    </div>
+   <iframe src="keyboard.html"></iframe>
 </div>
 
 <div id="config" class="tab-content" data-loaded="false">
-  <iframe src="config.html"></iframe>
+ <iframe src="config.html"></iframe>
 </div>
 
 <div id="mcuconf" class="tab-content" data-loaded="false">
-  <iframe src="mcu.html"></iframe>
-    </div>
+ <iframe src="mcu.html"></iframe>
 </div>
 
 <div id="halconf" class="tab-content" data-loaded="false">
-  <iframe src="hal.html"></iframe>
-    </div>
+ <iframe src="hal.html"></iframe>
 </div>
 
 <div id="chonf" class="tab-content" data-loaded="false">
   <iframe src="chconf.html"></iframe>
-    </div>
 </div>
 
 <div id="map-rules" class="tab-content" data-loaded="false">
-  <iframe src="map-rules.html"></iframe>
-    </div>
+<iframe src="map-rules.html"></iframe>
 </div>
 
 <div id="map-config" class="tab-content" data-loaded="false">
-  <iframe src="map-config.html"></iframe>
-    </div>
+<iframe src="map-config.html"></iframe>
 </div>
 
 <div id="keymap" class="tab-content" data-loaded="false">
-  <iframe src="keymap.html"></iframe>
-    </div>
+<iframe src="keymap.html"></iframe>
 </div>
 
 <div id="vial" class="tab-content" data-loaded="false">
-  <iframe src="vial.html"></iframe>
-    </div>
+<iframe src="vial.html"></iframe>
 </div>
 
 <script>
@@ -444,13 +483,19 @@ function openTab(evt, tabName) {
   tabcontent = document.getElementsByClassName("tab-content");
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
+    tabcontent[i].classList.remove('show'); // 移除 show class 隐藏内容
   }
   tabbuttons = document.getElementsByClassName("tab-button");
   for (i = 0; i < tabbuttons.length; i++) {
     tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
+    tabbuttons[i].classList.remove('show-slider'); // 移除滑块 class
   }
+
   document.getElementById(tabName).style.display = "block";
   evt.currentTarget.className += " active";
+  document.getElementById(tabName).classList.add('show'); // 添加 show class 触发内容淡入
+  evt.currentTarget.classList.add('show-slider'); // 添加滑块 class 触发滑块动画
+
 
   // No need to load external HTML for "config" tab anymore, iframe handles it
   // For other tabs, keep the loading logic if needed, or remove data-loaded and fetch if not used.
