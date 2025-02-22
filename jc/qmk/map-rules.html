@@ -199,6 +199,9 @@ select, input[type="text"] {
         <label><input type="checkbox" id="lto_enable"> 启用 LTO</label>
     </div>
     <div>
+        <label><input type="checkbox" id="vialrgb_enable"> VIAL RGB</label>
+    </div>
+    <div>
         <label><input type="checkbox" id="joystick_enable"> 启用 摇杆</label>
         <div id="joystick_driver_select" class="driver-select driver-option">
             <label><input type="checkbox" id="joystick_driver_enable"> 启用 摇杆驱动</label>
@@ -261,6 +264,7 @@ viaCustomKeyCodeEnableCheckbox.checked = true; // 默认勾选 VIA 自定义键�
 
 
 const ltoEnableCheckbox = document.getElementById('lto_enable');
+const vialrgbEnableCheckbox = document.getElementById('vialrgb_enable');
 const joystickEnableCheckbox = document.getElementById('joystick_enable');
 const pointingDeviceEnableCheckbox = document.getElementById('pointing_device_enable');
 const vpathEnableCheckbox = document.getElementById('vpath_enable');
@@ -306,6 +310,9 @@ function generateCode() {
     if (ltoEnableCheckbox.checked) {
         code += 'LTO_ENABLE = yes\n';
     }
+    if (vialrgbEnableCheckbox.checked) {
+        code += 'VIALRGB_ENABLE = yes\n';
+    }
     if (joystickEnableCheckbox.checked) {
         code += 'JOYSTICK_ENABLE = yes\n';
         if (joystickDriverEnableCheckbox.checked) {
@@ -341,7 +348,7 @@ vialInsecureEnableCheckbox.addEventListener('change', generateCode);
 radialControllerEnableCheckbox.addEventListener('change', generateCode);
 viaCustomKeyCodeEnableCheckbox.addEventListener('change', generateCode); // 添加 VIA 自定义键码 checkbox 事件监听
 ltoEnableCheckbox.addEventListener('change', generateCode);
-
+vialrgbEnableCheckbox.addEventListener('change', generateCode);
 
 joystickEnableCheckbox.addEventListener('change', function() {
     if (joystickEnableCheckbox.checked) {
