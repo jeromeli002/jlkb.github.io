@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
+<meta charset="utf-8">
 <title>JLKB</title>
 <style>
   /* 浅色动画效果 CSS */
@@ -643,7 +644,7 @@ function downloadRules() {
 function copyRules() {
   const text = document.getElementById('rules-text-output').value;
   navigator.clipboard.writeText(text).then(() => {
-    alert('rules.mk content copied to clipboard!'); // Optional: Alert to confirm copy
+    alert('已复制内容'); // Optional: Alert to confirm copy
   }, (err) => {
     console.error('Failed to copy text: ', err); // Optional: Error handling
     alert('Failed to copy rules.mk content to clipboard.');
@@ -651,7 +652,7 @@ function copyRules() {
 }
 
 function resetRules() {
-  if (confirm('Are you sure you want to reset all configurations?')) {
+  if (confirm('已重置')) {
     jobsCheckbox.checked = false;
     jobsNumberInput.value = 16;
     jobsNumberInput.disabled = true;

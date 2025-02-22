@@ -186,7 +186,8 @@ textarea {
 
 .keycode-input-group,
 .layer-row,
-.encoder-input-group {
+.encoder-input-group,
+.joystick-input-group {
     border: 1px solid #e0e0e0;
     padding: 15px; /* Increased padding */
     margin-bottom: 15px; /* Increased margin */
@@ -196,22 +197,25 @@ textarea {
 
 .keycode-input-group-header,
 .layer-row-header,
-.encoder-input-group-header {
+.encoder-input-group-header,
+.joystick-input-group-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Align items at each end */
     align-items: center;
     margin-bottom: 15px; /* Increased margin */
 }
 
 .keycode-input-group-header h4,
 .layer-row-header h4,
-.encoder-input-group-header h4 {
+.encoder-input-group-header h4,
+.joystick-input-group-header h4 {
     margin: 0;
     color: #545b62; /* Slightly darker header text */
 }
 
 .remove-keycode-button,
-.remove-encoder-button {
+.remove-encoder-button,
+.remove-joystick-button {
     padding: 8px 12px;
     cursor: pointer;
     border: none;
@@ -219,10 +223,12 @@ textarea {
     background-color: #dc3545; /* Danger button color */
     color: white;
     transition: background-color 0.3s ease;
+    margin-left: 10px; /* Add some space to the left of the remove button */
 }
 
 .remove-keycode-button:hover,
-.remove-encoder-button:hover {
+.remove-encoder-button:hover,
+.remove-joystick-button:hover {
     background-color: #c82333; /* Darker shade on hover */
 }
 
@@ -319,11 +325,11 @@ textarea {
         <h3>矩阵按键</h3>
         <div class="input-group">
             <label for="matrix_rows">Rows:</label>
-            <input type="number" id="matrix_rows" value="3" onchange="updateCode()">
+            <input type="number" id="matrix_rows" value="3" min="0" onchange="validateNonNegativeInput(this); updateCode()">
         </div>
         <div class="input-group">
             <label for="matrix_cols">Cols:</label>
-            <input type="number" id="matrix_cols" value="3" onchange="updateCode()">
+            <input type="number" id="matrix_cols" value="3" min="0" onchange="validateNonNegativeInput(this); updateCode()">
         </div>
     </div>
 
@@ -344,11 +350,11 @@ textarea {
         <h3>层指示灯设置</h3>
         <div class="input-group">
             <label for="highest_layer">最高层数 (1-15):</label>
-            <input type="number" id="highest_layer" value="3" min="1" max="15" onchange="updateLayerRows()">
+            <input type="number" id="highest_layer" value="3" min="1" max="15" onchange="validateNonNegativeInput(this); updateLayerRows()">
         </div>
         <div class="input-group">
             <label for="default_layer">默认层数 (0-based):</label>
-            <input type="number" id="default_layer" value="0" onchange="updateCode()">
+            <input type="number" id="default_layer" value="0" min="0" onchange="validateNonNegativeInput(this); updateCode()">
         </div>
         <div id="layerRows">
         </div>
@@ -357,19 +363,9 @@ textarea {
 
     <div class="code-section joystick-settings" id="joystickSettingsSection" style="display: none;">
         <h3>摇杆</h3>
-        <div class="joystick-row">
-            <label for="joystick_pin_a">摇杆 1 引脚:</label>
-            <input type="text" id="joystick_pin_a" value="A2" onchange="updateCode()">
-            <button type="button" onclick="swapJoystickValues('joystick_values_a')">切换</button>
-            <input type="hidden" id="joystick_values_a" value="1023, 512, 0">
+        <div id="joystickInputs">
         </div>
-        <div class="joystick-row">
-            <label for="joystick_pin_b">摇杆 2 引脚:</label>
-            <input type="text" id="joystick_pin_b" value="A1" onchange="updateCode()">
-            <button type="button" onclick="swapJoystickValues('joystick_values_b')">切换</button>
-            <input type="hidden" id="joystick_values_b" value="1023, 512, 0">
-        </div>
-        <p>PS: 切换按钮可以切换摇杆最小值、中间值、最大值</p>
+        <button type="button" onclick="addJoystickInput()">添加摇杆</button>
     </div>
 </div>
 
@@ -386,11 +382,19 @@ textarea {
 let keycodeIndex = 0; // Start index for custom keycodes
 let layerRowIndex = 0; // Start index for layer rows
 let encoderIndex = 0; // Start index for encoder inputs
+let joystickIndex = 0; // Start index for joystick inputs
+
 
 const hsvColors = ['HSV_AZURE', 'HSV_BLUE', 'HSV_CHARTREUSE', 'HSV_CYAN', 'HSV_FUCHSIA', 'HSV_GREEN', 'HSV_LIME', 'HSV_MAGENTA', 'HSV_MAROON', 'HSV_NAVY', 'HSV_OLIVE', 'HSV_ORANGE', 'HSV_PURPLE', 'HSV_RED', 'HSV_SILVER', 'HSV_TEAL', 'HSV_TURQUOISE', 'HSV_VIOLET', 'HSV_WHITE', 'HSV_YELLOW'];
 const encoderActions = [
     "KC_MS_WH_UP", "KC_MS_WH_DOWN", "KC_VOLD", "KC_VOLU", "RGB_HUD", "RGB_HUI", "RGB_SAD", "RGB_SAI"
 ];
+
+function validateNonNegativeInput(inputElement) {
+    if (inputElement.value < 0) {
+        inputElement.value = 0;
+    }
+}
 
 
 function updateCode() {
@@ -420,9 +424,7 @@ function updateCode() {
         });
         code = code.trimEnd(); //remove trailing newline
         code = code.slice(0, -1); //remove trailing comma if any
-        code += `\n};\n\n#define HIGHEST_LAYER ${parseInt(document.getElementById('highest_layer').value) || 3} //最高层数 0开始算起默认3(1-15层)\nstatic uint8_t current_layer = ${parseInt(document.getElementById('default_layer').value) || 0}; //默认0层开始\n`;
-    } else {
-        code += `#define HIGHEST_LAYER ${parseInt(document.getElementById('highest_layer').value) || 3} //最高层数 0开始算起默认3(1-15层)\nstatic uint8_t current_layer = ${parseInt(document.getElementById('default_layer').value) || 0}; //默认0层开始\n`;
+        code += `\n};\n\n`;
     }
 
 
@@ -481,6 +483,7 @@ function updateCode() {
     }
 
     if (document.getElementById('layer_indicator_checkbox').checked) {
+        code += `#define HIGHEST_LAYER ${parseInt(document.getElementById('highest_layer').value) || 3} //最高层数 0开始算起默认3(1-15层)\nstatic uint8_t current_layer = ${parseInt(document.getElementById('default_layer').value) || 0}; //默认0层开始，与层指示灯联动\n`;
         code += `// 层指示灯\n`;
         const layerRows = document.querySelectorAll('#layerRows .layer-row');
         layerRows.forEach((row, index) => {
@@ -501,9 +504,19 @@ function updateCode() {
 
 
     if (document.getElementById('joystick_config_checkbox').checked) {
-        const joystickValuesA = document.getElementById('joystick_values_a').value.split(',').join(', ');
-        const joystickValuesB = document.getElementById('joystick_values_b').value.split(', ').join(', ');
-        code += `//摇杆\njoystick_config_t joystick_axes[JOYSTICK_AXIS_COUNT] = {\n\t[0] = JOYSTICK_AXIS_IN(${document.getElementById('joystick_pin_a').value}, ${joystickValuesA}),\n\t[1] = JOYSTICK_AXIS_IN(${document.getElementById('joystick_pin_b').value}, ${joystickValuesB})\n\n};\n`;
+        code += `//摇杆\njoystick_config_t joystick_axes[JOYSTICK_AXIS_COUNT] = {\n`;
+        const joystickInputs = document.querySelectorAll('#joystickInputs .joystick-input-group');
+        joystickInputs.forEach((inputGroup, index) => {
+            const pinInput = inputGroup.querySelector('input[type="text"][data-type="pin"]');
+            const valuesInput = inputGroup.querySelector('input[type="hidden"]');
+            const values = valuesInput.value.split(',').join(', ');
+            if (pinInput.value.trim()) { // Only add if pin is specified
+                 code += `\t[${index}] = JOYSTICK_AXIS_IN(${pinInput.value.trim()}, ${values}),\n`;
+            }
+        });
+        code = code.trimEnd(); // Remove trailing newline
+        code = code.slice(0, -1); // Remove trailing comma if any
+        code += `\n};\n`;
     }
 
     document.getElementById('codeTextarea').value = code;
@@ -536,6 +549,7 @@ function resetCode() {
     resetCustomKeycodesSection();
     resetLayerIndicatorSection();
     resetEncoderSection();
+    resetJoystickSection();
 
     // Reset checkboxes
     document.getElementById('joystick_key_checkbox').checked = false;
@@ -550,10 +564,6 @@ function resetCode() {
     document.getElementById('matrix_cols').value = '3';
     document.getElementById('highest_layer').value = '3';
     document.getElementById('default_layer').value = '0';
-    document.getElementById('joystick_pin_a').value = 'A2';
-    document.getElementById('joystick_pin_b').value = 'A1';
-    document.getElementById('joystick_values_a').value = '1023, 512, 0';
-    document.getElementById('joystick_values_b').value = '1023, 512, 0';
 
 
     // Update visibility of sections based on checkbox states
@@ -576,12 +586,84 @@ function swapJoystickValues(inputId) {
 function toggleJoystickSettings() {
     const joystickSettingsSection = document.getElementById('joystickSettingsSection');
     const joystickCheckbox = document.getElementById('joystick_config_checkbox');
+    const joystickInputs = document.getElementById('joystickInputs');
     if (joystickCheckbox.checked) {
         joystickSettingsSection.style.display = 'block';
+        if (joystickInputs.children.length === 0) {
+            addJoystickInput(); // Add default joystick input if section is enabled and empty
+        }
     } else {
         joystickSettingsSection.style.display = 'none';
+        joystickInputs.innerHTML = ''; // Clear joystick inputs when unchecked
     }
 }
+
+function resetJoystickSection() {
+    const joystickInputs = document.getElementById('joystickInputs');
+    joystickInputs.innerHTML = ''; // Clear existing joystick inputs
+    if (document.getElementById('joystick_config_checkbox').checked) {
+        addJoystickInput(); // Add default joystick input if joystick checkbox is checked
+    }
+}
+
+
+let joystickCount = 0; // Counter for joystick inputs
+
+function addJoystickInput() {
+    joystickCount++;
+    const joystickInputsDiv = document.getElementById('joystickInputs');
+    const newJoystickInputGroup = document.createElement('div');
+    newJoystickInputGroup.className = 'joystick-input-group';
+    newJoystickInputGroup.innerHTML = `
+        <div class="joystick-input-group-header">
+            <h4>摇杆 ${joystickCount}</h4>
+            <div>
+                <button type="button" class="remove-joystick-button" onclick="removeJoystickInput(this.parentNode.parentNode.parentNode)">删减</button>
+            </div>
+        </div>
+        <div class="joystick-row">
+            <label for="joystick_pin_${joystickCount}">引脚:</label>
+            <input type="text" id="joystick_pin_${joystickCount}" data-index="${joystickCount}" data-type="pin" value="A${joystickCount + 1}" onchange="updateCode()">
+            <button type="button" onclick="swapJoystickValues('joystick_values_${joystickCount}')">切换</button>
+            <input type="hidden" id="joystick_values_${joystickCount}" value="1023, 512, 0">
+        </div>
+    `;
+    joystickInputsDiv.appendChild(newJoystickInputGroup);
+    updateJoystickIndices();
+    updateCode();
+}
+
+
+function removeJoystickInput(element) {
+    const joystickInputsDiv = document.getElementById('joystickInputs');
+    if (joystickInputsDiv.children.length <= 1) {
+        alert('At least one joystick must remain.');
+        return;
+    }
+    element.remove();
+    updateJoystickIndices();
+    updateCode();
+}
+
+function updateJoystickIndices() {
+    const joystickInputs = document.querySelectorAll('#joystickInputs .joystick-input-group');
+    joystickCount = 0; // Reset index counter
+    joystickInputs.forEach((inputGroup) => {
+        joystickCount++;
+        const header = inputGroup.querySelector('.joystick-input-group-header h4');
+        header.textContent = `摇杆 ${joystickCount}`; // Update header text
+        const label = inputGroup.querySelector('.joystick-row label');
+        label.textContent = `引脚:`; // Update label text to just "引脚:"
+        const pinInput = inputGroup.querySelector('.joystick-row input[type="text"]');
+        pinInput.id = `joystick_pin_${joystickCount}`; // Update pin input id
+        pinInput.dataset.index = joystickCount; // Update pin input data-index
+        const valuesButton = inputGroup.querySelector('.joystick-row button');
+        valuesButton.setAttribute('onclick', `swapJoystickValues('joystick_values_${joystickCount}')`); // Update button onclick
+        const valuesInput = inputGroup.querySelector('.joystick-row input[type="hidden"]');
+        valuesInput.id = `joystick_values_${joystickCount}`; // Update values input id
+    });
+}
+
 
 function toggleCustomKeycodesSection() {
     const customKeycodesSection = document.getElementById('customKeycodesSection');
@@ -720,11 +802,11 @@ function updateLayerRows() {
             <div class="layer-segment-inputs">
                 <div class="layer-input-group">
                     <label for="start_segment_${i}">开始段:</label>
-                    <input type="number" id="start_segment_${i}" data-index="${i}" data-type="start" value="0" onchange="updateCode()">
+                    <input type="number" id="start_segment_${i}" data-index="${i}" data-type="start" value="0" min="0" onchange="validateNonNegativeInput(this); updateCode()">
                 </div>
                 <div class="layer-input-group">
                     <label for="end_segment_${i}">结束段:</label>
-                    <input type="number" id="end_segment_${i}" data-index="${i}" data-type="end" value="1" onchange="updateCode()">
+                    <input type="number" id="end_segment_${i}" data-index="${i}" data-type="end" value="1" min="0" onchange="validateNonNegativeInput(this); updateCode()">
                 </div>
                 <div class="layer-input-group">
                     <label for="hsv_color_${i}">颜色:</label>
@@ -821,6 +903,16 @@ function updateEncoderActions(changedSelect) { // This function is no longer use
 }
 
 
+// Initialize joystick inputs to 2 on page load
+function initializeJoystickInputs() {
+    const joystickInputsDiv = document.getElementById('joystickInputs');
+    joystickInputsDiv.innerHTML = ''; // Clear any existing inputs
+    joystickCount = 0; // Reset counter
+    addJoystickInput(); // Add the first joystick input
+    addJoystickInput(); // Add the second joystick input
+}
+
+
 // Initial code update and settings visibility on page load
 updateCode();
 toggleJoystickSettings();
@@ -830,6 +922,8 @@ toggleEncoderSettings();
 resetCustomKeycodesSection();
 resetLayerIndicatorSection();
 resetEncoderSection();
+resetJoystickSection();
+initializeJoystickInputs();
 </script>
 
 </body>
