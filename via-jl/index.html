@@ -33,8 +33,43 @@
 		<link rel="stylesheet" href="./assets/index-907ee25a.css">
 	</head>
 	<body>
-		<div id="root">
-		</div>
+		<div id="root"></div>
+
+<!--tc--->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<style>
+p {
+  color: #000000;
+  font-size: 18px;
+  line-height: 15px;
+}
+a {
+  color: #0044ff;
+  font-size: 18px;
+  text-decoration: none;
+}
+</style>
+<script>
+    swal({
+        title: "❤️JLKB-公告❤️",
+        content: (function() {
+            let div = document.createElement("div");
+            div.innerHTML = `
+                <p>💞资源不定期更新，有问题联系客服💞</p>
+                <p>💘支持定制任意配列💘</p>
+                <p>🛵详情官网查询或咨询客服🛵</p><br>
+                <p>🏅JLKB网址🏅</p>
+                <p style="text-align: left; padding-left: 100px;">官&nbsp;&nbsp;&nbsp;网：🎯<a href="https://jlkb.jlkb.top/" target="_blank">https://jlkb.jlkb.top</a></p>
+                <p style="text-align: left; padding-left: 100px;">网&nbsp;&nbsp;&nbsp;盘：🎯<a href="http://lhfha.x3322.net:5244/" target="_blank">http://lhfha.x3322.net:5244</a></p>
+                <p style="text-align: left; padding-left: 100px;">选&nbsp;&nbsp;&nbsp;购：🎯<a href="https://jlkb.taobao.com/" target="_blank">https://jlkb.taobao.com</a></p>
+            `;
+            return div;
+        })(),
+        icon: "success",
+        button: "确  定",
+    });
+</script>	
+		
 		<noscript>
 			你需要启用 JavaScript 才能运行此应用.
 		</noscript>
