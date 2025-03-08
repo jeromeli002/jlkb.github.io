@@ -28,7 +28,6 @@ h1 {
 }
 
 div {
-    margin-bottom: 25px; /* 稍微增加 div 间距 */
     width: 95%; /* 宽度稍微增加 */
     max-width: 1000px; /* 最大宽度增加 */
 }
@@ -400,17 +399,6 @@ button:active {
     <div class="input-group">
         <h2>矩阵布局</h2>
         <div class="input-row">
-            <label for="colInput">Cols:</label>
-            <div class="number-input-group">
-                <div class="number-input-buttons">
-                    <div class="number-input-button" onclick="decrementValue('colInput')">&#9664;</div>
-                </div>
-                <input type="number" id="colInput" value="1" onchange="generateMatrices()" placeholder="Columns">
-                <div class="number-input-buttons">
-                    <div class="number-input-button" onclick="incrementValue('colInput')">&#9654;</div>
-                </div>
-            </div>
-
             <label for="rowInput" style="margin-left: 20px;">Rows:</label>
             <div class="number-input-group" style="margin-left: 0px;">
                 <div class="number-input-buttons">
@@ -421,6 +409,18 @@ button:active {
                     <div class="number-input-button" onclick="incrementValue('rowInput')">&#9654;</div>
                 </div>
             </div>
+            
+            <label for="colInput">Cols:</label>
+            <div class="number-input-group">
+                <div class="number-input-buttons">
+                    <div class="number-input-button" onclick="decrementValue('colInput')">&#9664;</div>
+                </div>
+                <input type="number" id="colInput" value="1" onchange="generateMatrices()" placeholder="Columns">
+                <div class="number-input-buttons">
+                    <div class="number-input-button" onclick="incrementValue('colInput')">&#9654;</div>
+                </div>
+            </div>
+            
         </div>
 
         <div class="buttons-row">
