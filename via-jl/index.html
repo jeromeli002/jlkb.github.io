@@ -3,10 +3,10 @@
  <head>
   <meta charset="utf-8" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
-  <link rel="icon" type="./image/png" sizes="16x16" href="./favicon-16x16.png" />
-  <link rel="manifest" href="./site.webmanifest" />
-  <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5" />
+  <link rel="icon" type="./via-jl/image/png" sizes="32x32" href="./favicon-32x32.png" />
+  <link rel="icon" type="./via-jl/image/png" sizes="16x16" href="./favicon-16x16.png" />
+  <link rel="manifest" href="./via-jl/site.webmanifest" />
+  <link rel="mask-icon" href="./via-jl/safari-pinned-tab.svg" color="#5bbad5" />
   <meta name="msapplication-TileColor" content="#da532c" />
   <meta name="theme-color" content="#dadada" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -23,15 +23,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@300;400;500&amp;family=Fira+Sans:wght@300;400&amp;display=swap" rel="stylesheet" />
   <title>VIA-JL</title>
   <script id="definition_hash" data-hash="201f071f6516cf32d8704c169ef0e10ede62e152d7c3e1d67ee8d1599efd1605"></script>
-  <script type="module" crossorigin="" src="./assets/index-4BBG-FBZ.js"></script>
-  <link rel="modulepreload" crossorigin="" href="./assets/vendor-CuJnSHbf.js" />
-  <link rel="stylesheet" crossorigin="" href="./assets/index-CEbNCJ3E.css" />
+  <script type="module" crossorigin="" src="./via-jl/assets/index-4BBG-FBZ.js"></script>
+  <link rel="modulepreload" crossorigin="" href="./via-jl/assets/vendor-CuJnSHbf.js" />
+  <link rel="stylesheet" crossorigin="" href="./via-jl/assets/index-CEbNCJ3E.css" />
  </head>
  <body>
   <div id="root"></div>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <style>p{color:#000;font-size:16px;line-height:15px}a{color:#04f;font-size:16px;text-decoration:none}</style>
-  <script>swal({
+  <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
+	 <script>swal({
         title: "❤️JLKB-公告❤️",
         content: (function() {
             let div = document.createElement("div");
