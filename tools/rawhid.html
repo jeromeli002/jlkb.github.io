@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>WebHID RAW 数据通信工具 (延迟批量发送)</title>
+    <style>
+        /* --- 样式部分（保持不变，确保界面和响应式布局） --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px 0; background-color: #f8f9fa; color: #343a40; }
+        #main-wrapper { max-width: 900px; width: 85%; margin: 0 auto; }
+        h1 { color: #007bff; text-align: center; font-size: 1.8em; margin-bottom: 5px; }
+        h2 { color: #495057; font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; text-align: center; font-weight: 600; }
+        .controls { margin-bottom: 20px; padding: 15px; border: 1px solid #e9ecef; border-radius: 8px; background-color: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .connect-row { display: flex; align-items: center; justify-content: flex-start; gap: 15px; margin-bottom: 15px; }
+        #connectButton { background-color: #007bff; flex-shrink: 0; min-width: 120px; }
+        #connectButton:hover:not(:disabled) { background-color: #0056b3; }
+        .validation-control { display: flex; align-items: center; flex-shrink: 0; }
+        .validation-control input[type="checkbox"] { margin-right: 8px; width: 18px; height: 18px; flex-shrink: 0; }
+        .validation-control label { font-weight: 600; color: #007bff; cursor: pointer; font-size: 0.9em; white-space: nowrap; }
+        
+        .input-group-row { display: flex; gap: 15px; margin-bottom: 10px; align-items: center; }
+        
+        .input-item { 
+            flex-grow: 0; 
+            min-width: auto;
+            display: flex; 
+            align-items: center; 
+        }
+        .input-item label { margin-right: 5px; white-space: nowrap; font-size: 0.9em; color: #495057; }
+        
+        .input-group-row input[type="number"] { 
+            flex-grow: 0; 
+            width: 70px; 
+            min-width: 70px; 
+            padding: 6px 4px; 
+            border: 1px solid #ced4da; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-family: monospace; 
+            font-size: 0.9em; 
+            text-align: right; 
+        }
+
+
+        textarea { padding: 8px; margin-top: 3px; width: 100%; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-family: monospace; font-size: 0.9em; resize: vertical; min-height: 60px; max-height: 200px; }
+        button { padding: 8px 15px; cursor: pointer; color: white; border: none; border-radius: 4px; font-size: 0.9em; transition: background-color 0.2s ease; }
+        
+        #clearLogButton { background-color: #dc3545; }
+        #clearLogButton:hover:not(:disabled) { background-color: #bd2130; }
+        
+        #copyLogButton { background-color: #17a2b8; }
+        #copyLogButton:hover:not(:disabled) { background-color: #138496; }
+
+        #exportLogButton { background-color: #20c997; }
+        #exportLogButton:hover:not(:disabled) { background-color: #17a07c; }
+
+
+        button:disabled { background-color: #cccccc; cursor: not-allowed; }
+        hr { border: 0; border-top: 1px solid #dee2e6; margin: 15px 0; }
+        
+        .log-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 5px; 
+        }
+        .log-header h2 { margin: 0; text-align: left; }
+        .log-header > div {
+            display: flex;
+            gap: 8px; 
+        }
+        .log-header button { margin-right: 0; }
+
+
+        #log { margin-top: 5px; padding: 10px; border: 1px solid #ced4da; background-color: #fcfcfc; height: 180px; overflow-y: scroll; white-space: pre-wrap; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); font-size: 0.85em; }
+        .red { color: #dc3545; }
+        .green { color: #28a745; }
+        .yellow { color: #ffc107; font-weight: bold; }
+        
+        #deviceInfoContainer { margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch; }
+        .device-card { flex: 0 0 calc(25% - 8px); max-width: calc(25% - 8px); padding: 8px; border: 1px solid #ced4da; border-radius: 6px; background-color: #f7faff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.2s ease; font-size: 0.8em; }
+        .device-card:hover { transform: translateY(-1px); box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        .device-card.selected { border-color: #007bff; box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2); background-color: #eaf3ff; }
+        .device-card h3 { margin-top: 0; margin-bottom: 4px; font-size: 1.0em; }
+        .device-card p { margin: 2px 0; }
+        hr.card-hr { border: 0; border-top: 1px solid #e9ecef; margin: 6px 0; }
+        .collection-list { margin: 4px 0 4px 8px; padding: 0; list-style-type: disc; font-size: 1em; }
+        .collection-list li { margin-bottom: 2px; }
+        .report-info { color: #6c757d; font-size: 0.9em; margin-left: 4px; border-left: 1px solid #adb5bd; padding-left: 2px; margin-top: 4px; }
+
+        .raw-data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .raw-data-header label { margin-bottom: 0 !important; }
+        .raw-data-format {
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            color: #495057;
+            white-space: nowrap;
+        }
+        .raw-data-format input[type="checkbox"] {
+            margin-left: 10px;
+            margin-right: 5px;
+            width: 15px;
+            height: 15px;
+        }
+
+        #rawDataControls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: flex-start;
+            align-items: center; 
+        }
+        #rawDataControls .input-item {
+             margin-left: 10px; 
+             flex-grow: 0; 
+        }
+        
+        #delayInput, #loopCountInput { 
+            width: 80px; 
+            min-width: 80px;
+            flex-grow: 0;
+            text-align: right; 
+        }
+        
+        .loop-control-item {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+        .loop-control-item input[type="checkbox"] {
+            margin-right: 5px;
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+        .loop-control-item label {
+            font-size: 0.9em;
+            color: #495057;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+
+        #addRawData, #removeRawData {
+            padding: 5px 10px;
+            font-size: 1.2em;
+            width: 40px;
+            height: 40px;
+            line-height: 1;
+            text-align: center;
+            background-color: #6c757d;
+        }
+        #addRawData { background-color: #28a745; }
+        #addRawData:hover:not(:disabled) { background-color: #1e7e34; }
+        #removeRawData { background-color: #dc3545; }
+        #removeRawData:hover:not(:disabled) { background-color: #bd2130; }
+
+        #sendAllButton {
+            background-color: #ffc107;
+            color: #343a40;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+        #sendAllButton:hover:not(:disabled) { background-color: #e0a800; }
+        
+        #sendAllButton.sending {
+            background-color: #dc3545; 
+            color: white;
+        }
+        #sendAllButton.sending:hover:not(:disabled) {
+            background-color: #bd2130;
+        }
+        
+        
+        .data-row {
+            display: flex;
+            gap: 10px;
+            align-items: stretch; 
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            background-color: #f4f6f9;
+        }
+        .data-row.selected-for-send {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+            background-color: #eaf3ff;
+        }
+        .data-row .textarea-wrapper { flex-grow: 1; }
+        .data-row textarea { margin-top: 0; min-height: 80px; }
+        .data-row .actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            flex-shrink: 0;
+            gap: 5px; 
+            padding-right: 5px;
+        }
+        .data-row .actions button {
+            padding: 5px 10px; 
+            min-width: 60px; 
+            margin: 0;
+            font-size: 0.8em; 
+        }
+        .data-row .actions .send-row-btn { background-color: #007bff; }
+        .data-row .actions .send-row-btn:hover:not(:disabled) { background-color: #0056b3; }
+        .data-row .actions .delete-row-btn { background-color: #dc3545; }
+        .data-row .actions .delete-row-btn:hover:not(:disabled) { background-color: #bd2130; }
+        
+        .data-row-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
+            font-size: 0.8em; 
+            color: #6c757d;
+        }
+        .fill-zero-btn {
+            padding: 2px 6px;
+            font-size: 0.7em;
+            min-width: auto;
+            background-color: #6c757d;
+            margin-left: 8px; 
+            line-height: 1.2;
+            height: 24px;
+        }
+        .fill-zero-btn:hover:not(:disabled) { background-color: #5a6268; }
+
+
+        @media (max-width: 650px) {
+             #rawDataControls {
+                flex-wrap: wrap; 
+                justify-content: space-between;
+                gap: 15px;
+            }
+            #rawDataControls > * { min-width: calc(50% - 5px); }
+            #rawDataControls #addRawData, 
+            #rawDataControls #removeRawData,
+            #rawDataControls #sendAllButton {
+                 flex-grow: 0; min-width: auto;
+            }
+            
+            #rawDataControls .loop-control-item,
+            #rawDataControls #addRawData, 
+            #rawDataControls #removeRawData {
+                min-width: auto; flex-grow: 0;
+            }
+            
+             #rawDataControls .input-item {
+                 margin-left: 0; flex-grow: 1; min-width: calc(50% - 10px);
+            }
+
+            .input-group-row input[type="number"] {
+                flex-grow: 1; min-width: 50px; width: auto;
+            }
+
+            .data-row { flex-direction: column; }
+            .data-row .actions {
+                flex-direction: row; justify-content: flex-start;
+                padding-top: 5px; gap: 10px; padding-right: 0; 
+            }
+            .data-row .actions button { flex-grow: 1; min-width: auto; }
+            .log-header > div { flex-wrap: wrap; justify-content: flex-end; }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-wrapper">
+        <h1>WebHID RAW 数据通信工具</h1>
+        
+        <h2>已连接设备信息 (点击选择目标)</h2>
+        <div id="deviceInfoContainer">未连接设备。</div> 
+
+        <div class="controls">
+            <div class="connect-row">
+                <button id="connectButton">连接设备</button>
+                <div class="validation-control">
+                    <input type="checkbox" id="enableValidationCheckbox">
+                    <label for="enableValidationCheckbox">启用 RAW 设备通信验证</label>
+                </div>
+            </div>
+            <hr>
+            
+            <div class="input-group-row">
+                <div class="input-item">
+                    <label for="deviceId">目标 ID:</label>
+                    <input type="number" id="deviceId" value="0" min="0" title="要发送数据的逻辑设备索引 (0, 1, 2...)">
+                </div>
+                 <div class="input-item">
+                    <label for="reportId">报文 ID:</label>
+                    <input type="number" id="reportId" value="0" min="0" title="发送 Output Report 使用的 ID (根据选中设备自动读取)">
+                </div>
+                <div class="input-item">
+                    <label for="dataLength">默认长度 (字节):</label>
+                    <input type="number" id="dataLength" value="32" min="1" title="所有数据行的发送长度，也用于新增数据行时的默认长度">
+                </div>
+            </div>
+            
+            <p style="margin-top: 10px;">
+                <div class="raw-data-header">
+                    <label id="rawDataLabel" style="font-size: 0.9em; color: #495057;">原始数据列表 (点击数据行选中，点击**“发送”**按钮发送):</label>
+                    <div class="raw-data-format">
+                        <input type="checkbox" id="binaryFormatCheckbox">
+                        <label for="binaryFormatCheckbox" style="cursor: pointer; font-weight: normal; color: #495057;">以二进制显示</label>
+                    </div>
+                </div>
+            </p>
+            
+            <div id="rawDataContainer">
+                </div>
+
+            <div id="rawDataControls">
+                <button id="addRawData" title="增加一个新的数据行">+</button>
+                <button id="removeRawData" title="删除当前选中的数据行" disabled>-</button>
+                
+                <div class="input-item">
+                    <label for="delayInput">延迟 (ms):</label>
+                    <input type="number" id="delayInput" value="100" min="0" title="批量发送时，每行数据之间的延迟时间">
+                </div>
+                
+                <div class="input-item">
+                    <label for="loopCountInput">循环次数:</label>
+                    <input type="number" id="loopCountInput" value="1" min="1" title="批量发送循环执行的次数">
+                </div>
+                
+                <div class="loop-control-item">
+                    <input type="checkbox" id="infiniteLoopCheckbox">
+                    <label for="infiniteLoopCheckbox">无限循环</label>
+                </div>
+                
+                <button id="sendAllButton" disabled>批量发送所有数据</button>
+            </div>
+            
+            <hr>
+
+        </div>
+
+        <div class="log-header">
+            <h2 style="text-align:left;">操作日志</h2>
+            <div> <button id="exportLogButton" title="导出所有日志内容到文件">导出日志</button>
+                <button id="copyLogButton" title="复制所有日志内容到剪贴板">复制日志</button>
+                <button id="clearLogButton">清空日志</button>
+            </div>
+        </div>
+        
+        <div id="log"></div>
+    </div>
+
+    <script>
+        let connectedDevices = []; // 仅包含当前活动和打开的设备
+        let selectedDeviceIndex = -1;
+        let dataRows = [];
+        let selectedDataRowIndex = -1; 
+        let isSendingAll = false; 
+        let stopSendingFlag = false; 
+        let knownDeviceFilters = new Set(); // 用于判断是否自动重连的已授权设备 VID/PID 组合
+        
+        // --- DOM 元素引用 ---
+        const connectButton = document.getElementById('connectButton');
+        const dataLengthInput = document.getElementById('dataLength');
+        const deviceIdInput = document.getElementById('deviceId');
+        const reportIdInput = document.getElementById('reportId');
+        const enableValidationCheckbox = document.getElementById('enableValidationCheckbox');
+        const binaryFormatCheckbox = document.getElementById('binaryFormatCheckbox');
+        const logArea = document.getElementById('log');
+        const deviceInfoContainer = document.getElementById('deviceInfoContainer');
+        const clearLogButton = document.getElementById('clearLogButton');
+        const copyLogButton = document.getElementById('copyLogButton'); 
+        const exportLogButton = document.getElementById('exportLogButton'); 
+        const rawDataContainer = document.getElementById('rawDataContainer');
+        const addRawDataButton = document.getElementById('addRawData');
+        const removeRawDataButton = document.getElementById('removeRawData');
+        const delayInput = document.getElementById('delayInput'); 
+        const sendAllButton = document.getElementById('sendAllButton');
+        const loopCountInput = document.getElementById('loopCountInput');
+        const infiniteLoopCheckbox = document.getElementById('infiniteLoopCheckbox');
+
+
+        // --- 常量 ---
+        const STANDARD_USAGE_PAGES = new Set([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E]);
+        const DEFAULT_TEST_REPORT_ID = 0;
+        const DEFAULT_TEST_DATA_LENGTH = 1;
+        
+        // --- 初始化 ---
+        window.addEventListener('load', () => {
+            if (navigator.hid) {
+                navigator.hid.addEventListener('connect', handleConnect);
+                // 监听器已在设备open时添加
+            } else {
+                 log('警告：当前浏览器不支持 WebHID API。', true);
+                 connectButton.disabled = true;
+            }
+
+            addNewDataRow(true); 
+            setInputValidation();
+            handleLoopControlChange(true); 
+            log('页面加载完成。请点击 "连接设备" 按钮开始。');
+        });
+
+
+        /** 记录日志 */
+        const log = (message, isError = false, isWarning = false) => {
+            const span = document.createElement('span');
+            span.className = isError ? 'red' : (isWarning ? 'yellow' : 'green');
+            span.textContent = `[${new Date().toLocaleTimeString()}] ${message}\n`;
+            // 修复日志顺序：使用 appendChild 确保最新的日志在最底部
+            logArea.appendChild(span);
+            
+            // 新增：自动滚动到最底部
+            logArea.scrollTop = logArea.scrollHeight;
+        };
+
+        /** 复制日志内容到剪贴板 */
+        const copyLogContent = () => {
+            try {
+                const logContent = logArea.textContent;
+                navigator.clipboard.writeText(logContent).then(() => {
+                    log('日志内容已成功复制到剪贴板。', false);
+                }, (err) => {
+                    log(`复制日志失败: ${err.message}`, true);
+                });
+            } catch (error) {
+                log(`复制日志失败: ${error.message}`, true);
+            }
+        };
+
+        /** 导出日志内容为文件 */
+        const exportLogContent = () => {
+            try {
+                const logContent = logArea.textContent;
+                if (!logContent.trim()) {
+                    log('日志内容为空，无法导出。', true);
+                    return;
+                }
+
+                const blob = new Blob([logContent], { type: 'text/plain;charset=utf-8' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'HID-log.log'; 
+
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                log('日志内容已成功导出为 HID-log.log 文件。', false);
+            } catch (error) {
+                log(`导出日志失败: ${error.message}`, true);
+            }
+        };
+
+        /** 格式化报文信息 */
+        const formatReports = (reports, type) => {
+            if (!reports || reports.length === 0) return '';
+            let html = `<div class="report-info"><strong>${type} Reports:</strong>`;
+            reports.forEach(report => { html += `<div>ID: ${report.reportId}</div>`; });
+            html += `</div>`;
+            return html;
+        };
+
+        /** 递归解析并格式化集合信息 */
+        const formatCollections = (collections) => {
+            if (!collections || collections.length === 0) return '';
+            let html = `<ul class="collection-list">`;
+            collections.forEach(col => {
+                const usagePageHex = col.usagePage.toString(16).padStart(4, '0').toUpperCase();
+                const usageHex = col.usage.toString(16).padStart(4, '0').toUpperCase();
+                html += `<li><strong>U-ID:</strong> 0x${usageHex} (Page: 0x${usagePageHex})`;
+                html += formatReports(col.inputReports, 'In');
+                html += formatReports(col.outputReports, 'Out');
+                if (col.children && col.children.length > 0) {
+                    html += formatCollections(col.children);
+                }
+                html += `</li>`;
+            });
+            html += `</ul>`;
+            return html;
+        };
+
+        /** 显示单个逻辑设备的信息 */
+        const displayDeviceInfo = (dev, index) => {
+            const vid = dev.vendorId.toString(16).padStart(4, '0').toUpperCase();
+            const pid = dev.productId.toString(16).padStart(4, '0').toUpperCase();
+            
+            let infoHTML = `
+                <h3>设备 #${index}</h3>
+                <p><strong>名称:</strong> ${dev.productName || '未知'}</p>
+                <p><strong>VID/PID:</strong> 0x${vid}/0x${pid}</p>
+                <hr class="card-hr">
+                <strong style="display:block; margin-bottom:5px;">集合 (Collections):</strong>
+            `;
+
+            if (dev.collections && dev.collections.length > 0) {
+                infoHTML += formatCollections(dev.collections);
+            } else {
+                infoHTML += '<div>无集合信息。</div>';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'device-card';
+            card.setAttribute('data-device-index', index);
+            card.innerHTML = infoHTML;
+            card.addEventListener('click', () => selectDevice(index, true)); 
+            deviceInfoContainer.appendChild(card);
+        };
+        
+        /** 检查设备是否定义了任何 Output Reports。 */
+        const hasOutputReports = (device) => {
+            if (!device.collections) return false;
+            return device.collections.some(collection => 
+                (collection.outputReports && collection.outputReports.length > 0) || 
+                (collection.children && hasOutputReports({ collections: collection.children }))
+            );
+        };
+
+        /** 尝试向目标设备发送一个 Output Report 作为连通性测试。 */
+        const attemptSendTestReport = async (device, index) => {
+            const reportId = DEFAULT_TEST_REPORT_ID;
+            const length = DEFAULT_TEST_DATA_LENGTH;
+            
+            if (length <= 0) return false;
+
+            const testBuffer = new Uint8Array(length).buffer;
+            
+            try {
+                await device.sendReport(reportId, testBuffer);
+                log(`[测试 #${index}] 使用 Report ID ${reportId} (长度 ${length}) 发送成功。`, false);
+                return true;
+            } catch (error) {
+                log(`[测试 #${index}] 使用 Report ID ${reportId} 发送测试数据失败: ${error.message}`, false, true);
+                return false;
+            }
+        };
+        
+        /** 核心逻辑：分优先级查找 RAW 设备索引，并根据复选框状态决定是否进行运行时验证 */
+        const findRawDeviceIndex = async () => {
+            if (connectedDevices.length === 0) return -1;
+            
+            const candidates = [];
+            const validationEnabled = enableValidationCheckbox.checked;
+
+            for (let i = 0; i < connectedDevices.length; i++) {
+                const device = connectedDevices[i];
+                const hasOutput = hasOutputReports(device);
+                
+                if (!device.collections || device.collections.length === 0) continue;
+
+                let hasVendorDefined = false;
+                let isPurelyVendorDefined = true;
+                let hasNonStandard = false;
+                let priority = 0; 
+
+                for (const collection of device.collections) {
+                    const isVendor = collection.usagePage >= 0xFF00;
+                    const isStandard = STANDARD_USAGE_PAGES.has(collection.usagePage);
+
+                    if (isVendor) hasVendorDefined = true;
+                    if (!isVendor) isPurelyVendorDefined = false;
+                    if (!isStandard && !isVendor) hasNonStandard = true;
+                }
+
+                if (isPurelyVendorDefined && hasVendorDefined && hasOutput) priority = 4;
+                else if (isPurelyVendorDefined && hasVendorDefined) priority = 3;
+                else if (hasVendorDefined && !isPurelyVendorDefined) priority = 2;
+                else if (!isPurelyVendorDefined && hasNonStandard) priority = 1;
+
+                if (priority > 0) {
+                    candidates.push({ index: i, priority, device });
+                }
+            }
+            
+            candidates.sort((a, b) => b.priority - a.priority);
+
+            if (candidates.length === 0) {
+                log(`未找到符合 RAW 特征的设备。默认回退选中设备 #0。`, false, true);
+                return 0;
+            }
+
+            let finalIndex = candidates[0].index; 
+
+            if (validationEnabled) {
+                const candidateIndices = candidates.map(c => c.index).join(', ');
+                log(`找到 ${candidates.length} 个潜在 RAW 设备 (索引: ${candidateIndices})。已启用通信验证，开始运行时测试...`, false, true);
+
+                for (const candidate of candidates) {
+                    if (await attemptSendTestReport(candidate.device, candidate.index)) {
+                        const reasonMap = { 4: "最高优先级 (纯 RAW + Output)", 3: "次高优先级 (纯 RAW)", 2: "中优先级 (混合 RAW)", 1: "低优先级 (非标准 Page)" };
+                        log(`运行时验证成功！自动选中设备 #${candidate.index}。依据: ${reasonMap[candidate.priority]} 特征并通过通信测试。`, false);
+                        finalIndex = candidate.index;
+                        return finalIndex;
+                    }
+                }
+
+                log(`所有潜在 RAW 设备均未能通过运行时通信测试。将根据描述符选择最高优先级设备 (${finalIndex})。`, false, true);
+            } else {
+                 log(`找到 ${candidates.length} 个潜在 RAW 设备 (索引: ${candidates.map(c => c.index).join(', ')})。通信验证未启用，直接选中最高优先级设备 (${finalIndex})。`, false, true);
+            }
+
+            return finalIndex;
+        };
+        
+        /** 查找并返回 Output Report ID，如果找不到则返回 0 */
+        const getFirstOutputReportId = (device) => {
+            const findInCollections = (collections) => {
+                if (!collections) return 0;
+                for (const collection of collections) {
+                    if (collection.outputReports && collection.outputReports.length > 0) {
+                        return collection.outputReports[0].reportId;
+                    }
+                    if (collection.children) {
+                        const childId = findInCollections(collection.children);
+                        if (childId !== 0) return childId;
+                    }
+                }
+                return 0;
+            };
+            return findInCollections(device.collections);
+        };
+
+
+        /**
+         * @description 更新所有设备信息显示，并执行动态 RAW 设备选中。
+         * 此函数仅根据全局 connectedDevices 数组更新 UI。
+         */
+        const updateDeviceInfoUI = async () => {
+            deviceInfoContainer.innerHTML = '';
+            
+            const maxIndex = connectedDevices.length > 0 ? connectedDevices.length - 1 : 0;
+            deviceIdInput.max = maxIndex;
+            deviceIdInput.title = `目标设备 ID (0 到 ${maxIndex})`;
+
+            if (connectedDevices.length === 0) {
+                deviceInfoContainer.innerHTML = "<p style='margin:10px 0; color:#666; text-align: center;'>未连接设备。</p>";
+                deviceIdInput.value = 0;
+                // 重置发送按钮状态
+                updateSendButtonsState(false, false); 
+                return;
+            }
+            
+            connectedDevices.forEach(displayDeviceInfo);
+
+            const rawIndex = await findRawDeviceIndex();
+            selectDevice(rawIndex, false);
+            
+            // 确保UI更新后发送按钮状态正确
+            updateSendButtonsState(true, false);
+        };
+
+        /** 选中一个设备 */
+        const selectDevice = (index, isManual = false) => {
+            const indexNum = parseInt(index);
+            const maxIndex = connectedDevices.length > 0 ? connectedDevices.length - 1 : 0;
+
+            if (isNaN(indexNum) || indexNum < 0 || indexNum > maxIndex) {
+                deviceIdInput.value = Math.max(0, Math.min(indexNum, maxIndex));
+                return;
+            }
+            
+            const cards = deviceInfoContainer.querySelectorAll('.device-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            const targetCard = deviceInfoContainer.querySelector(`[data-device-index="${indexNum}"]`);
+
+            if (targetCard) {
+                targetCard.classList.add('selected');
+                
+                if (isManual && indexNum !== selectedDeviceIndex) {
+                    log(`已手动选中设备 #${indexNum}。`, false);
+                }
+                
+                selectedDeviceIndex = indexNum;
+                deviceIdInput.value = indexNum; 
+                
+                const selectedDevice = connectedDevices[indexNum];
+                const firstReportId = getFirstOutputReportId(selectedDevice);
+                reportIdInput.value = firstReportId;
+                log(`已自动设置设备 #${indexNum} 的 Output Report ID 为: ${firstReportId}`, false, firstReportId === 0);
+            } else {
+                selectedDeviceIndex = -1;
+                deviceIdInput.value = 0;
+                reportIdInput.value = 0;
+                log(`设备 #${indexNum} 不存在，已重置选择。`, true);
+            }
+        };
+
+        /** 监听设备 ID 输入框的变化，并同步选中卡片 */
+        const handleDeviceIdChange = () => {
+            const newIndex = parseInt(deviceIdInput.value);
+            const maxIndex = connectedDevices.length > 0 ? connectedDevices.length - 1 : 0;
+
+            if (isNaN(newIndex)) {
+                deviceIdInput.value = selectedDeviceIndex >= 0 ? selectedDeviceIndex : 0;
+                return;
+            }
+
+            let safeIndex = newIndex;
+            if (newIndex < 0) {
+                safeIndex = 0;
+                log(`警告: 目标设备 ID 必须大于等于 0，已自动修正为 0。`, false, true);
+            } else if (newIndex > maxIndex) {
+                safeIndex = maxIndex;
+                log(`警告: 目标设备 ID 超过最大值 ${maxIndex}，已自动修正。`, false, true);
+            }
+
+            deviceIdInput.value = safeIndex;
+            selectDevice(safeIndex, true); 
+        };
+
+        /**
+         * @description 统一管理所有发送按钮的文本、样式和禁用状态。
+         * @param {boolean} isConnected 当前是否有设备连接。
+         * @param {boolean} isCurrentlySending 当前是否正在批量发送。
+         */
+        const updateSendButtonsState = (isConnected, isCurrentlySending) => {
+            
+            isSendingAll = isCurrentlySending; // 更新全局状态
+            
+            const finalDisableState = !isConnected || isCurrentlySending;
+            
+            // 1. 更新单行发送按钮状态
+            dataRows.forEach(row => {
+                row.sendButton.disabled = finalDisableState;
+            });
+            
+            // 2. 更新批量发送按钮状态和文本
+            if (isCurrentlySending) {
+                sendAllButton.textContent = '停止发送';
+                sendAllButton.classList.add('sending');
+                sendAllButton.disabled = false; // 正在发送时按钮保持可用，用于停止
+            } else {
+                sendAllButton.textContent = '批量发送所有数据';
+                sendAllButton.classList.remove('sending');
+                sendAllButton.disabled = !isConnected;
+            }
+        };
+        
+        // ** 已删除 refreshConnectedDevicesList 函数 **
+
+        /** 连接/断开设备 */
+        const toggleConnection = async () => {
+            if (connectedDevices.length > 0) {
+                // 断开逻辑
+                connectedDevices.forEach(dev => {
+                    dev.removeEventListener('inputreport', handleInputReport);
+                    dev.removeEventListener('disconnect', handleDisconnect);
+                });
+                connectedDevices = [];
+                selectedDeviceIndex = -1;
+                connectButton.textContent = '连接设备';
+                stopSendingFlag = true; 
+                updateSendButtonsState(false, false); 
+                updateDeviceInfoUI(); // 更新UI
+                reportIdInput.value = 0;
+                log('所有设备已断开。');
+                return;
+            }
+
+            try {
+                // 连接逻辑：requestDevice 只返回当前已插入的设备，且用户必须授予权限
+                const devices = await navigator.hid.requestDevice({ filters: [] }); 
+
+                if (devices.length === 0) {
+                    log('未选择任何设备。', false);
+                    return;
+                }
+                
+                log(`找到 ${devices.length} 个逻辑设备。正在尝试打开...`);
+                
+                // CRITICAL CHANGE: 仅将 requestDevice 返回的新设备添加到列表中
+                for (const dev of devices) {
+                    if (!dev.opened) {
+                        await dev.open();
+                    }
+                    // 记录 VID/PID 以便自动重连
+                    const filter = { vendorId: dev.vendorId, productId: dev.productId };
+                    knownDeviceFilters.add(JSON.stringify(filter));
+                    
+                    if (!connectedDevices.includes(dev)) {
+                        dev.addEventListener('inputreport', handleInputReport);
+                        dev.addEventListener('disconnect', handleDisconnect);
+                        connectedDevices.push(dev);
+                        log(`设备 ${dev.productName} 成功打开并添加到活动列表。`, false);
+                    } else {
+                         log(`设备 ${dev.productName} 已在列表中，跳过。`, false, true);
+                    }
+                }
+                
+                // 仅更新 UI，不再调用 getDevices()
+                await updateDeviceInfoUI(); 
+                connectButton.textContent = connectedDevices.length > 0 ? '断开所有设备' : '连接设备';
+
+            } catch (error) {
+                log(`连接设备失败: ${error.name}: ${error.message}`, true);
+                connectedDevices = [];
+                selectedDeviceIndex = -1;
+                updateDeviceInfoUI(); 
+                reportIdInput.value = 0;
+                updateSendButtonsState(false, false); 
+            }
+        };
+        
+        /** 处理设备重新连接 (WebHID 'connect' event) */
+        const handleConnect = async (event) => {
+            const device = event.device;
+            const filter = JSON.stringify({ vendorId: device.vendorId, productId: device.productId });
+
+            if (knownDeviceFilters.has(filter)) {
+                log(`检测到已知的设备 ${device.productName} 重新插入。正在尝试自动打开...`, false);
+                try {
+                    if (!device.opened) {
+                        await device.open();
+                    }
+                    
+                    // 核心修正：查找是否已有同 VID/PID 的设备存在，以防止竞态条件导致重复。
+                    const existingIndex = connectedDevices.findIndex(dev => 
+                        dev.vendorId === device.vendorId && 
+                        dev.productId === device.productId
+                    );
+
+                    if (existingIndex !== -1) {
+                        // 发现重复项：移除旧的设备对象，并清除其监听器。
+                        const oldDevice = connectedDevices[existingIndex];
+                        oldDevice.removeEventListener('inputreport', handleInputReport);
+                        oldDevice.removeEventListener('disconnect', handleDisconnect);
+                        connectedDevices.splice(existingIndex, 1);
+                        log(`⚠️ 发现并替换了重复的设备 ${oldDevice.productName} (索引 #${existingIndex})，已解决重复显示问题。`, false, true);
+                    }
+                    
+                    // 添加新连接的设备对象
+                    device.addEventListener('inputreport', handleInputReport);
+                    device.addEventListener('disconnect', handleDisconnect);
+                    connectedDevices.push(device);
+                    log(`设备 ${device.productName} 成功自动打开并重连。`, false);
+                    await updateDeviceInfoUI(); // 更新 UI
+
+                } catch (error) {
+                    log(`自动重连设备 ${device.productName} 失败: ${error.message}`, true);
+                }
+            } else {
+                log(`检测到新的设备 ${device.productName} 插入，但不是先前授权的设备，跳过自动重连。`, false, true);
+            }
+        };
+
+
+        /** 处理设备断开 */
+        const handleDisconnect = async (event) => {
+            const disconnectedDevice = event.device;
+            
+            // CRITICAL: 从活动列表中移除设备
+            connectedDevices = connectedDevices.filter(dev => dev !== disconnectedDevice);
+            log(`设备 ${disconnectedDevice.productName} (VID: 0x${disconnectedDevice.vendorId.toString(16)}) 已断开连接。`, true);
+            
+            if (connectedDevices.length === 0) {
+                stopSendingFlag = true; 
+            }
+            
+            // 更新 UI，清除已断开的设备显示
+            await updateDeviceInfoUI(); 
+            connectButton.textContent = connectedDevices.length > 0 ? '断开所有设备' : '连接设备';
+
+            if (connectedDevices.length === 0) {
+                selectedDeviceIndex = -1;
+                reportIdInput.value = 0;
+            }
+        };
+        
+        /** 处理接收到的 Input Report */
+        const handleInputReport = (event) => {
+            const senderIndex = connectedDevices.findIndex(dev => dev === event.device);
+            const data = new Uint8Array(event.data.buffer);
+            const hexData = Array.from(data).map(b => b.toString(16).padStart(2, '0')).join(' ');
+            log(`[Input #${senderIndex}] 报文 ID ${event.reportId}: ${hexData}`, false);
+        };
+
+        // --- 数据格式转换与校验核心逻辑 ---
+
+        /** 将 ArrayBuffer 转换为指定格式的字符串 */
+        const bufferToFormattedString = (buffer, format) => {
+            const dataArray = new Uint8Array(buffer);
+            if (format === 'bin') {
+                return Array.from(dataArray)
+                    .map(b => b.toString(2).padStart(8, '0'))
+                    .join(' ');
+            }
+            return Array.from(dataArray)
+                .map(b => b.toString(16).padStart(2, '0').toUpperCase())
+                .join(' ');
+        };
+
+        /** 将十六进制或二进制字符串转换为 ArrayBuffer */
+        const formattedStringToBuffer = (formattedString, expectedLength, isBinary) => {
+            const base = isBinary ? 2 : 16;
+            const digitLength = isBinary ? 8 : 2;
+            
+            const cleanRegex = isBinary ? /[^01]/g : /[^0-9a-fA-F]/g;
+            const cleanedData = formattedString.replace(cleanRegex, '');
+            
+            if (cleanedData.length === 0) {
+                return new Uint8Array(expectedLength).buffer;
+            }
+
+            if (cleanedData.length % digitLength !== 0) {
+                throw new Error(`输入数据 (${cleanedData.length} 位) 长度必须是 ${digitLength} 位的整数倍，无法构成完整字节。`);
+            }
+
+            const inputBuffer = new Uint8Array(cleanedData.length / digitLength);
+            for (let i = 0; i < cleanedData.length; i += digitLength) {
+                inputBuffer[i / digitLength] = parseInt(cleanedData.substring(i, i + digitLength), base);
+            }
+            
+            const actualLength = inputBuffer.length;
+            
+            if (actualLength > expectedLength) {
+                return inputBuffer.slice(0, expectedLength).buffer;
+            } else if (actualLength < expectedLength) {
+                const paddedBuffer = new Uint8Array(expectedLength);
+                paddedBuffer.set(inputBuffer, 0);
+                return paddedBuffer.buffer;
+            } else {
+                return inputBuffer.buffer;
+            }
+        };
+
+        /** 格式化或解析单个原始数据行 */
+        const updateRawDataFormat = (index, isSwitchingFormat) => {
+            const row = dataRows[index];
+            if (!row) return;
+
+            const isBinary = binaryFormatCheckbox.checked;
+            const expectedLength = parseInt(dataLengthInput.value); 
+            const currentInput = row.textArea.value;
+            
+            if (isNaN(expectedLength) || expectedLength <= 0) {
+                dataLengthInput.value = 32;
+                return;
+            }
+
+            try {
+                if (isSwitchingFormat) {
+                    const baseBuffer = formattedStringToBuffer(currentInput, expectedLength, !isBinary);
+                    row.buffer = baseBuffer;
+                    row.textArea.value = bufferToFormattedString(row.buffer, isBinary ? 'bin' : 'hex');
+                } else {
+                    const tempBuffer = formattedStringToBuffer(currentInput, expectedLength, isBinary);
+                    row.buffer = tempBuffer;
+
+                    const formattedValue = bufferToFormattedString(row.buffer, isBinary ? 'bin' : 'hex');
+                    if (row.textArea.value !== formattedValue) {
+                        row.textArea.value = formattedValue;
+                    }
+                }
+            } catch (error) {
+                // 忽略输入过程中的格式错误
+            }
+        };
+
+        /** 批量更新所有数据行的显示格式 */
+        const updateAllRowsFormat = (isSwitchingFormat) => {
+            dataRows.forEach((row, index) => {
+                updateRawDataFormat(index, isSwitchingFormat);
+            });
+        };
+        
+        /** 将指定行的数据缓冲区全部填充为 0 */
+        const fillDataWithZeros = (index) => {
+            const row = dataRows[index];
+            if (!row) {
+                log(`错误：数据行 #${index + 1} 不存在。`, true);
+                return;
+            }
+            
+            const expectedLength = parseInt(dataLengthInput.value);
+            const isBinary = binaryFormatCheckbox.checked;
+
+            if (isNaN(expectedLength) || expectedLength <= 0) {
+                log(`错误：请设置大于 0 的有效“默认长度”。`, true);
+                return;
+            }
+
+            const zeroBuffer = new Uint8Array(expectedLength).buffer;
+            row.buffer = zeroBuffer;
+            
+            row.textArea.value = bufferToFormattedString(row.buffer, isBinary ? 'bin' : 'hex');
+            log(`数据行 #${index + 1} 已填充 ${expectedLength} 个字节的 0。`, false, true);
+        };
+
+
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        /** 发送 Output Report（针对特定行）*/
+        const sendData = async (index, isBatch = false) => {
+            try {
+                if (selectedDeviceIndex === -1 || !connectedDevices[selectedDeviceIndex]) {
+                    if (!isBatch) log('请先选择一个目标设备。', true);
+                    throw new Error("未选择目标设备");
+                }
+                const targetDevice = connectedDevices[selectedDeviceIndex];
+
+                if (!targetDevice || !targetDevice.opened) {
+                    if (!isBatch) log(`选中的设备 #${selectedDeviceIndex} 无效或未打开，无法发送数据。`, true);
+                    throw new Error("设备无效或未打开");
+                }
+
+                const row = dataRows[index];
+                if (!row) {
+                    if (!isBatch) log(`错误：数据行 #${index + 1} 不存在或已被删除。`, true);
+                    throw new Error("数据行不存在或已被删除");
+                }
+                
+                const reportId = parseInt(reportIdInput.value);
+                const expectedLength = parseInt(dataLengthInput.value); 
+                const isBinary = binaryFormatCheckbox.checked;
+
+                if (isNaN(expectedLength) || expectedLength <= 0) {
+                    throw new Error(`“默认长度” (${dataLengthInput.value} 字节) 必须是大于 0 的有效数字。`);
+                }
+                
+                const dataBuffer = formattedStringToBuffer(row.textArea.value, expectedLength, isBinary);
+                const dataArray = new Uint8Array(dataBuffer);
+
+                await targetDevice.sendReport(reportId, dataBuffer);
+
+                const hexData = Array.from(dataArray).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+                log(`[Output #${selectedDeviceIndex} - 行 ${index + 1}] 已发送报文 ID ${reportId} 的数据 (${dataArray.length} 字节) - Hex: ${hexData}`, false);
+                
+                row.buffer = dataBuffer;
+                row.textArea.value = bufferToFormattedString(row.buffer, isBinary ? 'bin' : 'hex');
+
+                return dataArray.length; 
+            } catch (error) {
+                const errorMessage = error.message || error.name || "未知 WebHID 错误";
+                const errorName = error.name || "Error";
+                
+                if (!isBatch) {
+                    log(`[Output #${selectedDeviceIndex} - 行 ${index + 1}] 发送失败 (${errorName}): ${errorMessage}`, true);
+                }
+                throw new Error(`发送数据行 #${index + 1} 失败 (${errorName}): ${errorMessage}`);
+            }
+        };
+
+
+        /** 延迟批量发送所有数据行 */
+        const sendAllDataWithDelay = async () => {
+            if (isSendingAll) {
+                stopSendingFlag = true;
+                log('收到停止请求。当前循环结束后将中断批量发送...', false, true);
+                return;
+            }
+
+            if (dataRows.length === 0) {
+                log('没有可发送的数据行。', true);
+                return;
+            }
+
+            const isInfinite = infiniteLoopCheckbox.checked;
+            let loopCount = isInfinite ? Infinity : (parseInt(loopCountInput.value) || 1);
+            if (loopCount < 1 && !isInfinite) loopCount = 1;
+
+            updateSendButtonsState(true, true);
+
+            const delayMs = Math.max(0, parseInt(delayInput.value) || 0);
+
+            log(`开始批量发送，共 ${isInfinite ? '无限' : loopCount} 轮循环，行间/循环间延迟 ${delayMs} 毫秒...`, false, true);
+            let currentLoop = 1;
+            
+            try {
+                for (currentLoop = 1; currentLoop <= loopCount; currentLoop++) {
+                    if (stopSendingFlag) break; 
+                    
+                    const loopInfo = isInfinite ? `无限循环 (第 ${currentLoop} 轮)` : `第 ${currentLoop} 轮 / 共 ${loopCount} 轮`;
+                    log(`--- ⚙️ 开始 ${loopInfo} ---`, false, true);
+
+                    for (let i = 0; i < dataRows.length; i++) {
+                        if (stopSendingFlag) break; 
+                        
+                        selectDataRow(i); 
+                        await sendData(i, true); 
+                        
+                        if (i < dataRows.length - 1 && delayMs > 0) { 
+                            await delay(delayMs);
+                        }
+                    }
+                    
+                    if (stopSendingFlag) break; 
+
+                    log(`--- ✅ 结束 ${loopInfo} ---`, false, true);
+                    
+                    const isNextLoopScheduled = (isInfinite || currentLoop < loopCount);
+                    if (isNextLoopScheduled && delayMs > 0) {
+                         await delay(delayMs);
+                    }
+                }
+                
+                if (!stopSendingFlag) {
+                    log(`✅ 所有数据已按计划发送完成 (循环 ${isInfinite ? '无限循环，已手动停止' : loopCount} 轮)。`, false);
+                } else {
+                    log(`⚠️ 批量发送已手动中断。`, true);
+                }
+            } catch (error) {
+                log(`❌ 批量发送中断于数据行 #${selectedDataRowIndex + 1} (第 ${currentLoop} 轮): ${error.message}`, true);
+            } finally {
+                stopSendingFlag = false; 
+                updateSendButtonsState(connectedDevices.length > 0, false);
+            }
+        };
+
+        // --- 多行数据管理逻辑 ---
+
+        /** 设置数据行的选中状态 */
+        const selectDataRow = (index) => {
+            rawDataContainer.querySelectorAll('.data-row').forEach(rowDiv => {
+                rowDiv.classList.remove('selected-for-send');
+            });
+            
+            if (index >= 0 && index < dataRows.length) {
+                const rowDiv = dataRows[index].rowDiv;
+                rowDiv.classList.add('selected-for-send');
+                selectedDataRowIndex = index;
+            } else {
+                selectedDataRowIndex = -1;
+            }
+
+            removeRawDataButton.disabled = dataRows.length <= 1 || selectedDataRowIndex === -1;
+        };
+
+        
+        /** 增加一行新的原始数据 */
+        const addNewDataRow = (isInitial = false) => {
+            const index = dataRows.length;
+            const defaultLength = parseInt(dataLengthInput.value) || 32;
+            const initialBuffer = new Uint8Array(defaultLength).buffer;
+            
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'data-row';
+            rowDiv.setAttribute('data-index', index);
+            
+            const isBinary = binaryFormatCheckbox.checked;
+            const initialData = bufferToFormattedString(initialBuffer, isBinary ? 'bin' : 'hex');
+            
+            const buttonDisabled = connectedDevices.length === 0 ? 'disabled' : ''; 
+
+            rowDiv.innerHTML = `
+                <div class="textarea-wrapper">
+                    <div class="data-row-header">
+                        <span class="row-title">数据行 #${index + 1}</span>
+                        <button class="fill-zero-btn" data-index="${index}" title="将此行数据全部填充为 0">填充0</button>
+                    </div>
+                    <textarea class="raw-data-textarea" data-index="${index}">${initialData}</textarea>
+                </div>
+                <div class="actions">
+                    <button class="send-row-btn" data-index="${index}" ${buttonDisabled}>发送</button>
+                    <button class="delete-row-btn" data-index="${index}" title="删除此行">删除</button>
+                </div>
+            `;
+            
+            rawDataContainer.appendChild(rowDiv);
+
+            const rowObj = {
+                index: index,
+                rowDiv: rowDiv,
+                textArea: rowDiv.querySelector('.raw-data-textarea'),
+                sendButton: rowDiv.querySelector('.send-row-btn'),
+                deleteButton: rowDiv.querySelector('.delete-row-btn'),
+                fillButton: rowDiv.querySelector('.fill-zero-btn'), 
+                buffer: initialBuffer,
+            };
+            
+            dataRows.push(rowObj);
+
+            // 绑定事件 (使用 data-index 属性来确定当前行索引)
+            rowObj.sendButton.addEventListener('click', () => {
+                const correctIndex = parseInt(rowObj.sendButton.getAttribute('data-index'));
+                sendData(correctIndex);
+            });
+            
+            rowObj.deleteButton.addEventListener('click', () => {
+                const correctIndex = parseInt(rowObj.deleteButton.getAttribute('data-index'));
+                deleteDataRow(correctIndex);
+            });
+            
+            rowObj.fillButton.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const correctIndex = parseInt(rowObj.fillButton.getAttribute('data-index'));
+                fillDataWithZeros(correctIndex);
+            });
+
+            const handleInput = () => updateRawDataFormat(index, false);
+            rowObj.textArea.addEventListener('input', handleInput);
+            
+            // 初始校验绑定 (在 setInputValidation 中会全部重新绑定)
+            if (isBinary) {
+                rowObj.textArea.addEventListener('beforeinput', validateBinInput);
+            } else {
+                rowObj.textArea.addEventListener('beforeinput', validateHexInput);
+            }
+            
+            // 绑定行选中事件
+            rowDiv.addEventListener('click', (e) => {
+                if (e.target.closest('.fill-zero-btn')) return;
+                
+                if (e.target.classList.contains('data-row') || 
+                    e.target.classList.contains('textarea-wrapper') || 
+                    e.target.classList.contains('data-row-header') ||
+                    e.target.classList.contains('row-title')) 
+                {
+                     selectDataRow(index);
+                }
+            });
+            
+            selectDataRow(index);
+            
+            if (!isInitial) {
+                 log(`已新增数据行 #${index + 1}。`, false);
+            }
+        };
+
+        /** 删除一行原始数据 */
+        const deleteDataRow = (indexToDelete) => {
+            if (dataRows.length <= 1) {
+                log('错误：至少需要保留一行原始数据。', true);
+                return;
+            }
+            
+            const index = indexToDelete !== undefined ? indexToDelete : selectedDataRowIndex;
+
+            if (index === -1) {
+                log('请先选择要删除的数据行。', true);
+                return;
+            }
+            
+            if (index >= dataRows.length) return; 
+
+            // 1. 从 DOM 中移除
+            dataRows[index].rowDiv.remove();
+            
+            // 2. 从数组中移除
+            dataRows.splice(index, 1);
+
+            // 3. 重新索引并更新 DOM (按钮事件监听器不需要重新绑定，因为它们会读取更新后的 data-index)
+            dataRows.forEach((row, i) => {
+                row.index = i; 
+                
+                row.rowDiv.setAttribute('data-index', i);
+                row.rowDiv.querySelector('.row-title').textContent = `数据行 #${i + 1}`; 
+                row.textArea.setAttribute('data-index', i);
+
+                row.sendButton.setAttribute('data-index', i);
+                row.deleteButton.setAttribute('data-index', i);
+                row.fillButton.setAttribute('data-index', i);
+            });
+            
+            // 4. 更新选中状态
+            if (selectedDataRowIndex === index) {
+                const newIndex = Math.min(index, dataRows.length - 1);
+                selectDataRow(newIndex);
+            } else if (selectedDataRowIndex > index) {
+                selectDataRow(selectedDataRowIndex - 1);
+            } else {
+                selectDataRow(selectedDataRowIndex); 
+            }
+
+            log(`已删除数据行 #${index + 1}。`, false);
+        };
+
+
+        /** 使用 beforeinput 实时输入校验 */
+        const validateInput = (event, validCharsRegex) => {
+            const data = event.data; 
+            if (data === null) return;
+            
+            const allowedRegex = new RegExp(`[\\s]|${validCharsRegex.source}`, 'g');
+            
+            if (!allowedRegex.test(data)) {
+                event.preventDefault();
+            }
+        };
+        
+        const validateHexInput = (event) => validateInput(event, /[0-9a-fA-F]/i);
+        const validateBinInput = (event) => validateInput(event, /[01]/);
+
+        /** 重新设置所有行的输入校验规则（格式切换时调用） */
+        const setInputValidation = () => {
+            const isBinary = binaryFormatCheckbox.checked;
+
+            dataRows.forEach((row) => {
+                const textArea = row.textArea;
+                
+                textArea.removeEventListener('beforeinput', validateHexInput);
+                textArea.removeEventListener('beforeinput', validateBinInput);
+                
+                if (isBinary) {
+                    textArea.addEventListener('beforeinput', validateBinInput);
+                } else {
+                    textArea.addEventListener('beforeinput', validateHexInput);
+                }
+            });
+            
+            updateAllRowsFormat(true); 
+        };
+        
+        /** 处理循环控制输入框和复选框的联动 */
+        const handleLoopControlChange = (isInitial = false) => {
+            const isInfinite = infiniteLoopCheckbox.checked;
+            
+            if (isInfinite) {
+                loopCountInput.disabled = true;
+                loopCountInput.value = '∞';
+                loopCountInput.title = '无限循环模式';
+            } else {
+                loopCountInput.disabled = false;
+                let count = parseInt(loopCountInput.value);
+                if (isNaN(count) || count < 1) {
+                    count = 1;
+                    if (!isInitial) log('警告: 循环次数必须大于等于 1，已自动修正为 1。', false, true);
+                }
+                loopCountInput.value = count;
+                loopCountInput.title = '批量发送循环执行的次数';
+            }
+        };
+
+
+        // --- 绑定全局事件监听器 ---
+        connectButton.addEventListener('click', toggleConnection);
+        clearLogButton.addEventListener('click', () => { logArea.innerHTML = ''; log('日志已清空。', false); });
+        copyLogButton.addEventListener('click', copyLogContent); 
+        exportLogButton.addEventListener('click', exportLogContent); 
+        deviceIdInput.addEventListener('change', handleDeviceIdChange);
+        enableValidationCheckbox.addEventListener('change', updateDeviceInfoUI);
+        
+        // 监听默认长度变化
+        dataLengthInput.addEventListener('change', () => {
+             const newLength = parseInt(dataLengthInput.value);
+             if (isNaN(newLength) || newLength < 1) {
+                 dataLengthInput.value = 1;
+                 log('警告: 默认长度必须大于 0，已自动修正为 1。', false, true);
+             }
+             updateAllRowsFormat(false); 
+        });
+
+        // 监听延迟输入框
+        delayInput.addEventListener('change', () => {
+             const newDelay = parseInt(delayInput.value);
+             if (isNaN(newDelay) || newDelay < 0) {
+                 delayInput.value = 0;
+                 log('警告: 延迟时间必须是非负数，已自动修正为 0。', false, true);
+             }
+        });
+        
+        // 监听循环控制
+        loopCountInput.addEventListener('change', handleLoopControlChange);
+        infiniteLoopCheckbox.addEventListener('change', handleLoopControlChange);
+
+
+        // --- 按钮事件 ---
+        addRawDataButton.addEventListener('click', addNewDataRow);
+        removeRawDataButton.addEventListener('click', () => deleteDataRow()); 
+        sendAllButton.addEventListener('click', sendAllDataWithDelay);
+
+        // 切换格式时
+        binaryFormatCheckbox.addEventListener('change', setInputValidation);
+    </script>
+
+</body>
+</html>
