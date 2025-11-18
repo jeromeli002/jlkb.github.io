@@ -79,7 +79,7 @@
         #deviceInfoContainer { margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch; }
         .device-card { 
             flex: 1 1 180px; 
-            max-width: 180px; 
+            max-width: 180px; /* 设备信息最大宽度 */
             padding: 8px; 
             border: 1px solid #ced4da; 
             border-radius: 6px; 
@@ -100,9 +100,11 @@
 
         .raw-data-header {
             display: flex;
-            justify-content: space-between;
+            /* 调整为靠左对齐，使用 gap 分隔 label 和 checkbox */
+            justify-content: flex-start; 
             align-items: center;
             margin-bottom: 5px;
+            gap: 15px; 
         }
         .raw-data-header label { margin-bottom: 0 !important; }
         .raw-data-format {
@@ -113,7 +115,6 @@
             white-space: nowrap;
         }
         .raw-data-format input[type="checkbox"] {
-            margin-left: 10px;
             margin-right: 5px;
             width: 15px;
             height: 15px;
@@ -343,20 +344,6 @@
         }
     </style>
 </head>
-
-<script>
-        // Disable right-click menu and F12/Ctrl+Shift+I/Ctrl+U
-        document.addEventListener('contextmenu',function(e){e.preventDefault();});
-        document.onkeydown = function(e) {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
-                return false;
-            }
-            if (e.keyCode == 116) { // Disable F5 (refresh)
-                e.preventDefault();
-            }
-        };
-</script>
-
 <body>
     <div id="main-wrapper">
         <h1>WebHID RAW 数据通信工具</h1>
@@ -587,11 +574,13 @@
             const cleanedData = formattedString.replace(cleanRegex, '');
             
             if (cleanedData.length === 0) return new Uint8Array(expectedLength).buffer;
-            if (cleanedData.length % digitLength !== 0) throw new Error(`数据长度必须是 ${digitLength} 位的整数倍。`);
+            // if (cleanedData.length % digitLength !== 0) throw new Error(`数据长度必须是 ${digitLength} 位的整数倍。`);
+            // Allowing partial input during typing, so don't throw error here.
 
-            const inputBuffer = new Uint8Array(cleanedData.length / digitLength);
+            const inputBuffer = new Uint8Array(Math.ceil(cleanedData.length / digitLength));
             for (let i = 0; i < cleanedData.length; i += digitLength) {
-                inputBuffer[i / digitLength] = parseInt(cleanedData.substring(i, i + digitLength), base);
+                const chunk = cleanedData.substring(i, i + digitLength);
+                inputBuffer[i / digitLength] = parseInt(chunk, base);
             }
             
             if (inputBuffer.length > expectedLength) return inputBuffer.slice(0, expectedLength).buffer; 
@@ -929,16 +918,54 @@
             const currentInput = row.textArea.value;
             
             if (isNaN(expectedLength) || expectedLength <= 0) return;
+            
+            // 1. 保存当前光标位置和纯净字符数
+            const oldCaretPos = row.textArea.selectionStart;
+            let charsBeforeCaret = 0;
+            const isHex = !isBinary;
+            const cleanCharRegex = isHex ? /[0-9a-fA-F]/i : /[01]/;
+            const digitLength = isHex ? 2 : 8; 
+
+            for (let i = 0; i < oldCaretPos; i++) {
+                const char = currentInput[i];
+                if (char && char.match(cleanCharRegex)) {
+                    charsBeforeCaret++;
+                }
+            }
 
             try {
+                // 2. 格式化数据
                 const baseBuffer = isSwitchingFormat 
                     ? formattedStringToBuffer(currentInput, expectedLength, !isBinary)
                     : formattedStringToBuffer(currentInput, expectedLength, isBinary);
                     
                 row.buffer = baseBuffer;
                 const formattedValue = bufferToFormattedString(row.buffer, isBinary ? 'bin' : 'hex');
+                
+                // 3. 更新值并修复光标位置
                 if (row.textArea.value !== formattedValue) {
                     row.textArea.value = formattedValue;
+                    
+                    // 4. 计算新的光标位置 (字符数 + 之前添加的空格数)
+                    let newCaretPos = charsBeforeCaret;
+                    let spaceCount = 0;
+                    
+                    // 计算在目标纯净字符数之前应该有多少个分隔符（空格）
+                    if (charsBeforeCaret > 0) {
+                        for (let i = 1; i <= charsBeforeCaret; i++) {
+                            // 每隔 digitLength 个字符添加一个空格
+                            if (i % digitLength === 0) {
+                                spaceCount++;
+                            }
+                        }
+                        newCaretPos += spaceCount;
+                    }
+
+                    // 确保光标不超过实际文本长度
+                    newCaretPos = Math.min(newCaretPos, formattedValue.length);
+                    
+                    // 5. 恢复光标位置
+                    row.textArea.setSelectionRange(newCaretPos, newCaretPos);
                 }
             } catch (error) {
                 // 忽略输入过程中的格式错误
@@ -1159,6 +1186,7 @@
         // --- 输入校验/初始化 ---
         const validateInput = (event, validCharsRegex) => {
             const data = event.data; 
+            // 允许空格和有效字符
             if (data !== null && !new RegExp(`[\\s]|${validCharsRegex.source}`, 'g').test(data)) event.preventDefault();
         };
         
@@ -1274,5 +1302,18 @@
 
     </script>
 
+    <script>
+        // Disable right-click menu and F12/Ctrl+Shift+I/Ctrl+U
+        document.addEventListener('contextmenu',function(e){e.preventDefault();});
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
+                return false;
+            }
+            if (e.keyCode == 116) { // Disable F5 (refresh)
+                e.preventDefault();
+            }
+        };
+</script>
+    
 </body>
 </html>
