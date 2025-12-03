@@ -64,9 +64,9 @@
         .offset-controls { display: flex; gap: 8px; }
         .offset-control { display: flex; align-items: center; gap: 6px; flex: 1; background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
         
-        /* Slot 按钮 */
+        /* Slot 按钮 - 字体改大了 */
         .slot-buttons { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
-        .slot-btn { padding: 6px 0; font-size: 11px; border-radius: 6px; color: #64748b; background: #f1f5f9; border: 1px solid transparent; }
+        .slot-btn { padding: 6px 0; font-size: 12px; border-radius: 6px; color: #64748b; background: #f1f5f9; border: 1px solid transparent; }
         .slot-btn:hover { background: #e2e8f0; color: #334155; }
         .slot-btn.active { background-color: #4f46e5; color: white; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); font-weight: 600; }
 
@@ -325,7 +325,7 @@
             
             <div class="h-14 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-5 shadow-sm z-30">
                 <div class="flex items-center gap-3">
-                    <div class="bg-slate-100 text-slate-500 rounded px-2 py-1 text-[10px] font-bold tracking-widest">SIZE</div>
+                    <div class="bg-slate-100 text-slate-500 rounded px-2 py-1 text-[10px] font-bold tracking-widest">屏幕大小(SIZE)</div>
                     <select id="presetSize" class="text-xs font-semibold bg-transparent border-0 cursor-pointer text-slate-700 hover:text-indigo-600 transition-colors focus:ring-0">
                         <option value="128,32">128 x 32</option>
                         <option value="128,64">128 x 64</option>
@@ -393,46 +393,46 @@
             <div class="p-5 space-y-6">
                 
                 <div>
-                    <h3 class="font-bold text-slate-800 text-xs mb-4 flex items-center gap-2 uppercase tracking-wide opacity-60">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2 uppercase tracking-wide opacity-60">
                          <i class="fa-solid fa-sliders"></i> 参数调节
                     </h3>
                     
                     <div class="space-y-4">
                         <div class="control-group">
-                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">预览缩放 (Preview Scale)</label>
+                            <label class="text-xs font-bold text-slate-500 mb-1.5 block">预览缩放 (Preview Scale)</label>
                             <div class="flex items-center gap-2">
                                 <input type="range" id="sliderDisplayScale" min="0.1" max="10.0" step="0.1" value="4.0" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #06b6d4;">
                                 <div class="relative w-12">
-                                    <input type="number" id="inputDisplayScale" min="0.1" max="10.0" step="0.1" value="4.0" class="w-full text-[10px] border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
+                                    <input type="number" id="inputDisplayScale" min="0.1" max="10.0" step="0.1" value="4.0" class="w-full text-xs border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
                                 </div>
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">旋转 (Rotation)</label>
+                            <label class="text-xs font-bold text-slate-500 mb-1.5 block">旋转 (Rotation)</label>
                             <div class="flex items-center gap-2">
                                 <input type="range" id="sliderRotation" min="0" max="360" step="1" value="0" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #ef4444;">
                                 <div class="relative w-12">
-                                     <input type="number" id="inputRotation" min="0" max="360" step="1" value="0" class="w-full text-[10px] border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
+                                     <input type="number" id="inputRotation" min="0" max="360" step="1" value="0" class="w-full text-xs border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
                                 </div>
                             </div>
                             <span id="rotationDegVal" class="hidden">0°</span>
                         </div>
 
                         <div class="control-group">
-                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">偏移 & 镜像 (Offset & Mirror)</label>
+                            <label class="text-xs font-bold text-slate-500 mb-1.5 block">偏移 & 镜像 (Offset & Mirror)</label>
                             <div class="offset-controls">
                                 <div class="offset-control group focus-within:border-indigo-300 focus-within:ring-1 focus-within:ring-indigo-100 transition-all">
-                                    <span class="text-[10px] font-bold text-slate-400">X</span>
-                                    <input type="number" id="inputOffsetX" value="0" class="w-full bg-transparent border-none text-xs text-center focus:ring-0 p-0">
+                                    <span class="text-xs font-bold text-slate-400">X</span>
+                                    <input type="number" id="inputOffsetX" value="0" class="w-full bg-transparent border-none text-sm text-center focus:ring-0 p-0">
                                     <div class="toggle-wrapper-small" title="左右镜像">
                                         <input type="checkbox" id="checkMirrorX" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer"/>
                                         <label for="checkMirrorX" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
                                     </div>
                                 </div>
                                 <div class="offset-control group focus-within:border-indigo-300 focus-within:ring-1 focus-within:ring-indigo-100 transition-all">
-                                    <span class="text-[10px] font-bold text-slate-400">Y</span>
-                                    <input type="number" id="inputOffsetY" value="0" class="w-full bg-transparent border-none text-xs text-center focus:ring-0 p-0">
+                                    <span class="text-xs font-bold text-slate-400">Y</span>
+                                    <input type="number" id="inputOffsetY" value="0" class="w-full bg-transparent border-none text-sm text-center focus:ring-0 p-0">
                                     <div class="toggle-wrapper-small" title="上下镜像">
                                         <input type="checkbox" id="checkMirrorY" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer"/>
                                         <label for="checkMirrorY" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
@@ -442,11 +442,11 @@
                         </div>
 
                         <div class="control-group">
-                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">内容缩放 (Content Zoom)</label>
+                            <label class="text-xs font-bold text-slate-500 mb-1.5 block">内容缩放 (Content Zoom)</label>
                             <div class="flex items-center gap-2">
                                 <input type="range" id="sliderZoom" min="0.1" max="10.0" step="0.1" value="1.0" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #8b5cf6;" disabled>
                                 <div class="relative w-12">
-                                    <input type="number" id="inputZoom" min="0.1" max="10.0" step="0.1" value="1.0" class="w-full text-[10px] border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
+                                    <input type="number" id="inputZoom" min="0.1" max="10.0" step="0.1" value="1.0" class="w-full text-xs border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
                                 </div>
                             </div>
                             <span id="zoomVal" class="hidden">1.0x</span>
@@ -454,8 +454,8 @@
 
                         <div class="control-group">
                             <div class="flex justify-between mb-1.5">
-                                <label class="text-[10px] font-bold text-slate-500">阈值 (Threshold)</label>
-                                <span id="thresholdVal" class="text-[10px] font-mono text-blue-500">128</span>
+                                <label class="text-xs font-bold text-slate-500">阈值 (Threshold)</label>
+                                <span id="thresholdVal" class="text-xs font-mono text-blue-500">128</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <input type="range" id="sliderThreshold" min="0" max="255" value="128" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #3b82f6;">
@@ -464,7 +464,7 @@
                         </div>
 
                         <div class="flex items-center justify-between pt-2">
-                            <label class="text-xs font-bold text-slate-600">反色显示 (Invert)</label>
+                            <label class="text-sm font-bold text-slate-600">反色显示 (Invert)</label>
                             <div class="relative inline-block w-8 h-4">
                                 <input type="checkbox" id="checkInvert" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer"/>
                                 <label for="checkInvert" class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-200 cursor-pointer"></label>
@@ -476,33 +476,33 @@
                 <span id="displayScaleVal" class="hidden"></span>
 
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 transition-all hover:shadow-md hover:border-indigo-100">
-                    <h3 class="font-bold text-indigo-900 text-xs mb-3 flex items-center gap-2">
+                    <h3 class="font-bold text-indigo-900 text-sm mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-microchip text-indigo-500"></i> EEPROM 储存
                     </h3>
                     
                     <div class="mb-4">
                         <div class="flex items-center gap-3 mb-3">
-                            <label class="text-[10px] text-slate-500 font-bold whitespace-nowrap">槽位数量</label>
+                            <label class="text-xs text-slate-500 font-bold whitespace-nowrap">槽位数量</label>
                             <div class="flex-1 flex items-center gap-2">
                                 <input type="range" id="sliderTotalSlots" min="1" max="32" value="5" class="flex-1 progress-slider h-1 rounded-full" style="--slider-color: #6366f1;">
-                                <input type="number" id="totalSlots" value="5" min="1" max="32" class="w-8 text-[10px] border-none text-center bg-slate-100 rounded text-indigo-600 font-bold p-0">
+                                <input type="number" id="totalSlots" value="5" min="1" max="32" class="w-8 text-xs border-none text-center bg-slate-100 rounded text-indigo-600 font-bold p-0">
                             </div>
                         </div>
                         
                         <div class="bg-slate-50 rounded-lg p-2 border border-slate-100">
-                             <label class="text-[9px] text-slate-400 font-bold block mb-2 uppercase">屏幕标签</label>
+                             <label class="text-[10px] text-slate-400 font-bold block mb-2 uppercase">屏幕标签</label>
                              <div id="slotButtons" class="slot-buttons"></div>
                         </div>
                     </div>
                     
                     <div class="flex gap-2">
-                        <button id="btnWriteEEPROM" class="flex-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white text-[10px] font-bold py-2 rounded-lg transition-all border border-indigo-100">
+                        <button id="btnWriteEEPROM" class="flex-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white text-xs font-bold py-2 rounded-lg transition-all border border-indigo-100">
                             写入
                         </button>
-                        <button id="btnPreviewEEPROM" class="flex-1 bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white text-[10px] font-bold py-2 rounded-lg transition-all border border-purple-100">
+                        <button id="btnPreviewEEPROM" class="flex-1 bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white text-xs font-bold py-2 rounded-lg transition-all border border-purple-100">
                             预览
                         </button>
-                        <button id="btnClearEEPROM" class="flex-1 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-bold py-2 rounded-lg transition-all border border-red-100">
+                        <button id="btnClearEEPROM" class="flex-1 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white text-xs font-bold py-2 rounded-lg transition-all border border-red-100">
                             清空
                         </button>
                     </div>
@@ -512,8 +512,8 @@
             <div class="mt-auto p-5 space-y-3 bg-white border-t border-slate-100 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.05)] z-30">
                 <div class="bg-emerald-50/50 rounded-xl p-3 border border-emerald-100/50 flex items-center justify-between transition-all">
                     <div>
-                        <div class="text-xs font-bold text-emerald-700 flex items-center gap-1.5"><i class="fa-solid fa-bolt text-emerald-500"></i> 实时同步</div>
-                        <div class="text-[10px] text-emerald-600/70 mt-0.5">修改时自动发送数据</div>
+                        <div class="text-sm font-bold text-emerald-700 flex items-center gap-1.5"><i class="fa-solid fa-bolt text-emerald-500"></i> 实时同步</div>
+                        <div class="text-xs text-emerald-600/70 mt-0.5">修改时自动发送数据</div>
                     </div>
                     <div class="relative inline-block w-9 h-5">
                         <input type="checkbox" id="checkGlobalSync" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 appearance-none cursor-pointer" checked/>
@@ -522,16 +522,16 @@
                 </div>
 
                 <div class="bg-slate-50 rounded-xl p-1 border border-slate-100">
-                    <button id="btnConnect" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group">
+                    <button id="btnConnect" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group">
                         <div id="statusDot" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)] group-hover:scale-110 transition-transform"></div>
                         <span>连接键盘 (Connect)</span>
                     </button>
                 </div>
 
                 <button id="btnSend" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-200 transition-all hover-scale flex justify-center items-center gap-2" disabled>
-                    <span>手动发送</span> <i class="fa-regular fa-paper-plane"></i>
+                    <span class="text-sm">手动发送</span> <i class="fa-regular fa-paper-plane"></i>
                 </button>
-                <div id="log" class="text-[10px] text-slate-400 text-center h-4 truncate font-mono">Waiting for device...</div>
+                <div id="log" class="text-xs text-slate-400 text-center h-4 truncate font-mono">Waiting for device...</div>
             </div>
         </div>
     </div>
@@ -648,9 +648,9 @@
                 layoutOrder: ['date', 'time', 'custom'],
                 showDate: true, showTime: true, timeFormat: '24h', 
                 showYear: true, showMonth: true, showDayOfMonth: true, showDayOfWeek: true, 
-                timeFontSize: 16, timeFontFamily: commonFonts[1].val, 
-                dateFontSize: 8, dateFontFamily: commonFonts[1].val, 
-                showCustomText: true, customText: '键盘测试', customTextFontSize: 12, customTextFontFamily: commonFonts[1].val, customTextEffect: 'none', customTextSpeed: 1.0, 
+                timeFontSize: 28, timeFontFamily: commonFonts[2].val, 
+                dateFontSize: 12, dateFontFamily: commonFonts[3].val, 
+                showCustomText: true, customText: '开启摸鱼的一天！', customTextFontSize: 12, customTextFontFamily: commonFonts[3].val, customTextEffect: 'none', customTextSpeed: 1.0, 
                 offsetX: 0, offsetY: 0, zoom: 1.0, rotationDeg: 0, threshold: 128,
                 flipX: false, flipY: false 
             },
@@ -815,11 +815,11 @@
         }
 
         function populateFontSizeSelectors() {
-            const sizes = [6,7,8,9,10,11,12,13,14,15,16,18,20,22,24,28,32,36,42,48,56,64,72];
+            const sizes = [6,7,8,9,10,11,12,13,14,15,16,17,18,20,22,24,28,32,36,42,48,56,64,72];
             const createOptions = (def) => sizes.map(s => `<option value="${s}" ${s===def?'selected':''}>${s}px</option>`).join('');
-            els.selectFontSize.innerHTML = createOptions(12);
+            els.selectFontSize.innerHTML = createOptions(22);
             els.selectTimeFontSize.innerHTML = createOptions(16);
-            els.selectDateFontSize.innerHTML = createOptions(8);
+            els.selectDateFontSize.innerHTML = createOptions(12);
             els.selectCustomTextFontSize.innerHTML = createOptions(12);
         }
 
