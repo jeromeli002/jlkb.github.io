@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMK 配置生成器 (新版)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        :root {
+            /* 浅色系变量 */
+            --bg-color: #f0f2f5;
+            --text-color: #333d4d;
+            --border-color: #d1d9e6;
+            --section-bg: #ffffff;
+            --header-bg: #e6edf7;
+            --button-bg: #4a90e2;
+            --button-hover-bg: #3a7bc4;
+            --copy-button-bg: #5cb85c;
+            --copy-button-hover-bg: #4cae4c;
+            --download-button-bg: #5bc0de;
+            --download-button-hover-bg: #46b8da;
+            --reset-button-bg: #d9534f;
+            --reset-button-hover-bg: #c9302c;
+            --text-light: #7c889a;
+            --input-bg: #fdfefe;
+            --input-border-focus: #8ab6f9;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* 深色模式 */
+                --bg-color: #282c34;
+                --text-color: #e0e0e0;
+                --border-color: #444;
+                --section-bg: #3c4048;
+                --header-bg: #4c5058;
+                --button-bg: #5a9bd4;
+                --button-hover-bg: #4a8ac3;
+                --copy-button-bg: #4CAF50;
+                --copy-button-hover-bg: #409C43;
+                --download-button-bg: #2196F3;
+                --download-button-hover-bg: #1A7BBF;
+                --reset-button-bg: #EF5350;
+                --reset-button-hover-bg: #D32F2F;
+                --text-light: #b0b0b0;
+                --input-bg: #3a3f45;
+                --input-border-focus: #5a9bd4;
+            }
+        }
+        
+        /* --- 结构调整 CSS (已更新) --- */
+        .app-title {
+            width: 100%;
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin: 1.5rem 0 1rem 0;
+            font-weight: bold;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            max-width: 90%; /* 调整最大宽度 */
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        /* 顶部/结果栏标题 */
+        #result-header {
+            width: 100%;
+            background-color: var(--section-bg);
+            padding: 0.8rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; /* 固定在顶部 */
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            max-width: 90%; /* 调整最大宽度 */
+            box-sizing: border-box;
+            margin-bottom: 1.5rem; /* 分隔顶部标题和内容 */
+        }
+        #result-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .main-layout {
+            display: flex; /* 使用 Flexbox 实现高度自适应 */
+            align-items: stretch; /* 确保子元素（左右栏）拉伸到相同高度 */
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 90%; /* 调整最大宽度 */
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            box-sizing: border-box;
+            /* 确保在 body 设置了居中对齐时，main-layout 能够居中 */
+            margin: 0 auto; 
+        }
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 2; /* 左侧占 2/3 空间 */
+        }
+        .right-column {
+            flex: 1; /* 右侧占 1/3 空间 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section {
+            background-color: var(--section-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+        .right-column .section {
+            padding: 0; /* 移除右侧栏容器的 padding */
+            flex-grow: 1; /* 填充剩余空间 */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* 隐藏超出部分 */
+        }
+        
+        .section h3 {
+            margin: 0 0 0.8rem 0;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section h3 label {
+            margin: 0;
+            cursor: pointer;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            align-items: flex-start;
+        }
+        .row.column-flex-start {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .row label {
+            display: flex;
+            flex-direction: column;
+            color: var(--text-color);
+            white-space: nowrap;
+            /* 调整 flex-basis 以适应新的最大宽度和尽量一行显示 */
+            flex-basis: auto; /* 让宽度自适应内容，但受限于max-width */
+            min-width: 120px; /* 最小宽度 */
+            max-width: 120px; /* 最大宽度 */
+            box-sizing: border-box;
+            flex-grow: 0; /* 不让它拉伸 */
+            flex-shrink: 1; /* 允许它缩小 */
+        }
+        .row label.full-width {
+            flex-basis: 100%;
+            max-width: 100%; /* 全宽标签不受120px限制 */
+        }
+        .row input[type="text"],
+        .row input[type="number"],
+        .row select {
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            width: 100%; /* 让输入框和选择框充满其父label的宽度 */
+            max-width: 120px; /* 限制输入框和选择框的最大宽度 */
+            box-sizing: border-box; /* 包含padding和border在内的宽度 */
+            margin-top: 0.2rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .row input[type="text"]:focus,
+        .row input[type="number"]:focus,
+        .row select:focus {
+            outline: none;
+            border-color: var(--input-border-focus);
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+
+        textarea {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            width: calc(100% - 1rem);
+            min-height: 200px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            margin-top: 0.5rem;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        #output {
+            /* 关键点：填充右侧栏的剩余空间 */
+            flex-grow: 1;
+            width: 100%;
+            padding: 1.5rem; /* 内部 padding */
+            box-sizing: border-box;
+            border: none; /* 移除 textarea 自身的边框 */
+            border-radius: 0;
+            background-color: transparent; /* 透明背景，使用父容器背景 */
+            margin: 0;
+            min-height: 500px; /* 确保最小高度 */
+            resize: none; /* 禁用拖拽调整大小，由 Flexbox 控制 */
+            font-size: 0.9rem;
+        }
+        /* 调整左侧栏的 textarea 样式 (这些现在只用于组合键/分叉键示例) */
+        .left-column textarea {
+             width: calc(100% - 1rem);
+             min-height: 100px;
+             padding: 0.5rem;
+             margin-top: 0.5rem;
+             border: 1px solid var(--border-color);
+             background-color: var(--input-bg);
+             resize: vertical;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            color: #fff;
+            background-color: var(--button-bg);
+            white-space: nowrap;
+        }
+        button:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        button.copy-button { background-color: var(--copy-button-bg); }
+        button.copy-button:hover { background-color: var(--copy-button-hover-bg); }
+        button.copy-button.copied { background-color: #218838; }
+        button.download-button { background-color: var(--download-button-bg); }
+        button.download-button:hover { background-color: var(--download-button-hover-bg); }
+        button.reset-button { background-color: var(--reset-button-bg); }
+        button.reset-button:hover { background-color: var(--reset-button-hover_bg); }
+        button.reset-button.reset { background-color: #c82333; }
+
+        .add-remove-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            justify-content: flex-start;
+        }
+        .add-remove-buttons button {
+            padding: 0.4rem 0.8rem;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .checkbox-label input {
+            margin: 0;
+            flex-shrink: 0;
+            transform: scale(1.1);
+        }
+        .encoder-block {
+            border: 1px dashed var(--border-color);
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--input-bg);
+        }
+        .encoder-block h4 {
+            margin: 0 0 0.6rem 0;
+            color: var(--text-light);
+        }
+        p.example-text {
+            margin: 0.3rem 0 0.2rem;
+            color: var(--text-light);
+        }
+        .pin-input-group {
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 0.5rem; 
+            margin-top: 0.2rem;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 992px) {
+            .main-layout {
+                flex-direction: column; /* 小屏幕上垂直堆叠 */
+                gap: 1.5rem;
+            }
+            .left-column, .right-column {
+                width: 100%;
+                flex: none;
+            }
+            .section {
+                padding: 1rem;
+            }
+            .right-column .section {
+                padding: 0;
+            }
+            #output {
+                padding: 1rem;
+                min-height: 300px;
+            }
+            .row label {
+                flex-basis: calc(50% - 0.5rem);
+                max-width: none;
+            }
+            .row label.full-width {
+                flex-basis: 100%;
+            }
+            .row input[type="text"],
+            .row input[type="number"],
+            .row select {
+                max-width: none;
+            }
+            .section h3 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            #result-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .row label {
+                flex-basis: 100%;
+                min-width: unset;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            .button-group button {
+                width: 100%;
+            }
+            .add-remove-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="app-title">RMK 配置生成器 (新版)</h1>
+    
+    <div id="result-header">
+        <h3>生成结果 (output.toml)</h3>
+        <div class="button-group">
+            <button id="copyButton" class="copy-button">复制</button>
+            <button id="downloadButton" class="download-button">下载</button>
+            <button id="resetButton" class="reset-button">重置</button>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <div class="left-column">
+            <div class="section">
+                <h3>通用配置</h3>
+                <div class="row">
+                    <label>名称:<input type="text" id="name" value="RMK Keyboard" /></label>
+                    <label>产品名称:<input type="text" id="product_name" value="My RMK Keyboard" /></label>
+                    <label>厂商:<input type="text" id="manufacturer" value="haobo" /></label>
+                    <label>供应商 ID:<input type="text" id="vendor_id" value="4C4B" maxlength="4" pattern="[0-9a-fA-F]{1,4}" title="请输入1到4位十六进制字符" /></label>
+                    <label>产品 ID:<input type="text" id="product_id" value="4643" maxlength="4" pattern="[0-9a-fA-F]{1,4}" title="请输入1到4位十六进制字符" /></label>
+                    <label>芯片:
+                        <select id="chip">
+                            <option value="nrf52840" selected>nrf52840</option>
+                            <option value="rp2040">rp2040</option>
+                            <option value="stm32l4">stm32l4</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>矩阵配置 (Row/Col Pins)</h3>
+                <div class="row">
+                    <label>扫描模式:
+                        <select id="scan_mode">
+                            <option value="col2row" selected>从列到行 (col2row)</option>
+                            <option value="row2col">从行到列 (row2col)</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="row">
+                    <label class="full-width">行引脚 (Row Pins):
+                        <div id="row-pins" class="pin-input-group">
+                            </div>
+                        <div class="add-remove-buttons">
+                            <button type="button" onclick="addInputPin('row')">添加行引脚</button>
+                            <button type="button" onclick="removeInputPin('row')">移除行引脚</button>
+                        </div>
+                    </label>
+                    <label class="full-width">列引脚 (Col Pins):
+                        <div id="col-pins" class="pin-input-group">
+                            </div>
+                        <div class="add-remove-buttons">
+                            <button type="button" onclick="addInputPin('col')">添加列引脚</button>
+                            <button type="button" onclick="removeInputPin('col')">移除列引脚</button>
+                        </div>
+                    </label>
+                </div>
+                <div class="row">
+                    <label>层数:<input type="number" id="layers" value="2" min="1" /></label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3><label class="checkbox-label"><input type="checkbox" id="enable_light" checked onchange="toggleSection('light')" /> 启用指示灯 [light]</label></h3>
+                <div id="light" class="row">
+                    <label>Caps Lock 引脚:
+                        <select id="capslock_pin"></select>
+                    </label>
+                    <label id="capslock_low_active_label">Caps Lock 低电平有效:
+                        <select id="capslock_low_active">
+                            <option value="true">true</option>
+                            <option value="false" selected>false</option>
+                        </select>
+                    </label>
+                    <label>Scroll Lock 引脚:
+                        <select id="scrolllock_pin"></select>
+                    </label>
+                    <label id="scrolllock_low_active_label">Scroll Lock 低电平有效:
+                        <select id="scrolllock_low_active">
+                            <option value="true">true</option>
+                            <option value="false" selected>false</option>
+                        </select>
+                    </label>
+                    <label>Num Lock 引脚:
+                        <select id="numslock_pin"></select>
+                    </label>
+                    <label id="numslock_low_active_label">Num Lock 低电平有效:
+                        <select id="numslock_low_active">
+                            <option value="true">true</option>
+                            <option value="false" selected>false</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><label class="checkbox-label"><input type="checkbox" id="enable_ble" checked onchange="toggleBleSection()" /> 启用蓝牙 [ble] (仅限 nrf52840)</label></h3>
+                <div id="ble" class="row">
+                    <label>电池 ADC 引脚:
+                        <select id="battery_adc_pin">
+                            <option value="vddh" selected>vddh (板载分压)</option>
+                            <option value="P0_04">P0_04</option>
+                            <option value="P0_05">P0_05</option>
+                            <option value="P0_06">P0_06</option>
+                            <option value="P0_07">P0_07</option>
+                            <option value="P0_28">P0_28</option>
+                            <option value="P0_29">P0_29</option>
+                            <option value="P0_30">P0_30</option>
+                            <option value="P0_31">P0_31</option>
+                        </select>
+                    </label>
+                    <label id="adc_measured_label">ADC 分压器 测量值:<input type="text" id="adc_divider_measured" value="2000" /></label>
+                    <label id="adc_total_label">ADC 分压器 总值:<input type="text" id="adc_divider_total" value="2806" /></label>
+                    <label>充电状态引脚:
+                        <select id="charge_state_pin"></select>
+                    </label>
+                    <label id="charge_state_low_active_label">充电状态低电平有效:
+                        <select id="charge_state_low_active">
+                            <option value="true">true</option>
+                            <option value="false" selected>false</option>
+                        </select>
+                    </label>
+                    <label>充电指示灯引脚:
+                        <select id="charge_led_pin"></select>
+                    </label>
+                    <label id="charge_led_low_active_label">充电指示灯低电平有效:
+                        <select id="charge_led_low_active">
+                            <option value="true">true</option>
+                            <option value="false" selected>false</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><label class="checkbox-label"><input type="checkbox" id="enable_encoder" checked onchange="toggleSection('encoder')" /> 启用编码器 [[input_device.encoder]]</label></h3>
+                <div id="encoder" class="encoder-section">
+                    <div id="encoder-list">
+                        </div>
+                    <div class="add-remove-buttons">
+                        <button type="button" onclick="addEncoder()">添加编码器</button>
+                        <button type="button" onclick="removeEncoder()">移除编码器</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><label class="checkbox-label"><input type="checkbox" id="enable_storage" onchange="toggleSection('storage')" /> 启用存储 [storage]</label></h3>
+                <div id="storage" class="row">
+                    <label>启用存储:
+                        <select id="storage_enabled">
+                            <option value="true" selected>true</option>
+                            <option value="false">false</option>
+                        </select>
+                    </label>
+                    <label>清除存储:
+                        <select id="storage_clear_storage">
+                            <option value="false" selected>false</option>
+                            <option value="true">true</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><label class="checkbox-label"><input type="checkbox" id="enable_combo" checked onchange="toggleSection('combo')" /> 启用组合键 [behavior.combo]</label></h3>
+                <div id="combo" class="row column-flex-start">
+                    <label>超时:<input type="text" id="combo_timeout" value="150ms" /></label>
+                    <p class="example-text">combos = [...] 示例配置:</p>
+                    <textarea id="combo_example" class="code-example">
+combos = [
+    { actions = ["J", "K"], output = "L" },
+    { actions = ["F", "D"], output = "TO(1)", layer = 0 },
+    { actions = ["A", "S", "D"], output = "X" }
+]
+                    </textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><label class="checkbox-label"><input type="checkbox" id="enable_fork" checked onchange="toggleSection('fork')" /> 启用分叉键 [behavior.fork]</label></h3>
+                <div id="fork" class="row column-flex-start">
+                    <p class="example-text">forks = [...] 示例配置:</p>
+                    <textarea id="fork_example" class="code-example">
+forks = [
+    { trigger = "Dot", negative_output = "Dot", positive_output = "WM(Semicolon, LShift)", match_any = "LShift|RShift" },
+    { trigger = "Comma", negative_output = "Comma", positive_output = "Semicolon", match_any = "LShift|RShift", match_none = "LAlt|RAlt" },
+    { trigger = "LeftBracket", negative_output = "WM(LeftBracket, LShift)", positive_output = "LeftBracket", match_any = "LShift|RShift" },
+    { trigger = "X", negative_output = "WM(X, LShift)", positive_output = "X", match_any = "LShift|RShift" },
+    { trigger = "F24", negative_output = "A", positive_output = "Macro1", match_any = "LCtrl|RCtrl" },
+    { trigger = "Y", negative_output = "Y", positive_output = "Z", match_any = "MouseBtn1", bindable = false },
+    { trigger = "Z", negative_output = "Z", positive_output = "Y", match_any = "MouseBtn1", bindable = false },
+    { trigger = "LT(2,Backspace)", negative_output = "LT(2,Backspace)", positive_output = "LT(2,Delete)", match_any = "LShift|RShift" },
+    { trigger = "MediaPlayPause", negative_output = "MediaPlayPause", positive_output = "MediaNextTrack", match_any = "LCtrl|RCtrl", bindable = true },
+    { trigger = "MediaNextTrack", negative_output = "MediaNextTrack", positive_output = "BrightnessUp", match_any = "LAlt|RAlt", bindable = true },
+    { trigger = "BrightnessUp", negative_output = "BrightnessUp", positive_output = "BrightnessDown", match_any = "LShift|RShift", bindable = false },
+    { trigger = "MediaNextTrack", negative_output = "MediaNextTrack", positive_output = "MediaPrevTrack", match_any = "LShift|RShift", match_none = "LAlt|RAlt", bindable = false},
+    { trigger = "MediaPlayPause", negative_output = "MediaPlayPause", positive_output = "AudioVolUp", match_any = "LAlt|RAlt", match_none = "LCtrl|RCtrl", bindable = true },
+    { trigger = "AudioVolUp", negative_output = "AudioVolUp", positive_output = "AudioVolDown", match_any = "LShift|RShift", match_none = "LCtrl|RCtrl", bindable = false }
+]
+                    </textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><label class="checkbox-label"><input type="checkbox" id="enable_rmk" checked onchange="toggleSection('rmk')" /> 启用 RMK [rmk]</label></h3>
+                <div id="rmk" class="row">
+                    <label>组合键最大数量:<input type="number" id="rmk_combo_max_num" value="128" min="0" /></label>
+                    <label>分叉键最大数量:<input type="number" id="rmk_fork_max_num" value="16" min="0" /></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="section">
+                <textarea id="output"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allPins = [
+            "null", "P0_00","P0_01","P0_02","P0_03","P0_04","P0_05","P0_06","P0_07",
+            "P0_08","P0_09","P0_10","P0_11","P0_12","P0_13","P0_14","P0_15",
+            "P0_16","P0_17","P0_18","P0_19","P0_20","P0_21","P0_22","P0_23",
+            "P0_24","P0_25","P0_26","P0_27","P0_28","P0_29","P0_30","P0_31",
+            "P1_00","P1_01","P1_02","P1_03","P1_04","P1_05","P1_06","P1_07",
+            "P1_08","P1_09","P1_10","P1_11","P1_12","P1_13","P1_14","P1_15",
+            "P1_16","P1_17","P1_18","P1_19","P1_20","P1_21","P1_22","P1_23",
+            "P1_24","P1_25","P1_26","P1_27","P1_28","P1_29","P1_30","P1_31",
+        ];
+
+        const defaultValues = {};
+        document.querySelectorAll('input[type="text"], input[type="number"], select, input[type="checkbox"], textarea.code-example').forEach(element => {
+            if (element.type === 'checkbox') {
+                defaultValues[element.id] = element.checked;
+            } else {
+                defaultValues[element.id] = element.value;
+            }
+        });
+        defaultValues['vendor_id'] = '4C4B';
+        defaultValues['product_id'] = '4643';
+        defaultValues['scan_mode'] = 'col2row';
+        defaultValues['enable_storage'] = false;
+        defaultValues['layers'] = 2; 
+
+        const defaultRowPinValue = "P1_00";
+        const defaultColPinValue = "P1_05";
+        const defaultEncoderData = {
+            internal_pullup: 'false',
+            pin_a: "P0_29",
+            pin_b: "P0_28",
+            phase: "resolution",
+            resolution: 4,
+            reverse: 'false'
+        };
+
+        const rowPinsDiv = document.getElementById('row-pins');
+        const colPinsDiv = document.getElementById('col-pins');
+        const encoderListDiv = document.getElementById('encoder-list');
+        const chipSelect = document.getElementById('chip');
+        const enableBleCheckbox = document.getElementById('enable_ble');
+        const bleSection = document.getElementById('ble');
+        const batteryAdcPinSelect = document.getElementById('battery_adc_pin');
+        const adcMeasuredLabel = document.getElementById('adc_measured_label');
+        const adcTotalLabel = document.getElementById('adc_total_label');
+        const chargeStatePinSelect = document.getElementById('charge_state_pin');
+        const chargeStateLowActiveLabel = document.getElementById('charge_state_low_active_label');
+        const chargeLedPinSelect = document.getElementById('charge_led_pin');
+        const chargeLedLowActiveLabel = document.getElementById('charge_led_low_active_label');
+        const comboExampleTextarea = document.getElementById('combo_example');
+        const forkExampleTextarea = document.getElementById('fork_example');
+        const scanModeSelect = document.getElementById('scan_mode');
+        const vendorIdInput = document.getElementById('vendor_id');
+        const productIdInput = document.getElementById('product_id');
+        const layersInput = document.getElementById('layers');
+        
+        // --- 键位配置的隐藏数据对象（已更新以支持多层） ---
+        const matrixMapTextarea = { value: '' }; 
+        const layer0Textarea = { value: '' };
+        const layerAdditionalTextarea = { value: '' }; // 新增：存储 Layer 1 及以上的所有层配置
+        const aliasesTextarea = { value: '' };
+        // 重置时需要重新计算这些值
+        defaultValues['matrix_map_example'] = ''; 
+        defaultValues['layer_0_example'] = '';
+        defaultValues['aliases_example'] = `my_copy = "WM(C, LCtrl)"\nmy_paste = "WM(V, LCtrl)"`;
+
+
+        function generateMatrixMap(rows, cols) {
+            let map = "";
+            for (let r = 0; r < rows; r++) {
+                let rowStr = "";
+                for (let c = 0; c < cols; c++) {
+                    rowStr += `( ${r},${c} ) `;
+                }
+                map += rowStr.trim() + "\n";
+            }
+            return map.trim();
+        }
+
+        function generateLayerKeys(rows, cols) {
+            let keys = "";
+            for (let r = 0; r < rows; r++) {
+                let rowStr = "";
+                for (let c = 0; c < cols; c++) {
+                    rowStr += "_ ";
+                }
+                keys += rowStr.trim() + "\n";
+            }
+            return keys.trim();
+        }
+
+        // --- 核心修改：支持动态层数生成 ---
+        function updateLayoutExamples() {
+            const rows = parseInt(rowPinsDiv.children.length) || 1;
+            const cols = parseInt(colPinsDiv.children.length) || 1;
+            const layers = parseInt(layersInput.value) || 1;
+
+            matrixMapTextarea.value = generateMatrixMap(rows, cols);
+
+            const keysMap = generateLayerKeys(rows, cols);
+            
+            // Layer 0 (Base Layer)
+            layer0Textarea.value = `name = "base_layer"\nkeys = """\n${keysMap}\n"""`;
+
+            // Layer 1 and above
+            let additionalLayersContent = '';
+            for (let i = 1; i < layers; i++) {
+                const layerName = `layer_${i}`;
+                // Layer 1+ defaults to all "No" keys
+                const layerKeys = keysMap.replace(/_/g, "No"); 
+                
+                additionalLayersContent += `\n[[layer]]\nname = "${layerName}"\nkeys = """\n${layerKeys}\n"""`;
+            }
+            // Store the dynamically generated layers
+            layerAdditionalTextarea.value = additionalLayersContent;
+            
+            // Aliases content remains the default example
+            aliasesTextarea.value = defaultValues['aliases_example'];
+        }
+
+
+        function createPinSelect(value) {
+            const select = document.createElement('select');
+            allPins.forEach(pin => {
+                const option = document.createElement('option');
+                option.value = pin;
+                option.textContent = pin;
+                if(pin === value) option.selected = true;
+                select.appendChild(option);
+            });
+            return select;
+        }
+
+        function addInputPin(type, value) {
+            const div = type === 'row' ? rowPinsDiv : colPinsDiv;
+            const defaultValue = type === 'row' ? defaultRowPinValue : defaultColPinValue;
+            const sel = createPinSelect(value || defaultValue);
+            div.appendChild(sel);
+            sel.addEventListener('change', update);
+            update();
+        }
+        function removeInputPin(type) {
+            const div = type === 'row' ? rowPinsDiv : colPinsDiv;
+            if(div.children.length > 1){
+                div.removeChild(div.lastChild);
+                update();
+            }
+        }
+
+        function fillLightAndChargePinOptions() {
+            const lightPins = [
+                { id: 'capslock_pin', defaultValue: 'P0_30' },
+                { id: 'scrolllock_pin', defaultValue: 'null' },
+                { id: 'numslock_pin', defaultValue: 'null' }
+            ];
+            lightPins.forEach(item => {
+                const select = document.getElementById(item.id);
+                if (select) {
+                    select.innerHTML = '';
+                    allPins.forEach(pin => {
+                        const option = document.createElement('option');
+                        option.value = pin;
+                        option.textContent = pin;
+                        if (pin === item.defaultValue) option.selected = true;
+                        select.appendChild(option);
+                    });
+                    toggleAssociatedLabelVisibility(select, item.id.replace('_pin', '_low_active_label'), document.getElementById('enable_light').checked);
+                }
+            });
+
+            const chargePins = [
+                { id: 'charge_state_pin', defaultValue: 'null', associatedLabelId: 'charge_state_low_active_label' },
+                { id: 'charge_led_pin', defaultValue: 'null', associatedLabelId: 'charge_led_low_active_label' }
+            ];
+            chargePins.forEach(item => {
+                const select = document.getElementById(item.id);
+                if (select) {
+                    select.innerHTML = '';
+                    allPins.forEach(pin => {
+                        const option = document.createElement('option');
+                        option.value = pin;
+                        option.textContent = pin;
+                        if (pin === item.defaultValue) option.selected = true;
+                        select.appendChild(option);
+                    });
+                    toggleAssociatedLabelVisibility(select, item.associatedLabelId, enableBleCheckbox.checked);
+                }
+            });
+        }
+
+        function createEncoderBlock(index, encoderData = {}) {
+            const block = document.createElement('div');
+            block.className = 'encoder-block';
+            block.dataset.index = index;
+
+            block.innerHTML = `
+                <h4># 编码器 ${index + 1}</h4>
+                <div class="row">
+                    <label>上拉:
+                        <select class="encoder-internal-pullup">
+                            <option value="false" ${encoderData.internal_pullup === 'false' ? 'selected' : ''}>false</option>
+                            <option value="true" ${encoderData.internal_pullup === 'true' ? 'selected' : ''}>true</option>
+                        </select>
+                    </label>
+                    <label>引脚 A:</label>
+                    <label>引脚 B:</label>
+                    <label>相位:
+                        <select class="encoder-phase">
+                            <option value="default" ${encoderData.phase === 'default' ? 'selected' : ''}>default</option>
+                            <option value="resolution" ${encoderData.phase === 'resolution' || !encoderData.phase ? 'selected' : ''}>resolution</option>
+                        </select>
+                    </label>
+                    <label class="encoder-resolution-label">分辨率:
+                        <input type="number" class="encoder-resolution" value="${encoderData.resolution || defaultEncoderData.resolution}" min="1" />
+                    </label>
+                    <label>反向:
+                        <select class="encoder-reverse">
+                            <option value="false" ${encoderData.reverse === 'false' || !encoderData.reverse ? 'selected' : ''}>false</option>
+                            <option value="true" ${encoderData.reverse === 'true' ? 'selected' : ''}>true</option>
+                        </select>
+                    </label>
+                </div>
+            `;
+            
+            const pinASelect = createPinSelectForEncoder(encoderData.pin_a || defaultEncoderData.pin_a);
+            pinASelect.className = 'encoder-pin-a';
+            block.querySelector('label:nth-child(2)').appendChild(pinASelect);
+
+            const pinBSelect = createPinSelectForEncoder(encoderData.pin_b || defaultEncoderData.pin_b);
+            pinBSelect.className = 'encoder-pin-b';
+            block.querySelector('label:nth-child(3)').appendChild(pinBSelect);
+
+            block.querySelectorAll('select, input').forEach(el => {
+                el.addEventListener('change', update);
+                el.addEventListener('input', update);
+            });
+            const phaseSelect = block.querySelector('.encoder-phase');
+            phaseSelect.addEventListener('change', () => toggleEncoderResolutionInput(phaseSelect));
+            toggleEncoderResolutionInput(phaseSelect);
+
+            return block;
+        }
+
+        function createPinSelectForEncoder(value) {
+            const select = document.createElement('select');
+            const encoderPins = allPins.filter(pin => pin !== 'null');
+            encoderPins.forEach(pin => {
+                const option = document.createElement('option');
+                option.value = pin;
+                option.textContent = pin;
+                if (pin === value) option.selected = true;
+                select.appendChild(option);
+            });
+            return select;
+        }
+
+        function toggleEncoderResolutionInput(phaseSelectElement) {
+            const parentRow = phaseSelectElement.closest('.row');
+            const resolutionLabel = parentRow.querySelector('.encoder-resolution-label');
+            if (resolutionLabel) { // Ensure the element exists
+                resolutionLabel.classList.toggle('hidden', phaseSelectElement.value !== "resolution");
+            }
+            update();
+        }
+
+        function addEncoder(encoderData) {
+            const newIndex = encoderListDiv.children.length;
+            const newBlock = createEncoderBlock(newIndex, encoderData);
+            encoderListDiv.appendChild(newBlock);
+            update();
+        }
+
+        function removeEncoder() {
+            if (encoderListDiv.children.length > 0) {
+                encoderListDiv.removeChild(encoderListDiv.lastChild);
+                update();
+            }
+        }
+
+        function toggleSection(id){
+            const checked = document.getElementById(`enable_${id}`)?.checked;
+            const sectionElement = document.getElementById(id);
+            if (sectionElement) {
+                sectionElement.classList.toggle('hidden', !checked);
+            }
+            update(); // Re-render when sections are toggled
+        }
+
+        function toggleBleSection() {
+            const selectedChip = chipSelect.value;
+            const isNrf52840 = (selectedChip === 'nrf52840');
+            
+            enableBleCheckbox.disabled = !isNrf52840;
+
+            if (!isNrf52840) {
+                enableBleCheckbox.checked = false;
+            }
+            bleSection.classList.toggle('hidden', !enableBleCheckbox.checked);
+            
+            updateBleRelatedVisibility();
+            update();
+        }
+
+        function updateBleRelatedVisibility(){
+            const bleEnabled = enableBleCheckbox.checked && (chipSelect.value === 'nrf52840');
+            
+            // Toggle visibility for battery ADC pin label
+            const batteryAdcLabel = batteryAdcPinSelect.parentElement;
+            if (batteryAdcLabel) {
+                batteryAdcLabel.classList.toggle('hidden', !bleEnabled);
+            }
+
+            const adcPin = batteryAdcPinSelect.value;
+            const isAdcVddh = (adcPin === "vddh");
+            adcMeasuredLabel.classList.toggle('hidden', isAdcVddh || !bleEnabled);
+            adcTotalLabel.classList.toggle('hidden', isAdcVddh || !bleEnabled);
+
+            toggleAssociatedLabelVisibility(chargeStatePinSelect, 'charge_state_low_active_label', bleEnabled);
+            toggleAssociatedLabelVisibility(chargeLedPinSelect, 'charge_led_low_active_label', bleEnabled);
+        }
+
+        function toggleAssociatedLabelVisibility(selectElement, associatedLabelId, parentEnabled) {
+            const associatedLabel = document.getElementById(associatedLabelId);
+            if (associatedLabel) {
+                associatedLabel.classList.toggle('hidden', selectElement.value === 'null' || !parentEnabled);
+            }
+            // Also toggle the select element's parent label if it exists and should be hidden
+            if (selectElement.parentElement) {
+                selectElement.parentElement.classList.toggle('hidden', !parentEnabled);
+            }
+        }
+
+        function formatHexInput(event) {
+            let value = event.target.value.toUpperCase().replace(/[^0-9A-F]/g, '');
+            if (value.length > 4) {
+                value = value.substring(0, 4);
+            }
+            event.target.value = value;
+            update();
+        }
+
+        function padHexValue(value, id) {
+             if (!value) {
+                return id === 'vendor_id' ? '4C4B' : '4643'; // New default IDs
+            }
+            return value.padEnd(4, '0');
+        }
+
+        function getFormattedHexValue(elementId) {
+            const value = document.getElementById(elementId).value.toUpperCase().replace(/[^0-9A-F]/g, '');
+            return "0x" + padHexValue(value, elementId);
+        }
+
+        function update(){
+            const lightEnabled = document.getElementById('enable_light').checked;
+            toggleAssociatedLabelVisibility(document.getElementById('capslock_pin'), 'capslock_low_active_label', lightEnabled);
+            toggleAssociatedLabelVisibility(document.getElementById('scrolllock_pin'), 'scrolllock_low_active_label', lightEnabled);
+            toggleAssociatedLabelVisibility(document.getElementById('numslock_pin'), 'numslock_low_active_label', lightEnabled);
+            updateBleRelatedVisibility();
+            updateLayoutExamples(); // 重新生成层配置
+
+            const name = document.getElementById('name').value.trim();
+            const product_name = document.getElementById('product_name').value.trim();
+            const manufacturer = document.getElementById('manufacturer').value.trim();
+            const vendor_id = getFormattedHexValue('vendor_id');
+            const product_id = getFormattedHexValue('product_id');
+            const chip = document.getElementById('chip').value;
+
+            // Updated pins names
+            const rowPins = Array.from(rowPinsDiv.children).map(s=>s.value);
+            const colPins = Array.from(colPinsDiv.children).map(s=>s.value);
+            const scanMode = scanModeSelect.value;
+            const layers = parseInt(document.getElementById('layers').value) || 1;
+            const rows = rowPins.length;
+            const cols = colPins.length;
+
+            // 从 JS 对象中获取内容
+            const matrixMapContent = matrixMapTextarea.value.trim();
+            const layer0Content = layer0Textarea.value.trim();
+            const additionalLayersContent = layerAdditionalTextarea.value.trim(); // 获取所有额外的层
+            const aliasesContent = aliasesTextarea.value.trim();
+
+            const capslock_pin = document.getElementById('capslock_pin').value;
+            const capslock_low_active = document.getElementById('capslock_low_active').value;
+            const scrolllock_pin = document.getElementById('scrolllock_pin').value;
+            const scrolllock_low_active = document.getElementById('scrolllock_low_active').value;
+            const numslock_pin = document.getElementById('numslock_pin').value;
+            const numslock_low_active = document.getElementById('numslock_low_active').value;
+
+            const bleEnabled = enableBleCheckbox.checked && (chip === 'nrf52840');
+            const battery_adc_pin = batteryAdcPinSelect.value;
+            const adc_divider_measured = document.getElementById('adc_divider_measured').value.trim();
+            const adc_divider_total = document.getElementById('adc_divider_total').value.trim();
+            const charge_state_pin = document.getElementById('charge_state_pin').value;
+            const charge_state_low_active = document.getElementById('charge_state_low_active').value;
+            const charge_led_pin = document.getElementById('charge_led_pin').value;
+            const charge_led_low_active = document.getElementById('charge_led_low_active').value;
+
+            const encoderEnabled = document.getElementById('enable_encoder').checked;
+            const encoders = [];
+            if (encoderEnabled) {
+                Array.from(encoderListDiv.children).forEach(block => {
+                    const internal_pullup = block.querySelector('.encoder-internal-pullup').value;
+                    const pin_a = block.querySelector('.encoder-pin-a').value;
+                    const pin_b = block.querySelector('.encoder-pin-b').value;
+                    const phase = block.querySelector('.encoder-phase').value;
+                    const resolution = block.querySelector('.encoder-resolution').value;
+                    const reverse = block.querySelector('.encoder-reverse').value; // New reverse parameter
+                    encoders.push({ internal_pullup, pin_a, pin_b, phase, resolution, reverse });
+                });
+            }
+
+            const storageEnabled = document.getElementById('enable_storage').checked;
+            const storage_enabled = document.getElementById('storage_enabled').value;
+            const storage_clear_storage = document.getElementById('storage_clear_storage').value;
+
+            const comboEnabled = document.getElementById('enable_combo').checked;
+            const combo_timeout = document.getElementById('combo_timeout').value.trim();
+            const combo_example_content = comboExampleTextarea.value.trim();
+
+            const forkEnabled = document.getElementById('enable_fork').checked;
+            const fork_example_content = forkExampleTextarea.value.trim();
+
+            const rmkEnabled = document.getElementById('enable_rmk').checked;
+            const rmk_combo_max_num = document.getElementById('rmk_combo_max_num').value.trim();
+            const rmk_fork_max_num = document.getElementById('rmk_fork_max_num').value.trim();
+
+            let out = "";
+
+            // [keyboard]
+            out += "[keyboard]\n";
+            out += `name = "${name}"\n`;
+            out += `product_name = "${product_name}"\n`;
+            out += `vendor_id = ${vendor_id}\n`;
+            out += `product_id = ${product_id}\n`;
+            out += `manufacturer = "${manufacturer}"\n`;
+            out += `chip = "${chip}"\n\n`;
+
+            // [matrix]
+            out += "[matrix]\n";
+            out += `row_pins = [${rowPins.map(p=>`"${p}"`).join(", ")}]\n`; // Updated name
+            out += `col_pins = [${colPins.map(p=>`"${p}"`).join(", ")}]\n`; // Updated name
+            if(scanMode === 'row2col'){
+                out += `row2col = true\n\n`;
+            } else {
+                out += `# RMK uses col2row as the default matrix diode direction, uncomment if you want to use a row2col matrix\n`;
+                out += `# row2col = true\n\n`;
+            }
+
+            // [layout]
+            out += "[layout]\n";
+            out += `rows = ${rows}\n`;
+            out += `cols = ${cols}\n`;
+            out += `layers = ${layers}\n`;
+            out += `matrix_map = """\n${matrixMapContent}\n"""\n\n`; // New matrix_map
+
+            // [[layer]]
+            out += `# Define keymap layers using [[layer]]\n`
+            out += `[[layer]]\n`;
+            out += `${layer0Content}\n`;
+            
+            // --- 核心修改：输出额外的层 ---
+            if (additionalLayersContent) {
+                out += additionalLayersContent;
+            }
+            // ---------------------------
+
+            // [aliases] - If enabled
+            if (aliasesContent) {
+                out += `\n[aliases]\n`;
+                out += `${aliasesContent}\n`;
+            }
+            
+            // [light]
+            if(lightEnabled){
+                out += "\n[light]\n";
+                // Only output config if pin is not 'null'
+                if (capslock_pin !== 'null' && capslock_pin !== undefined) {
+                    out += `capslock.pin = "${capslock_pin}"\n`;
+                    if (capslock_low_active === 'true') {
+                        out += `capslock.low_active = ${capslock_low_active}\n`;
+                    }
+                }
+                if (scrolllock_pin !== 'null' && scrolllock_pin !== undefined) {
+                    out += `scrolllock.pin = "${scrolllock_pin}"\n`;
+                    if (scrolllock_low_active === 'true') {
+                        out += `scrolllock.low_active = ${scrolllock_low_active}\n`;
+                    }
+                } else {
+                    out += `# scrolllock.pin = "PA3"\n# scrolllock.low_active = true\n`;
+                }
+                if (numslock_pin !== 'null' && numslock_pin !== undefined) {
+                    out += `numslock.pin = "${numslock_pin}"\n`;
+                    if (numslock_low_active === 'true') {
+                        out += `numslock.low_active = ${numslock_low_active}\n`;
+                    }
+                } else {
+                    out += `# numslock.pin = "PA5"\n# numslock.low_active = true\n`;
+                }
+                out += "\n";
+            } else {
+                out += "\n# [light]\n# capslock.pin = \"P0_30\"\n# capslock.low_active = false\n";
+            }
+
+            // [bluetooth]
+            if (bleEnabled) {
+                out += "[ble]\n"; // Updated name
+                out += "enabled = true\n";
+                if (battery_adc_pin && battery_adc_pin !== 'null') {
+                    out += `battery_adc_pin = "${battery_adc_pin}"\n`;
+                    if (battery_adc_pin !== 'vddh') {
+                        out += `adc_divider_measured = ${adc_divider_measured}\n`;
+                        out += `adc_divider_total = ${adc_divider_total}\n`;
+                    }
+                }
+                if (charge_state_pin !== 'null') {
+                    out += `charge_state_pin = "${charge_state_pin}"\n`;
+                    out += `charge_state_low_active = ${charge_state_low_active}\n`;
+                }
+                if (charge_led_pin !== 'null') {
+                    out += `charge_led_pin = "${charge_led_pin}"\n`;
+                    out += `charge_led_low_active = ${charge_led_low_active}\n`;
+                }
+                out += "\n";
+            }
+
+            // [[input_device.encoder]]
+            if(encoderEnabled && encoders.length > 0){
+                encoders.forEach((encoder, index) => {
+                    out += `# 编码器 ${index + 1}\n`;
+                    out += "[[input_device.encoder]]\n";
+                    out += `pin_a = "${encoder.pin_a}"\n`;
+                    out += `pin_b = "${encoder.pin_b}"\n`;
+                    if (encoder.internal_pullup === 'true') {
+                        out += `internal_pullup = ${encoder.internal_pullup}\n`;
+                    }
+                    out += `phase = "${encoder.phase}"\n`;
+                    if(encoder.phase === "resolution"){
+                        out += `resolution = ${encoder.resolution}\n`;
+                    }
+                    if (encoder.reverse === 'true') {
+                        out += `reverse = ${encoder.reverse}\n`; // New reverse parameter
+                    }
+                    out += "\n";
+                });
+            }
+
+            // [storage]
+            if(storageEnabled){
+                out += "[storage]\n";
+                out += `enabled = ${storage_enabled}\n`;
+                out += `clear_storage = ${storage_clear_storage}\n\n`;
+            } else {
+                out += "# [storage]\n# enabled = false\n# clear_storage = true\n\n";
+            }
+
+            // [behavior.combo]
+            if(comboEnabled){
+                out += "[behavior.combo]\n";
+                out += `timeout = "${combo_timeout}"\n`;
+                out += `${combo_example_content}\n\n`;
+            }
+
+            // [behavior.fork]
+            if(forkEnabled){
+                out += "[behavior.fork]\n";
+                out += `${fork_example_content}\n\n`;
+            }
+
+            // [rmk]
+            if(rmkEnabled){
+                out += "[rmk]\n";
+                out += `combo_max_num = ${rmk_combo_max_num}\n`;
+                out += `fork_max_num = ${rmk_fork_max_num}\n`;
+            }
+
+            document.getElementById('output').value = out;
+        }
+
+        function resetAll() {
+            document.querySelectorAll('input[type="text"]:not(#vendor_id):not(#product_id), input[type="number"], select, textarea.code-example').forEach(element => {
+                if (defaultValues.hasOwnProperty(element.id)) {
+                    element.value = defaultValues[element.id];
+                }
+            });
+            document.querySelectorAll('input[type="checkbox"]').forEach(element => {
+                if (defaultValues.hasOwnProperty(element.id)) {
+                    element.checked = defaultValues[element.id];
+                }
+            });
+
+            vendorIdInput.value = defaultValues['vendor_id'];
+            productIdInput.value = defaultValues['product_id'];
+            scanModeSelect.value = defaultValues['scan_mode'];
+            layersInput.value = defaultValues['layers']; // Reset layers
+            comboExampleTextarea.value = defaultValues['combo_example'];
+            forkExampleTextarea.value = defaultValues['fork_example'];
+            
+            // 隐藏的数据也需要重置
+            matrixMapTextarea.value = defaultValues['matrix_map_example'];
+            layer0Textarea.value = defaultValues['layer_0_example'];
+            layerAdditionalTextarea.value = ''; // 额外层清空
+            aliasesTextarea.value = defaultValues['aliases_example'];
+
+
+            rowPinsDiv.innerHTML = '';
+            addInputPin('row', 'P1_00');
+            addInputPin('row', 'P1_01'); // Default two pins
+            colPinsDiv.innerHTML = '';
+            addInputPin('col', 'P1_05');
+            addInputPin('col', 'P1_06'); // Default two pins
+
+            encoderListDiv.innerHTML = '';
+            addEncoder(defaultEncoderData);
+            
+            fillLightAndChargePinOptions(); // Refill pins
+            
+            chipSelect.dispatchEvent(new Event('change'));
+            batteryAdcPinSelect.dispatchEvent(new Event('change'));
+            chargeStatePinSelect.dispatchEvent(new Event('change'));
+            chargeLedPinSelect.dispatchEvent(new Event('change'));
+            scanModeSelect.dispatchEvent(new Event('change'));
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                if (cb.id !== 'enable_ble') {
+                    toggleSection(cb.id.replace("enable_", ""), defaultValues[cb.id]);
+                }
+            });
+            toggleBleSection();
+
+            vendorIdInput.dispatchEvent(new Event('blur'));
+            productIdInput.dispatchEvent(new Event('blur'));
+            
+            update();
+        }
+
+        function bindInputs(){
+            document.querySelectorAll("input:not([type=checkbox]), select, textarea").forEach(input => input.addEventListener("input", update));
+            
+            vendorIdInput.addEventListener('input', formatHexInput);
+            productIdInput.addEventListener('input', formatHexInput);
+            vendorIdInput.addEventListener('blur', (event) => {
+                event.target.value = padHexValue(event.target.value, event.target.id);
+                update();
+            });
+            productIdInput.addEventListener('blur', (event) => {
+                event.target.value = padHexValue(event.target.value, event.target.id);
+                update();
+            });
+
+            chipSelect.addEventListener('change', toggleBleSection);
+            batteryAdcPinSelect.addEventListener('change', updateBleRelatedVisibility);
+            chargeStatePinSelect.addEventListener('change', updateBleRelatedVisibility);
+            chargeLedPinSelect.addEventListener('change', updateBleRelatedVisibility);
+            scanModeSelect.addEventListener('change', update);
+
+            document.querySelectorAll("input[type=checkbox]").forEach(cb=>{
+                if (cb.id === 'enable_ble') {
+                    cb.addEventListener("change", toggleBleSection);
+                } else {
+                    cb.addEventListener("change", toggleSection.bind(null, cb.id.replace("enable_", "")));
+                }
+            });
+            
+            layersInput.addEventListener('input', update); // Watch layers input for immediate update (use 'input' instead of 'change')
+
+            // Button Logic (Copy, Download, Reset)
+            const copyButton = document.getElementById('copyButton');
+            copyButton.addEventListener('click', () => {
+                const outputTextarea = document.getElementById('output');
+                outputTextarea.select();
+                document.execCommand('copy');
+                copyButton.textContent = '已复制!';
+                copyButton.classList.add('copied');
+                setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('copied');
+                }, 2000);
+            });
+
+            const downloadButton = document.getElementById('downloadButton');
+            downloadButton.addEventListener('click', () => {
+                const outputTextarea = document.getElementById('output');
+                const content = outputTextarea.value;
+                const filename = document.getElementById('name').value.trim().replace(/\s/g, '_') + '.toml';
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                downloadButton.textContent = '已下载!';
+                setTimeout(() => {
+                    downloadButton.textContent = '下载';
+                }, 2000);
+            });
+
+            const resetButton = document.getElementById('resetButton');
+            resetButton.addEventListener('click', () => {
+                resetAll();
+                resetButton.textContent = '已重置!';
+                resetButton.classList.add('reset');
+                setTimeout(() => {
+                    resetButton.textContent = '重置';
+                    resetButton.classList.remove('reset');
+                }, 2000);
+            });
+        }
+
+        (function init() {
+            // Set initial matrix pins (2x2 by default)
+            addInputPin('row', 'P1_00');
+            addInputPin('row', 'P1_01');
+            addInputPin('col', 'P1_05');
+            addInputPin('col', 'P1_06');
+            
+            addEncoder(defaultEncoderData);
+
+            fillLightAndChargePinOptions();
+            bindInputs();
+
+            // Set initial values for removed textareas after defaultValues are saved
+            updateLayoutExamples();
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                if (cb.id !== 'enable_ble') {
+                    toggleSection(cb.id.replace("enable_", ""), cb.checked);
+                }
+            });
+            toggleBleSection();
+
+            vendorIdInput.dispatchEvent(new Event('blur'));
+            productIdInput.dispatchEvent(new Event('blur'));
+
+            update();
+        })();
+    </script>
+<script>
+        // Disable right-click menu and F12/Ctrl+Shift+I/Ctrl+U
+        document.addEventListener('contextmenu',function(e){e.preventDefault();});
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
+                return false;
+            }
+            if (e.keyCode == 116) { // Disable F5 (refresh)
+                e.preventDefault();
+            }
+        };
+    </script>
+</body>
+</html>

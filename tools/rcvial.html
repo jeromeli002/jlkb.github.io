@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<title>QMK工具</title>
+<meta charset="UTF-8">
+<style>
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa; /* 更浅的背景色 */
+    color: #343a40; /* 颜色更深的文字，对比度更强 */
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.7; /* 行高稍作调整，更舒适 */
+    max-width: 1200px;
+    font-size: 16px;
+}
+
+h1 {
+    color: #007bff; /* 科技蓝，更醒目 */
+    margin-bottom: 30px; /* 增加标题下边距 */
+    text-align: center;
+    font-weight: 700;
+    font-size: 52px; /* 标题字号加大 */
+    letter-spacing: -0.03em; /* 调整字间距 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05); /* 标题增加阴影 */
+}
+
+div {
+    width: 95%; /* 宽度稍微增加 */
+    max-width: 1000px; /* 最大宽度增加 */
+}
+
+label {
+    display: inline-block;
+    margin-bottom: 8px; /* 标签下边距调整 */
+    font-weight: 500;
+    color: #495057; /* 标签颜色 */
+    width: auto;
+    text-align: left;
+    margin-right: 15px; /* 标签右边距加大 */
+    font-size: 20px; /* 标签字号加大 */
+}
+
+input[type="number"] {
+    padding: 14px; /* 输入框内边距加大 */
+    border: 1px solid #ced4da; /* 边框颜色 */
+    border-radius: 8px; /* 更圆润的边框 */
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px; /* 输入框下边距加大 */
+    background-color: #fff;
+    color: #495057;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* 过渡效果 */
+    font-size: 17px; /* 输入框文字大小 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    text-align: left;
+    resize: horizontal;
+    min-width: 50px;
+    max-width: 150px;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.075); /* 输入框内阴影 */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]:focus {
+    border-color: #007bff; /* 聚焦时边框颜色 */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* 聚焦时阴影，颜色调整 */
+}
+
+textarea, #vialInput {
+    padding: 15px;
+    border: 1px solid #ced4da; /* 统一边框颜色 */
+    border-radius: 8px; /* 更圆润的边框 */
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Roboto Mono', monospace;
+    background-color: #f8f9fa; /* 与body背景一致 */
+    color: #495057;
+    line-height: 1.6;
+    resize: both;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* 过渡效果 */
+    font-size: 16px;
+    min-height: 120px; /* 最小高度稍微增加 */
+    text-align: left;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.075); /* 文本框内阴影 */
+}
+
+textarea:focus, #vialInput:focus {
+    border-color: #007bff; /* 聚焦时边框颜色 */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* 聚焦时阴影，颜色调整 */
+}
+
+textarea::placeholder, #vialInput::placeholder {
+    color: #6c757d; /* Placeholder 颜色 */
+    font-style: italic;
+    font-size: 15px; /* Placeholder 字号 */
+    text-align: left;
+}
+
+.input-group {
+    border: 1px solid #ced4da; /* 统一边框颜色 */
+    border-radius: 12px; /* 更圆润的 Group 边框 */
+    padding: 30px; /* Group 内边距加大 */
+    margin-bottom: 35px; /* Group 下边距加大 */
+    background-color: #fff; /* 白色背景 */
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.08); /* Group 阴影调整 */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 1000px; /* Group 最大宽度 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.input-group h2, .input-group .vial-label {
+    font-size: 28px; /* Group 标题字号加大 */
+    margin-top: 0;
+    margin-bottom: 25px; /* 标题下边距加大 */
+    color: #495057; /* 标题颜色 */
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: block;
+    width: 100%;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /* 行间距加大 */
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.input-row label {
+    margin-right: 15px;
+    margin-bottom: 0px;
+    width: auto;
+    text-align: left;
+    font-size: 22px; /* 行内标签字号 */
+}
+
+.input-row input {
+    margin-bottom: 0;
+    margin-right: 0;
+    font-size: 17px; /* 行内输入框字号 */
+    width: 100%;
+}
+
+.generators-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 95%; /* 容器宽度 */
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.output-section-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 25px; /* 输出容器间距 */
+}
+
+.output-section {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    width: 49%; /* 输出区域宽度 */
+}
+
+.output-section label {
+    display: block;
+    text-align: left;
+    margin-bottom: 12px; /* 输出标签下边距 */
+    font-size: 22px; /* 输出标签字号 */
+    color: #495057;
+}
+
+.output-section textarea {
+    /* flex-grow: 1;  移除 flex-grow 和 flex-basis */
+    /* flex-basis: 0; */
+    min-width: 0;
+    text-align: left;
+    border-radius: 8px; /* 输出文本框圆角 */
+    resize: both; /* 确保可以拉伸 */
+    overflow: auto; /* 增加 overflow: auto */
+}
+
+
+button {
+    background-color: #007bff; /* 按钮蓝色 */
+    color: white;
+    padding: 14px 28px; /* 按钮内边距 */
+    border: none;
+    border-radius: 8px; /* 按钮圆角 */
+    cursor: pointer;
+    font-size: 17px; /* 按钮文字大小 */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* 按钮过渡效果 */
+    margin: 5px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* 按钮阴影 */
+    width: 130px; /*  设置按钮宽度 */
+}
+
+button:hover {
+    background-color: #0056b3; /* Hover 颜色 */
+    transform: translateY(-2px); /* Hover 上移效果 */
+    box-shadow: 3px 3px 7px rgba(0,0,0,0.15); /* Hover 阴影加深 */
+}
+
+button:active {
+    transform: translateY(0); /* 点击时取消上移 */
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* 点击时阴影减弱 */
+}
+
+
+.buttons-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px; /* 按钮行下边距 */
+}
+
+.number-input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.number-input-buttons {
+    display: flex;
+    flex-direction: row;
+    margin: 0 3px; /* 调整数字按钮左右间距 */
+    justify-content: center;
+}
+
+.number-input-button {
+    background-color: #e9ecef; /* 数字按钮背景色 */
+    border: 1px solid #dee2e6; /* 数字按钮边框 */
+    border-radius: 6px; /* 数字按钮圆角 */
+    width: 35px; /* 数字按钮宽度 */
+    height: 30px; /* 数字按钮高度 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: #495057;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    margin: 0;
+}
+
+.number-input-button:hover {
+    background-color: #d3d9df; /* 数字按钮 Hover 颜色 */
+}
+
+.number-input-button:active {
+    background-color: #adb5bd; /* 数字按钮点击颜色 */
+}
+
+.number-input-button:first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+.number-input-button:last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+
+#vialInput, #vialOutput, #jsonOutput, #textOutput {
+    background-color: #f8f9fa; /* 统一浅灰色背景 */
+    color: #495057;
+    border-color: #ced4da;
+    text-align: left;
+}
+
+
+#jsonOutput, #textOutput {
+    resize: both; /* 确保矩阵文本框可以拉动 */
+    text-align: left;
+    background-color: #f8f9fa;
+    color: #495057;
+    border-color: #ced4da;
+}
+
+#vialInput {
+    text-align: left;
+    font-size: 16px;
+    min-height: 120px; /* vial 输入框最小高度 */
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    display: block;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+/*  移除 vialOutput 的固定宽度 */
+#vialOutput {
+    text-align: left;
+    width: 100%; /* 确保 vialOutput 占据可用宽度 */
+}
+
+
+
+/* 修改 vial 工具的 input-group，使其内部元素垂直排列 */
+.input-group-vial {
+    display: flex;
+    flex-direction: column; /* 垂直布局 */
+    align-items: stretch;
+}
+
+.input-group-vial h2.vial-tool-title {
+    font-size: 28px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #495057;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: block;
+    width: 100%;
+}
+
+
+.input-group-vial .vial-label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px; /* 减小 label 的下外边距 */
+    font-size: 22px; /* 保持 label 字号 */
+}
+
+.input-group-vial > div { /* 输入和输出 div 容器 */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+    margin-bottom: 15px; /* 增加输入输出容器的下外边距 */
+}
+
+.input-group-vial > div:first-child {
+    margin-bottom: 0; /* 移除第一个 div 容器的下外边距 */
+}
+
+
+.input-group-vial textarea#vialInput,
+.input-group-vial textarea#vialOutput {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* 修改按钮行样式，使其在输入框上方居中显示 */
+.input-group-vial .buttons-row-vial {
+    display: flex;
+    justify-content: center; /* 按钮居中 */
+    padding: 0;
+    box-sizing: border-box;
+    margin-bottom: 12px; /* 按钮行下外边距，与输入框label保持距离 */
+    margin-top: 15px; /* 按钮行上外边距，与标题保持距离 */
+    flex-direction: row;
+}
+
+/* vial 工具的输入框label样式 */
+.input-group-vial .vial-input-label {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 22px;
+    color: #495057;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>QMK工具</h1>
+
+<div class="generators-container">
+    <div class="input-group">
+        <h2>矩阵布局</h2>
+        <div class="input-row">
+            <label for="rowInput" style="margin-left: 20px;">Rows:</label>
+            <div class="number-input-group" style="margin-left: 0px;">
+                <div class="number-input-buttons">
+                    <div class="number-input-button" onclick="decrementValue('rowInput')">&#9664;</div>
+                </div>
+                <input type="number" id="rowInput" value="1" onchange="generateMatrices()" placeholder="Rows">
+                <div class="number-input-buttons">
+                    <div class="number-input-button" onclick="incrementValue('rowInput')">&#9654;</div>
+                </div>
+            </div>
+            
+            <label for="colInput">Cols:</label>
+            <div class="number-input-group">
+                <div class="number-input-buttons">
+                    <div class="number-input-button" onclick="decrementValue('colInput')">&#9664;</div>
+                </div>
+                <input type="number" id="colInput" value="1" onchange="generateMatrices()" placeholder="Columns">
+                <div class="number-input-buttons">
+                    <div class="number-input-button" onclick="incrementValue('colInput')">&#9654;</div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="buttons-row">
+            <button id="resetButton" onclick="resetForm()">重置</button>
+            <button id="copyJsonButton" onclick="copyJsonOutput()">复制矩阵</button>
+            <button id="copyKctButton" onclick="copyKctOutput()">复制 键码</button>
+        </div>
+
+        <div class="output-section-container">
+            <div class="output-section">
+                <label for="jsonOutput">生成矩阵:</label>
+                <textarea id="jsonOutput" rows="10" cols="50"  placeholder="Generated JSON matrix will appear here"></textarea>
+            </div>
+
+            <div class="output-section">
+                <label for="textOutput">生成键码:</label>
+                <textarea id="textOutput" rows="10" cols="50" placeholder="Generated KC_TRNS matrix will appear here"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group input-group-vial">
+        <h2 class="vial-tool-title">Vial 工具</h2>
+        <div class="buttons-row buttons-row-vial">
+            <button id="resetVialButton" onclick="resetVial()">重置</button>
+            <button id="copyVialButton" onclick="copyVialOutput()">复制vial</button>
+        </div>
+        <div>
+            <label for="vialInput" class="vial-input-label">输入 raw data</label>
+            <textarea id="vialInput" placeholder="粘贴www.keyboard-layout-editor.com内的Raw data数据" oninput="convertVial()" style="display: block; margin-bottom: 0px; margin-top: 0px;"></textarea>
+        </div>
+        <div>
+            <label for="vialOutput" class="vial-label">生成vial:</label>
+            <textarea id="vialOutput" placeholder="生成的vial.json文件使用"></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateMatrix(cols, rows) {
+    var matrixArray = [];
+    var jsonString = "";
+
+    for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < cols; j++) {
+            var matrixObject = {
+                "matrix": [i, j],
+                "x": j,
+                "y": i
+            };
+            matrixArray.push(matrixObject);
+        }
+    }
+
+    for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < cols; j++) {
+            const index = i * cols + j;
+            jsonString += JSON.stringify(matrixArray[index]);
+            if (j < cols - 1) {
+                jsonString += ",\n";
+            }
+        }
+        if (i < rows - 1) {
+            jsonString += ",\n\n";
+        } else {
+            jsonString += "\n";
+        }
+    }
+
+    return jsonString;
+}
+
+function generateKCTMatrix(cols, rows) {
+    var matrixString = "";
+
+    for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < cols; j++) {
+            matrixString += "KC_TRNS";
+            if (j < cols - 1) {
+                matrixString += ", ";
+            }
+        }
+        matrixString += ",\n";
+    }
+
+    if (rows > 0) {
+        matrixString = matrixString.slice(0, -2);
+    }
+
+    return matrixString;
+}
+
+function generateMatrices() {
+    var cols = parseInt(document.getElementById("colInput").value);
+    var rows = parseInt(document.getElementById("rowInput").value);
+
+    var jsonOutput = generateMatrix(cols, rows);
+    var kctOutput = generateKCTMatrix(cols, rows);
+
+    document.getElementById("jsonOutput").value = jsonOutput;
+    document.getElementById("textOutput").value = kctOutput;
+}
+
+function copyJsonOutput() {
+    var jsonTextarea = document.getElementById("jsonOutput");
+    jsonTextarea.select();
+    navigator.clipboard.writeText(jsonTextarea.value);
+}
+
+function copyKctOutput() {
+    var kctTextarea = document.getElementById("textOutput");
+    kctTextarea.select();
+    navigator.clipboard.writeText(kctTextarea.value);
+}
+
+function resetForm() {
+    document.getElementById("colInput").value = 1;
+    document.getElementById("rowInput").value = 1;
+    document.getElementById("vialInput").value = "";
+    document.getElementById("vialOutput").value = "";
+    generateMatrices();
+}
+
+function incrementValue(inputId) {
+    var inputElement = document.getElementById(inputId);
+    var currentValue = parseInt(inputElement.value) || 0;
+    inputElement.value = currentValue + 1;
+    generateMatrices();
+}
+
+function decrementValue(inputId) {
+    var inputElement = document.getElementById(inputId);
+    var currentValue = parseInt(inputElement.value) || 0;
+    if (currentValue > 1) {
+        inputElement.value = currentValue - 1;
+        generateMatrices();
+    }
+}
+
+function convertVial() {
+    var vialInput = document.getElementById("vialInput").value;
+    let convertedString = '';
+    for (let i = 0; i < vialInput.length; i++) {
+        const char = vialInput[i];
+        if (char.match(/[a-zA-Z]/)) {
+            let shouldQuote = true;
+            if (i > 0 && vialInput[i - 1].match(/[a-zA-Z]/)) {
+                shouldQuote = false;
+            }
+             if (i < vialInput.length - 1 && vialInput[i + 1].match(/[a-zA-Z]/)) {
+                shouldQuote = false;
+            }
+            if (i > 0 && vialInput[i - 1] === '\\') {
+                shouldQuote = false;
+            }
+             if (i < vialInput.length - 1 && vialInput[i + 1] === '\\') {
+                shouldQuote = false;
+            }
+
+            if (shouldQuote) {
+                convertedString += '"' + char + '"';
+            } else {
+                convertedString += char;
+            }
+        } else {
+            convertedString += char;
+        }
+    }
+    document.getElementById("vialOutput").value = convertedString;
+}
+
+function copyVialOutput() {
+    var vialOutputTextarea = document.getElementById("vialOutput");
+    vialOutputTextarea.select();
+    navigator.clipboard.writeText(vialOutputTextarea.value);
+}
+
+function resetVial() {
+    document.getElementById("vialInput").value = "";
+    document.getElementById("vialOutput").value = "";
+}
+
+
+window.onload = generateMatrices;
+</script>
+
+<script>
+        // Disable right-click menu and F12/Ctrl+Shift+I/Ctrl+U
+        document.addEventListener('contextmenu',function(e){e.preventDefault();});
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
+                return false;
+            }
+            if (e.keyCode == 116) { // Disable F5 (refresh)
+                e.preventDefault();
+            }
+        };
+</script>
+
+</body>
+</html>

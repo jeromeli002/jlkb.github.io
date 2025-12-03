@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLED屏幕测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        
+        /* 像素化渲染 */
+        canvas { image-rendering: pixelated; }
+        
+        /* 滚动条美化 */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+        
+        /* 交互动效 */
+        .transition-base { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .hover-scale:hover { transform: scale(1.02); }
+        
+        /* Tab 样式 */
+        .tab-btn { position: relative; color: #64748b; border-bottom: 2px solid transparent; }
+        .tab-btn:hover { color: #4f46e5; background-color: #f8fafc; }
+        .tab-btn.active-tab-style { color: #4f46e5; background-color: #eef2ff; border-bottom-color: #4f46e5; font-weight: 600; }
+        .tab-btn i { margin-right: 6px; }
+
+        /* 图片库 Grid */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.75rem; }
+        .gallery-card { aspect-ratio: 16 / 9; overflow: hidden; position: relative; border-radius: 0.5rem; transition: all 0.2s; border: 1px solid #e2e8f0; background: #f8fafc; }
+        .gallery-card:hover { border-color: #818cf8; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .gallery-card.active { ring: 2px solid #4f46e5; border-color: #4f46e5; }
+
+        /* Switch样式 */
+        .toggle-checkbox:checked { right: 0; border-color: #4f46e5; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }
+        .toggle-checkbox { right: 20px; transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); border-color: #cbd5e1; }
+        .toggle-label { width: 40px; background-color: #cbd5e1; transition: background-color 0.3s; }
+        
+        /* 小号Switch */
+        .toggle-checkbox.small:checked { right: 0; border-color: #3b82f6; }
+        .toggle-checkbox.small:checked + .toggle-label.small { background-color: #3b82f6; }
+        .toggle-checkbox.small { right: 14px; width: 14px; height: 14px; }
+        .toggle-label.small { width: 28px; height: 14px; }
+        .toggle-wrapper-small { width: 28px; height: 14px; position: relative; display: inline-block; vertical-align: middle; }
+
+        /* 拖拽排序 */
+        .draggable-item { cursor: grab; transition: all 0.2s; border: 1px solid transparent; }
+        .draggable-item:hover { border-color: #cbd5e1; }
+        .draggable-item.dragging { opacity: 0.8; transform: scale(0.98); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); cursor: grabbing; border: 1px dashed #4f46e5; background: #eef2ff; }
+        
+        /* 滑块美化 */
+        .progress-slider { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px; background: linear-gradient(to right, var(--slider-color) 0%, var(--slider-color) var(--progress, 50%), #e2e8f0 var(--progress, 50%), #e2e8f0 100%); outline: none; }
+        .progress-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: white; border: 2px solid var(--slider-color); cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform 0.1s; }
+        .progress-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        
+        /* 偏移控制面板 */
+        .offset-controls { display: flex; gap: 8px; }
+        .offset-control { display: flex; align-items: center; gap: 6px; flex: 1; background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        
+        /* Slot 按钮 */
+        .slot-buttons { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+        .slot-btn { padding: 6px 0; font-size: 11px; border-radius: 6px; color: #64748b; background: #f1f5f9; border: 1px solid transparent; }
+        .slot-btn:hover { background: #e2e8f0; color: #334155; }
+        .slot-btn.active { background-color: #4f46e5; color: white; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); font-weight: 600; }
+
+        /* 文本列表项 */
+        .text-item { transition: all 0.2s; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
+        .text-item:hover { border-color: #cbd5e1; background-color: #f8fafc; }
+        .text-item.active { background-color: #eef2ff !important; border-color: #818cf8 !important; box-shadow: 0 0 0 1px #818cf8; }
+        .text-item.checked-bg { background-color: #f0fdf4; border-color: #86efac; }
+        
+        /* 输入框通用 */
+        input[type="text"], input[type="number"], select {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background-color: #fff;
+            color: #334155;
+            transition: all 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* 模式按钮 */
+        .mode-btn { background: white; border: 1px solid #e2e8f0; color: #64748b; }
+        .mode-btn:hover { background: #f8fafc; color: #334155; }
+        .mode-btn.active { background-color: #eff6ff; color: #2563eb; border-color: #bfdbfe; font-weight: 600; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+
+        /* 玻璃拟态背景 */
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
+    </style>
+</head>
+<body class="bg-slate-100 h-screen flex flex-col overflow-hidden text-slate-700 select-none">
+
+    <div class="flex-1 flex flex-col md:flex-row w-full h-full max-w-[1920px] mx-auto overflow-hidden">
+        
+        <div class="w-full md:w-[22%] lg:w-[20%] border-r border-slate-200 bg-white flex flex-col z-20 shadow-lg md:shadow-none">
+            
+            <div class="flex border-b border-slate-100 p-1 bg-white flex-shrink-0 gap-1">
+                <button id="tabImageMode" class="tab-btn flex-1 text-xs py-2.5 rounded-md transition-all active-tab-style" data-mode="image">
+                    <i class="fa-regular fa-image"></i> 图片
+                </button>
+                <button id="tabTextMode" class="tab-btn flex-1 text-xs py-2.5 rounded-md transition-all" data-mode="text">
+                    <i class="fa-solid fa-font"></i> 文本
+                </button>
+                <button id="tabTimeMode" class="tab-btn flex-1 text-xs py-2.5 rounded-md transition-all" data-mode="time">
+                    <i class="fa-regular fa-clock"></i> 时间
+                </button>
+            </div>
+
+            <div id="imagePanel" class="flex-1 flex flex-col min-h-0 bg-slate-50/50">
+                <div class="p-4 border-b border-slate-100 bg-white flex-shrink-0">
+                    <h2 class="font-bold text-slate-700 text-xs mb-3 flex items-center gap-2 uppercase tracking-wider opacity-80">
+                        <i class="fa-regular fa-images text-indigo-500"></i> 图片库
+                    </h2>
+                    <label class="group flex flex-col items-center justify-center w-full h-20 border-2 border-indigo-100 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-indigo-50 hover:border-indigo-300 transition-all">
+                        <div class="flex flex-col items-center justify-center pt-2 pb-3 transition-transform group-hover:scale-110">
+                            <i class="fa-solid fa-cloud-arrow-up text-indigo-400 mb-1.5 text-lg"></i>
+                            <p class="text-[10px] text-slate-400 font-medium">点击上传 / 拖拽图片</p>
+                        </div>
+                        <input type="file" id="fileInput" multiple accept="image/*" class="hidden" />
+                    </label>
+                </div>
+                <div id="galleryList" class="flex-1 overflow-y-auto custom-scroll p-3 gallery-grid content-start bg-slate-50">
+                    <div class="col-span-3 flex flex-col items-center justify-center h-40 text-slate-300 gap-2" id="emptyGalleryMsg">
+                        <i class="fa-regular fa-image text-2xl"></i>
+                        <span class="text-xs">暂无图片</span>
+                    </div>
+                </div>
+                <div class="p-3 border-t border-slate-200 bg-white flex gap-2 flex-shrink-0">
+                    <button id="btnPattern" class="flex-1 py-1.5 text-xs font-medium border border-slate-200 rounded-lg bg-white text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-all shadow-sm">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 测试样图
+                    </button>
+                    <button id="btnClearAll" class="flex-1 py-1.5 text-xs font-medium border border-red-100 text-red-500 rounded-lg bg-red-50 hover:bg-red-100 transition-all shadow-sm">
+                        <i class="fa-regular fa-trash-can mr-1"></i> 清空
+                    </button>
+                </div>
+            </div>
+
+            <div id="textPanel" class="flex-1 flex-col hidden h-full min-h-0 bg-slate-50/50">
+                <div class="p-4 border-b border-slate-100 bg-white flex-shrink-0 shadow-sm z-10">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="font-bold text-slate-700 text-xs flex items-center gap-2 uppercase tracking-wider opacity-80">
+                            <i class="fa-solid fa-pen-to-square text-indigo-500"></i> 编辑器
+                        </h2>
+                        <div class="flex items-center gap-2 bg-slate-100 px-2 py-1 rounded-full">
+                            <label class="text-[10px] font-bold text-slate-500 cursor-pointer" for="checkMultiLayer">多层</label>
+                            <div class="relative inline-block w-7 h-3.5">
+                                <input type="checkbox" id="checkMultiLayer" class="toggle-checkbox absolute block w-3.5 h-3.5 rounded-full bg-white border appearance-none cursor-pointer"/>
+                                <label for="checkMultiLayer" class="toggle-label block overflow-hidden h-3.5 rounded-full bg-slate-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="text" id="textInput" placeholder="在此输入文本..." class="w-full text-sm p-2.5 border border-slate-200 rounded-lg mb-3 transition-all focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 shadow-sm">
+                    <div class="flex flex-col gap-2 mb-3">
+                        <div class="flex gap-2">
+                            <select id="selectFontSize" class="text-xs border border-slate-200 rounded-lg px-2 py-1.5 w-1/3 bg-slate-50 focus:bg-white" title="字号">
+                            </select>
+                            <select id="selectFontFamily" class="text-xs border border-slate-200 rounded-lg px-2 py-1.5 w-2/3 truncate bg-slate-50 focus:bg-white" title="字体">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="textEffectControls" class="mb-3 p-3 border border-indigo-50 rounded-xl bg-indigo-50/30 space-y-2 transition-all">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[10px] font-bold text-indigo-600 flex-shrink-0">特效</label>
+                            <select id="selectTextEffect" class="text-[10px] p-1 border-0 rounded bg-white/80 outline-none w-24 text-right cursor-pointer hover:text-indigo-600 transition-colors focus:ring-0">
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                             <label class="text-[10px] font-bold text-slate-400">速度</label>
+                             <input type="range" id="sliderTextSpeed" min="0.1" max="3.0" step="0.1" value="1.0" class="flex-1 progress-slider h-1 rounded-full" style="--slider-color: #6366f1;">
+                             <span id="textSpeedVal" class="text-[10px] font-mono text-indigo-500 w-8 text-right">1.0x</span>
+                        </div>
+                    </div>
+
+                    <button id="btnAddText" class="w-full bg-indigo-600 text-white text-xs font-bold py-2.5 rounded-lg hover:bg-indigo-700 active:scale-95 transition-all shadow-md shadow-indigo-200">
+                        <i class="fa-solid fa-plus mr-1"></i> 添加文本
+                    </button>
+                </div>
+                <div id="textList" class="flex-1 overflow-y-auto custom-scroll p-3 space-y-2 bg-slate-50">
+                    <div class="text-center text-slate-300 text-xs mt-10" id="emptyTextMsg">暂无内容</div>
+                </div>
+                <div class="p-3 border-t border-slate-200 bg-white flex gap-2 flex-shrink-0">
+                    <button id="btnClearText" class="flex-1 py-1.5 text-xs font-medium border border-red-100 text-red-500 rounded-lg bg-red-50 hover:bg-red-100 transition-all">清空列表</button>
+                </div>
+            </div>
+
+            <div id="timePanel" class="flex-1 flex-col hidden h-full overflow-y-auto custom-scroll bg-slate-50">
+                
+                <div class="p-4 bg-white border-b border-slate-100 mb-2 shadow-sm">
+                    <h2 class="font-bold text-slate-700 text-xs mb-3 flex items-center gap-2 uppercase tracking-wider opacity-80">
+                        <i class="fa-solid fa-layer-group text-indigo-500"></i> 布局排序
+                    </h2>
+                    <div id="layoutOrderContainer" class="flex flex-col gap-2 draggable-container">
+                        <div class="draggable-item bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between shadow-sm select-none transition-all group" draggable="true" data-type="date">
+                            <span class="text-xs font-bold text-slate-600 group-hover:text-emerald-600 transition-colors"><i class="fa-regular fa-calendar mr-2 text-emerald-500"></i> 日期 (Date)</span>
+                            <i class="fa-solid fa-grip-lines text-slate-300 cursor-grab"></i>
+                        </div>
+                        <div class="draggable-item bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between shadow-sm select-none transition-all group" draggable="true" data-type="time">
+                            <span class="text-xs font-bold text-slate-600 group-hover:text-blue-600 transition-colors"><i class="fa-regular fa-clock mr-2 text-blue-500"></i> 时间 (Time)</span>
+                            <i class="fa-solid fa-grip-lines text-slate-300 cursor-grab"></i>
+                        </div>
+                        <div class="draggable-item bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between shadow-sm select-none transition-all group" draggable="true" data-type="custom">
+                            <span class="text-xs font-bold text-slate-600 group-hover:text-amber-600 transition-colors"><i class="fa-solid fa-align-left mr-2 text-amber-500"></i> 自定义 (Text)</span>
+                            <i class="fa-solid fa-grip-lines text-slate-300 cursor-grab"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-3 pb-6 space-y-3">
+                    <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 hover:border-emerald-200 transition-all">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-50">
+                            <label class="text-xs font-bold text-slate-700 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-400"></div> 日期样式</label>
+                            <div class="relative inline-block w-8 h-4">
+                                <input type="checkbox" id="checkShowDate" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer" checked/>
+                                <label for="checkShowDate" class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-200 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2 mb-3">
+                            <select id="selectDateFontSize" class="w-1/3 text-xs p-1.5 border border-slate-200 rounded-md bg-slate-50 outline-none"></select>
+                            <select id="selectDateFontFamily" class="w-2/3 text-xs p-1.5 border border-slate-200 rounded-md bg-slate-50 outline-none truncate"></select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                             <div class="flex items-center justify-between bg-slate-50 p-2 rounded-md">
+                                <span class="text-[10px] font-bold text-slate-500">年份</span>
+                                <div class="relative inline-block w-6 h-3">
+                                    <input type="checkbox" id="checkShowYear" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer" checked/>
+                                    <label for="checkShowYear" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-50 p-2 rounded-md">
+                                <span class="text-[10px] font-bold text-slate-500">月份</span>
+                                <div class="relative inline-block w-6 h-3">
+                                    <input type="checkbox" id="checkShowMonth" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer" checked/>
+                                    <label for="checkShowMonth" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-50 p-2 rounded-md">
+                                <span class="text-[10px] font-bold text-slate-500">日期</span>
+                                <div class="relative inline-block w-6 h-3">
+                                    <input type="checkbox" id="checkShowDayOfMonth" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer" checked/>
+                                    <label for="checkShowDayOfMonth" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-50 p-2 rounded-md">
+                                <span class="text-[10px] font-bold text-slate-500">星期</span>
+                                <div class="relative inline-block w-6 h-3">
+                                    <input type="checkbox" id="checkShowDayOfWeek" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer" checked/>
+                                    <label for="checkShowDayOfWeek" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 hover:border-blue-200 transition-all">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-50">
+                            <label class="text-xs font-bold text-slate-700 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-400"></div> 时间样式</label>
+                            <div class="relative inline-block w-8 h-4">
+                                <input type="checkbox" id="checkShowTime" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer" checked/>
+                                <label for="checkShowTime" class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-200 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <select id="selectTimeFormat" class="w-full text-xs p-1.5 border border-slate-200 rounded-md bg-slate-50 outline-none text-slate-600">
+                                <option value="24h">24小时制 (HH:MM:SS)</option>
+                                <option value="12h">12小时制 (AM/PM)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <select id="selectTimeFontSize" class="w-1/3 text-xs p-1.5 border border-slate-200 rounded-md bg-slate-50 outline-none"></select>
+                            <select id="selectTimeFontFamily" class="w-2/3 text-xs p-1.5 border border-slate-200 rounded-md bg-slate-50 outline-none truncate"></select>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 hover:border-amber-200 transition-all">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-50">
+                            <label class="text-xs font-bold text-slate-700 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-400"></div> 自定义文字</label>
+                            <div class="relative inline-block w-8 h-4">
+                                <input type="checkbox" id="checkShowCustomText" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer" checked/>
+                                <label for="checkShowCustomText" class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-200 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div id="customTextControls">
+                            <input type="text" id="customTextInput" placeholder="输入自定义文本" class="w-full text-xs p-2 border border-slate-200 rounded-md mb-2 bg-slate-50 focus:bg-white">
+                            
+                            <div class="flex gap-2 mb-3">
+                                <select id="selectCustomTextFontSize" class="w-1/3 text-xs p-1.5 border border-slate-200 rounded-md bg-slate-50 outline-none"></select>
+                                <select id="selectCustomTextFontFamily" class="w-2/3 text-xs p-1.5 border border-slate-200 rounded-md bg-slate-50 outline-none truncate"></select>
+                            </div>
+                            
+                            <div class="bg-amber-50/50 p-2 rounded-lg border border-amber-100/50 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-[10px] font-bold text-amber-600/80">动画</label>
+                                    <select id="selectCustomTextEffect" class="text-[10px] p-1 border-0 bg-transparent outline-none text-right w-24 text-amber-700 font-medium"></select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] text-amber-600/60">速度</span>
+                                    <input type="range" id="sliderCustomTextSpeed" min="0.1" max="3.0" step="0.1" value="1.0" class="flex-1 progress-slider h-1 rounded-full" style="--slider-color: #f59e0b;">
+                                    <span id="customTextSpeedVal" class="text-[10px] font-mono text-amber-600 w-8 text-right">1.0x</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w-full md:w-[48%] lg:w-[55%] bg-slate-100 flex flex-col relative">
+            
+            <div class="h-14 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-5 shadow-sm z-30">
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-100 text-slate-500 rounded px-2 py-1 text-[10px] font-bold tracking-widest">SIZE</div>
+                    <select id="presetSize" class="text-xs font-semibold bg-transparent border-0 cursor-pointer text-slate-700 hover:text-indigo-600 transition-colors focus:ring-0">
+                        <option value="128,32">128 x 32</option>
+                        <option value="128,64">128 x 64</option>
+                        <option value="custom">自定义...</option>
+                    </select>
+                    <div id="customSizeInputs" class="hidden flex items-center gap-1 animate-fadeIn">
+                        <input type="number" id="inputW" value="128" class="w-14 text-xs border border-slate-200 rounded bg-white text-center py-1" placeholder="W">
+                        <span class="text-xs text-slate-300">×</span>
+                        <input type="number" id="inputH" value="32" class="w-10 text-xs border border-slate-200 rounded bg-white text-center py-1" placeholder="H">
+                    </div>
+                </div>
+                
+                <div class="flex bg-slate-100/80 p-1 rounded-lg gap-0.5 border border-slate-200">
+                    <button class="mode-btn active px-3 py-1.5 rounded-md text-xs flex items-center gap-1.5 transition-all" data-mode="contain" title="适应">
+                        <i class="fa-solid fa-compress"></i> <span class="hidden xl:inline">适应</span>
+                    </button>
+                    <button class="mode-btn px-3 py-1.5 rounded-md text-xs flex items-center gap-1.5 transition-all" data-mode="cover" title="裁剪">
+                        <i class="fa-solid fa-crop-simple"></i> <span class="hidden xl:inline">裁剪</span>
+                    </button>
+                    <button class="mode-btn px-3 py-1.5 rounded-md text-xs flex items-center gap-1.5 transition-all" data-mode="stretch" title="拉伸">
+                        <i class="fa-solid fa-expand"></i> <span class="hidden xl:inline">拉伸</span>
+                    </button>
+                    <button class="mode-btn px-3 py-1.5 rounded-md text-xs flex items-center gap-1.5 transition-all" data-mode="tile" title="平铺">
+                        <i class="fa-solid fa-table-cells"></i> <span class="hidden xl:inline">平铺</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px]">
+                
+                <div class="absolute top-6 left-6 flex bg-white rounded-lg shadow-sm border border-slate-200 transition-all hover:shadow-md">
+                    <button id="orientationH" class="orientation-btn active px-3 py-1.5 text-xs font-medium text-slate-600 rounded-l-lg hover:bg-slate-50 hover:text-indigo-600 transition-all" data-orientation="horizontal">0°</button>
+                    <div class="w-px bg-slate-100"></div>
+                    <button id="orientationV" class="orientation-btn px-3 py-1.5 text-xs font-medium text-slate-600 rounded-r-lg hover:bg-slate-50 hover:text-indigo-600 transition-all" data-orientation="vertical">90°</button>
+                </div>
+
+                <div class="relative group transition-transform duration-300"> 
+                    <div id="previewCanvasWrapper" class="bg-gray-800 p-8 rounded-[14px] shadow-2xl transition-all relative ring-4 ring-gray-900/10">
+                         <div class="absolute bottom-0 left-0 w-full text-center text-[24px] text-gray-100 font-bold tracking-[0.3em] pointer-events-none select-none">OLED DEVICE</div>
+                         <div class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent rounded-[12px] pointer-events-none z-10"></div>
+                        <canvas id="previewCanvas" class="bg-black block cursor-grab shadow-inner rounded-[2px] border border-gray-700"></canvas>
+                    </div>
+                    
+                    <div id="dragHint" class="absolute -top-12 left-0 w-full flex justify-center opacity-0 transition duration-300 pointer-events-none">
+                        <span class="bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
+                             <i class="fa-solid fa-hand-pointer animate-bounce"></i> 拖拽调整位置
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex items-center gap-6 bg-white/90 px-6 py-2.5 rounded-full shadow-lg shadow-slate-200/50 backdrop-blur border border-slate-100 text-[10px] font-mono text-slate-500 transition-all hover:scale-105">
+                    <span id="scaleVal" class="flex items-center gap-1"><i class="fa-solid fa-magnifying-glass text-slate-300"></i> <span class="font-bold text-slate-700">4.0x</span></span> 
+                    <span class="w-px h-3 bg-slate-200"></span>
+                    <span id="offsetVal">X:0 Y:0</span>
+                    <span class="w-px h-3 bg-slate-200"></span>
+                    <span id="rotationVal">Rot: 0°</span>
+                    <span class="w-px h-3 bg-slate-200"></span>
+                    <button id="btnResetTransform" class="text-indigo-500 hover:text-indigo-700 font-bold transition-all hover:rotate-180"><i class="fa-solid fa-arrows-rotate"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-[30%] lg:w-[25%] border-l border-slate-200 bg-white flex flex-col z-20 overflow-y-auto shadow-lg md:shadow-none">
+            
+            <div class="p-5 space-y-6">
+                
+                <div>
+                    <h3 class="font-bold text-slate-800 text-xs mb-4 flex items-center gap-2 uppercase tracking-wide opacity-60">
+                         <i class="fa-solid fa-sliders"></i> 参数调节
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="control-group">
+                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">预览缩放 (Preview Scale)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="sliderDisplayScale" min="0.1" max="10.0" step="0.1" value="4.0" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #06b6d4;">
+                                <div class="relative w-12">
+                                    <input type="number" id="inputDisplayScale" min="0.1" max="10.0" step="0.1" value="4.0" class="w-full text-[10px] border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">旋转 (Rotation)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="sliderRotation" min="0" max="360" step="1" value="0" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #ef4444;">
+                                <div class="relative w-12">
+                                     <input type="number" id="inputRotation" min="0" max="360" step="1" value="0" class="w-full text-[10px] border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
+                                </div>
+                            </div>
+                            <span id="rotationDegVal" class="hidden">0°</span>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">偏移 & 镜像 (Offset & Mirror)</label>
+                            <div class="offset-controls">
+                                <div class="offset-control group focus-within:border-indigo-300 focus-within:ring-1 focus-within:ring-indigo-100 transition-all">
+                                    <span class="text-[10px] font-bold text-slate-400">X</span>
+                                    <input type="number" id="inputOffsetX" value="0" class="w-full bg-transparent border-none text-xs text-center focus:ring-0 p-0">
+                                    <div class="toggle-wrapper-small" title="左右镜像">
+                                        <input type="checkbox" id="checkMirrorX" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer"/>
+                                        <label for="checkMirrorX" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
+                                    </div>
+                                </div>
+                                <div class="offset-control group focus-within:border-indigo-300 focus-within:ring-1 focus-within:ring-indigo-100 transition-all">
+                                    <span class="text-[10px] font-bold text-slate-400">Y</span>
+                                    <input type="number" id="inputOffsetY" value="0" class="w-full bg-transparent border-none text-xs text-center focus:ring-0 p-0">
+                                    <div class="toggle-wrapper-small" title="上下镜像">
+                                        <input type="checkbox" id="checkMirrorY" class="toggle-checkbox small absolute block rounded-full bg-white border appearance-none cursor-pointer"/>
+                                        <label for="checkMirrorY" class="toggle-label small block overflow-hidden rounded-full bg-slate-200 cursor-pointer"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="text-[10px] font-bold text-slate-500 mb-1.5 block">内容缩放 (Content Zoom)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="sliderZoom" min="0.1" max="10.0" step="0.1" value="1.0" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #8b5cf6;" disabled>
+                                <div class="relative w-12">
+                                    <input type="number" id="inputZoom" min="0.1" max="10.0" step="0.1" value="1.0" class="w-full text-[10px] border border-slate-200 rounded px-1 py-0.5 text-center bg-slate-50">
+                                </div>
+                            </div>
+                            <span id="zoomVal" class="hidden">1.0x</span>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="flex justify-between mb-1.5">
+                                <label class="text-[10px] font-bold text-slate-500">阈值 (Threshold)</label>
+                                <span id="thresholdVal" class="text-[10px] font-mono text-blue-500">128</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="range" id="sliderThreshold" min="0" max="255" value="128" class="flex-1 progress-slider h-1.5 rounded-full" style="--slider-color: #3b82f6;">
+                                <input type="number" id="inputThreshold" min="0" max="255" value="128" class="hidden">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2">
+                            <label class="text-xs font-bold text-slate-600">反色显示 (Invert)</label>
+                            <div class="relative inline-block w-8 h-4">
+                                <input type="checkbox" id="checkInvert" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 appearance-none cursor-pointer"/>
+                                <label for="checkInvert" class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-200 cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <span id="displayScaleVal" class="hidden"></span>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 transition-all hover:shadow-md hover:border-indigo-100">
+                    <h3 class="font-bold text-indigo-900 text-xs mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-indigo-500"></i> EEPROM 储存
+                    </h3>
+                    
+                    <div class="mb-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <label class="text-[10px] text-slate-500 font-bold whitespace-nowrap">槽位数量</label>
+                            <div class="flex-1 flex items-center gap-2">
+                                <input type="range" id="sliderTotalSlots" min="1" max="32" value="5" class="flex-1 progress-slider h-1 rounded-full" style="--slider-color: #6366f1;">
+                                <input type="number" id="totalSlots" value="5" min="1" max="32" class="w-8 text-[10px] border-none text-center bg-slate-100 rounded text-indigo-600 font-bold p-0">
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-50 rounded-lg p-2 border border-slate-100">
+                             <label class="text-[9px] text-slate-400 font-bold block mb-2 uppercase">屏幕标签</label>
+                             <div id="slotButtons" class="slot-buttons"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button id="btnWriteEEPROM" class="flex-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white text-[10px] font-bold py-2 rounded-lg transition-all border border-indigo-100">
+                            写入
+                        </button>
+                        <button id="btnPreviewEEPROM" class="flex-1 bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white text-[10px] font-bold py-2 rounded-lg transition-all border border-purple-100">
+                            预览
+                        </button>
+                        <button id="btnClearEEPROM" class="flex-1 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-bold py-2 rounded-lg transition-all border border-red-100">
+                            清空
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto p-5 space-y-3 bg-white border-t border-slate-100 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.05)] z-30">
+                <div class="bg-emerald-50/50 rounded-xl p-3 border border-emerald-100/50 flex items-center justify-between transition-all">
+                    <div>
+                        <div class="text-xs font-bold text-emerald-700 flex items-center gap-1.5"><i class="fa-solid fa-bolt text-emerald-500"></i> 实时同步</div>
+                        <div class="text-[10px] text-emerald-600/70 mt-0.5">修改时自动发送数据</div>
+                    </div>
+                    <div class="relative inline-block w-9 h-5">
+                        <input type="checkbox" id="checkGlobalSync" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 appearance-none cursor-pointer" checked/>
+                        <label for="checkGlobalSync" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-200 cursor-pointer w-9"></label>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-1 border border-slate-100">
+                    <button id="btnConnect" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group">
+                        <div id="statusDot" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)] group-hover:scale-110 transition-transform"></div>
+                        <span>连接键盘 (Connect)</span>
+                    </button>
+                </div>
+
+                <button id="btnSend" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-200 transition-all hover-scale flex justify-center items-center gap-2" disabled>
+                    <span>手动发送</span> <i class="fa-regular fa-paper-plane"></i>
+                </button>
+                <div id="log" class="text-[10px] text-slate-400 text-center h-4 truncate font-mono">Waiting for device...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 扩充后的字体库 (保持不变) ---
+        const commonFonts = [
+            { name: "--- 中文字体 (Chinese) ---", val: "", disabled: true },
+            { name: "微软雅黑 (Microsoft YaHei)", val: "'Microsoft YaHei', '微软雅黑', sans-serif" },
+            { name: "黑体 (SimHei)", val: "'SimHei', '黑体', sans-serif" },
+            { name: "宋体 (SimSun)", val: "'SimSun', '宋体', serif" },
+            { name: "楷体 (KaiTi)", val: "'KaiTi', '楷体', serif" },
+            { name: "仿宋 (FangSong)", val: "'FangSong', '仿宋', serif" },
+            { name: "新宋体 (NSimSun)", val: "'NSimSun', '新宋体', serif" },
+            { name: "萍方 (PingFang SC)", val: "'PingFang SC', sans-serif" },
+            { name: "冬青黑体 (Hiragino Sans GB)", val: "'Hiragino Sans GB', sans-serif" },
+            { name: "思源黑体 (Source Han Sans)", val: "'Source Han Sans CN', 'Noto Sans SC', sans-serif" },
+            { name: "思源宋体 (Source Han Serif)", val: "'Source Han Serif CN', 'Noto Serif SC', serif" },
+            { name: "华文黑体 (STHeiti)", val: "'STHeiti', sans-serif" },
+            { name: "华文楷体 (STKaiti)", val: "'STKaiti', serif" },
+            { name: "华文宋体 (STSong)", val: "'STSong', serif" },
+            { name: "华文仿宋 (STFangsong)", val: "'STFangsong', serif" },
+            { name: "微軟正黑體 (Microsoft JhengHei)", val: "'Microsoft JhengHei', sans-serif" },
+            { name: "--- 英文字体 (Sans-Serif) ---", val: "", disabled: true },
+            { name: "Arial", val: "Arial, sans-serif" },
+            { name: "Arial Black", val: "'Arial Black', sans-serif" },
+            { name: "Helvetica", val: "Helvetica, sans-serif" },
+            { name: "Helvetica Neue", val: "'Helvetica Neue', sans-serif" },
+            { name: "Verdana", val: "Verdana, sans-serif" },
+            { name: "Tahoma", val: "Tahoma, sans-serif" },
+            { name: "Trebuchet MS", val: "'Trebuchet MS', sans-serif" },
+            { name: "Impact", val: "Impact, sans-serif" },
+            { name: "Gill Sans", val: "'Gill Sans', sans-serif" },
+            { name: "Segoe UI", val: "'Segoe UI', sans-serif" },
+            { name: "Roboto", val: "Roboto, sans-serif" },
+            { name: "Open Sans", val: "'Open Sans', sans-serif" },
+            { name: "Lato", val: "Lato, sans-serif" },
+            { name: "Montserrat", val: "'Montserrat', sans-serif" },
+            { name: "Futura", val: "Futura, sans-serif" },
+            { name: "Century Gothic", val: "'Century Gothic', sans-serif" },
+            { name: "DIN", val: "DIN, 'DIN Alternate', sans-serif" },
+            { name: "--- 英文字体 (Serif) ---", val: "", disabled: true },
+            { name: "Times New Roman", val: "'Times New Roman', serif" },
+            { name: "Georgia", val: "Georgia, serif" },
+            { name: "Garamond", val: "Garamond, serif" },
+            { name: "Baskerville", val: "Baskerville, serif" },
+            { name: "Palatino", val: "'Palatino Linotype', serif" },
+            { name: "Didot", val: "Didot, serif" },
+            { name: "--- 等宽/特殊 (Monospace/Other) ---", val: "", disabled: true },
+            { name: "Courier New", val: "'Courier New', monospace" },
+            { name: "Consolas", val: "Consolas, monospace" },
+            { name: "Monaco", val: "Monaco, monospace" },
+            { name: "Lucida Console", val: "'Lucida Console', monospace" },
+            { name: "Digital (LCD Style)", val: "'Digital-7', 'DS-Digital', monospace" },
+            { name: "Comic Sans MS", val: "'Comic Sans MS', cursive" },
+            { name: "--- 艺术、卡通、个性化字体 ---", val: "", disabled: true },
+            { name: "Comic Sans MS (卡通)", val: "'Comic Sans MS', cursive" },
+            { name: "Papyrus (古老风格)", val: "Papyrus, fantasy" },
+            { name: "Brush Script MT (手写体)", val: "'Brush Script MT', cursive" },
+            { name: "Chalkduster (粉笔)", val: "Chalkduster, fantasy" },
+            { name: "Marker Felt (马克笔)", val: "'Marker Felt', fantasy" },
+            { name: "Trattatello (艺术)", val: "Trattatello, fantasy" },
+            { name: "Zapfino (优雅)", val: "Zapfino, cursive" },
+            { name: "Herculanum (古典)", val: "Herculanum, fantasy" },
+            { name: "Party LET (派对)", val: "'Party LET', fantasy" },
+            { name: "Bradley Hand (手写)", val: "'Bradley Hand', cursive" },
+            { name: "Snell Roundhand (圆体)", val: "'Snell Roundhand', cursive" },
+            { name: "Apple Chancery (书法)", val: "'Apple Chancery', cursive" },
+            { name: "Copperplate (铜版)", val: "Copperplate, fantasy" },
+            { name: "American Typewriter (打字机)", val: "'American Typewriter', serif" },
+            { name: "Chalkboard (黑板)", val: "Chalkboard, fantasy" },
+            { name: "Noteworthy (醒目)", val: "Noteworthy, fantasy" },
+            { name: "Avenir Next (现代)", val: "'Avenir Next', sans-serif" },
+            { name: "Futura Condensed (未来感)", val: "'Futura Condensed', sans-serif" },
+            { name: "Bodoni 72 (时尚)", val: "'Bodoni 72', serif" },
+            { name: "Baskerville Old Face (古典)", val: "'Baskerville Old Face', serif" },
+            { name: "Goudy Old Style (传统)", val: "'Goudy Old Style', serif" },
+            { name: "Lucida Handwriting (手写)", val: "'Lucida Handwriting', cursive" },
+            { name: "Kristen ITC (活泼)", val: "'Kristen ITC', cursive" },
+            { name: "Jazz LET (爵士)", val: "'Jazz LET', fantasy" },
+            { name: "Stencil (模板)", val: "Stencil, fantasy" },
+            { name: "Ravie (艺术)", val: "Ravie, fantasy" },
+            { name: "Harrington (装饰)", val: "Harrington, fantasy" },
+            { name: "Blackadder ITC (哥特)", val: "'Blackadder ITC', fantasy" },
+            { name: "Mistral (手写)", val: "Mistral, cursive" },
+            { name: "Vivaldi (华丽)", val: "Vivaldi, cursive" },
+        ];
+        
+        const effectOptions = [
+            { val: "none", name: "无效果" },
+            { val: "scroll_left", name: "左滚动 (循环)" },
+            { val: "blink", name: "闪烁 (逐字)" },
+            { val: "scroll_up", name: "上滚动 (循环)" },
+            { val: "wave", name: "波浪 (平移)" },
+            { val: "typing", name: "打字机 (逐字)" }, 
+            { val: "slide_pingpong", name: "左右往返 (平移)" }, 
+            { val: "grow_shrink", name: "缩放 (循环)" }, 
+        ];
+
+        // --- State & Config ---
+        const state = {
+            globalSync: true, 
+            isSending: false, 
+            lastSentBuffer: null,
+            isSyncPaused: false,
+            width: 128, height: 32,
+            leftPanelMode: 'image', 
+            totalSlots: 5, selectedSlot: 0,
+            multiLayer: false, 
+            images: [], selectedId: null, 
+            textItems: [], activeTextId: null, 
+            
+            timeSettings: { 
+                layoutOrder: ['date', 'time', 'custom'],
+                showDate: true, showTime: true, timeFormat: '24h', 
+                showYear: true, showMonth: true, showDayOfMonth: true, showDayOfWeek: true, 
+                timeFontSize: 16, timeFontFamily: commonFonts[1].val, 
+                dateFontSize: 8, dateFontFamily: commonFonts[1].val, 
+                showCustomText: true, customText: '键盘测试', customTextFontSize: 12, customTextFontFamily: commonFonts[1].val, customTextEffect: 'none', customTextSpeed: 1.0, 
+                offsetX: 0, offsetY: 0, zoom: 1.0, rotationDeg: 0, threshold: 128,
+                flipX: false, flipY: false 
+            },
+
+            fitMode: 'contain', offsetX: 0, offsetY: 0, zoom: 1.0, rotationDeg: 0, threshold: 128, flipX: false, flipY: false,
+            
+            animation: {
+                frame: 0, scrollOffsetLeft: 0, scrollOffsetUp: 0, blinkIndex: 0, pingpongDirection: 1, 
+                lastTimeUpdate: Date.now(), lastBlinkUpdate: Date.now() 
+            },
+
+            previewOrientation: 'horizontal', displayScale: 4.0, invert: false, 
+            device: null, packetSize: 32, payloadSize: 30, timeUpdateInterval: null 
+        };
+
+        // --- DOM Elements ---
+        const els = {
+            canvas: document.getElementById('previewCanvas'),
+            canvasWrapper: document.getElementById('previewCanvasWrapper'), 
+            ctx: null,
+            layoutOrderContainer: document.getElementById('layoutOrderContainer'),
+            tabImageMode: document.getElementById('tabImageMode'), tabTextMode: document.getElementById('tabTextMode'), tabTimeMode: document.getElementById('tabTimeMode'),
+            imagePanel: document.getElementById('imagePanel'), textPanel: document.getElementById('textPanel'), timePanel: document.getElementById('timePanel'),
+            fileInput: document.getElementById('fileInput'), galleryList: document.getElementById('galleryList'),
+            modeBtns: document.querySelectorAll('.mode-btn'), orientationBtns: document.querySelectorAll('.orientation-btn'), 
+            textInput: document.getElementById('textInput'), selectFontSize: document.getElementById('selectFontSize'), selectFontFamily: document.getElementById('selectFontFamily'),
+            btnAddText: document.getElementById('btnAddText'), textList: document.getElementById('textList'), btnClearText: document.getElementById('btnClearText'),
+            checkMultiLayer: document.getElementById('checkMultiLayer'), 
+            selectTextEffect: document.getElementById('selectTextEffect'), sliderTextSpeed: document.getElementById('sliderTextSpeed'), textSpeedVal: document.getElementById('textSpeedVal'), 
+            checkShowDate: document.getElementById('checkShowDate'), checkShowTime: document.getElementById('checkShowTime'), selectTimeFormat: document.getElementById('selectTimeFormat'),
+            checkShowYear: document.getElementById('checkShowYear'), checkShowMonth: document.getElementById('checkShowMonth'), checkShowDayOfMonth: document.getElementById('checkShowDayOfMonth'), checkShowDayOfWeek: document.getElementById('checkShowDayOfWeek'),
+            selectTimeFontSize: document.getElementById('selectTimeFontSize'), selectTimeFontFamily: document.getElementById('selectTimeFontFamily'), selectDateFontSize: document.getElementById('selectDateFontSize'), selectDateFontFamily: document.getElementById('selectDateFontFamily'),
+            checkShowCustomText: document.getElementById('checkShowCustomText'), customTextInput: document.getElementById('customTextInput'), selectCustomTextFontSize: document.getElementById('selectCustomTextFontSize'), selectCustomTextFontFamily: document.getElementById('selectCustomTextFontFamily'), selectCustomTextEffect: document.getElementById('selectCustomTextEffect'), sliderCustomTextSpeed: document.getElementById('sliderCustomTextSpeed'), customTextSpeedVal: document.getElementById('customTextSpeedVal'), customTextControls: document.getElementById('customTextControls'),
+            sliderThreshold: document.getElementById('sliderThreshold'), sliderZoom: document.getElementById('sliderZoom'), sliderRotation: document.getElementById('sliderRotation'), 
+            checkInvert: document.getElementById('checkInvert'), checkGlobalSync: document.getElementById('checkGlobalSync'),
+            presetSize: document.getElementById('presetSize'), customSizeInputs: document.getElementById('customSizeInputs'), inputW: document.getElementById('inputW'), inputH: document.getElementById('inputH'), sliderDisplayScale: document.getElementById('sliderDisplayScale'), 
+            scaleVal: document.getElementById('scaleVal'), offsetVal: document.getElementById('offsetVal'), rotationDegVal: document.getElementById('rotationDegVal'), thresholdVal: document.getElementById('thresholdVal'), zoomVal: document.getElementById('zoomVal'), dragHint: document.getElementById('dragHint'), displayScaleVal: document.getElementById('displayScaleVal'), 
+            btnReset: document.getElementById('btnResetTransform'), btnConnect: document.getElementById('btnConnect'), btnSend: document.getElementById('btnSend'), statusDot: document.getElementById('statusDot'), log: document.getElementById('log'),
+            
+            inputDisplayScale: document.getElementById('inputDisplayScale'),
+            inputRotation: document.getElementById('inputRotation'),
+            inputOffsetX: document.getElementById('inputOffsetX'),
+            inputOffsetY: document.getElementById('inputOffsetY'),
+            inputZoom: document.getElementById('inputZoom'),
+            inputThreshold: document.getElementById('inputThreshold'),
+            
+            checkMirrorX: document.getElementById('checkMirrorX'),
+            checkMirrorY: document.getElementById('checkMirrorY'),
+            
+            totalSlots: document.getElementById('totalSlots'),
+            sliderTotalSlots: document.getElementById('sliderTotalSlots'),
+            slotButtons: document.getElementById('slotButtons'),
+            btnWriteEEPROM: document.getElementById('btnWriteEEPROM'),
+            btnClearEEPROM: document.getElementById('btnClearEEPROM'),
+            btnPreviewEEPROM: document.getElementById('btnPreviewEEPROM'),
+        };
+
+        function init() {
+            els.ctx = els.canvas.getContext('2d', { willReadFrequently: true });
+            state.displayScale = parseFloat(els.sliderDisplayScale.value);
+
+            populateFontSelectors(); 
+            populateFontSizeSelectors(); 
+            populateEffectSelectors(); 
+            updateSlotButtons(); 
+
+            updateCanvasSize(128, 32);
+            setupInteractions();
+            setupDragOrder(); 
+            
+            const sliders = [els.sliderThreshold, els.sliderZoom, els.sliderRotation, els.sliderDisplayScale, els.sliderTextSpeed, els.sliderCustomTextSpeed, els.sliderTotalSlots];
+            sliders.forEach(el => setupWheelAdjust(el, parseFloat(el.step) || 1));
+
+            const selects = [
+                els.selectFontSize, els.selectFontFamily, els.selectTextEffect,
+                els.selectTimeFontSize, els.selectTimeFontFamily, els.selectTimeFormat,
+                els.selectDateFontSize, els.selectDateFontFamily,
+                els.selectCustomTextFontSize, els.selectCustomTextFontFamily, els.selectCustomTextEffect
+            ];
+            selects.forEach(el => setupSelectWheelAdjust(el));
+
+            const numberInputs = [els.inputDisplayScale, els.inputRotation, els.inputZoom, els.inputThreshold, els.inputOffsetX, els.inputOffsetY, els.totalSlots];
+            numberInputs.forEach(el => setupNumberInputWheel(el));
+
+            updateProgressSliders();
+
+            updatePreviewOrientation(); 
+            setLeftPanelMode(state.leftPanelMode); 
+            startRealTimeClock(); 
+            updateAndSend();
+        }
+
+        // --- 断开连接处理 ---
+        function handleDisconnect() {
+            if (state.device) {
+                try { state.device.close(); } catch(e) {}
+                state.device = null;
+            }
+            state.lastSentBuffer = null;
+            state.isSending = false;
+            
+            // 更新 UI 为未连接状态
+            els.statusDot.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]";
+            els.btnConnect.innerHTML = `
+                <div id="statusDot" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
+                <span>连接键盘 (Connect)</span>
+            `;
+            els.btnConnect.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+            els.btnConnect.classList.add('bg-slate-900', 'hover:bg-slate-800');
+            els.btnSend.disabled = true;
+            els.log.innerText = "设备已断开";
+        }
+
+        // --- 监听设备物理断开事件 ---
+        navigator.hid.addEventListener('disconnect', (event) => {
+            if (state.device && event.device === state.device) {
+                handleDisconnect();
+            }
+        });
+        
+        function updateSlotButtons() {
+            let count = parseInt(els.totalSlots.value) || 1;
+            count = Math.max(1, Math.min(32, count));
+            els.totalSlots.value = count;
+            els.sliderTotalSlots.value = count;
+            state.totalSlots = count;
+            els.slotButtons.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                const btn = document.createElement('button');
+                btn.className = `slot-btn ${state.selectedSlot === i ? 'active' : ''}`;
+                btn.innerText = `屏 ${i}`;
+                btn.dataset.屏 = i;
+                btn.addEventListener('click', () => {
+                    state.selectedSlot = i;
+                    updateSlotButtons();
+                });
+                els.slotButtons.appendChild(btn);
+            }
+        }
+
+        function updateProgressSliders() {
+            const progressSliders = document.querySelectorAll('.progress-slider');
+            progressSliders.forEach(slider => {
+                const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+                slider.style.setProperty('--progress', `${value}%`);
+            });
+        }
+
+        function populateEffectSelectors() {
+            const createOptions = (defVal) => effectOptions.map(e => `<option value="${e.val}" ${e.val === defVal ? 'selected' : ''}>${e.name}</option>`).join('');
+            els.selectTextEffect.innerHTML = createOptions('none');
+            els.selectCustomTextEffect.innerHTML = createOptions('none');
+        }
+
+        function populateFontSelectors() {
+            const createOptions = () => commonFonts.map(f => `<option value="${f.val}" ${f.disabled?'disabled style="font-weight:bold; color:#aaa; background:#eee"':''}>${f.name}</option>`).join('');
+            const html = createOptions();
+            els.selectFontFamily.innerHTML = html;
+            els.selectTimeFontFamily.innerHTML = html;
+            els.selectDateFontFamily.innerHTML = html;
+            els.selectCustomTextFontFamily.innerHTML = html;
+        }
+
+        function populateFontSizeSelectors() {
+            const sizes = [6,7,8,9,10,11,12,13,14,15,16,18,20,22,24,28,32,36,42,48,56,64,72];
+            const createOptions = (def) => sizes.map(s => `<option value="${s}" ${s===def?'selected':''}>${s}px</option>`).join('');
+            els.selectFontSize.innerHTML = createOptions(12);
+            els.selectTimeFontSize.innerHTML = createOptions(16);
+            els.selectDateFontSize.innerHTML = createOptions(8);
+            els.selectCustomTextFontSize.innerHTML = createOptions(12);
+        }
+
+        function setupDragOrder() {
+            const container = els.layoutOrderContainer;
+            let draggedItem = null;
+            container.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.draggable-item');
+                if(draggedItem) { e.dataTransfer.effectAllowed = 'move'; setTimeout(() => draggedItem.classList.add('dragging'), 0); }
+            });
+            container.addEventListener('dragend', (e) => {
+                if(draggedItem) draggedItem.classList.remove('dragging'); draggedItem = null;
+                const items = Array.from(container.querySelectorAll('.draggable-item'));
+                state.timeSettings.layoutOrder = items.map(el => el.dataset.type);
+                updateAndSend(); 
+            });
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(container, e.clientY);
+                const currentDraggable = document.querySelector('.dragging');
+                if (!currentDraggable) return;
+                if (afterElement == null) { container.appendChild(currentDraggable); } else { container.insertBefore(currentDraggable, afterElement); }
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.draggable-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) return { offset: offset, element: child }; else return closest;
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function updateAndSend() {
+            render();
+            if (state.globalSync && state.device && state.device.opened && !state.isSyncPaused) {
+                if (state.isSending) return; 
+                sendDataToDevice(null, false);
+            }
+        }
+        
+        function startRealTimeClock() {
+            if (state.timeUpdateInterval) clearInterval(state.timeUpdateInterval);
+            state.timeUpdateInterval = setInterval(() => {
+                const now = Date.now();
+                const settings = state.timeSettings;
+                const w = state.width;
+                const h = state.height;
+                let shouldRender = false;
+                state.animation.frame = (state.animation.frame + 1) % 60000; 
+                if (now - state.animation.lastTimeUpdate > 1000) { state.animation.lastTimeUpdate = now; shouldRender = true; }
+                
+                let needAnimation = false;
+                if (state.mode === 'time' && settings.showCustomText && settings.customText.trim() && settings.customTextEffect !== 'none') {
+                    needAnimation = true;
+                } else if (state.mode === 'text') {
+                     const itemsToCheck = state.multiLayer 
+                        ? state.textItems.filter(i => i.visible) 
+                        : (state.activeTextId ? [state.textItems.find(i => i.id === state.activeTextId)].filter(Boolean) : []);
+                     if (itemsToCheck.some(i => i.effect !== 'none')) needAnimation = true;
+                }
+
+                if (needAnimation) {
+                     state.animation.scrollOffsetLeft = (state.animation.scrollOffsetLeft + 1) % (w * 4); 
+                     state.animation.scrollOffsetUp = (state.animation.scrollOffsetUp + 1) % (h * 4); 
+                     if (now - state.animation.lastBlinkUpdate > 100) { 
+                         state.animation.blinkIndex++; 
+                         state.animation.lastBlinkUpdate = now; 
+                     }
+                     shouldRender = true;
+                }
+                
+                if (shouldRender) updateAndSend();
+            }, 50); 
+        }
+
+        function setupWheelAdjust(sliderEl, stepSize) {
+            sliderEl.addEventListener('wheel', (e) => {
+                if (sliderEl.disabled) return; e.preventDefault(); 
+                let currentVal = parseFloat(sliderEl.value); const direction = e.deltaY > 0 ? -1 : 1; 
+                let newVal = Math.max(parseFloat(sliderEl.min), Math.min(parseFloat(sliderEl.max), currentVal + direction * stepSize));
+                const step = sliderEl.step || "1"; const decimals = (step.split('.')[1] || '').length;
+                sliderEl.value = newVal.toFixed(decimals); 
+                sliderEl.dispatchEvent(new Event('input')); 
+                updateProgressSliders();
+            });
+        }
+
+        function setupSelectWheelAdjust(selectEl) {
+            selectEl.addEventListener('wheel', (e) => {
+                e.preventDefault(); 
+                const options = Array.from(selectEl.options).filter(o => !o.disabled);
+                let currentOpt = selectEl.options[selectEl.selectedIndex]; let currentIndex = options.indexOf(currentOpt);
+                let newIndex = currentIndex + (e.deltaY > 0 ? 1 : -1);
+                newIndex = Math.max(0, Math.min(options.length - 1, newIndex));
+                if (newIndex !== currentIndex) { options[newIndex].selected = true; selectEl.dispatchEvent(new Event('change')); }
+            });
+        }
+
+        function setupNumberInputWheel(inputEl) {
+            inputEl.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const step = parseFloat(inputEl.step) || 1;
+                let currentVal = parseFloat(inputEl.value) || 0;
+                const min = parseFloat(inputEl.min);
+                const max = parseFloat(inputEl.max);
+                const direction = e.deltaY > 0 ? -1 : 1;
+                
+                let newVal = currentVal + direction * step;
+                if (min !== undefined && !isNaN(min)) newVal = Math.max(min, newVal);
+                if (max !== undefined && !isNaN(max)) newVal = Math.min(max, newVal);
+                
+                inputEl.value = newVal;
+                inputEl.dispatchEvent(new Event('input'));
+            });
+        }
+
+        function getSelectedContent() {
+            if (state.mode === 'image' && state.selectedId !== null) return state.images.find(img => img.id === state.selectedId);
+            if (state.mode === 'text' && state.activeTextId !== null) return state.textItems.find(item => item.id === state.activeTextId);
+            if (state.mode === 'time') return state.timeSettings;
+            return null;
+        }
+
+        function saveCurrentStateToSelectedContent() {
+            const content = getSelectedContent();
+            if (content) {
+                content.offsetX = state.offsetX; content.offsetY = state.offsetY; 
+                content.zoom = state.zoom; content.rotationDeg = state.rotationDeg; content.threshold = state.threshold; 
+                content.flipX = state.flipX; content.flipY = state.flipY;
+                
+                if (state.mode === 'image') content.fitMode = state.fitMode; 
+            }
+        }
+
+        function loadStateFromSelectedContent() {
+            const content = getSelectedContent();
+            els.textInput.value = ''; els.modeBtns.forEach(b => b.classList.remove('active')); els.sliderZoom.disabled = false;
+            
+            if (content) {
+                state.offsetX = content.offsetX; state.offsetY = content.offsetY; 
+                state.zoom = content.zoom; state.rotationDeg = content.rotationDeg; state.threshold = content.threshold !== undefined ? content.threshold : 128; 
+                state.flipX = content.flipX || false; state.flipY = content.flipY || false;
+                
+                if (state.mode === 'image') {
+                    state.fitMode = content.fitMode || 'contain'; 
+                    const activeBtn = Array.from(els.modeBtns).find(b => b.dataset.mode === state.fitMode); if (activeBtn) activeBtn.classList.add('active'); els.sliderZoom.disabled = (state.fitMode === 'stretch'); 
+                } else if (state.mode === 'text') {
+                     els.textInput.value = content.text; setSelectValue(els.selectFontSize, content.fontSize); setSelectValue(els.selectFontFamily, content.fontFamily); setSelectValue(els.selectTextEffect, content.effect); 
+                     const textSpeed = content.speed !== undefined ? content.speed : 1.0; els.sliderTextSpeed.value = textSpeed.toFixed(1); els.textSpeedVal.innerText = textSpeed.toFixed(1) + 'x';
+                } else if (state.mode === 'time') { 
+                    els.checkShowDate.checked = content.showDate; els.checkShowTime.checked = content.showTime; setSelectValue(els.selectTimeFormat, content.timeFormat);
+                    els.checkShowYear.checked = content.showYear; els.checkShowMonth.checked = content.showMonth; els.checkShowDayOfMonth.checked = content.showDayOfMonth; els.checkShowDayOfWeek.checked = content.showDayOfWeek;
+                    setSelectValue(els.selectTimeFontSize, content.timeFontSize); setSelectValue(els.selectTimeFontFamily, content.timeFontFamily); setSelectValue(els.selectDateFontSize, content.dateFontSize); setSelectValue(els.selectDateFontFamily, content.dateFontFamily);
+                    els.checkShowCustomText.checked = content.showCustomText; els.customTextInput.value = content.customText;
+                    setSelectValue(els.selectCustomTextFontSize, content.customTextFontSize); setSelectValue(els.selectCustomTextFontFamily, content.customTextFontFamily); setSelectValue(els.selectCustomTextEffect, content.customTextEffect);
+                    els.sliderCustomTextSpeed.value = content.customTextSpeed.toFixed(1); els.customTextSpeedVal.innerText = content.customTextSpeed.toFixed(1) + 'x';
+                    els.customTextControls.style.display = content.showCustomText ? 'block' : 'none';
+                    els.modeBtns.forEach(b => b.classList.remove('active'));
+                }
+            } else { resetTransform(false); }
+            updateUiControls();
+        }
+        
+        function setSelectValue(select, val) { const sVal = String(val); if (Array.from(select.options).some(o => o.value === sVal)) select.value = sVal; }
+        function updateUiControls() {
+            els.inputDisplayScale.value = state.displayScale.toFixed(1);
+            els.sliderDisplayScale.value = state.displayScale;
+            els.displayScaleVal.innerText = state.displayScale.toFixed(1) + 'x';
+            
+            els.inputRotation.value = state.rotationDeg;
+            els.sliderRotation.value = state.rotationDeg;
+            els.rotationDegVal.innerText = `${state.rotationDeg}°`;
+            
+            els.inputOffsetX.value = Math.round(state.offsetX);
+            els.inputOffsetY.value = Math.round(state.offsetY);
+            
+            els.checkMirrorX.checked = state.flipX;
+            els.checkMirrorY.checked = state.flipY;
+            
+            els.inputZoom.value = state.zoom.toFixed(1);
+            els.sliderZoom.value = state.zoom;
+            els.zoomVal.innerText = state.zoom.toFixed(1) + 'x';
+            
+            els.inputThreshold.value = state.threshold;
+            els.sliderThreshold.value = state.threshold;
+            els.thresholdVal.innerText = state.threshold;
+            
+            els.offsetVal.innerText = `X:${Math.round(state.offsetX)} Y:${Math.round(state.offsetY)}`;
+            
+            updateProgressSliders();
+        }
+        
+        function switchContent(newMode, newId, newTextId) {
+            saveCurrentStateToSelectedContent(); 
+            state.mode = newMode; state.selectedId = newId; 
+            
+            if (newMode === 'text') {
+                if (newTextId) {
+                    state.activeTextId = newTextId;
+                } else {
+                    state.activeTextId = null;
+                }
+            } else {
+                state.activeTextId = null;
+            }
+            
+            const isTransformable = (newMode === 'image' && (state.fitMode === 'cover' || state.fitMode === 'tile')) || newMode === 'text' || newMode === 'time';
+            if (!isTransformable) els.canvas.classList.remove('cursor-grab', 'cursor-grabbing');
+            loadStateFromSelectedContent();
+            
+            updateAndSend();
+        }
+        
+        function resetTransform(save = true, resetThreshold = true) {
+            state.offsetX = 0; state.offsetY = 0; state.zoom = 1.0; state.rotationDeg = 0; if (resetThreshold) state.threshold = 128;
+            state.flipX = false; state.flipY = false; 
+            if (save) saveCurrentStateToSelectedContent(); updateUiControls();
+        }
+
+        function updateSelectedTextProperty(prop, value) {
+            const content = getSelectedContent();
+            if (state.mode === 'text' && content) {
+                if (prop === 'text') { content.text = value; updateTextList(); }
+                else if (prop === 'fontSize') content.fontSize = parseInt(value); else if (prop === 'fontFamily') content.fontFamily = value;
+                else if (prop === 'effect') content.effect = value; else if (prop === 'speed') content.speed = parseFloat(value);
+                updateAndSend();
+            }
+        }
+        
+        function updateTimeSetting(prop, value) {
+            state.timeSettings[prop] = value;
+            if (prop === 'showCustomText') els.customTextControls.style.display = value ? 'block' : 'none';
+            if (state.mode === 'time') updateAndSend();
+        }
+        
+        let isDragging = false; let dragStartX = 0; let dragStartY = 0; let initialOffsetX = 0; let initialOffsetY = 0; 
+        function setupInteractions() {
+            const cvs = els.canvas;
+            els.textInput.addEventListener('input', (e) => updateSelectedTextProperty('text', e.target.value));
+            els.selectFontSize.addEventListener('change', (e) => updateSelectedTextProperty('fontSize', e.target.value));
+            els.selectFontFamily.addEventListener('change', (e) => updateSelectedTextProperty('fontFamily', e.target.value));
+            els.selectTextEffect.addEventListener('change', (e) => updateSelectedTextProperty('effect', e.target.value)); 
+            els.sliderTextSpeed.addEventListener('input', (e) => { 
+                const speed = parseFloat(e.target.value); 
+                updateSelectedTextProperty('speed', speed); 
+                els.textSpeedVal.innerText = speed.toFixed(1) + 'x'; 
+                updateProgressSliders();
+            });
+            els.checkMultiLayer.addEventListener('change', (e) => {
+                state.multiLayer = e.target.checked;
+                updateTextList();
+                updateAndSend();
+            });
+
+            const bindTime = (el, prop, isCheck = false, isInt = false) => {
+                el.addEventListener('change', (e) => {
+                    let val = isCheck ? e.target.checked : e.target.value;
+                    if(isInt) val = parseInt(val); else if(el.type === 'range' && prop !== 'customTextSpeed') return; else if(el.type !== 'select-one' && el.type !== 'checkbox') val = e.target.value; 
+                    updateTimeSetting(prop, val);
+                });
+                if (el.type === 'range' && prop === 'customTextSpeed') {
+                    el.addEventListener('input', (e) => { 
+                        let val = parseFloat(e.target.value); 
+                        updateTimeSetting(prop, val); 
+                        els.customTextSpeedVal.innerText = val.toFixed(1) + 'x'; 
+                        updateProgressSliders();
+                    });
+                }
+            };
+            
+            bindTime(els.checkShowDate, 'showDate', true); bindTime(els.checkShowTime, 'showTime', true); bindTime(els.selectTimeFormat, 'timeFormat');
+            bindTime(els.checkShowYear, 'showYear', true); bindTime(els.checkShowMonth, 'showMonth', true); bindTime(els.checkShowDayOfMonth, 'showDayOfMonth', true); bindTime(els.checkShowDayOfWeek, 'showDayOfWeek', true);
+            bindTime(els.selectTimeFontSize, 'timeFontSize', false, true); bindTime(els.selectTimeFontFamily, 'timeFontFamily');
+            bindTime(els.selectDateFontSize, 'dateFontSize', false, true); bindTime(els.selectDateFontFamily, 'dateFontFamily');
+            bindTime(els.checkShowCustomText, 'showCustomText', true); bindTime(els.customTextInput, 'customText');
+            bindTime(els.selectCustomTextFontSize, 'customTextFontSize', false, true); bindTime(els.selectCustomTextFontFamily, 'customTextFontFamily'); bindTime(els.selectCustomTextEffect, 'customTextEffect'); bindTime(els.sliderCustomTextSpeed, 'customTextSpeed'); 
+            
+            els.inputDisplayScale.addEventListener('input', (e) => { 
+                state.displayScale = parseFloat(e.target.value); 
+                els.sliderDisplayScale.value = state.displayScale; 
+                applyDisplayScale(); 
+                updateProgressSliders();
+            });
+            els.sliderDisplayScale.addEventListener('input', (e) => { 
+                state.displayScale = parseFloat(e.target.value); 
+                els.inputDisplayScale.value = state.displayScale.toFixed(1); 
+                applyDisplayScale(); 
+                updateProgressSliders();
+            });
+            
+            els.inputRotation.addEventListener('input', (e) => { 
+                state.rotationDeg = parseInt(e.target.value); 
+                els.sliderRotation.value = state.rotationDeg; 
+                els.rotationDegVal.innerText = `${state.rotationDeg}°`; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+                updateProgressSliders();
+            });
+            els.sliderRotation.addEventListener('input', (e) => { 
+                state.rotationDeg = parseInt(e.target.value); 
+                els.inputRotation.value = state.rotationDeg; 
+                els.rotationDegVal.innerText = `${state.rotationDeg}°`; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+                updateProgressSliders();
+            });
+            
+            els.inputOffsetX.addEventListener('input', (e) => { 
+                state.offsetX = parseInt(e.target.value); 
+                els.offsetVal.innerText = `X:${Math.round(state.offsetX)} Y:${Math.round(state.offsetY)}`; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+            });
+            
+            els.inputOffsetY.addEventListener('input', (e) => { 
+                state.offsetY = parseInt(e.target.value); 
+                els.offsetVal.innerText = `X:${Math.round(state.offsetX)} Y:${Math.round(state.offsetY)}`; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+            });
+
+            els.checkMirrorX.addEventListener('change', (e) => {
+                state.flipX = e.target.checked;
+                saveCurrentStateToSelectedContent();
+                updateAndSend();
+            });
+            els.checkMirrorY.addEventListener('change', (e) => {
+                state.flipY = e.target.checked;
+                saveCurrentStateToSelectedContent();
+                updateAndSend();
+            });
+            
+            els.inputZoom.addEventListener('input', (e) => { 
+                state.zoom = parseFloat(e.target.value); 
+                els.sliderZoom.value = state.zoom; 
+                els.zoomVal.innerText = state.zoom.toFixed(1) + 'x'; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+                updateProgressSliders();
+            });
+            els.sliderZoom.addEventListener('input', (e) => { 
+                state.zoom = parseFloat(e.target.value); 
+                els.inputZoom.value = state.zoom.toFixed(1); 
+                els.zoomVal.innerText = state.zoom.toFixed(1) + 'x'; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+                updateProgressSliders();
+            });
+            
+            els.inputThreshold.addEventListener('input', (e) => { 
+                state.threshold = parseInt(e.target.value); 
+                els.sliderThreshold.value = state.threshold; 
+                els.thresholdVal.innerText = state.threshold; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+                updateProgressSliders();
+            });
+            els.sliderThreshold.addEventListener('input', (e) => { 
+                state.threshold = parseInt(e.target.value); 
+                els.inputThreshold.value = state.threshold; 
+                els.thresholdVal.innerText = state.threshold; 
+                saveCurrentStateToSelectedContent(); 
+                updateAndSend(); 
+                updateProgressSliders();
+            });
+            
+            els.totalSlots.addEventListener('input', updateSlotButtons);
+            els.sliderTotalSlots.addEventListener('input', (e) => { 
+                els.totalSlots.value = e.target.value; 
+                updateSlotButtons(); 
+                updateProgressSliders();
+            });
+            
+            els.btnWriteEEPROM.addEventListener('click', async () => {
+                const slot = state.selectedSlot;
+                if (isNaN(slot)) return;
+                const cmd = 0xB0 + slot; 
+                els.log.innerText = `正在写入 Slot ${slot}...`;
+                els.btnWriteEEPROM.disabled = true;
+                const success = await sendDataToDevice(cmd, true); 
+                els.btnWriteEEPROM.disabled = false;
+                els.log.innerText = success ? `写入 Slot ${slot} 成功` : "写入失败";
+            });
+
+            els.btnClearEEPROM.addEventListener('click', async () => {
+                if (!state.device || !state.device.opened) { els.log.innerText = "设备未连接"; return; }
+                const slot = state.selectedSlot;
+                if (isNaN(slot)) return;
+                const { width: w, height: h } = state;
+                const bufferSize = (w * h) / 8;
+                const blackBuffer = new Uint8Array(bufferSize); 
+                const cmd = 0xB0 + slot;
+                els.log.innerText = `清空 Slot ${slot}...`;
+                els.btnClearEEPROM.disabled = true;
+                const success = await sendDataToDevice(cmd, true, blackBuffer);
+                els.btnClearEEPROM.disabled = false;
+                els.log.innerText = success ? `清空 Slot ${slot} 成功` : "清空失败";
+            });
+
+            els.btnPreviewEEPROM.addEventListener('click', async () => {
+                if (!state.device || !state.device.opened) { els.log.innerText = "设备未连接"; return; }
+                const slot = state.selectedSlot;
+                if (isNaN(slot)) return;
+                const packet = new Uint8Array(state.packetSize);
+                packet[0] = 0xAD;
+                packet[1] = slot;
+                try {
+                    const needPause = state.globalSync;
+                    if (needPause) {
+                         state.isSyncPaused = true;
+                         els.log.innerText = `预览 Slot ${slot} (暂停同步)`;
+                    } else {
+                         els.log.innerText = `预览 Slot ${slot}`;
+                    }
+                    await state.device.sendReport(0, packet);
+                    if (needPause) {
+                        setTimeout(() => {
+                            state.isSyncPaused = false;
+                            els.log.innerText = "恢复同步";
+                            sendDataToDevice(null, true); 
+                        }, 5000);
+                    }
+                } catch(e) {
+                    els.log.innerText = "预览指令发送失败";
+                    state.isSyncPaused = false;
+                }
+            });
+
+            els.checkGlobalSync.addEventListener('change', (e) => { state.globalSync = e.target.checked; if(state.globalSync) updateAndSend(); });
+
+            els.tabImageMode.addEventListener('click', () => setLeftPanelMode('image'));
+            els.tabTextMode.addEventListener('click', () => setLeftPanelMode('text'));
+            els.tabTimeMode.addEventListener('click', () => setLeftPanelMode('time')); 
+            
+            els.btnAddText.addEventListener('click', addTextItem);
+            els.btnClearText.addEventListener('click', () => { state.textItems = []; state.activeTextId = null; state.mode = state.images.length ? 'image' : 'empty'; if (state.mode === 'image' && state.images.length > 0) selectImage(state.images[0].id); else switchContent('empty', null, null); updateTextList(); });
+            
+            cvs.addEventListener('wheel', (e) => {
+                const isTransformable = (state.mode === 'image' && (state.fitMode === 'cover' || state.fitMode === 'tile')) || state.mode === 'text' || state.mode === 'time'; if (!isTransformable) return; e.preventDefault(); 
+                const zoomStep = 0.1; const direction = e.deltaY > 0 ? -1 : 1; 
+                let newZoom = Math.max(0.1, Math.min(10.0, state.zoom + direction * zoomStep)); state.zoom = parseFloat(newZoom.toFixed(1));
+                els.sliderZoom.value = state.zoom; els.inputZoom.value = state.zoom.toFixed(1); els.zoomVal.innerText = state.zoom.toFixed(1) + 'x'; saveCurrentStateToSelectedContent(); updateAndSend(); updateProgressSliders();
+            });
+
+            cvs.addEventListener('mousedown', (e) => {
+                const canDrag = (state.mode === 'image' && (state.fitMode === 'cover' || state.fitMode === 'tile')) || state.mode === 'text' || state.mode === 'time'; if (!canDrag) return;
+                isDragging = true; dragStartX = e.clientX; dragStartY = e.clientY; initialOffsetX = state.offsetX; initialOffsetY = state.offsetY;
+                cvs.classList.add('cursor-grabbing'); cvs.classList.remove('cursor-grab');
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const screenDx = e.clientX - dragStartX; const screenDy = e.clientY - dragStartY;
+                const displayScale = state.displayScale; const visualDx = screenDx / displayScale; const visualDy = screenDy / displayScale;
+                let canvasDx = visualDx; let canvasDy = visualDy;
+                if (state.previewOrientation === 'vertical') { canvasDx = visualDy; canvasDy = -visualDx; }
+                const angleRad = state.rotationDeg * Math.PI / 180; const cos = Math.cos(angleRad); const sin = Math.sin(angleRad);
+                const rotatedDx = canvasDx * cos + canvasDy * sin; const rotatedDy = -canvasDx * sin + canvasDy * cos;
+                
+                let moveX = rotatedDx;
+                let moveY = rotatedDy;
+                if (state.flipX) moveX = -moveX;
+                if (state.flipY) moveY = -moveY;
+
+                let zoomFactor = 1.0; const isScaledContext = (state.mode === 'text' || state.mode === 'time' || (state.mode === 'image' && state.fitMode === 'tile')); if (isScaledContext) { zoomFactor = state.zoom; }
+                state.offsetX = initialOffsetX + moveX / zoomFactor; state.offsetY = initialOffsetY + moveY / zoomFactor;
+                els.inputOffsetX.value = Math.round(state.offsetX); els.inputOffsetY.value = Math.round(state.offsetY);
+                els.offsetVal.innerText = `X:${Math.round(state.offsetX)} Y:${Math.round(state.offsetY)}`; updateAndSend();
+            });
+
+            window.addEventListener('mouseup', () => {
+                if(isDragging) { isDragging = false; cvs.classList.remove('cursor-grabbing'); const isTransformable = (state.mode === 'image' && (state.fitMode === 'cover' || state.fitMode === 'tile')) || state.mode === 'text' || state.mode === 'time'; if(isTransformable) cvs.classList.add('cursor-grab'); saveCurrentStateToSelectedContent(); }
+            });
+
+            els.btnReset.addEventListener('click', () => { resetTransform(true); updateAndSend(); });
+            els.checkInvert.onchange = (e) => { state.invert = e.target.checked; updateAndSend(); };
+            els.orientationBtns.forEach(btn => {
+                btn.addEventListener('click', () => { els.orientationBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); state.previewOrientation = btn.dataset.orientation; updatePreviewOrientation(); state.offsetX = 0; state.offsetY = 0; updateAndSend(); });
+            });
+            els.modeBtns.forEach(btn => {
+                btn.addEventListener('click', () => { if (state.leftPanelMode !== 'image') return; els.modeBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); state.fitMode = btn.dataset.mode; resetTransform(true, false); els.sliderZoom.disabled = (state.fitMode === 'stretch'); updateAndSend(); });
+            });
+        }
+        
+        function addTextItem() {
+            const text = els.textInput.value.trim(); if (!text) { alert("请输入文本内容！"); return; }
+            const newTextItem = { 
+                id: Date.now() + Math.random(), 
+                text: text, 
+                visible: true, 
+                fontSize: parseInt(els.selectFontSize.value), 
+                fontFamily: els.selectFontFamily.value, 
+                effect: els.selectTextEffect.value, 
+                speed: parseFloat(els.sliderTextSpeed.value), 
+                offsetX: 0, 
+                offsetY: 0, 
+                zoom: 1.0, 
+                rotationDeg: 0, 
+                threshold: 128,
+                flipX: false, flipY: false 
+            };
+            state.textItems.push(newTextItem); 
+            state.activeTextId = newTextItem.id;
+            switchContent('text', null, newTextItem.id); 
+            updateTextList();
+        }
+        
+        function selectTextItem(id) {
+            switchContent('text', null, id);
+            updateTextList();
+            setLeftPanelMode('text');
+        }
+        
+        function toggleTextVisibility(id, visible) {
+            const item = state.textItems.find(i => i.id === id);
+            if (item) {
+                item.visible = visible;
+                updateAndSend();
+            }
+        }
+        
+        function updateTextList() {
+            els.textList.innerHTML = ''; 
+            if (!state.textItems.length) { 
+                els.textList.innerHTML = '<div class="text-center text-slate-300 text-xs mt-10">暂无文本项</div>'; 
+                return; 
+            }
+            
+            state.textItems.forEach(item => {
+                const div = document.createElement('div'); 
+                const isActive = item.id === state.activeTextId;
+                
+                let className = `p-2 rounded border cursor-pointer flex items-center gap-2 bg-white hover:bg-slate-50 transition-all text-item`;
+                if (isActive) {
+                    className += ' active';
+                } else if (state.multiLayer && item.visible) {
+                    className += ' checked-bg';
+                }
+                
+                div.className = className;
+                
+                let checkBoxHtml = '';
+                if (state.multiLayer) {
+                    checkBoxHtml = `\
+                        <input type="checkbox" class="visibility-check mr-2 cursor-pointer w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" 
+                            ${item.visible ? 'checked' : ''} 
+                            data-id="${item.id}" onclick="event.stopPropagation()">\
+                    `;
+                }
+                
+                div.innerHTML = `\
+                    ${checkBoxHtml}\
+                    <div class="text-xl text-slate-400 font-bold flex-shrink-0 w-6 text-center" style="font-family: ${item.fontFamily};">Ag</div>\
+                    <div class="truncate text-xs font-bold text-slate-600 flex-1">${item.text}</div>\
+                    <button class="del-btn text-slate-300 hover:text-red-500 px-1 transition-all"><i class="fa-solid fa-xmark"></i></button>\
+                `;
+                
+                if (state.multiLayer) {
+                    const cb = div.querySelector('.visibility-check');
+                    if (cb) {
+                        cb.onchange = (e) => {
+                            toggleTextVisibility(item.id, e.target.checked);
+                            updateTextList();
+                        };
+                    }
+                }
+
+                div.onclick = (e) => {
+                    if (e.target.closest('.del-btn')) { 
+                        state.textItems = state.textItems.filter(i => i.id !== item.id); 
+                        if(state.activeTextId === item.id) {
+                            state.activeTextId = null;
+                            if(state.textItems.length > 0) {
+                                selectTextItem(state.textItems[0].id);
+                            } else {
+                                switchContent('empty', null, null);
+                            }
+                        } else {
+                            updateTextList();
+                            updateAndSend(); 
+                        }
+                    } else if (!e.target.classList.contains('visibility-check')) {
+                        selectTextItem(item.id);
+                    }
+                };
+                els.textList.appendChild(div);
+            });
+        }
+        
+        els.fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files); if (!files.length) return;
+            const loaded = await Promise.all(files.map(file => new Promise(res => { const img = new Image(); const url = URL.createObjectURL(file); img.onload = () => res({ id: Date.now()+Math.random(), name: file.name, imgObject: img, src: url, fitMode: state.fitMode, offsetX: 0, offsetY: 0, zoom: 1.0, rotationDeg: 0, threshold: 128, flipX: false, flipY: false }); img.src = url; })));
+            state.images = [...state.images, ...loaded]; if(loaded.length) { switchContent('image', loaded[0].id, null); setLeftPanelMode('image'); } updateGallery(); e.target.value = '';
+        });
+        function selectImage(id) { switchContent('image', id, null); updateGallery(); setLeftPanelMode('image'); }
+        function updateGallery() {
+            els.galleryList.innerHTML = ''; const emptyMsg = document.getElementById('emptyGalleryMsg'); if(emptyMsg) emptyMsg.style.display = state.images.length ? 'none' : 'flex';
+            state.images.forEach(img => {
+                const div = document.createElement('div'); const isActive = img.id === state.selectedId;
+                div.className = `gallery-card group relative ${isActive ? 'active' : ''}`;
+                div.innerHTML = `<div class="w-full h-full bg-white flex items-center justify-center p-1"><img src="${img.src}" class="max-w-full max-h-full object-contain"></div><div class="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm text-white text-[9px] truncate px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-all">${img.name}</div><button class="del-btn absolute top-1 right-1 bg-white/90 text-red-500 w-5 h-5 flex items-center justify-center text-[10px] rounded shadow-sm opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-xmark"></i></button>`;
+                div.onclick = (e) => { if (e.target.closest('.del-btn')) { state.images = state.images.filter(i => i.id !== img.id); if(state.selectedId === img.id) { state.selectedId = null; if (state.images.length) selectImage(state.images[0].id); else switchContent('empty', null, null); } else updateGallery(); updateAndSend(); } else selectImage(img.id); }; els.galleryList.appendChild(div);
+            });
+        }
+
+        document.getElementById('btnClearAll').onclick = () => { state.images = []; state.selectedId = null; switchContent('empty', null, null); updateGallery(); };
+        document.getElementById('btnPattern').onclick = () => { switchContent('pattern', null, null); setLeftPanelMode('image'); };
+        
+        function setLeftPanelMode(mode) {
+            state.leftPanelMode = mode;
+            els.imagePanel.style.display = (mode === 'image' ? 'flex' : 'none'); els.textPanel.style.display = (mode === 'text' ? 'flex' : 'none'); els.timePanel.style.display = (mode === 'time' ? 'flex' : 'none');
+            els.tabImageMode.classList.toggle('active-tab-style', mode === 'image'); els.tabTextMode.classList.toggle('active-tab-style', mode === 'text'); els.tabTimeMode.classList.toggle('active-tab-style', mode === 'time');
+            if (mode === 'image' && state.selectedId) switchContent('image', state.selectedId, null); 
+            else if (mode === 'text' && state.activeTextId) switchContent('text', null, state.activeTextId); 
+            else if (mode === 'time') switchContent('time', null, null); 
+            else switchContent('empty', null, null);
+            
+            if (mode !== 'image') { 
+                els.modeBtns.forEach(b => b.classList.remove('active')); 
+                els.sliderZoom.disabled = false; 
+            } else { 
+                const activeBtn = Array.from(els.modeBtns).find(b => b.dataset.mode === state.fitMode); 
+                if (activeBtn) activeBtn.classList.add('active'); 
+                els.sliderZoom.disabled = (state.fitMode === 'stretch'); 
+            }
+        }
+        
+        function updatePreviewOrientation() { els.canvasWrapper.style.transform = state.previewOrientation === 'vertical' ? 'rotate(90deg)' : 'rotate(0deg)'; }
+        function applyDisplayScale() { const scale = state.displayScale; els.canvas.style.width = `${state.width * scale}px`; els.canvas.style.height = `${state.height * scale}px`; els.displayScaleVal.innerText = `${scale.toFixed(1)}x`; els.scaleVal.innerHTML = `<i class="fa-solid fa-magnifying-glass text-slate-300"></i> <span class="font-bold text-slate-700">${scale.toFixed(1)}x</span>`; }
+        function updateCanvasSize(w, h) { state.width = parseInt(w); state.height = parseInt(h); els.canvas.width = w; els.canvas.height = h; applyDisplayScale(); updateAndSend(); }
+        els.presetSize.onchange = (e) => { if(e.target.value === 'custom') els.customSizeInputs.classList.remove('hidden'); else { els.customSizeInputs.classList.add('hidden'); const [w, h] = e.target.value.split(','); updateCanvasSize(w, h); } };
+        const handleSizeChange = () => { const w = parseInt(els.inputW.value) || 128; const h = parseInt(els.inputH.value) || 32; updateCanvasSize(w, h); };
+        els.inputW.addEventListener('input', handleSizeChange); els.inputH.addEventListener('input', handleSizeChange);
+
+        function drawPattern(w, h) {
+            const ctx = els.ctx; 
+            ctx.fillStyle = 'black'; 
+            ctx.fillRect(0, 0, w, h);
+            
+            const blockSize = 8;
+            ctx.fillStyle = 'white';
+            
+            for (let y = 0; y < h; y += blockSize) {
+                for (let x = 0; x < w; x += blockSize) {
+                    if ((Math.floor(x / blockSize) + Math.floor(y / blockSize)) % 2 === 0) {
+                        ctx.fillRect(x, y, blockSize, blockSize);
+                    }
+                }
+            }
+
+        }
+
+        function render() {
+            const { ctx } = els; const w = state.width; const h = state.height;
+            ctx.fillStyle = 'black'; ctx.fillRect(0, 0, w, h);
+            
+            if (state.mode === 'image' && state.selectedId !== null) { 
+                const imgObj = state.images.find(img => img.id === state.selectedId); 
+                if (imgObj) drawImageTransformed(ctx, imgObj.imgObject, w, h); 
+            } 
+            else if (state.mode === 'text') { 
+                if (state.multiLayer) {
+                    state.textItems.forEach(item => {
+                        if (item.visible) {
+                            let useX, useY, useZoom, useRot, useFlipX, useFlipY;
+                            if (item.id === state.activeTextId) {
+                                useX = state.offsetX; useY = state.offsetY;
+                                useZoom = state.zoom; useRot = state.rotationDeg;
+                                useFlipX = state.flipX; useFlipY = state.flipY;
+                            } else {
+                                useX = item.offsetX; useY = item.offsetY;
+                                useZoom = item.zoom; useRot = item.rotationDeg;
+                                useFlipX = item.flipX; useFlipY = item.flipY;
+                            }
+                            drawTextTransformed(ctx, item, w, h, useX, useY, useZoom, useRot, useFlipX, useFlipY);
+                        }
+                    });
+                } else if (state.activeTextId !== null) {
+                    const textObj = state.textItems.find(item => item.id === state.activeTextId);
+                    if (textObj) {
+                        drawTextTransformed(ctx, textObj, w, h, state.offsetX, state.offsetY, state.zoom, state.rotationDeg, state.flipX, state.flipY);
+                    }
+                }
+            } 
+            else if (state.mode === 'time') { 
+                drawTimeTransformed(ctx, state.timeSettings, w, h); 
+            } 
+            else if (state.mode === 'pattern') { 
+                drawPattern(w, h); 
+            }
+            
+            els.offsetVal.innerText = `X:${Math.round(state.offsetX)} Y:${Math.round(state.offsetY)}`;
+            if (state.mode !== 'empty') processPixels();
+            
+            const isTransformable = (state.mode === 'image' && (state.fitMode === 'cover' || state.fitMode === 'tile')) || state.mode === 'text' || state.mode === 'time'; 
+            if (isTransformable) { 
+                els.dragHint.style.opacity = '1'; 
+                if (!isDragging) els.canvas.classList.add('cursor-grab'); 
+            } else { 
+                els.dragHint.style.opacity = '0'; 
+                els.canvas.classList.remove('cursor-grab', 'cursor-grabbing'); 
+            }
+        }
+
+        function drawTextWithEffects(ctx, item, cvsW, cvsH, posX, posY) {
+             const { text, fontSize, fontFamily, effect, speed: itemSpeed } = item;
+             let speed = itemSpeed; if (state.mode === 'time') speed = state.timeSettings.customTextSpeed; speed = speed || 1.0; 
+             ctx.font = `${fontSize}px ${fontFamily}, 'Microsoft YaHei', sans-serif`; 
+             const textWidth = ctx.measureText(text).width; const textHeight = fontSize; ctx.save(); 
+             if (effect === 'scroll_left') {
+                 const scrollOffset = (state.animation.scrollOffsetLeft * speed) % (textWidth + cvsW);
+                 const loopLength = textWidth + cvsW; const startX = posX - textWidth / 2 + cvsW / 2 - scrollOffset;
+                 ctx.textAlign = 'left'; ctx.translate(startX, posY); ctx.fillText(text, -cvsW/2, 0); 
+                 if (startX + textWidth < posX - textWidth/2 - 5) { ctx.fillText(text, -cvsW/2 + loopLength, 0); }
+             } else if (effect === 'scroll_up') {
+                 const lineHeight = textHeight + 2; 
+                 const loopLength = cvsH + lineHeight; 
+                 const scrollOffset = (state.animation.scrollOffsetUp * speed) % loopLength;
+                 const startY = posY - cvsH / 2 + lineHeight / 2 + cvsH - scrollOffset;
+                 ctx.textAlign = 'center'; ctx.translate(posX, startY); ctx.fillText(text, 0, -cvsH/2 + lineHeight/2);
+                 if (startY + lineHeight < posY + cvsH/2 - lineHeight - 2) { ctx.fillText(text, 0, -cvsH/2 + loopLength + lineHeight/2); }
+             } else if (effect === 'blink' || effect === 'typing') {
+                 const adjustedIndex = Math.floor(state.animation.blinkIndex * speed);
+                 const charCount = adjustedIndex; const L = text.length; let displayStr = '';
+                 if (effect === 'typing') { 
+                     displayStr = text.slice(0, charCount % (L + 5)); 
+                 } else { 
+                     const cycle = L * 2;
+                     const phase = charCount % cycle;
+                     if (phase < L) { displayStr = text.slice(0, phase + 1); } 
+                     else { displayStr = text.slice(0, L - (phase - L)); } 
+                 }
+                 ctx.textAlign = 'center'; ctx.translate(posX, posY); ctx.fillText(displayStr, 0, 0);
+             } else if (effect === 'slide_pingpong') {
+                 const slideOffset = Math.sin(state.animation.frame * 0.05 * speed) * (cvsW/4); 
+                 ctx.textAlign = 'center'; ctx.translate(posX + slideOffset, posY); ctx.fillText(text, 0, 0);
+             } else if (effect === 'grow_shrink') {
+                 const frame = (state.animation.frame * speed) % 120; const scale = 1.0 + Math.sin(frame * (Math.PI / 60)) * 0.2; 
+                 ctx.textAlign = 'center'; ctx.translate(posX, posY); ctx.scale(scale, scale); ctx.fillText(text, 0, 0);
+             } else if (effect === 'wave') {
+                 const frame = state.animation.frame * speed / 5; const charWidth = textWidth / text.length; const amplitude = Math.max(1, fontSize / 12); 
+                 ctx.textAlign = 'left'; ctx.translate(posX - textWidth/2, posY); 
+                 for (let i = 0; i < text.length; i++) { const char = text[i]; const yShift = Math.sin((i * 0.5) + (frame / 10)) * amplitude; ctx.fillText(char, i * charWidth, yShift); }
+             } else { ctx.textAlign = 'center'; ctx.translate(posX, posY); ctx.fillText(text, 0, 0); }
+             ctx.restore();
+        }
+
+        function drawTextTransformed(ctx, textItem, cvsW, cvsH, offsetX, offsetY, zoom, rotationDeg, flipX = false, flipY = false) {
+            ctx.save(); 
+            const rotationAngle = rotationDeg * Math.PI / 180;
+            ctx.translate(cvsW / 2, cvsH / 2); 
+            ctx.rotate(rotationAngle); 
+            ctx.scale(zoom * (flipX ? -1 : 1), zoom * (flipY ? -1 : 1));
+            ctx.fillStyle = 'white'; 
+            ctx.textBaseline = 'middle'; 
+            drawTextWithEffects(ctx, textItem, cvsW, cvsH, offsetX, offsetY); 
+            ctx.restore();
+        }
+
+        function drawTimeTransformed(ctx, settings, cvsW, cvsH) {
+            const now = new Date();
+            const { showDate, showTime, timeFormat, showYear, showMonth, showDayOfMonth, showDayOfWeek, timeFontSize, timeFontFamily, dateFontSize, dateFontFamily, showCustomText, customText, customTextFontSize, customTextFontFamily, customTextEffect, flipX, flipY } = settings;
+            let hours = now.getHours(); const minutes = String(now.getMinutes()).padStart(2, '0'); const seconds = String(now.getSeconds()).padStart(2, '0'); let ampm = '';
+            if (timeFormat === '12h') { ampm = (hours >= 12) ? '下午' : '上午'; hours = hours % 12; hours = hours ? hours : 12; }
+            const timeStr = `${String(hours).padStart(2, '0')}:${minutes}:${seconds}`;
+            const year = now.getFullYear(); const month = now.getMonth() + 1; const dayOfMonth = now.getDate(); const dayOfWeekStr = ['日', '一', '二', '三', '四', '五', '六'][now.getDay()];
+            let dateDisplay = ''; if (showYear) dateDisplay += `${year}年`; if (showMonth) dateDisplay += `${month}月`; if (showDayOfMonth) dateDisplay += `${dayOfMonth}日`;
+            let dayOfWeekDisplay = showDayOfWeek ? `周${dayOfWeekStr}` : ''; let dateStr = '';
+            if (dateDisplay && dayOfWeekDisplay) dateStr = `${dateDisplay} ${dayOfWeekDisplay}`; else if (dateDisplay) dateStr = dateDisplay; else if (dayOfWeekDisplay) dateStr = dayOfWeekDisplay;
+            let elements = [];
+            if (showDate && dateStr) elements.push({ type: 'date', height: dateFontSize, str: dateStr, fontFamily: dateFontFamily, fontSize: dateFontSize });
+            if (showTime) elements.push({ type: 'time', height: timeFontSize, str: timeStr, fontFamily: timeFontFamily, fontSize: timeFontSize, isTime: true, ampm: ampm }); 
+            if (showCustomText && customText.trim()) { elements.push({ type: 'custom', height: customTextFontSize, str: customText, fontFamily: customTextFontFamily, fontSize: customTextFontSize, effect: customTextEffect, speed: settings.customTextSpeed, isCustom: true }); }
+            elements.sort((a, b) => settings.layoutOrder.indexOf(a.type) - settings.layoutOrder.indexOf(b.type));
+            elements = elements.filter(el => { if (el.type === 'date' && !showDate) return false; if (el.type === 'time' && !showTime) return false; if (el.type === 'custom' && !showCustomText) return false; return true; });
+            const padding = 2; const totalHeight = elements.reduce((sum, el) => sum + el.height, 0) + (elements.length > 0 ? (elements.length - 1) * padding : 0);
+            let currentY = -(totalHeight / 2); 
+            ctx.save(); 
+            const rotationAngle = state.rotationDeg * Math.PI / 180; 
+            ctx.translate(cvsW / 2, cvsH / 2); 
+            ctx.rotate(rotationAngle); 
+            ctx.scale(state.zoom * (flipX ? -1 : 1), state.zoom * (flipY ? -1 : 1));
+            ctx.translate(state.offsetX, state.offsetY); 
+            ctx.fillStyle = 'white'; ctx.textBaseline = 'middle'; 
+            elements.forEach(el => {
+                const centerY = currentY + el.height / 2; ctx.save(); 
+                if (el.type === 'time' && showTime) { 
+                    ctx.font = `${el.fontSize}px ${el.fontFamily}`;
+                    if (el.ampm) {
+                        ctx.font = `${el.fontSize}px ${el.fontFamily}`; const timeStrWidth = ctx.measureText(timeStr).width; ctx.font = `${settings.dateFontSize}px ${settings.dateFontFamily}`; const ampmStrWidth = ctx.measureText(el.ampm).width; ctx.font = `${el.fontSize}px ${el.fontFamily}`; const space = el.fontSize / 4; const totalWidth = timeStrWidth + space + ampmStrWidth; const startX = -totalWidth / 2;
+                        ctx.textAlign = 'left'; ctx.fillText(timeStr, startX, centerY); ctx.font = `${settings.dateFontSize}px ${settings.dateFontFamily}`; ctx.fillText(el.ampm, startX + timeStrWidth + space, centerY); 
+                    } else { ctx.textAlign = 'center'; ctx.fillText(timeStr, 0, centerY); }
+                } else if (el.type === 'custom') { const itemData = { text: el.str, fontSize: el.fontSize, fontFamily: el.fontFamily, effect: el.effect, speed: el.speed }; ctx.translate(0, centerY); drawTextWithEffects(ctx, itemData, cvsW, cvsH, 0, 0); 
+                } else if (el.type === 'date' && showDate) { ctx.font = `${el.fontSize}px ${el.fontFamily}`; ctx.textAlign = 'center'; ctx.fillText(el.str, 0, centerY); }
+                ctx.restore(); currentY += el.height + padding;
+            });
+            ctx.restore();
+        }
+
+        function drawImageTransformed(ctx, img, cvsW, cvsH) {
+            const imgW = img.width; const imgH = img.height; 
+            ctx.save(); 
+            const rotationAngle = state.rotationDeg * Math.PI / 180; 
+            ctx.translate(cvsW / 2, cvsH / 2); 
+            ctx.rotate(rotationAngle);
+            ctx.scale(state.flipX ? -1 : 1, state.flipY ? -1 : 1);
+            
+            const drawOriginX = -cvsW / 2; const drawOriginY = -cvsH / 2; let drawX, drawY, drawW, drawH;
+            switch (state.fitMode) {
+                case 'stretch': ctx.drawImage(img, drawOriginX, drawOriginY, cvsW, cvsH); break;
+                case 'tile': 
+                    const pattern = ctx.createPattern(img, 'repeat'); ctx.fillStyle = pattern; 
+                    ctx.scale(state.zoom, state.zoom); 
+                    ctx.translate(state.offsetX, state.offsetY); 
+                    const safeDrawSize = Math.max(cvsW, cvsH) * 5; ctx.fillRect(-safeDrawSize / 2 / state.zoom, -safeDrawSize / 2 / state.zoom, safeDrawSize / state.zoom, safeDrawSize / state.zoom); break;
+                default: 
+                    const scaleW = cvsW / imgW; const scaleH = cvsH / imgH; let scale = (state.fitMode === 'cover') ? Math.max(scaleW, scaleH) : Math.min(scaleW, scaleH); scale *= state.zoom; 
+                    drawW = imgW * scale; drawH = imgH * scale; 
+                    drawX = drawOriginX + (cvsW - drawW) / 2 + state.offsetX; 
+                    drawY = drawOriginY + (cvsH - drawH) / 2 + state.offsetY; 
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH); break;
+            } 
+            ctx.restore();
+        }
+
+        function processPixels() {
+            const w = state.width; const h = state.height; const imageData = els.ctx.getImageData(0, 0, w, h); const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) { const avg = (data[i] + data[i+1] + data[i+2]) / 3; let isWhite = avg > state.threshold; if (state.invert) isWhite = !isWhite; const val = isWhite ? 255 : 0; data[i] = val; data[i+1] = val; data[i+2] = val; } els.ctx.putImageData(imageData, 0, 0);
+        }
+        
+        async function sendDataToDevice(commandByte = null, isForced = false, buffer = null) {
+            // 检查设备状态
+            if (!state.device || !state.device.opened) { 
+                if (isForced) els.log.innerText = "设备未连接！"; 
+                // 如果发现状态不对，确保 UI 也显示断开
+                if (state.device) handleDisconnect();
+                return false; 
+            }
+            
+            if (state.isSending) return; 
+            state.isSending = true;
+            
+            const cmd = commandByte === null ? 0xAC : commandByte;
+            const { width: w, height: h } = state; 
+            
+            // 1. 生成数据
+            let dataToSend = buffer;
+            if (dataToSend === null) {
+                const ctx = els.ctx; 
+                const imgData = ctx.getImageData(0,0,w,h).data; 
+                dataToSend = new Uint8Array((w * h) / 8); 
+                let ptr = 0;
+                for(let page=0; page<Math.ceil(h/8); page++) { 
+                    for(let col=0; col<w; col++) { 
+                        let byte = 0; 
+                        for(let bit=0; bit<8; bit++) { 
+                            const y = page*8 + bit; 
+                            if(y < h && imgData[(y*w+col)*4] > 128) byte |= (1<<bit); 
+                        } 
+                        dataToSend[ptr++] = byte; 
+                    } 
+                }
+            }
+            
+            // 2. 智能同步：比对数据变化
+            if (!isForced && state.lastSentBuffer) {
+                let isChanged = false;
+                if (state.lastSentBuffer.length !== dataToSend.length) {
+                    isChanged = true;
+                } else {
+                    for (let i = 0; i < dataToSend.length; i++) {
+                        if (dataToSend[i] !== state.lastSentBuffer[i]) {
+                            isChanged = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isChanged) { 
+                    state.isSending = false; 
+                    return true; 
+                }
+            }
+
+            if (!isForced) {
+                state.lastSentBuffer = new Uint8Array(dataToSend);
+            }
+            
+            try {
+                if (isForced) els.log.innerText = "发送中..."; 
+                const chunks = Math.ceil(dataToSend.length / state.payloadSize);
+                for(let i=0; i<chunks; i++) { 
+                    const pkt = new Uint8Array(state.packetSize); 
+                    pkt[0] = cmd; 
+                    pkt[1] = i; 
+                    pkt.set(dataToSend.slice(i*state.payloadSize, (i+1)*state.payloadSize), 2); 
+                    
+                    // 如果设备重启了，sendReport 会抛出错误，进入 catch 块
+                    await state.device.sendReport(0, pkt); 
+                }
+                if (isForced) els.log.innerText = "完成"; 
+                state.isSending = false; 
+                return true;
+            } catch(err) { 
+                console.error("发送失败:", err);
+                // 捕获错误，这通常意味着连接失效（如设备重启）
+                els.log.innerText = "发送失败 (请重连)"; 
+                state.isSending = false; 
+                handleDisconnect(); // 自动断开，强制用户重新点击连接
+                return false; 
+            }
+        }
+
+        // --- 连接/重连按钮逻辑 ---
+        els.btnConnect.onclick = async () => {
+            // 如果当前看起来是连接状态，用户点击则是为了“断开”
+            if (state.device && state.device.opened) { 
+                handleDisconnect();
+                return;
+            }
+
+            // 禁用按钮防止重复点击
+            els.btnConnect.disabled = true; 
+            els.btnConnect.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
+            
+            try {
+                // 总是请求一个新的设备实例，不要复用旧的
+                const devices = await navigator.hid.requestDevice({ filters: [{ usagePage: 0xFF60, usage: 0x61 }] });
+                
+                if (devices.length > 0) { 
+                    // 彻底覆盖旧的 device 对象
+                    state.device = devices[0]; 
+                    
+                    // 打开新设备
+                    await state.device.open(); 
+                    
+                    // 重置发送状态
+                    state.lastSentBuffer = null; 
+                    state.isSending = false;
+                    
+                    // 更新 UI 为连接成功
+                    els.btnConnect.innerHTML = `
+                        <div id="statusDot" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+                        <span>${state.device.productName || "已连接设备"}</span>
+                    `;
+                    els.btnConnect.classList.remove('bg-slate-900', 'hover:bg-slate-800');
+                    els.btnConnect.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                    els.btnSend.disabled = false; 
+                    els.log.innerText = "已连接"; 
+                    
+                    if (state.globalSync) updateAndSend(); 
+                } else { 
+                    // 用户取消了选择
+                    handleDisconnect(); // 确保 UI 回归原位
+                    els.log.innerText = "取消连接"; 
+                }
+            } catch(e) { 
+                console.error("连接错误:", e);
+                handleDisconnect(); // 确保 UI 回归原位
+                els.btnConnect.innerText = "重试"; 
+                els.log.innerText = "连接失败";
+            } finally { 
+                els.btnConnect.disabled = false; 
+            }
+        };
+        
+        els.btnSend.onclick = async () => { 
+            els.btnSend.disabled = true; 
+            await sendDataToDevice(null, true); 
+            // 只有当设备还连着的时候才恢复按钮，否则由 handleDisconnect 处理
+            if (state.device && state.device.opened) {
+                els.btnSend.disabled = false; 
+            }
+        };
+
+        init();
+    </script>
+    <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
+</body>
+</html>

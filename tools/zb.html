@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>矩阵坐标生成器</title>
+    <style>
+        :root {
+            /* 颜色变量 */
+            --p: #007bff; --pd: #0056b3; /* Primary */
+            --s: #6c757d; --sd: #5a6268; /* Secondary */
+            --a: #ffc107; --ad: #e0a800; /* Accent */
+            --t: #333; /* Text */
+            --bg: #f8f9fa; /* Background */
+            --sb: #ffffff; /* Section Background */
+            --b: #dee2e6; /* Border */
+            --err: #dc3545; /* Error */
+            --k: #f0f0f0; --kb: #c0c0c0; /* Key */
+            --ks: #e0f2f7; /* Key Selected */
+            --dr: #e6f7ff; --drb: #007bff; /* Drag */
+            --shl: rgba(0, 0, 0, 0.08); /* Shadow Light */
+            --shm: rgba(0, 0, 0, 0.15); /* Shadow Medium */
+            --e: #ffecd2; --eb: 1px solid #ffa000; --es: 0 0 0 2px rgba(255, 160, 0, 0.3); /* Encoder */
+            --selb: 1px dashed var(--p); --selbg: rgba(0, 123, 255, 0.1); /* Selection Box */
+            --p-rgb: 0, 123, 255;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --p: #8a2be2; --pd: #6a0dad;
+                --t: #e0e0e0; --bg: #212529; --sb: #2c3034;
+                --b: #495057; --err: #ff6b6b;
+                --k: #495057; --kb: #6c757d;
+                --ks: #4a3468;
+                --drb: #8a2be2;
+                --shl: rgba(0, 0, 0, 0.3); --shm: rgba(0, 0, 0, 0.5);
+                --e: #6a4000; --eb: 1px solid #ffa000; 
+                --selbg: rgba(138, 43, 226, 0.1);
+                --p-rgb: 138, 43, 226;
+            }
+        }
+
+        body {
+            margin: 0; padding: 30px 0; background-color: var(--bg); color: var(--t);
+            line-height: 1.6; display: flex; flex-direction: column; align-items: center;
+            min-height: 10vh; box-sizing: border-box;
+        }
+        .container {
+            width: calc(100% - 3rem); margin: 0 auto; display: flex;
+            flex-direction: column; gap: 30px; box-sizing: border-box;
+        }
+        h1 {
+            color: var(--p); margin: 0 0 5px; text-align: center; font-weight: 600;
+            text-shadow: 1px 1px 2px var(--shl); width: 100%;
+        }
+
+        /* 关键调整：主布局容器使用 Flex 且 align-items: stretch (默认) */
+        .main-layout { 
+            display: flex; /* 更改为 flex 容器 */
+            width: 100%; 
+            box-sizing: border-box; 
+            gap: 30px; /* 替代浮动带来的 margin 间隙 */
+        }
+        
+        .left-col {
+            flex-grow: 2; /* 2/3 宽度 */
+            width: auto; /* 移除固定宽度，让 flex 决定 */
+            display: flex;
+            flex-direction: column; 
+            gap: 30px; 
+            box-sizing: border-box;
+        }
+        
+        .right-col {
+            flex-grow: 1; /* 1/3 宽度 */
+            width: auto; /* 移除固定宽度，让 flex 决定 */
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            
+            /* 取消 sticky 效果，让其拉伸高度 */
+            position: static; 
+            top: auto; 
+            align-self: stretch; /* 确保其拉伸到与左侧容器一样高 */
+        }
+
+        /* 关键调整：右侧的 section 必须设置 flex-grow: 1 来填充高度 */
+        .right-col > .section {
+            flex-grow: 1; /* 占据 .right-col 的全部高度 */
+            height: 100%; /* 确保在 flex 容器内生效 */
+        }
+
+        .section {
+            background-color: var(--sb); padding: 25px; border-radius: 12px;
+            box-shadow: 0 6px 12px var(--shl); border: 1px solid var(--b);
+            width: 100%; box-sizing: border-box; display: flex;
+            flex-direction: column; /* 保持内部为列布局 */
+            align-items: center;
+        }
+        .section h2 {
+            margin: 0 0 20px; color: var(--p); border-bottom: 2px solid var(--b);
+            padding-bottom: 12px; font-weight: 600; width: 100%; text-align: left;
+        }
+        label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--t); align-self: flex-start; }
+        
+        textarea {
+            width: calc(100% - 20px); padding: 12px; margin-bottom: 18px; border: 1px solid var(--b);
+            border-radius: 8px; background-color: var(--input-background, var(--sb)); color: var(--t);
+            box-sizing: border-box; transition: border-color 0.3s, box-shadow 0.3s; 
+            min-height: 200px; /* 保持最小高度 */
+            resize: vertical; white-space: pre-wrap; box-shadow: inset 0 1px 3px var(--shl);
+            align-self: center;
+        }
+        textarea:focus {
+            border-color: var(--p); box-shadow: 0 0 0 4px rgba(var(--p-rgb), 0.25), inset 0 1px 3px var(--shm);
+            outline: none;
+        }
+        textarea.error {
+            border-color: var(--err); box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.25), inset 0 1px 3px var(--shm);
+            animation: shake 0.3s;
+        }
+        #errorDisplay { color: var(--err); margin: -10px 0 15px; font-size: 0.9em; min-height: 1.2em; font-weight: 500; align-self: flex-start; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .btn-group, .res-btns {
+            display: flex; gap: 15px; margin-top: 20px; justify-content: center;
+            flex-wrap: wrap; width: 100%;
+        }
+        .res-btns { margin-top: 0; }
+
+        button {
+            padding: 12px 25px; border: none; border-radius: 8px; background-color: var(--p);
+            color: #fff; cursor: pointer; font-weight: 600; transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px var(--shl);
+        }
+        button:hover { background-color: var(--pd); transform: translateY(-2px); box-shadow: 0 4px 8px var(--shm); }
+        button:active { transform: translateY(0); box-shadow: 0 1px 2px var(--shl); }
+        #resetBtn { background-color: var(--s); } #resetBtn:hover { background-color: var(--sd); }
+        #applyBtn { background-color: var(--a); color: var(--t); } #applyBtn:hover { background-color: var(--ad); }
+
+        #keyboard { border: 2px dashed var(--b); background-color: var(--sb); border-radius: 8px; overflow: auto; padding: 15px; box-shadow: inset 0 1px 3px var(--shl); width: 100%; box-sizing: border-box; }
+        #keyboard .keyboard-inner { position: relative; }
+
+        #keyboard .key {
+            position: absolute; background-color: var(--k); border: 1px solid var(--kb);
+            border-radius: 6px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; color: var(--t); text-align: center; white-space: pre-wrap;
+            word-break: break-word; box-sizing: border-box; cursor: grab; user-select: none;
+            box-shadow: 1px 2px 4px var(--shl); transition: all 0.15s ease; padding: 5px; line-height: 1.2;
+        }
+        #keyboard .key span { font-size: 0.8em; line-height: 1.1; }
+        #keyboard .key span.main-label { font-size: 12px; font-weight: normal; }
+        
+        #keyboard .key.is-encoder { background-color: var(--e); border: var(--eb); box-shadow: var(--es), 1px 2px 4px var(--shm); border-radius: 50%; }
+        #keyboard .key.is-encoder.selected, #keyboard .key.is-encoder.dragging, #keyboard .key.is-encoder.dragover { border-radius: 50%; }
+        
+        #keyboard .key:hover { transform: translateY(-1px); }
+        #keyboard .key.dragging { background-color: var(--dr); opacity: 0.8; cursor: grabbing; box-shadow: 0 4px 8px var(--shm); transform: scale(1.02); }
+        #keyboard .key.dragover { border: 3px solid var(--drb); box-shadow: 0 0 0 3px rgba(var(--p-rgb), 0.3); }
+        #keyboard .key.selected {
+            border: 2px solid var(--p); background-color: var(--ks); 
+            box-shadow: 0 0 0 4px rgba(var(--p-rgb), 0.3), 0 4px 8px var(--shm);
+            transform: translateY(-1px) scale(1.01);
+        }
+        
+        #keyboard .selection-box { position: absolute; border: var(--selb); background-color: var(--selbg); z-index: 10; pointer-events: none; }
+
+        /* 关键调整：结果文本框占据所有剩余空间 */
+        #rgbResult { 
+            flex-grow: 1; /* 填充父容器 section 的剩余空间 */
+            min-height: 150px; /* 适当减少最小高度，让 flex 决定 */
+            margin-bottom: 0; /* 移除底部 margin */
+        }
+        .label-and-btns {
+            display: flex; justify-content: center; align-items: center; margin-bottom: 10px;
+            flex-wrap: wrap; width: 100%;
+        }
+        .label-and-btns label { margin: 0 15px 0 0; flex-shrink: 0; align-self: center; }
+
+        #controlMenu {
+            display: flex; flex-wrap: wrap; gap: 20px; margin-top: 15px; padding: 15px;
+            background-color: var(--sb); border: 1px solid var(--b); border-radius: 8px;
+            box-shadow: inset 0 1px 3px var(--shl); justify-content: center; align-items: center;
+            width: 100%; box-sizing: border-box;
+        }
+        #controlMenu .stats-item {
+            font-weight: 600; color: var(--p); white-space: nowrap; padding: 5px 10px;
+            border: 1px solid var(--b); border-radius: 5px; background-color: var(--sb);
+        }
+        #controlMenu .ctrl-item { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+        #controlMenu input[type="checkbox"], #controlMenu input[type="radio"] { transform: scale(1.2); cursor: pointer; }
+        #controlMenu .ctrl-item label { margin-bottom: 0; display: inline-block; }
+        #controlMenu input[type="number"] {
+            width: 80px; padding: 8px; border: 1px solid var(--b); border-radius: 5px;
+            background-color: var(--sb); color: var(--t); box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #controlMenu input[type="number"]:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(var(--p-rgb), 0.15); outline: none; }
+        #controlMenu .radio-group { display: flex; gap: 15px; }
+
+
+        /* 响应式精简 */
+        @media (max-width: 768px) {
+            .container { width: calc(100% - 30px); gap: 20px; }
+            body { padding: 20px 0; }
+            h1 { margin-bottom: 25px; }
+
+            .main-layout { display: flex; flex-direction: column; gap: 20px; } 
+            /* 手机端保持原本的流式布局 */
+            .left-col, .right-col {
+                float: none; width: 100%; margin: 0; position: static; top: auto; align-self: auto;
+            }
+            .left-col { order: 1; } .right-col { order: 2; }
+            
+            /* 手机端取消 right-col 的拉伸，恢复min-height */
+            .right-col > .section { flex-grow: 0; height: auto; }
+            #rgbResult { min-height: 200px; margin-bottom: 18px; } /* 恢复手机端的最小高度和 margin */
+
+
+            .section { padding: 20px; border-radius: 10px; align-items: flex-start; }
+            .section h2 { margin-bottom: 15px; }
+            
+            .btn-group, .res-btns { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 15px; }
+            button { width: 100%; padding: 10px 20px; }
+
+            .label-and-btns { flex-direction: column; align-items: flex-start; margin-bottom: 0; }
+            .res-btns { margin-top: 10px; align-self: flex-start; }
+            #keyboard { min-height: 150px; padding: 10px; }
+
+            #controlMenu { flex-direction: column; align-items: flex-start; gap: 15px; padding: 10px; }
+            #controlMenu .stats-item { width: calc(50% - 15px); box-sizing: border-box; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>矩阵坐标生成器</h1>
+        <div class="main-layout">
+            <div class="left-col">
+                <div class="section">
+                    <h2>KLE 原始数据</h2>
+                    <textarea id="rawData" spellcheck="false"></textarea>
+                    <div id="errorDisplay"></div>
+                    <div id="keyboard" class="section">
+                        <div class="keyboard-inner"></div>
+                    </div>
+                    
+                    <div id="controlMenu">
+                        <span id="totalRows" class="stats-item"></span>
+                        <span id="totalCols" class="stats-item"></span>
+
+                        <div class="ctrl-item">
+                            <input type="checkbox" id="encoderCheckbox">
+                            <label for="encoderCheckbox">旋钮</label>
+                        </div>
+
+                        <div class="ctrl-item encoder-options">
+                            <label for="encoderIndexInput">第</label>
+                            <input type="number" id="encoderIndexInput" min="0" value="0">
+                            <label>个旋钮</label>
+                        </div>
+                        <div class="ctrl-item radio-group encoder-options">
+                            <input type="radio" id="encoderPositive" name="encoderDirection" value="1" checked>
+                            <label for="encoderPositive">正向</label>
+                            <input type="radio" id="encoderNegative" name="encoderDirection" value="0">
+                            <label for="encoderNegative">反向</label>
+                        </div>
+
+                        <div class="ctrl-item row-col-options">
+                            <label for="rowIndexInput">行</label>
+                            <input type="number" id="rowIndexInput" min="0" value="0">
+                        </div>
+                        <div class="ctrl-item row-col-options">
+                            <label for="colIndexInput">列</label>
+                            <input type="number" id="colIndexInput" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="section">
+                    <div class="label-and-btns">
+                        <label for="rgbResult">生成结果：</label>
+                        <div class="res-btns">
+                            <button id="resetBtn">重置</button>
+                            <button id="copyCodeBtn">复制</button>
+                            <button id="applyBtn">应用</button>
+                        </div>
+                    </div>
+                    <textarea id="rgbResult" spellcheck="false" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            const UNIT = 40, GAP = 5;
+            const INITIAL_RAW_KLE_DATA = `["0,8","1,8","0,9","1,9"],
+["5,8","3,8","2,9",{h:2},"6,10"],
+["3,9","4,9","5,9"],
+["6,7","6,8","6,9",{h:2},"7,10"],
+[{w:2},"7,8","7,9"]
+`;
+            const IGNORE_PROPERTIES = ['a', 't', 'n', 'p', 'f', 'fa'];
+
+            const els = {
+                keyboard: document.getElementById("keyboard"),
+                keyboardInner: document.querySelector("#keyboard .keyboard-inner"),
+                rawDataInput: document.getElementById("rawData"),
+                rgbResult: document.getElementById("rgbResult"),
+                resetBtn: document.getElementById("resetBtn"),
+                copyCodeBtn: document.getElementById("copyCodeBtn"),
+                applyBtn: document.getElementById("applyBtn"),
+                errorDisplay: document.getElementById("errorDisplay"),
+                encoderCheckbox: document.getElementById("encoderCheckbox"),
+                encoderOptions: document.querySelectorAll(".encoder-options"),
+                rowIndexInput: document.getElementById("rowIndexInput"),
+                colIndexInput: document.getElementById("colIndexInput"),
+                rowColOptions: document.querySelectorAll(".row-col-options"),
+                encoderIndexInput: document.getElementById("encoderIndexInput"),
+                encoderPositive: document.getElementById("encoderPositive"),
+                encoderNegative: document.getElementById("encoderNegative"),
+                totalRowsSpan: document.getElementById("totalRows"),
+                totalColsSpan: document.getElementById("totalCols"),
+            };
+
+            let keysData = [];
+            let currentMatrixCoordinates = [];
+            let currentKLEData = [];
+            let lastClickedVisualIndex = -1;
+            let selectedKeyVisualIndices = new Set();
+            let isSelecting = false;
+            let startX, startY;
+            let selectionBox = null;
+
+            const copyBtnText = els.copyCodeBtn.textContent;
+            const applyBtnText = els.applyBtn.textContent;
+
+            const clearError = (element = els.rawDataInput, errorDiv = els.errorDisplay) => {
+                element.classList.remove('error');
+                errorDiv.textContent = '';
+            };
+
+            const showError = (message, element = els.rawDataInput, errorDiv = els.errorDisplay) => {
+                element.classList.add('error');
+                errorDiv.textContent = '解析错误: ' + message;
+                element.style.animation = 'none';
+                void element.offsetHeight;
+                element.style.animation = '';
+            };
+
+            const parseInput = (text) => {
+                const trimmed = text.trim();
+                let parsedKLE;
+                try {
+                    if (trimmed.startsWith('[[') && trimmed.endsWith(']]')) {
+                        parsedKLE = JSON.parse(trimmed);
+                    } else {
+                        const cleanedLines = trimmed.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                        const joinedLines = cleanedLines.map((line, i, arr) => {
+                            return (i < arr.length - 1 && !line.endsWith(',') && !line.endsWith(']') && line !== '[' && line !== '],') ? line + ',' : line;
+                        }).join('\n');
+                        parsedKLE = Function(`"use strict";return (${'[' + joinedLines + ']'})`)();
+                    }
+                } catch (e) {
+                    throw new Error("KLE数据格式不正确。请检查括号、逗号和引号。", { cause: e });
+                }
+
+                currentKLEData = parsedKLE.map(row => row.map(item => (typeof item === 'object' && item !== null) ? { ...item } : item));
+
+                let tempMatrix = [];
+                let rowCounter = 0;
+
+                parsedKLE.forEach(kleRow => {
+                    let matrixRowCoords = [];
+                    let colCounter = 0;
+                    let hasKeyInRow = false;
+
+                    kleRow.forEach(item => {
+                        let isVisualKey = false;
+                        let coord = '';
+
+                        if (typeof item === 'object') {
+                            isVisualKey = Object.keys(item).some(k => !['x', 'y', 'w', 'h'].includes(k)) || item.encoderInfo;
+                            if (isVisualKey) {
+                                coord = `${rowCounter},${colCounter}`;
+                            }
+                        } else if (typeof item === 'string') {
+                            isVisualKey = true;
+                            const encoderMatch = item.match(/^(\d+),([01])\n\n\n\n\n\n\n\n\ne$/);
+                            if (encoderMatch) {
+                                coord = `E-${parseInt(encoderMatch[1], 10)}`;
+                            } else if (item === "") {
+                                coord = ''; 
+                            } else {
+                                coord = `${rowCounter},${colCounter}`;
+                            }
+                        }
+
+                        if (isVisualKey) {
+                            matrixRowCoords.push(coord);
+                            colCounter++;
+                            if (coord !== '') hasKeyInRow = true;
+                        }
+                    });
+                    
+                    if (matrixRowCoords.length > 0) { 
+                        tempMatrix.push(matrixRowCoords);
+                        if (hasKeyInRow) rowCounter++; 
+                    }
+                });
+
+                currentMatrixCoordinates = tempMatrix;
+                return parsedKLE;
+            };
+
+            const computeKeysForVisualization = (kleData) => {
+                const result = [];
+                let currentY = 0, accumulatedYOffset = 0;
+                let matrixRowIndex = 0;
+
+                kleData.forEach((kleRow) => {
+                    let xPos = 0, nextW = 1, nextH = 1, nextXOffset = 0;
+                    let rowYOffset = 0;
+                    let matrixColIndex = 0;
+
+                    kleRow.forEach((item) => {
+                        let isVisualKey = false;
+                        if (typeof item === "object") {
+                            nextW = item.w || nextW;
+                            nextH = item.h || nextH;
+                            nextXOffset = item.x || nextXOffset;
+                            rowYOffset = item.y || rowYOffset;
+                            
+                            isVisualKey = Object.keys(item).some(k => !['x', 'y', 'w', 'h'].includes(k)) || item.encoderInfo;
+
+                            if (!isVisualKey && Object.keys(item).every(k => ['x', 'y', 'w', 'h'].includes(k))) {
+                                return;
+                            }
+                        } else {
+                            isVisualKey = true;
+                        }
+
+                        if (isVisualKey) {
+                            const displayCoord = currentMatrixCoordinates[matrixRowIndex] && currentMatrixCoordinates[matrixRowIndex][matrixColIndex] ? currentMatrixCoordinates[matrixRowIndex][matrixColIndex] : '';
+                            
+                            let topLabel = '';
+                            let mainLabel = displayCoord;
+                            let isEncoderKey = false;
+
+                            if (typeof item === 'string') {
+                                const encoderMatch = item.match(/^(\d+),([01])\n\n\n\n\n\n\n\n\ne$/);
+                                if (encoderMatch) {
+                                    topLabel = parseInt(encoderMatch[2], 10) === 1 ? '正' : '反';
+                                    mainLabel = `E-${encoderMatch[1]}`;
+                                    isEncoderKey = true;
+                                }
+                            } else if (typeof item === 'object' && item.encoderInfo) {
+                                topLabel = item.encoderInfo.direction === 1 ? '正' : '反';
+                                mainLabel = `E-${item.encoderInfo.index}`;
+                                isEncoderKey = true;
+                            }
+
+                            if (displayCoord === '') {
+                                mainLabel = ''; topLabel = ''; isEncoderKey = false;
+                            }
+
+                            const key = {
+                                x: xPos + nextXOffset, y: currentY + accumulatedYOffset + rowYOffset,
+                                w: nextW, h: nextH,
+                                label: { top: topLabel, main: mainLabel },
+                                logicalMatrixRow: matrixRowIndex, logicalMatrixCol: matrixColIndex,
+                                originalKLEItem: item, isEncoder: isEncoderKey
+                            };
+                            result.push(key);
+
+                            xPos = key.x + key.w;
+                            nextW = 1; nextH = 1; nextXOffset = 0;
+                            matrixColIndex++;
+                        } else {
+                            xPos += nextW + nextXOffset;
+                            nextW = 1; nextH = 1; nextXOffset = 0;
+                        }
+                    });
+                    accumulatedYOffset += rowYOffset;
+                    currentY += 1;
+                    if (matrixColIndex > 0) {
+                        matrixRowIndex++;
+                    }
+                });
+                return result;
+            };
+
+            const generateOutputDataFromMatrixAndKLE = () => {
+                let outputData = [];
+                let matrixRowCounter = 0;
+
+                currentKLEData.forEach(kleRow => {
+                    let outputRowItems = [];
+                    let matrixColCounter = 0;
+                    let hasOutputItem = false;
+
+                    kleRow.forEach(item => {
+                        let isKeyInThisPosition = false;
+                        let itemToPush = null;
+
+                        if (typeof item === 'object' && item !== null) {
+                            const newItemProps = {};
+                            for (const key in item) {
+                                if (!IGNORE_PROPERTIES.includes(key)) {
+                                    newItemProps[key] = item[key];
+                                }
+                            }
+                            isKeyInThisPosition = Object.keys(item).some(k => !['x', 'y', 'w', 'h'].includes(k)) || item.encoderInfo;
+
+                            if (isKeyInThisPosition) {
+                                if (currentMatrixCoordinates[matrixRowCounter] && currentMatrixCoordinates[matrixRowCounter][matrixColCounter] !== undefined) {
+                                    const coord = currentMatrixCoordinates[matrixRowCounter][matrixColCounter];
+                                    const visualKey = keysData.find(k => k.logicalMatrixRow === matrixRowCounter && k.logicalMatrixCol === matrixColCounter);
+
+                                    if (Object.keys(newItemProps).length > 0) {
+                                        outputRowItems.push(newItemProps);
+                                        hasOutputItem = true;
+                                    }
+                                    
+                                    if (coord !== '') { 
+                                        if (visualKey && visualKey.isEncoder && coord.startsWith('E-')) {
+                                            const [_, encoderIndex] = coord.split('-');
+                                            const direction = visualKey.label.top === '正' ? 1 : 0;
+                                            outputRowItems.push(`${encoderIndex},${direction}\n\n\n\n\n\n\n\n\ne`);
+                                        } else {
+                                            outputRowItems.push(coord);
+                                        }
+                                    } else {
+                                        outputRowItems.push("");
+                                    }
+                                }
+                                matrixColCounter++;
+                            } else {
+                                if (Object.keys(newItemProps).length > 0) {
+                                    outputRowItems.push(newItemProps);
+                                    hasOutputItem = true;
+                                }
+                            }
+                        } else { // Handle simple string keys
+                            if (currentMatrixCoordinates[matrixRowCounter] && currentMatrixCoordinates[matrixRowCounter][matrixColCounter] !== undefined) {
+                                const coord = currentMatrixCoordinates[matrixRowCounter][matrixColCounter];
+                                const visualKey = keysData.find(k => k.logicalMatrixRow === matrixRowCounter && k.logicalMatrixCol === matrixColCounter);
+
+                                if (coord !== '') {
+                                    if (visualKey && visualKey.isEncoder && coord.startsWith('E-')) {
+                                        const [_, encoderIndex] = coord.split('-');
+                                        const direction = visualKey.label.top === '正' ? 1 : 0;
+                                        outputRowItems.push(`${encoderIndex},${direction}\n\n\n\n\n\n\n\n\ne`);
+                                    } else {
+                                        outputRowItems.push(coord);
+                                    }
+                                } else {
+                                    outputRowItems.push("");
+                                }
+                                matrixColCounter++;
+                            }
+                        }
+                    });
+                    
+                    if (matrixColCounter > 0) { 
+                        matrixRowCounter++;
+                    }
+
+                    if (outputRowItems.length > 0) {
+                        outputData.push(outputRowItems);
+                    }
+                });
+                return outputData;
+            };
+
+            const renderKeys = (keys) => {
+                els.keyboardInner.innerHTML = "";
+                const visibleKeys = keys.filter(k => k.label.main !== '');
+                const maxKeyX = Math.max(0, ...visibleKeys.map(k => k.x + k.w));
+                const maxKeyY = Math.max(0, ...visibleKeys.map(k => k.y + k.h));
+                const requiredWidth = maxKeyX * (UNIT + GAP) + GAP;
+                const requiredHeight = maxKeyY * (UNIT + GAP) + GAP + UNIT; 
+
+                Object.assign(els.keyboardInner.style, {
+                    minWidth: `${requiredWidth}px`, minHeight: `${requiredHeight}px`, position: 'relative'
+                });
+
+                keys.forEach((key, idx) => {
+                    if (key.label.main === '') return; 
+
+                    const keyWidth = key.w * UNIT + (key.w - 1) * GAP;
+                    const keyHeight = key.h * UNIT + (key.h - 1) * GAP;
+                    const div = document.createElement("div");
+
+                    Object.assign(div.style, {
+                        left: `${key.x * (UNIT + GAP)}px`,
+                        top: `${key.y * (UNIT + GAP)}px`,
+                        width: `${keyWidth}px`,
+                        height: `${keyHeight}px`
+                    });
+                    div.className = "key";
+                    if (selectedKeyVisualIndices.has(idx)) div.classList.add('selected');
+                    if (key.isEncoder) div.classList.add('is-encoder');
+                    
+                    div.draggable = true;
+                    div.dataset.visualIndex = idx;
+                    div.dataset.logicalRow = key.logicalMatrixRow;
+                    div.dataset.logicalCol = key.logicalMatrixCol;
+
+                    if (key.label.top) {
+                        const topSpan = document.createElement('span');
+                        topSpan.textContent = key.label.top;
+                        div.appendChild(topSpan);
+                    }
+                    const mainSpan = document.createElement('span');
+                    mainSpan.className = 'main-label';
+                    mainSpan.textContent = key.label.main;
+                    div.appendChild(mainSpan);
+
+                    div.addEventListener('click', e => {
+                        const currentIdx = idx;
+                        if (e.ctrlKey) {
+                            selectedKeyVisualIndices[selectedKeyVisualIndices.has(currentIdx) ? 'delete' : 'add'](currentIdx);
+                        } else if (e.shiftKey) {
+                            if (lastClickedVisualIndex !== -1 && lastClickedVisualIndex !== currentIdx) {
+                                const visibleIndices = keys.map((k, i) => k.label.main !== '' ? i : -1).filter(i => i !== -1);
+                                const startVisibleIndex = visibleIndices.indexOf(lastClickedVisualIndex);
+                                const endVisibleIndex = visibleIndices.indexOf(currentIdx);
+
+                                if (startVisibleIndex !== -1 && endVisibleIndex !== -1) {
+                                    const [min, max] = [Math.min(startVisibleIndex, endVisibleIndex), Math.max(startVisibleIndex, endVisibleIndex)];
+                                    for (let i = min; i <= max; i++) selectedKeyVisualIndices.add(visibleIndices[i]);
+                                } else {
+                                    selectedKeyVisualIndices.add(currentIdx);
+                                }
+                            } else {
+                                selectedKeyVisualIndices.add(currentIdx);
+                            }
+                        } else {
+                            selectedKeyVisualIndices.clear();
+                            selectedKeyVisualIndices.add(currentIdx);
+                        }
+                        lastClickedVisualIndex = currentIdx;
+                        updateControlMenuVisibility();
+                        updateSelectedKeyInControlMenu();
+                        renderKeys(keysData);
+                    });
+
+                    div.addEventListener('dragstart', e => {
+                        e.dataTransfer.setData("text/plain", idx);
+                        div.classList.add("dragging");
+                    });
+                    div.addEventListener('dragend', () => div.classList.remove("dragging"));
+                    div.addEventListener('dragover', e => {
+                        e.preventDefault();
+                        div.classList.add("dragover");
+                    });
+                    div.addEventListener('dragleave', () => div.classList.remove("dragover"));
+                    div.addEventListener('drop', e => {
+                        e.preventDefault();
+                        div.classList.remove("dragover");
+                        const fromVisualIdx = parseInt(e.dataTransfer.getData("text/plain"));
+                        const toVisualIdx = idx;
+
+                        if (fromVisualIdx === toVisualIdx) return;
+                        
+                        const fromKey = keysData[fromVisualIdx];
+                        const toKey = keysData[toVisualIdx];
+
+                        if (currentMatrixCoordinates[fromKey.logicalMatrixRow][fromKey.logicalMatrixCol] === '' ||
+                            currentMatrixCoordinates[toKey.logicalMatrixRow][toKey.logicalMatrixCol] === '') {
+                            alert("不能拖动到已删除的位置。");
+                            return;
+                        }
+
+                        // Swap coordinates in the matrix
+                        [
+                            currentMatrixCoordinates[fromKey.logicalMatrixRow][fromKey.logicalMatrixCol],
+                            currentMatrixCoordinates[toKey.logicalMatrixRow][toKey.logicalMatrixCol]
+                        ] = [
+                            currentMatrixCoordinates[toKey.logicalMatrixRow][toKey.logicalMatrixCol],
+                            currentMatrixCoordinates[fromKey.logicalMatrixRow][fromKey.logicalMatrixCol]
+                        ];
+
+                        // Swap labels and types in keysData
+                        [fromKey.label, toKey.label] = [toKey.label, fromKey.label];
+                        [fromKey.isEncoder, toKey.isEncoder] = [toKey.isEncoder, fromKey.isEncoder];
+                        [fromKey.originalKLEItem, toKey.originalKLEItem] = [toKey.originalKLEItem, fromKey.originalKLEItem];
+                        
+                        els.rgbResult.value = formatKLEOutput(generateOutputDataFromMatrixAndKLE());
+                        renderKeys(keysData);
+                    });
+                    els.keyboardInner.appendChild(div);
+                });
+            };
+
+            const formatKLEOutput = (dataToFormat) => {
+                const outputRows = dataToFormat.map(row => {
+                    const rowItems = row.map(item => {
+                        if (typeof item === 'string') {
+                            return JSON.stringify(item);
+                        } else if (typeof item === 'object') {
+                            const outputItem = {};
+                            for (const key in item) {
+                                if (!IGNORE_PROPERTIES.includes(key)) {
+                                    outputItem[key] = item[key];
+                                }
+                            }
+                            return JSON.stringify(outputItem);
+                        }
+                        return String(item);
+                    }).join(',');
+                    return `[${rowItems}]`;
+                });
+                return outputRows.join(',\n');
+            };
+            
+            const updateMatrixStats = () => {
+                let maxR = -1, maxC = -1;
+                currentMatrixCoordinates.forEach(row => {
+                    row.forEach(coordStr => {
+                        if (coordStr && coordStr !== '' && !coordStr.startsWith('E-')) {
+                            const [r, c] = coordStr.split(',').map(Number);
+                            if (r > maxR) maxR = r;
+                            if (c > maxC) maxC = c;
+                        }
+                    });
+                });
+                els.totalRowsSpan.textContent = `行数: ${Math.max(0, maxR + 1)}`;
+                els.totalColsSpan.textContent = `列数: ${Math.max(0, maxC + 1)}`;
+            };
+
+            const processInput = () => {
+                try {
+                    parseInput(els.rawDataInput.value); 
+                    keysData = computeKeysForVisualization(currentKLEData);
+                    els.rgbResult.value = formatKLEOutput(generateOutputDataFromMatrixAndKLE());
+                    renderKeys(keysData);
+                    updateMatrixStats();
+                    clearError();
+                } catch (e) {
+                    showError(e.message);
+                    els.keyboardInner.innerHTML = "";
+                    els.rgbResult.value = "";
+                    els.totalRowsSpan.textContent = '行数: 0';
+                    els.totalColsSpan.textContent = '列数: 0';
+                    console.error("解析错误:", e);
+                }
+            };
+
+            const handleCopy = async () => {
+                try {
+                    await navigator.clipboard.writeText(els.rgbResult.value);
+                    els.copyCodeBtn.textContent = '已复制！';
+                    els.copyCodeBtn.style.backgroundColor = '#a5d6a7';
+                } catch (err) {
+                    els.copyCodeBtn.textContent = '复制失败';
+                    els.copyCodeBtn.style.backgroundColor = '#ffab91';
+                } finally {
+                    setTimeout(() => {
+                        els.copyCodeBtn.textContent = copyBtnText;
+                        els.copyCodeBtn.style.backgroundColor = '';
+                    }, 2000);
+                }
+            };
+
+            const handleApply = () => {
+                els.rawDataInput.value = els.rgbResult.value;
+                processInput();
+
+                els.applyBtn.textContent = '已应用！';
+                els.applyBtn.style.backgroundColor = '#a5d6a7';
+                setTimeout(() => {
+                    els.applyBtn.textContent = applyBtnText;
+                    els.applyBtn.style.backgroundColor = '';
+                }, 2000);
+            };
+
+            const resetAll = () => {
+                els.rawDataInput.value = INITIAL_RAW_KLE_DATA;
+                selectedKeyVisualIndices.clear();
+                lastClickedVisualIndex = -1;
+                els.encoderCheckbox.checked = false;
+                els.encoderIndexInput.value = 0;
+                els.encoderPositive.checked = true;
+                els.rowIndexInput.value = 0;
+                els.colIndexInput.value = 0;
+                updateControlMenuVisibility();
+                processInput();
+            };
+
+            const updateControlMenuVisibility = () => {
+                const isEncoder = els.encoderCheckbox.checked;
+                els.encoderOptions.forEach(el => el.style.display = isEncoder ? 'flex' : 'none');
+                els.rowColOptions.forEach(el => el.style.display = isEncoder ? 'none' : 'flex');
+            };
+
+            const updateSelectedKeyCoordinate = () => {
+                Array.from(selectedKeyVisualIndices).forEach(visualIndex => {
+                    const keyToUpdate = keysData[visualIndex];
+                    if (!keyToUpdate || currentMatrixCoordinates[keyToUpdate.logicalMatrixRow][keyToUpdate.logicalMatrixCol] === '') return;
+
+                    const { logicalMatrixRow: r, logicalMatrixCol: c } = keyToUpdate;
+
+                    if (els.encoderCheckbox.checked) {
+                        const index = parseInt(els.encoderIndexInput.value, 10);
+                        const dir = els.encoderPositive.checked ? 1 : 0;
+                        
+                        if (isNaN(index) || index < 0) {
+                            alert("旋钮序号必须是非负整数！");
+                            els.encoderIndexInput.value = 0;
+                            return;
+                        }
+
+                        currentMatrixCoordinates[r][c] = `E-${index}`;
+                        keyToUpdate.label = { top: dir === 1 ? '正' : '反', main: `E-${index}` };
+                        keyToUpdate.isEncoder = true;
+                        keyToUpdate.originalKLEItem = { ...keyToUpdate.originalKLEItem, encoderInfo: { index, direction: dir } };
+
+                    } else {
+                        const row = parseInt(els.rowIndexInput.value, 10);
+                        const col = parseInt(els.colIndexInput.value, 10);
+
+                        if (isNaN(row) || row < 0 || isNaN(col) || col < 0) {
+                            alert("行和列都必须是非负整数！");
+                            els.rowIndexInput.value = 0; els.colIndexInput.value = 0;
+                            return;
+                        }
+
+                        currentMatrixCoordinates[r][c] = `${row},${col}`;
+                        keyToUpdate.label = { top: '', main: `${row},${col}` };
+                        keyToUpdate.isEncoder = false;
+                        if (keyToUpdate.originalKLEItem && keyToUpdate.originalKLEItem.encoderInfo) delete keyToUpdate.originalKLEItem.encoderInfo;
+                    }
+                });
+                
+                els.rgbResult.value = formatKLEOutput(generateOutputDataFromMatrixAndKLE());
+                renderKeys(keysData);
+                updateMatrixStats();
+            };
+
+            const updateSelectedKeyInControlMenu = () => {
+                const firstSelectedIdx = Array.from(selectedKeyVisualIndices).find(idx => keysData[idx] && keysData[idx].label.main !== '');
+                
+                if (firstSelectedIdx !== undefined) {
+                    const key = keysData[firstSelectedIdx];
+                    els.encoderCheckbox.checked = key.isEncoder;
+                    if (key.isEncoder) {
+                        const index = parseInt(key.label.main.split('-')[1], 10);
+                        els.encoderIndexInput.value = isNaN(index) ? 0 : index;
+                        els.encoderPositive.checked = (key.label.top === '正');
+                        els.encoderNegative.checked = (key.label.top === '反');
+                    } else {
+                        const [row, col] = key.label.main.split(',');
+                        els.rowIndexInput.value = parseInt(row, 10) || 0;
+                        els.colIndexInput.value = parseInt(col, 10) || 0;
+                    }
+                } else { 
+                    els.encoderCheckbox.checked = false;
+                    els.encoderIndexInput.value = 0;
+                    els.rowIndexInput.value = 0;
+                    els.colIndexInput.value = 0;
+                }
+                updateControlMenuVisibility();
+            };
+
+            // Selection box event handlers
+            const handleMouseDown = (e) => {
+                if (e.button !== 0 || e.target.closest('.key') || e.ctrlKey || e.shiftKey) return;
+                
+                isSelecting = true;
+                const rect = els.keyboardInner.getBoundingClientRect();
+                startX = e.clientX - rect.left - els.keyboardInner.scrollLeft;
+                startY = e.clientY - rect.top - els.keyboardInner.scrollTop;
+
+                selectionBox = document.createElement('div');
+                selectionBox.className = 'selection-box';
+                Object.assign(selectionBox.style, { left: `${startX}px`, top: `${startY}px`, width: '0px', height: '0px' });
+                els.keyboardInner.appendChild(selectionBox);
+
+                selectedKeyVisualIndices.clear();
+                lastClickedVisualIndex = -1;
+                renderKeys(keysData); 
+                updateSelectedKeyInControlMenu();
+            };
+
+            const handleMouseMove = (e) => {
+                if (!isSelecting) return;
+
+                const rect = els.keyboardInner.getBoundingClientRect();
+                const currentX = e.clientX - rect.left - els.keyboardInner.scrollLeft;
+                const currentY = e.clientY - rect.top - els.keyboardInner.scrollTop;
+
+                const [left, top] = [Math.min(startX, currentX), Math.min(startY, currentY)];
+                const [width, height] = [Math.abs(currentX - startX), Math.abs(currentY - startY)];
+
+                Object.assign(selectionBox.style, { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` });
+
+                const currentSelectionRect = { left, top, right: left + width, bottom: top + height };
+                const newSelectedIndices = new Set();
+                const keyboardRect = els.keyboardInner.getBoundingClientRect();
+
+                keysData.forEach((key, idx) => {
+                    if (key.label.main === '') return;
+
+                    const keyEl = els.keyboardInner.querySelector(`[data-visual-index="${idx}"]`);
+                    if (keyEl) {
+                        const keyRect = keyEl.getBoundingClientRect();
+                        const [keyLeft, keyTop] = [keyRect.left - keyboardRect.left + els.keyboardInner.scrollLeft, keyRect.top - keyboardRect.top + els.keyboardInner.scrollTop];
+                        const [keyRight, keyBottom] = [keyLeft + keyRect.width, keyTop + keyRect.height];
+
+                        if (
+                            currentSelectionRect.left < keyRight && currentSelectionRect.right > keyLeft &&
+                            currentSelectionRect.top < keyBottom && currentSelectionRect.bottom > keyTop
+                        ) {
+                            newSelectedIndices.add(idx);
+                        }
+                    }
+                });
+                
+                const currentSelectedArray = Array.from(selectedKeyVisualIndices).sort().join(',');
+                const newSelectedArray = Array.from(newSelectedIndices).sort().join(',');
+
+                if (currentSelectedArray !== newSelectedArray) {
+                    selectedKeyVisualIndices = newSelectedIndices;
+                    renderKeys(keysData);
+                }
+            };
+
+            const handleMouseUp = () => {
+                if (isSelecting) {
+                    isSelecting = false;
+                    if (selectionBox && selectionBox.parentNode) {
+                        selectionBox.parentNode.removeChild(selectionBox);
+                        selectionBox = null;
+                    }
+                    updateSelectedKeyInControlMenu();
+                }
+            };
+
+            // Event Listeners
+            els.rawDataInput.addEventListener('input', processInput);
+            els.resetBtn.addEventListener('click', resetAll);
+            els.copyCodeBtn.addEventListener('click', handleCopy);
+            els.applyBtn.addEventListener('click', handleApply);
+
+            els.encoderCheckbox.addEventListener('change', () => {
+                updateControlMenuVisibility();
+                const hasVisibleSelectedKey = Array.from(selectedKeyVisualIndices).some(idx => keysData[idx] && keysData[idx].label.main !== '');
+                if (hasVisibleSelectedKey) {
+                    if (els.encoderCheckbox.checked) {
+                        els.encoderIndexInput.value = 0; els.encoderPositive.checked = true;
+                    } else {
+                        els.rowIndexInput.value = 0; els.colIndexInput.value = 0;
+                    }
+                    updateSelectedKeyCoordinate();
+                }
+            });
+            [els.encoderIndexInput, els.encoderPositive, els.encoderNegative, els.rowIndexInput, els.colIndexInput].forEach(el => {
+                el.addEventListener('input', updateSelectedKeyCoordinate);
+                el.addEventListener('change', updateSelectedKeyCoordinate); // For radio/checkbox changes
+            });
+
+            // Mouse selection listeners
+            els.keyboard.addEventListener('mousedown', handleMouseDown);
+            els.keyboard.addEventListener('mousemove', handleMouseMove);
+            els.keyboard.addEventListener('mouseup', handleMouseUp);
+            els.keyboard.addEventListener('selectstart', e => { if (isSelecting) e.preventDefault(); });
+
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.key') && !els.keyboard.contains(e.target) && !e.target.closest('#controlMenu') && !e.target.closest('.res-btns')) {
+                    if (selectedKeyVisualIndices.size > 0) {
+                        selectedKeyVisualIndices.clear();
+                        lastClickedVisualIndex = -1;
+                        renderKeys(keysData);
+                        updateSelectedKeyInControlMenu();
+                    }
+                }
+            });
+
+            resetAll();
+        })();
+    </script>
+    <script>
+        // Disable right-click menu and F12/Ctrl+Shift+I/Ctrl+U
+        document.addEventListener('contextmenu',e => e.preventDefault());
+        document.onkeydown = e => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85) || e.keyCode == 116) {
+                e.preventDefault();
+            }
+        };
+    </script>
+</body>
+</html>

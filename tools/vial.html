@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="310x310" href="./logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIAL工具</title>
+    <style>
+        /* Base Styles & Typography */
+        body { 
+            font-family: "Microsoft YaHei", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 0; 
+            background: #f0f0f0; /* Light gray background */
+            color: #333; 
+            line-height: 1.5; 
+            margin: 0; 
+            min-height: 100vh; 
+            font-size: 14px;
+        }
+        .main-container { 
+            display: flex;
+            gap: 15px;
+            width: calc(100% - 6rem); /* 3rem padding on each side */
+            margin: 10px 3rem; /* 3rem margin on each side, 10px top/bottom */
+            align-items: stretch; /* 确保左右两列等高 */
+        }
+        .left-column {
+            flex: 2; 
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+        }
+        .right-column {
+            flex: 1; 
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+            /* 关键：启用 Flex 布局，使其内容垂直排列并拉伸 */
+            display: flex;
+            flex-direction: column;
+            position: relative; 
+            align-self: auto; 
+            overflow-y: hidden; /* 外部容器不滚动，由内部的文本框滚动 */
+        }
+        h2 { 
+            text-align: center; 
+            color: #00bcd4; 
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+        .section { 
+            margin-bottom: 18px;
+            padding: 15px;
+            background-color: #ffffff; 
+            border-radius: 8px;
+            border: 1px solid #b2ebf2; 
+            box-shadow: inset 0 1px 4px rgba(0, 188, 212, 0.04);
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px;
+            font-weight: 600; 
+            color: #00838f; 
+            font-size: 1em;
+        }
+
+        /* Input Fields & Textareas */
+        textarea, input[type="text"], input[type="number"], select { 
+            width: calc(100% - 16px);
+            font-family: 'Roboto Mono', monospace; 
+            font-size: 13px;
+            padding: 8px;
+            border: 1px solid #b2ebf2; 
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; 
+            resize: vertical; 
+            line-height: 1.4;
+            box-sizing: border-box; 
+            background-color: #fff;
+        }
+        textarea { 
+            min-height: 100px;
+            resize: none; /* 移除手动垂直拖拽，交给Flexbox控制 */
+        }
+        input[type="number"]:focus, select:focus, textarea:focus, input[type="text"]:focus { 
+            border-color: #4dd0e1; 
+            outline: none; 
+            box-shadow: 0 0 0 3px rgba(77, 208, 225, 0.2);
+        }
+        textarea.error, input.error { 
+            border-color: #ef9a9a; 
+            box-shadow: 0 0 0 3px rgba(239, 154, 154, 0.3); 
+            animation: pulseRed 0.6s 3 ease-in-out; 
+        }
+        @keyframes pulseRed { 
+            0% { border-color: #ef9a9a; } 
+            50% { border-color: #ffcccb; } 
+            100% { border-color: #ef9a9a; } 
+        }
+        .error-message { 
+            color: #d65a5a; 
+            font-size: 0.85em;
+            margin-top: 5px; 
+            min-height: 1.1em; 
+            font-weight: 500; 
+        }
+
+        /* Inline Input Groups */
+        .inline-input-group { 
+            display: flex; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .inline-input-group label { 
+            margin-bottom: 0; 
+            flex-shrink: 0; 
+            font-size: 0.95em;
+            color: #555; 
+        }
+        .inline-input-group input, .inline-input-group select { 
+            flex-grow: 1; 
+            width: auto; 
+            min-width: 70px;
+            margin-bottom: 0; 
+            height: 36px;
+            padding: 6px 8px;
+        }
+        .inline-input-group input.short-input { min-width: 60px; max-width: 100px; flex-grow: 0.6; }
+        .inline-input-group input.matrix-input { min-width: 40px; max-width: 60px; flex-grow: 0.4; }
+        .inline-input-group select#lightingSelect { min-width: 90px; max-width: 140px; flex-grow: 0.8; } 
+
+        /* Buttons */
+        .button-group { 
+            text-align: center; 
+            margin-top: 20px;
+        }
+        /* Adjusted for the result section */
+        .result-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 0; /* 移除顶部 Margin */
+            flex-grow: 1; /* 关键：让结果组占据右侧栏所有剩余空间 */
+            min-height: 0; /* 确保Flex子项能正确收缩 */
+        }
+        .result-group .label-and-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+            justify-content: flex-start; 
+            flex-wrap: wrap; 
+            flex-shrink: 0; /* 按钮和标签不应收缩 */
+        }
+        .result-group .label-and-buttons label {
+            margin-bottom: 0; 
+            flex-shrink: 0; 
+        }
+        .result-group .label-and-buttons button {
+            margin: 0; 
+        }
+
+        button { 
+            padding: 10px 20px;
+            margin: 0 6px;
+            border: none; 
+            border-radius: 6px;
+            cursor: pointer; 
+            font-size: 14px;
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            color: #333;
+        }
+        button:hover { 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); 
+            opacity: 0.95;
+        }
+        /* Specific button colors */
+        button#resetBtn { background-color: #4dd0e1; }
+        button#resetBtn:hover { background-color: #00bcd4; }
+        button#copyCodeBtn { background-color: #c8e6c9; }
+        button#copyCodeBtn:hover { background-color: #a5d6a7; }
+        button#downloadBtn { background-color: #ffe0b2; }
+        button#downloadBtn:hover { background-color: #ffcc80; }
+        
+        /* Adjusted for centered +/- text */
+        button.add-btn, button.remove-btn { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            box-shadow: none;
+        }
+        button.add-btn { background-color: #80deea; }
+        button.add-btn:hover { background-color: #4dd0e1; }
+        button.remove-btn { background-color: #ffccbc; }
+        button.remove-btn:hover { background-color: #ffab91; }
+
+        /* Keyboard Visualization */
+        #keyboard { 
+            margin-top: 25px;
+            position: relative;
+            background: #fcfcfc;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.06);
+            min-height: 100px;
+            transition: height 0.3s ease;
+            overflow-x: auto;
+            max-width: 800px; 
+            padding-bottom: 10px;
+            width: 100%; 
+        }
+        .key { 
+            position: absolute; 
+            background: #90a4ae; 
+            color: #fff; 
+            text-align: center; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 12px;
+            font-weight: 600; 
+            border-radius: 4px;
+            user-select: none; 
+            cursor: grab; 
+            transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; 
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+        .key:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); 
+            background: #78909c; 
+        }
+        .key.dragging { 
+            opacity: 0.7; 
+            cursor: grabbing; 
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); 
+        }
+        .key.dragover { 
+            box-shadow: 0 0 0 4px rgba(77, 208, 225, 0.5);
+            border: 1px dashed #00bcd4;
+        }
+
+        /* Result Textarea */
+        textarea#rgbResult { 
+            margin-top: 10px; 
+            min-height: 200px; /* 保持最小高度 */
+            height: 100%; /* 关键：让文本框占据父容器（result-group）的剩余空间 */
+            flex-grow: 1; /* 关键：允许文本框填充剩余高度 */
+            padding: 12px;
+            font-size: 13px;
+            background-color: #f0fbfc; 
+            border: 1px solid #b2ebf2; 
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+            width: calc(100% - 24px);
+            resize: none; /* 禁用用户拖拽调整大小 */
+        }
+        
+        /* Custom Keycodes & Labels Sections */
+        #customKeycodesSection, #labelsSection, .vial-config-option { margin-bottom: 18px; }
+        #customKeycodesContainer, #labelsContainer { 
+            border: 1px solid #b2ebf2; 
+            border-radius: 6px; 
+            padding: 12px;
+            margin-bottom: 15px;
+            background-color: #f5fdff; 
+        }
+        .custom-keycode-group, .label-group { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 5px;
+            background-color: #ffffff; 
+            border: 1px solid #e0f7fa; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .custom-keycode-group input, .label-group input { 
+            flex-grow: 1; 
+            height: 32px;
+            padding: 6px;
+            font-size: 12px;
+            border: 1px solid #b2ebf2; 
+            border-radius: 4px;
+        }
+        .action-buttons, .label-action-buttons { 
+            display: flex; 
+            gap: 4px;
+        }
+        .action-buttons button, .label-action-buttons button { 
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        
+        .config-toggle-label {
+            display: flex; 
+            align-items: center; 
+            font-weight: 600; 
+            color: #00838f; 
+            font-size: 1em; 
+            margin-bottom: 12px;
+        }
+        .config-toggle-label input[type="checkbox"] { 
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+        .config-toggle-label select {
+            margin-left: 8px;
+            width: auto;
+            flex-grow: 0;
+        }
+
+        /* Labels Section Specific Styles */
+        .label-group.array-type { flex-wrap: nowrap; align-items: flex-start; } 
+        .array-type .main-label-input { flex-shrink: 0; width: auto; min-width: 80px; max-width: 120px; }
+        .sub-label-inputs { display: flex; flex-wrap: wrap; gap: 6px; flex-grow: 1; }
+        .sub-label-item { display: flex; align-items: center; gap: 3px; }
+        .sub-label-item input { max-width: 100px; }
+        
+        /* Adjusted for centered +/- text */
+        .add-sub-label-btn { 
+            font-size: 16px !important; 
+            width: 26px !important; 
+            height: 26px !important; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        } 
+        .remove-sub-label-btn { 
+            font-size: 14px !important; 
+            width: 24px !important; 
+            height: 24px !important; 
+            border-radius: 3px !important; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 992px) { 
+            .main-container {
+                flex-direction: column;
+                gap: 0; 
+                width: calc(100% - 16px); /* Adjust for smaller screens body padding */
+                margin: 8px auto;
+            }
+            .left-column, .right-column {
+                flex: none; 
+                width: 100%;
+                max-width: unset; 
+                margin-top: 0;
+                margin-bottom: 15px;
+                position: static; 
+                max-height: unset; 
+                overflow-y: visible; 
+                padding: 15px;
+            }
+            .right-column {
+                display: block; /* 恢复块级布局 */
+                height: auto; /* 恢复自动高度 */
+            }
+            .result-group {
+                min-height: auto;
+                flex-grow: 0; 
+            }
+            textarea#rgbResult {
+                height: 200px; /* 在小屏上使用固定高度或 min-height */
+                resize: vertical; /* 允许小屏拖拽 */
+                flex-grow: 0;
+            }
+            #keyboard {
+                overflow-x: auto; 
+                max-width: unset; 
+            }
+        }
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            h2 { font-size: 1.8em; margin-bottom: 18px; }
+            button { padding: 8px 15px; font-size: 13px; }
+            textarea, input { padding: 6px; font-size: 12px; }
+            .inline-input-group { gap: 6px; }
+            .inline-input-group input, .inline-input-group select { width: calc(100% - 16px); }
+
+            .custom-keycode-group input, .label-group input { width: calc(50% - 8px); }
+            .action-buttons, .label-action-buttons { justify-content: flex-start; }
+            .result-group .label-and-buttons {
+                flex-direction: column; 
+                align-items: flex-start;
+            }
+            .result-group .label-and-buttons button {
+                width: 100%; 
+                margin-bottom: 5px; 
+            }
+        }
+
+        /* Dark Mode Styles */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #282c34; 
+                color: #e0e0e0; 
+            }
+
+            .left-column, .right-column, .section {
+                background-color: #3a3f4a; 
+                border-color: #555; 
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); 
+            }
+
+            h2 {
+                color: #81ceeb; 
+            }
+
+            label {
+                color: #b0bec5; 
+            }
+
+            textarea, input[type="text"], input[type="number"], select {
+                background-color: #4a4f59; 
+                border-color: #666;
+                color: #e0e0e0;
+            }
+
+            input[type="number"]:focus, select:focus, textarea:focus, input[type="text"]:focus {
+                border-color: #81ceeb;
+                box-shadow: 0 0 0 3px rgba(129, 206, 235, 0.3);
+            }
+
+            textarea.error, input.error {
+                border-color: #cf6679;
+                box-shadow: 0 0 0 3px rgba(207, 102, 121, 0.4);
+            }
+
+            .error-message {
+                color: #cf6679;
+            }
+
+            /* Keyboard Visualization */
+            #keyboard {
+                background: #3a3f4a; 
+                border-color: #555;
+                box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.2);
+            }
+
+            .key {
+                background: #607d8b; 
+                color: #e0e0e0;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .key:hover {
+                background: #546e7a; 
+            }
+
+            .key.dragover {
+                box-shadow: 0 0 0 4px rgba(129, 206, 235, 0.5);
+                border: 1px dashed #81ceeb;
+            }
+
+            /* Result Textarea */
+            textarea#rgbResult {
+                background-color: #4a4f59; 
+                border-color: #666;
+                color: #e0e0e0;
+            }
+
+            /* Custom Keycodes & Labels Sections */
+            #customKeycodesContainer, #labelsContainer {
+                background-color: #3a3f4a; 
+                border-color: #555;
+            }
+
+            .custom-keycode-group, .label-group {
+                background-color: #4a4f59; 
+                border-color: #666;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .custom-keycode-group input, .label-group input {
+                border-color: #666;
+                background-color: #555a62; 
+                color: #e0e0e0;
+            }
+
+            /* Buttons */
+            button {
+                background-color: #555a62; 
+                color: #e0e0e0;
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            }
+            button:hover {
+                background-color: #6a707a;
+            }
+            button#resetBtn { background-color: #00bcd4; } 
+            button#resetBtn:hover { background-color: #0097a7; }
+            button#copyCodeBtn { background-color: #4caf50; } 
+            button#copyCodeBtn:hover { background-color: #388e3c; }
+            button#downloadBtn { background-color: #ff9800; } 
+            button#downloadBtn:hover { background-color: #f57c00; }
+
+            button.add-btn { background-color: #00bcd4; } 
+            button.add-btn:hover { background-color: #0097a7; }
+            button.remove-btn { background-color: #e57373; } 
+            button.remove-btn:hover { background-color: #d32f2f; }
+            .add-sub-label-btn { background-color: #00bcd4 !important; }
+            .add-sub-label-btn:hover { background-color: #0097a7 !important; }
+            .remove-sub-label-btn { background-color: #e57373 !important; }
+            .remove-sub-label-btn:hover { background-color: #d32f2f !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container"> 
+    <div class="left-column">
+        <h2>VIAL工具</h2>
+
+        <div class="section input-section">
+            <label for="rawData">KLE原始数据（拖拽可视化按键或直接修改输入框都会实时更新下方输出）：</label>
+            <textarea id="rawData" spellcheck="false"></textarea>
+            <div id="errorDisplay" class="error-message"></div>
+        </div>
+
+        <div class="section config-section">
+            <label>键盘基本信息:</label>
+            <div class="inline-input-group">
+                <label for="keyboardNameInput">名称 (name):</label>
+                <input type="text" id="keyboardNameInput" class="short-input">
+                <label for="vendorIdInput">供应商ID (vendorId):</label>
+                <input type="text" id="vendorIdInput" maxlength="4" placeholder="4位十六进制(0-F)" class="short-input">
+                <label for="productIdInput">产品ID (productId):</label>
+                <input type="text" id="productIdInput" maxlength="4" placeholder="4位十六进制(0-F)" class="short-input">
+            </div>
+            
+            <div id="vialConfigSection" class="section">
+                <div class="vial-config-option">
+                    <label class="config-toggle-label">
+                        <input type="checkbox" id="enableMidi">
+                        启用 MIDI (vial.midi):
+                        <select id="midiSelect" style="display:none;">
+                            <option value="basic">basic</option>
+                            <option value="advanced">advanced</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="vial-config-option">
+                    <label class="config-toggle-label">
+                        <input type="checkbox" id="enableVibl">
+                        启用 VIBL (vial.vibl):
+                    </label>
+                </div>
+            </div>
+
+            <div id="customKeycodesSection" class="section">
+                <label class="config-toggle-label">
+                    <input type="checkbox" id="enableCustomKeycodes">
+                    启用自定义键码 (Custom Keycodes):
+                </label>
+                <div id="customKeycodesContainer">
+                    </div>
+            </div>
+
+            <div id="labelsSection" class="section">
+                <label class="config-toggle-label">
+                    <input type="checkbox" id="enableLabels">
+                    启用自定义标签 (Labels):
+                </label>
+                <div id="labelsContainer">
+                    </div>
+                <div class="button-group" style="text-align: right; margin-top: 8px; margin-bottom: 0;">
+                    <button id="addLabelBtn" class="add-btn" style="background-color: #80deea; padding: 6px 12px; font-size: 13px;">+ 添加标签</button>
+                </div>
+            </div>
+            
+            <div class="inline-input-group">
+                <label for="rowsInput">矩阵行列数 (Rows):</label>
+                <input type="number" id="rowsInput" min="1" class="matrix-input">
+                <label for="colsInput">(Cols):</label>
+                <input type="number" id="colsInput" min="1" class="matrix-input">
+                <label for="lightingSelect">灯光类型 (Lighting):</label>
+                <select id="lightingSelect">
+                    <option value="none">无</option>
+                    <option value="vialrgb">VIAL RGB</option>
+                    <option value="qmk_backlight">QMK 背光</option>
+                    <option value="qmk_backlight_rgblight">QMK 背光+RGB灯</option>
+                    <option value="qmk_rgblight">QMK RGB灯</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="keyboard" class="section"></div> 
+    </div>
+
+    <div class="right-column">
+        <div class="result-group">
+            <div class="label-and-buttons">
+                <label for="rgbResult">生成结果：</label>
+                <button id="resetBtn">重置</button>
+                <button id="copyCodeBtn">复制</button>
+                <button id="downloadBtn">下载</button>
+            </div>
+            <textarea id="rgbResult" spellcheck="false" readonly></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+    // Constants
+    const UNIT = 40, GAP = 5;
+    const DEFAULT_KEYBOARD_NAME = "XMK";
+    const DEFAULT_VENDOR_ID = "F001";
+    const DEFAULT_PRODUCT_ID = "6001";
+    const DEFAULT_ROWS = "6";
+    const DEFAULT_COLS = "5";
+    const DEFAULT_LIGHTING = "vialrgb";
+    const INITIAL_RAW_KLE_DATA = `["0,8","1,8","0,9","1,9"],
+["5,8","3,8","2,9",{h:2},"6,10"],
+["3,9","4,9","5,9"],
+["6,7","6,8","6,9",{h:2},"7,10"],
+[{w:2},"7,8","7,9"]
+`;
+    const INITIAL_CUSTOM_KEYCODES = [
+        {"name": "下\\n一层", "title": "增加一层0→1", "shortName": "向下\\n一层"},
+        {"name": "上\\n一层", "title": "减少一层1→0", "shortName": "向上\\n一层"},
+        {"name": "一键购物", "title": "淘宝购物", "shortName": "一键\\n购物"},
+        {"name": "按6\\n放7", "title": "按下6层抬起7层", "shortName": "按6\\n放7"}
+    ];
+    const INITIAL_LABELS = [
+        ["左上旋钮"],
+        ["右上旋钮"],
+        ["旋钮选择", "无旋钮", "多旋钮"]
+    ];
+
+    // DOM Elements
+    const elements = {
+        keyboard: document.getElementById("keyboard"),
+        rawDataInput: document.getElementById("rawData"),
+        rgbResult: document.getElementById("rgbResult"),
+        resetBtn: document.getElementById("resetBtn"),
+        copyCodeBtn: document.getElementById("copyCodeBtn"),
+        downloadBtn: document.getElementById("downloadBtn"),
+        errorDisplay: document.getElementById("errorDisplay"),
+        keyboardNameInput: document.getElementById("keyboardNameInput"),
+        vendorIdInput: document.getElementById("vendorIdInput"),
+        productIdInput: document.getElementById("productIdInput"),
+        rowsInput: document.getElementById("rowsInput"),
+        colsInput: document.getElementById("colsInput"),
+        lightingSelect: document.getElementById("lightingSelect"),
+        enableViblCheckbox: document.getElementById("enableVibl"), 
+        enableMidiCheckbox: document.getElementById("enableMidi"), 
+        midiSelect: document.getElementById("midiSelect"), 
+        customKeycodesContainer: document.getElementById("customKeycodesContainer"),
+        enableCustomKeycodesCheckbox: document.getElementById("enableCustomKeycodes"),
+        labelsContainer: document.getElementById("labelsContainer"),
+        enableLabelsCheckbox: document.getElementById("enableLabels"),
+        addLabelBtn: document.getElementById("addLabelBtn")
+    };
+
+    let keysData = [];
+    let currentParsedKLE = [];
+
+    let customKeycodesData = JSON.parse(JSON.stringify(INITIAL_CUSTOM_KEYCODES));
+    let labelsData = JSON.parse(JSON.stringify(INITIAL_LABELS));
+
+    const copyButtonOriginalText = elements.copyCodeBtn.textContent;
+
+    // Helper Functions
+    const clearError = (element = elements.rawDataInput, errorDiv = elements.errorDisplay) => {
+        element.classList.remove('error');
+        errorDiv.textContent = '';
+    };
+
+    const showParsingError = (message, element = elements.rawDataInput, errorDiv = elements.errorDisplay) => {
+        element.classList.add('error');
+        errorDiv.textContent = '解析错误: ' + message;
+        element.style.animation = 'none';
+        void element.offsetHeight;
+        element.style.animation = '';
+    };
+
+    const parseInput = (text) => {
+        const trimmed = text.trim();
+        try {
+            if (trimmed.startsWith('[[') && trimmed.endsWith(']]')) {
+                const parsed = JSON.parse(trimmed);
+                if (!Array.isArray(parsed) || parsed.some(row => !Array.isArray(row))) {
+                    throw new Error("KLE数据格式不正确，应为二维数组。");
+                }
+                return parsed;
+            }
+            const cleanedLines = trimmed.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            const joinedLines = cleanedLines.map((line, i, arr) =>
+                (i < arr.length - 1 && !line.endsWith(',') && line !== '[') ? line + ',' : line
+            ).join('\n');
+            return Function(`"use strict";return (${'[' + joinedLines + ']'})`)();
+        } catch (e) {
+            console.error("Parse input error:", e);
+            throw new Error("KLE数据格式不正确。请检查括号、逗号和引号。", { cause: e });
+        }
+    };
+
+    const computeKeysForVisualization = (data) => {
+        const result = [];
+        let currentY = 0, accumulatedYOffset = 0;
+
+        data.forEach((row, rowIndex) => {
+            let xPos = 0, nextW = 1, nextH = 1, nextXOffset = 0;
+            let rowYOffset = 0;
+
+            const hasYOffsetInRow = row.find(item => typeof item === "object" && "y" in item);
+            if (hasYOffsetInRow) rowYOffset = hasYOffsetInRow.y;
+
+            const rowY = currentY + accumulatedYOffset + rowYOffset;
+
+            row.forEach((item, itemIndex) => {
+                if (typeof item === "object") {
+                    if ("w" in item) nextW = item.w;
+                    if ("h" in item) nextH = item.h;
+                    if ("x" in item) nextXOffset = item.x;
+                    if ("y" in item) rowYOffset = item.y;
+                    return;
+                }
+                
+                const label = item; 
+
+                const key = {
+                    x: xPos + nextXOffset, 
+                    y: rowY, 
+                    w: nextW, 
+                    h: nextH,
+                    label: label,
+                    kleRowIndex: rowIndex,
+                    kleItemIndex: itemIndex
+                };
+                result.push(key);
+
+                xPos = key.x + key.w;
+                nextW = 1; 
+                nextH = 1; 
+                nextXOffset = 0;
+            });
+            accumulatedYOffset += rowYOffset;
+            currentY += 1;
+        });
+        return result;
+    };
+
+    const renderKeys = (keys) => {
+        elements.keyboard.innerHTML = "";
+        const maxKeyX = Math.max(0, ...keys.map(k => k.x + k.w));
+        const requiredWidth = maxKeyX * (UNIT + GAP) + GAP;
+        const innerKeyboardContent = document.createElement('div');
+        innerKeyboardContent.style.minWidth = `${requiredWidth}px`;
+        innerKeyboardContent.style.position = 'relative';
+
+        keys.forEach((key, idx) => {
+            const keyWidth = key.w * UNIT + (key.w - 1) * GAP;
+            const keyHeight = key.h * UNIT + (key.h - 1) * GAP;
+            const div = document.createElement("div");
+            Object.assign(div.style, {
+                left: `${key.x * (UNIT + GAP)}px`, 
+                top: `${key.y * (UNIT + GAP)}px`,
+                width: `${keyWidth}px`, 
+                height: `${keyHeight}px`
+            });
+            div.className = "key";
+            div.textContent = key.label;
+            div.draggable = true;
+            div.dataset.visualIndex = idx;
+
+            div.addEventListener('dragstart', e => { 
+                e.dataTransfer.setData("text/plain", idx); 
+                div.classList.add("dragging"); 
+            });
+            div.addEventListener('dragend', () => div.classList.remove("dragging"));
+            div.addEventListener('dragover', e => { 
+                e.preventDefault(); 
+                div.classList.add("dragover"); 
+            });
+            div.addEventListener('dragleave', () => div.classList.remove("dragover"));
+            div.addEventListener('drop', e => {
+                e.preventDefault();
+                div.classList.remove("dragover");
+                const fromVisualIdx = parseInt(e.dataTransfer.getData("text/plain"));
+                const toVisualIdx = idx;
+
+                if (fromVisualIdx !== toVisualIdx) {
+                    const fromKey = keysData[fromVisualIdx];
+                    const toKey = keysData[toVisualIdx];
+
+                    const tempKLEItem = JSON.parse(JSON.stringify(currentParsedKLE[fromKey.kleRowIndex][fromKey.kleItemIndex]));
+                    currentParsedKLE[fromKey.kleRowIndex][fromKey.kleItemIndex] = JSON.parse(JSON.stringify(currentParsedKLE[toKey.kleRowIndex][toKey.kleItemIndex]));
+                    currentParsedKLE[toKey.kleRowIndex][toKey.kleItemIndex] = tempKLEItem;
+
+                    elements.rawDataInput.value = currentParsedKLE.map(row => JSON.stringify(row)).join(',\n');
+
+                    keysData = computeKeysForVisualization(currentParsedKLE); 
+                    renderKeys(keysData);
+                    updateFormattedKLEOutput();
+                }
+            });
+            innerKeyboardContent.appendChild(div);
+        });
+        elements.keyboard.appendChild(innerKeyboardContent);
+        const maxY = Math.max(...keys.map(k => k.y + (k.h || 1)), 0);
+        // Elements keyboard min-height set by CSS, here calculate actual content height
+        const contentHeight = (UNIT + GAP) * maxY + GAP;
+        elements.keyboard.style.height = `${Math.max(100, contentHeight)}px`; 
+    };
+
+    const processInput = () => {
+        try {
+            const parsed = parseInput(elements.rawDataInput.value);
+            currentParsedKLE = JSON.parse(JSON.stringify(parsed));
+            keysData = computeKeysForVisualization(currentParsedKLE);
+            renderKeys(keysData);
+            updateFormattedKLEOutput();
+            clearError();
+        } catch (e) {
+            showParsingError(e.message);
+            elements.keyboard.innerHTML = "";
+            elements.rgbResult.value = "";
+            console.error("解析错误:", e);
+        }
+    };
+
+    const formatHexId = (value) => {
+        let hex = value.toUpperCase().replace(/[^0-9A-F]/g, '');
+        // PadStart will add leading zeros if the string length is less than 4
+        hex = hex.padStart(4, '0').substring(0, 4); 
+        return `0x${hex}`;
+    };
+
+    const updateFormattedKLEOutput = () => {
+        const { keyboardNameInput, vendorIdInput, productIdInput, rowsInput, colsInput, lightingSelect, enableViblCheckbox, enableMidiCheckbox, midiSelect, enableCustomKeycodesCheckbox, enableLabelsCheckbox } = elements;
+        const keyboardName = keyboardNameInput.value.trim();
+        const vendorId = vendorIdInput.value.trim() ? formatHexId(vendorIdInput.value) : "0x0000"; 
+        const productId = productIdInput.value.trim() ? formatHexId(productIdInput.value) : "0x0000"; 
+        const rows = parseInt(rowsInput.value);
+        const cols = parseInt(colsInput.value);
+        const lighting = lightingSelect.value;
+        const enableVibl = enableViblCheckbox.checked; 
+        const enableMidi = enableMidiCheckbox.checked; 
+        const midiMode = midiSelect.value; 
+        const enableCustomKeycodes = enableCustomKeycodesCheckbox.checked;
+        const enableLabels = enableLabelsCheckbox.checked;
+        
+        const outputParts = [];
+        let vialConfig = [];
+
+        if (keyboardName) outputParts.push(`  "name": "${keyboardName}"`);
+        if (vendorId !== "0x0000") outputParts.push(`  "vendorId": "${vendorId}"`);
+        if (productId !== "0x0000") outputParts.push(`  "productId": "${productId}"`);
+
+        if (enableMidi) {
+            vialConfig.push(`    "midi": "${midiMode}"`);
+        }
+        if (enableVibl) {
+            vialConfig.push(`    "vibl": true`);
+        }
+
+        if (vialConfig.length > 0) {
+            outputParts.push(`  "vial": {\n${vialConfig.join(',\n')}\n  }`);
+        }
+
+        if (enableCustomKeycodes) {
+            const filteredCustomKeycodes = customKeycodesData.filter(item => 
+                item.name.trim() !== "" || item.title.trim() !== "" || item.shortName.trim() !== ""
+            );
+            if (filteredCustomKeycodes.length > 0) {
+                const formattedCustomKeycodes = filteredCustomKeycodes.map(item =>
+                    `{ "name": "${item.name.replace(/\n/g, '\\n')}", "title": "${item.title}", "shortName": "${item.shortName.replace(/\n/g, '\\n')}" }`
+                ).join(',\n      ');
+                outputParts.push(`  "customKeycodes": [\n      ${formattedCustomKeycodes}\n  ]`);
+            }
+        }
+        
+        outputParts.push(`  "matrix": { "rows": ${rows}, "cols": ${cols} }`);
+        if (lighting !== "none") outputParts.push(`  "lighting": "${lighting}"`);
+        
+        const layoutsContent = [];
+
+        if (enableLabels) {
+            const filteredLabels = labelsData.filter(label => label[0].trim() !== "").map(label => {
+                const mainLabel = label[0];
+                const subLabels = label.slice(1).filter(subLabel => subLabel.trim() !== "");
+                
+                if (subLabels.length === 0) {
+                    return JSON.stringify(mainLabel); 
+                }
+                return `[ ${JSON.stringify(mainLabel)}, ${subLabels.map(subLabel => JSON.stringify(subLabel)).join(', ')} ]`;
+            });
+
+            if (filteredLabels.length > 0) {
+                layoutsContent.push(`    "labels": [\n      ${filteredLabels.join(',\n      ')}\n    ]`);
+            }
+        }
+
+        const keymapContent = currentParsedKLE.map(row => JSON.stringify(row)).join(',\n          ');
+        layoutsContent.push(`    "keymap": [\n          ${keymapContent}\n    ]`);
+
+        outputParts.push(`  "layouts": {\n${layoutsContent.join(',\n')}\n  }`);
+
+        elements.rgbResult.value = `{\n${outputParts.join(',\n')}\n}`;
+    };
+
+    const renderCustomKeycodes = () => {
+        elements.customKeycodesContainer.innerHTML = '';
+        customKeycodesData.forEach((item, index) => {
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'custom-keycode-group';
+            groupDiv.draggable = true;
+            groupDiv.dataset.index = index;
+            groupDiv.innerHTML = `
+                <input type="text" placeholder="name (如: 下\\n一层)" value="${item.name.replace(/\\n/g, '\n')}" data-prop="name">
+                <input type="text" placeholder="title (如: 增加一层0→1)" value="${item.title}" data-prop="title">
+                <input type="text" placeholder="shortName (如: 向下\\n一层)" value="${item.shortName.replace(/\\n/g, '\n')}" data-prop="shortName">
+                <div class="action-buttons">
+                    <button class="add-btn" title="添加">+</button>
+                    <button class="remove-btn" title="删除">-</button>
+                </div>
+            `;
+            groupDiv.querySelectorAll('input[type="text"]').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    item[e.target.dataset.prop] = e.target.value.replace(/\n/g, '\\n');
+                    updateFormattedKLEOutput();
+                });
+            });
+            groupDiv.querySelector('.add-btn').addEventListener('click', () => addCustomKeycode(index + 1));
+            groupDiv.querySelector('.remove-btn').addEventListener('click', () => removeCustomKeycode(index));
+
+            groupDiv.addEventListener('dragstart', e => { e.dataTransfer.setData("text/plain", index); groupDiv.classList.add("dragging-custom"); });
+            groupDiv.addEventListener('dragend', () => groupDiv.classList.remove("dragging-custom"));
+            groupDiv.addEventListener('dragover', e => { e.preventDefault(); groupDiv.classList.add("dragover"); });
+            groupDiv.addEventListener('dragleave', () => groupDiv.classList.remove("dragover"));
+            groupDiv.addEventListener('drop', e => {
+                e.preventDefault();
+                groupDiv.classList.remove("dragover");
+                const fromIdx = parseInt(e.dataTransfer.getData("text/plain"));
+                const toIdx = index;
+                if (fromIdx !== toIdx) {
+                    const [draggedItem] = customKeycodesData.splice(fromIdx, 1);
+                    customKeycodesData.splice(toIdx, 0, draggedItem);
+                    renderCustomKeycodes();
+                    updateFormattedKLEOutput();
+                }
+            });
+            elements.customKeycodesContainer.appendChild(groupDiv);
+        });
+
+        if (elements.enableCustomKeycodesCheckbox.checked && customKeycodesData.length === 0) {
+            const addButton = document.createElement('button');
+            addButton.className = 'add-btn';
+            addButton.textContent = '+ 添加自定义键码';
+            addButton.style.cssText = 'width: 100%; margin-top: 8px; font-size: 13px;';
+            addButton.addEventListener('click', () => addCustomKeycode());
+            elements.customKeycodesContainer.appendChild(addButton);
+        }
+
+        elements.customKeycodesContainer.style.display = elements.enableCustomKeycodesCheckbox.checked ? 'block' : 'none';
+    };
+
+    const addCustomKeycode = (index = customKeycodesData.length) => {
+        customKeycodesData.splice(index, 0, {"name": "", "title": "", "shortName": ""});
+        renderCustomKeycodes();
+        updateFormattedKLEOutput();
+    };
+
+    const removeCustomKeycode = (index) => {
+        if (customKeycodesData.length > 0) {
+            customKeycodesData.splice(index, 1);
+            renderCustomKeycodes();
+            updateFormattedKLEOutput();
+        }
+    };
+
+    const renderLabels = () => {
+        elements.labelsContainer.innerHTML = '';
+        labelsData.forEach((item, index) => {
+            const groupDiv = document.createElement('div');
+            groupDiv.className = `label-group array-type`; 
+            groupDiv.draggable = true;
+            groupDiv.dataset.index = index;
+
+            const mainLabelValue = item[0] || "";
+            const subLabels = item.slice(1);
+
+            const subLabelInputsHtml = subLabels.map((subItem, subIdx) => `
+                <div class="sub-label-item">
+                    <input type="text" value="${subItem}" data-index="${subIdx}" class="sub-label-input" placeholder="子标签" ${mainLabelValue.trim() === "" ? 'disabled' : ''}>
+                    <button class="remove-sub-label-btn" title="删除子项">-</button>
+                </div>
+            `).join('');
+
+            groupDiv.innerHTML = `
+                <input type="text" value="${mainLabelValue}" class="main-label-input" placeholder="主标签">
+                <div class="sub-label-inputs">
+                    ${subLabelInputsHtml}
+                    <button class="add-sub-label-btn" title="添加子项" ${mainLabelValue.trim() === "" ? 'disabled' : ''}>+</button>
+                </div>
+                <div class="label-action-buttons">
+                    <button class="remove-btn" title="删除">-</button>
+                </div>
+            `;
+
+            const mainLabelInput = groupDiv.querySelector('.main-label-input');
+            const addSubLabelBtn = groupDiv.querySelector('.add-sub-label-btn');
+
+            mainLabelInput.addEventListener('input', (e) => {
+                labelsData[index][0] = e.target.value;
+                const isDisabled = e.target.value.trim() === "";
+                groupDiv.querySelectorAll('.sub-label-input').forEach(input => {
+                    input.disabled = isDisabled;
+                });
+                addSubLabelBtn.disabled = isDisabled;
+                updateFormattedKLEOutput();
+            });
+
+            groupDiv.querySelectorAll('.sub-label-input').forEach((input) => {
+                input.disabled = mainLabelInput.value.trim() === "";
+                input.addEventListener('input', (e) => {
+                    labelsData[index][parseInt(e.target.dataset.index) + 1] = e.target.value;
+                    updateFormattedKLEOutput();
+                });
+            });
+            
+            groupDiv.querySelectorAll('.remove-sub-label-btn').forEach((button, subIdx) => {
+                button.addEventListener('click', () => {
+                    labelsData[index].splice(subIdx + 1, 1);
+                    renderLabels(); 
+                    updateFormattedKLEOutput();
+                });
+            });
+
+            addSubLabelBtn.disabled = mainLabelInput.value.trim() === "";
+            addSubLabelBtn.addEventListener('click', () => {
+                labelsData[index].push(""); 
+                renderLabels(); 
+                updateFormattedKLEOutput();
+            });
+
+            groupDiv.querySelector('.remove-btn').addEventListener('click', () => removeLabel(index));
+
+            groupDiv.addEventListener('dragstart', e => { e.dataTransfer.setData("text/plain", index); groupDiv.classList.add("dragging-label"); });
+            groupDiv.addEventListener('dragend', () => groupDiv.classList.remove("dragging-label"));
+            groupDiv.addEventListener('dragover', e => { e.preventDefault(); groupDiv.classList.add("dragover"); });
+            groupDiv.addEventListener('dragleave', () => groupDiv.classList.remove("dragover"));
+            groupDiv.addEventListener('drop', e => {
+                e.preventDefault();
+                groupDiv.classList.remove("dragover");
+                const fromIdx = parseInt(e.dataTransfer.getData("text/plain"));
+                const toIdx = index;
+                if (fromIdx !== toIdx) {
+                    const [draggedItem] = labelsData.splice(fromIdx, 1);
+                    labelsData.splice(toIdx, 0, draggedItem);
+                    renderLabels();
+                    updateFormattedKLEOutput();
+                }
+            });
+            elements.labelsContainer.appendChild(groupDiv);
+        });
+
+        elements.labelsContainer.style.display = elements.enableLabelsCheckbox.checked ? 'block' : 'none';
+        elements.addLabelBtn.style.display = elements.enableLabelsCheckbox.checked ? 'inline-block' : 'none'; 
+    };
+
+    const addLabel = () => {
+        labelsData.push([""]); 
+        renderLabels();
+        updateFormattedKLEOutput();
+    };
+
+    const removeLabel = (index) => {
+        if (labelsData.length > 0) {
+            labelsData.splice(index, 1);
+            renderLabels();
+            updateFormattedKLEOutput();
+        }
+    };
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(elements.rgbResult.value);
+            elements.copyCodeBtn.textContent = '已复制！';
+            elements.copyCodeBtn.style.backgroundColor = '#a5d6a7';
+        } catch (err) {
+            console.error('复制失败:', err);
+            elements.copyCodeBtn.textContent = '复制失败';
+            elements.copyCodeBtn.style.backgroundColor = '#ffab91';
+        } finally {
+            setTimeout(() => {
+                elements.copyCodeBtn.textContent = copyButtonOriginalText;
+                elements.copyCodeBtn.style.backgroundColor = ''; 
+            }, 2000);
+        }
+    };
+
+    const handleDownload = () => {
+        const filename = "vial.json";
+        const content = elements.rgbResult.value;
+        const blob = new Blob([content], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    const resetAll = () => {
+        elements.rawDataInput.value = INITIAL_RAW_KLE_DATA;
+        elements.rowsInput.value = DEFAULT_ROWS;
+        elements.colsInput.value = DEFAULT_COLS;
+        elements.lightingSelect.value = DEFAULT_LIGHTING;
+        
+        elements.enableViblCheckbox.checked = false; 
+        elements.enableMidiCheckbox.checked = false; 
+        elements.midiSelect.value = "basic"; 
+        elements.midiSelect.style.display = 'none'; 
+
+        elements.enableCustomKeycodesCheckbox.checked = false;
+        elements.enableLabelsCheckbox.checked = false;
+
+        elements.keyboardNameInput.value = DEFAULT_KEYBOARD_NAME;
+        elements.vendorIdInput.value = DEFAULT_VENDOR_ID;
+        elements.productIdInput.value = DEFAULT_PRODUCT_ID;
+
+        customKeycodesData = JSON.parse(JSON.stringify(INITIAL_CUSTOM_KEYCODES));
+        labelsData = JSON.parse(JSON.stringify(INITIAL_LABELS));
+
+        renderCustomKeycodes();
+        renderLabels();
+        processInput();
+    };
+
+    // Event Listeners
+    elements.rawDataInput.addEventListener('input', processInput); 
+    elements.rowsInput.addEventListener('input', updateFormattedKLEOutput);
+    elements.colsInput.addEventListener('input', updateFormattedKLEOutput);
+    elements.lightingSelect.addEventListener('change', updateFormattedKLEOutput);
+    elements.keyboardNameInput.addEventListener('input', updateFormattedKLEOutput);
+    elements.vendorIdInput.addEventListener('input', (e) => { 
+        e.target.value = e.target.value.toUpperCase().replace(/[^0-9A-F]/g, ''); 
+        updateFormattedKLEOutput(); 
+    });
+    elements.productIdInput.addEventListener('input', (e) => { 
+        e.target.value = e.target.value.toUpperCase().replace(/[^0-9A-F]/g, ''); 
+        updateFormattedKLEOutput(); 
+    });
+    elements.enableViblCheckbox.addEventListener('change', updateFormattedKLEOutput); 
+    elements.enableMidiCheckbox.addEventListener('change', () => { 
+        elements.midiSelect.style.display = elements.enableMidiCheckbox.checked ? 'inline-block' : 'none';
+        updateFormattedKLEOutput(); 
+    });
+    elements.midiSelect.addEventListener('change', updateFormattedKLEOutput); 
+    elements.enableCustomKeycodesCheckbox.addEventListener('change', () => { 
+        renderCustomKeycodes(); 
+        updateFormattedKLEOutput(); 
+    });
+    elements.enableLabelsCheckbox.addEventListener('change', () => { 
+        renderLabels(); 
+        updateFormattedKLEOutput(); 
+    });
+    elements.addLabelBtn.addEventListener('click', addLabel); 
+    elements.resetBtn.addEventListener('click', resetAll);
+    elements.copyCodeBtn.addEventListener('click', handleCopy);
+    elements.downloadBtn.addEventListener('click', handleDownload);
+
+    // Initial setup
+    resetAll();
+})();
+</script>
+<script>
+document.addEventListener('contextmenu',function(e){e.preventDefault();});
+document.onkeydown = function(e) {
+    if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
+        return false;
+    }
+};
+</script>
+</body>
+</html>
