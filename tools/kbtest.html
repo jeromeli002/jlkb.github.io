@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLKB键盘测试</title>
+    <title>键盘测试</title>
     <style>
         /* ============ 全局重置 ============ */
         * { box-sizing: border-box; }
@@ -192,7 +192,9 @@
         .extra-keys-container .row { gap: var(--gap); display: flex; align-items: center; justify-content: center; }
 
         .recent-keys-container {
-            width: 100%; background: var(--container-bg); padding: 15px 20px;
+            /* 1004px = 22 * 40px (key size) + 21 * 4px (gap) + 2 * 20px (padding) */
+            width: 1030px; 
+            background: var(--container-bg); padding: 15px 20px;
             border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: 1px solid var(--border-color); margin-top: 20px; 
             text-align: left; transition: all 0.3s;
@@ -208,6 +210,8 @@
             color: var(--history-text); border-color: var(--history-border);     
             width: var(--base-size); height: var(--base-size); font-size: 11px; 
             transform: none; box-shadow: none;
+            /* --- 新增/修改: 实现平滑的 500ms 移动/淡入淡出过渡 --- */
+            transition: transform 500ms ease-out, opacity 500ms ease-out, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
         }
 
         /* 绝对最新记录的样式 */
@@ -274,8 +278,7 @@
                         </label>
                     </div>
                     <div class="switch-row">
-                        <span>主题</span>
-                        <label class="switch">
+                        <span id="theme-display-text">深色</span><label class="switch">
                             <input type="checkbox" id="theme-toggle">
                             <span class="slider" style="background-color: #666;"></span>
                         </label>
@@ -532,6 +535,7 @@
         const resetBtn = document.getElementById('reset-btn');
         const soundToggle = document.getElementById('sound-toggle');
         const themeToggle = document.getElementById('theme-toggle');
+        const themeDisplayText = document.getElementById('theme-display-text'); // 新增：主题显示文本
         const logList = document.getElementById('log-list'); 
         const recentKeysList = document.getElementById('recent-keys-list'); 
         const progressBar = document.getElementById('test-progress-bar');
@@ -557,7 +561,7 @@
         // 其它状态
         const wheelTimeouts = {}; 
         const pulseKeyTimouts = {}; 
-        const MAX_RECENT_KEYS = 22;
+        const MAX_RECENT_KEYS = 66; 
         let totalTestableKeys = 0;
         let recentKeyHistory = [];
         
@@ -723,6 +727,16 @@
 
             return code;
         }
+        
+        /** 更新主题显示文本 (深色/浅色) */
+        function updateThemeDisplayText(theme) {
+            if (theme === 'light' || theme === true) {
+                themeDisplayText.textContent = '浅色';
+            } else {
+                themeDisplayText.textContent = '深色';
+            }
+        }
+
 
         // ====================================================================
         // III. UI/状态更新函数
@@ -759,25 +773,77 @@
         function updateInfoDisplay(name, code, location) {
             keyNameDisplay.textContent = name;
             // *** 使用 QMK 格式代码显示 ***
-            keyCodeDisplay.textContent = code || "KC_NO";
+            keyCodeDisplay.textContent = mapCodeToQMK(code) || "KC_NO";
             keyLocationDisplay.textContent = (location !== undefined && location !== null) ? `[Loc: ${location}]` : '';
         }
 
-        /** 更新最近点击按键列表 */
+        /**
+         * 更新最近点击按键列表（平滑过渡版）
+         * * 此函数使用 DOM 插入/移除和 CSS 动画，实现新按键的平滑滑入
+         * 和被淘汰按键的平滑滑出。
+         */
         function updateRecentKeyDisplay(code, keyName) {
-            recentKeyHistory.unshift({ code: code, key: keyName });
-            if (recentKeyHistory.length > MAX_RECENT_KEYS) {
-                recentKeyHistory = recentKeyHistory.slice(0, MAX_RECENT_KEYS);
+            // 根据 CSS 变量计算出的按键尺寸 + 间隙 (40px + 4px)
+            const KEY_STEP_PX = 44; 
+            const MAX_KEYS = MAX_RECENT_KEYS;
+
+            const newKey = { code: code, key: keyName };
+
+            // 1. **(修正: 同步处理最旧的按键，确保 DOM 数量严格不超过 MAX_KEYS)**
+            let elementToRemove = null;
+            if (recentKeysList.children.length >= MAX_KEYS) {
+                elementToRemove = recentKeysList.lastElementChild;
+            }
+
+            // 2. 更新历史记录 JS 数组（确保长度不超过 66）
+            recentKeyHistory.unshift(newKey);
+            if (recentKeyHistory.length > MAX_KEYS) {
+                // 仅裁剪 JS 数组
+                recentKeyHistory = recentKeyHistory.slice(0, MAX_KEYS); 
+            }
+
+            // 3. 处理将被移除的按键：**在插入新按键前立即移除 DOM**
+            if (elementToRemove) {
+                // 移除最新的标记
+                elementToRemove.classList.remove('recent-key-latest'); 
+                
+                // 应用淡出和向后平移效果 (动画开始)
+                elementToRemove.style.opacity = '0';
+                elementToRemove.style.transform = `translateX(${KEY_STEP_PX}px)`; 
+                
+                // **关键修改：立即移除 DOM 元素，保证在插入新元素之前，DOM 元素数量严格 <= 65**
+                if (elementToRemove.parentElement) {
+                    elementToRemove.parentElement.removeChild(elementToRemove);
+                }
             }
             
-            recentKeysList.innerHTML = ''; 
-            recentKeyHistory.forEach((entry, index) => {
-                const keyEl = document.createElement('div');
-                keyEl.className = 'key recent-history'; 
-                keyEl.setAttribute('data-code', entry.code);
-                keyEl.textContent = entry.key; 
-                if (index === 0) keyEl.classList.add('recent-key-latest');
-                recentKeysList.appendChild(keyEl);
+            // 4. 移除现有最新标记 (防止多个 recent-key-latest)
+            const currentLatest = recentKeysList.querySelector('.recent-key-latest');
+            if (currentLatest) {
+                currentLatest.classList.remove('recent-key-latest');
+            }
+
+            // 5. 创建新按键并设置初始状态 (滑入)
+            const newKeyEl = document.createElement('div');
+            newKeyEl.className = 'key recent-history recent-key-latest';
+            newKeyEl.setAttribute('data-code', newKey.code);
+            newKeyEl.textContent = newKey.key;
+            
+            // 初始状态：设置为左侧一个 key 的位置并淡出
+            newKeyEl.style.opacity = '0';
+            newKeyEl.style.transform = `translateX(-${KEY_STEP_PX}px)`; 
+
+            // 6. 插入到容器开头 (此时 DOM 数量严格为 MAX_KEYS)
+            recentKeysList.prepend(newKeyEl);
+            
+            // 7. 触发动画
+            // 强制浏览器重绘以确保初始状态已应用
+            void newKeyEl.offsetWidth; 
+
+            // 下一帧动画：滑入到最终位置 (0) 并淡入
+            requestAnimationFrame(() => {
+                newKeyEl.style.opacity = '1.0';
+                newKeyEl.style.transform = 'translateX(0)';
             });
         }
         
@@ -1057,17 +1123,38 @@
         
         /** 初始化所有设置和事件监听 */
         function init() {
-            // 主题初始化
+            // ====================================================================
+            // 主题持久化初始化
+            // ====================================================================
             const savedTheme = localStorage.getItem('kbtest-theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             themeToggle.checked = (savedTheme === 'light');
+            
+            // 初始设置主题显示文本
+            updateThemeDisplayText(savedTheme);
+
             themeToggle.addEventListener('change', (e) => {
                 const theme = e.target.checked ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', theme);
                 localStorage.setItem('kbtest-theme', theme);
                 drawKPMChart();
+                // 切换时更新主题显示文本
+                updateThemeDisplayText(theme); 
             });
 
+            // ====================================================================
+            // 音效持久化初始化 
+            // ====================================================================
+            // 读取保存的状态，如果没有则默认为 true (开启)
+            const savedSound = localStorage.getItem('kbtest-sound');
+            const initialSoundState = savedSound !== null ? (savedSound === 'true') : true;
+            soundToggle.checked = initialSoundState;
+
+            // 监听音效开关变化并保存状态
+            soundToggle.addEventListener('change', (e) => {
+                localStorage.setItem('kbtest-sound', e.target.checked);
+            });
+            
             // Media Session 设置
             setupMediaSession(); 
             document.body.addEventListener('click', activateMediaSession, { once: true });
@@ -1092,9 +1179,7 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
-
 <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
     <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
-
 </html>
