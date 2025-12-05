@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>键盘测试</title>
+    <title>JLKB键盘测试</title>
     <style>
         /* ============ 全局重置 ============ */
         * { box-sizing: border-box; }
@@ -119,8 +119,7 @@
         .info-box strong { font-size: 16px; color: var(--text-color); font-family: monospace;}
         #key-name { color: var(--active-color); }
         
-        /* 额外显示的 Location 信息 */
-        #key-location-display { font-size: 10px; color: #666; margin-left: 5px; vertical-align: middle; }
+        /* 移除 key-location-display 的样式 */
         
         .test-progress-container {
             min-width: 120px; border-right: 1px solid var(--border-color);
@@ -189,7 +188,7 @@
             border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: 1px solid var(--border-color); margin-bottom: 0; transition: all 0.3s;
         }
-        .extra-keys-container .row { gap: var(--gap); display: flex; align-items: center; justify-content: center; }
+        .extra-keys-container .row { flex-wrap: wrap; display: flex; gap: var(--gap); align-items: center; justify-content: center; }
 
         .recent-keys-container {
             /* 1004px = 22 * 40px (key size) + 21 * 4px (gap) + 2 * 20px (padding) */
@@ -296,10 +295,10 @@
                     <strong id="key-name">-</strong>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">按键代码 (Loc)</span>
+                    <span class="label">QMK 代码 (HEX)</span>
                     <div style="display: flex; align-items: baseline;">
                         <strong id="key-code">-</strong>
-                        <span id="key-location-display"></span>
+                        <strong id="key-hex-display" style="color: #666; margin-left: 5px;"></strong>
                     </div>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
@@ -530,12 +529,12 @@
         // DOM 引用
         const keyNameDisplay = document.getElementById('key-name');
         const keyCodeDisplay = document.getElementById('key-code');
-        const keyLocationDisplay = document.getElementById('key-location-display');
+        const keyHexDisplay = document.getElementById('key-hex-display'); // 新增：十六进制显示
         const kpmDisplay = document.getElementById('kpm-stat');
         const resetBtn = document.getElementById('reset-btn');
         const soundToggle = document.getElementById('sound-toggle');
         const themeToggle = document.getElementById('theme-toggle');
-        const themeDisplayText = document.getElementById('theme-display-text'); // 新增：主题显示文本
+        const themeDisplayText = document.getElementById('theme-display-text'); 
         const logList = document.getElementById('log-list'); 
         const recentKeysList = document.getElementById('recent-keys-list'); 
         const progressBar = document.getElementById('test-progress-bar');
@@ -605,6 +604,49 @@
             'MouseWheelUp': 'KC_WH_U', 'MouseWheelDown': 'KC_WH_D',
             'MouseWheelLeft': 'KC_WH_L', 'MouseWheelRight': 'KC_WH_R',
         };
+        
+        // QMK 十六进制映射表 (USB HID Keycodes)
+        const QMK_HEX_MAP = {
+            'KC_NO': '0x00', 'KC_ERR_OVF': '0x01', 'KC_A': '0x04', 'KC_B': '0x05', 'KC_C': '0x06', 
+            'KC_D': '0x07', 'KC_E': '0x08', 'KC_F': '0x09', 'KC_G': '0x0A', 'KC_H': '0x0B', 
+            'KC_I': '0x0C', 'KC_J': '0x0D', 'KC_K': '0x0E', 'KC_L': '0x0F', 'KC_M': '0x10', 
+            'KC_N': '0x11', 'KC_O': '0x12', 'KC_P': '0x13', 'KC_Q': '0x14', 'KC_R': '0x15', 
+            'KC_S': '0x16', 'KC_T': '0x17', 'KC_U': '0x18', 'KC_V': '0x19', 'KC_W': '0x1A', 
+            'KC_X': '0x1B', 'KC_Y': '0x1C', 'KC_Z': '0x1D', 'KC_1': '0x1E', 'KC_2': '0x1F', 
+            'KC_3': '0x20', 'KC_4': '0x21', 'KC_5': '0x22', 'KC_6': '0x23', 'KC_7': '0x24', 
+            'KC_8': '0x25', 'KC_9': '0x26', 'KC_0': '0x27', 'KC_ENT': '0x28', 'KC_ESC': '0x29', 
+            'KC_BSPC': '0x2A', 'KC_TAB': '0x2B', 'KC_SPC': '0x2C', 'KC_MINS': '0x2D', 'KC_EQL': '0x2E', 
+            'KC_LBRC': '0x2F', 'KC_RBRC': '0x30', 'KC_BSLS': '0x31', 'KC_NUHS': '0x32', 'KC_SCLN': '0x33', 
+            'KC_QUOT': '0x34', 'KC_GRV': '0x35', 'KC_COMM': '0x36', 'KC_DOT': '0x37', 'KC_SLSH': '0x38', 
+            'KC_CAPS': '0x39', 'KC_F1': '0x3A', 'KC_F2': '0x3B', 'KC_F3': '0x3C', 'KC_F4': '0x3D', 
+            'KC_F5': '0x3E', 'KC_F6': '0x3F', 'KC_F7': '0x40', 'KC_F8': '0x41', 'KC_F9': '0x42', 
+            'KC_F10': '0x43', 'KC_F11': '0x44', 'KC_F12': '0x45', 'KC_PSCR': '0x46', 'KC_SLCK': '0x47', 
+            'KC_PAUS': '0x48', 'KC_INS': '0x49', 'KC_HOME': '0x4A', 'KC_PGUP': '0x4B', 'KC_DEL': '0x4C', 
+            'KC_END': '0x4D', 'KC_PGDN': '0x4E', 'KC_RIGHT': '0x4F', 'KC_LEFT': '0x50', 'KC_DOWN': '0x51', 
+            'KC_UP': '0x52', 'KC_NLCK': '0x53', 'KC_PSLS': '0x54', 'KC_PAST': '0x55', 'KC_PMNS': '0x56', 
+            'KC_PPLS': '0x57', 'KC_PENT': '0x58', 'KC_P1': '0x59', 'KC_P2': '0x5A', 'KC_P3': '0x5B', 
+            'KC_P0': '0x62', 'KC_PDOT': '0x63', 'KC_NUBS': '0x64', 'KC_MENU': '0x65',
+            'KC_LCTL': '0xE0', 'KC_LSFT': '0xE1', 'KC_LALT': '0xE2', 'KC_LGUI': '0xE3', 
+            'KC_RCTL': '0xE4', 'KC_RSFT': '0xE5', 'KC_RALT': '0xE6', 'KC_RGUI': '0xE7',
+            
+            // F13-F24 (QMK extended range)
+            'KC_F13': '0x68', 'KC_F14': '0x69', 'KC_F15': '0x6A', 'KC_F16': '0x6B', 
+            'KC_F17': '0x6C', 'KC_F18': '0x6D', 'KC_F19': '0x6E', 'KC_F20': '0x6F', 
+            'KC_F21': '0x70', 'KC_F22': '0x71', 'KC_F23': '0x72', 'KC_F24': '0x73',
+            
+            // Media Keys (Consumer control usage page) - NOTE: QMK maps these to 0x01xx range, using 0xXX for display simplicity here.
+            'KC_VOLU': '0xA0', 'KC_VOLD': '0xA1', 'KC_MUTE': '0xA2',
+            'KC_MPLY': '0xCD', 'KC_MNXT': '0xB5', 'KC_MPRV': '0xB6',
+            
+            // Mouse Keys (QMK specific names for HID buttons)
+            'KC_BTN1': '0x81', 'KC_BTN2': '0x82', 'KC_BTN3': '0x83', 
+            'KC_BTN4': '0x84', 'KC_BTN5': '0x85',
+            'KC_WH_U': '0x90', 'KC_WH_D': '0x91', 'KC_WH_L': '0x92', 'KC_WH_R': '0x93',
+            
+            // Numpad 4, 5, 6, 7, 8, 9
+            'KC_P4': '0x5C', 'KC_P5': '0x5D', 'KC_P6': '0x5E', 'KC_P7': '0x5F', 'KC_P8': '0x60', 'KC_P9': '0x61',
+        };
+
 
         // ====================================================================
         // II. 核心工具函数
@@ -632,6 +674,11 @@
             
             // 默认回退 (不常见按键)
             return 'KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+        }
+        
+        /** 将 QMK 代码映射为十六进制代码 */
+        function getQMKHexCode(qmkCode) {
+            return QMK_HEX_MAP[qmkCode] || '0x??';
         }
 
         /** 获取格式化时间 */
@@ -770,17 +817,17 @@
         }
 
         /** 更新顶部的按键信息显示 */
-        function updateInfoDisplay(name, code, location) {
+        function updateInfoDisplay(name, code) {
+            const qmkCode = mapCodeToQMK(code);
+            const hexCode = getQMKHexCode(qmkCode);
+            
             keyNameDisplay.textContent = name;
-            // *** 使用 QMK 格式代码显示 ***
-            keyCodeDisplay.textContent = mapCodeToQMK(code) || "KC_NO";
-            keyLocationDisplay.textContent = (location !== undefined && location !== null) ? `[Loc: ${location}]` : '';
+            keyCodeDisplay.textContent = qmkCode || "KC_NO";
+            keyHexDisplay.textContent = `(${hexCode})`;
         }
 
         /**
          * 更新最近点击按键列表（平滑过渡版）
-         * * 此函数使用 DOM 插入/移除和 CSS 动画，实现新按键的平滑滑入
-         * 和被淘汰按键的平滑滑出。
          */
         function updateRecentKeyDisplay(code, keyName) {
             // 根据 CSS 变量计算出的按键尺寸 + 间隙 (40px + 4px)
@@ -789,58 +836,44 @@
 
             const newKey = { code: code, key: keyName };
 
-            // 1. **(修正: 同步处理最旧的按键，确保 DOM 数量严格不超过 MAX_KEYS)**
             let elementToRemove = null;
             if (recentKeysList.children.length >= MAX_KEYS) {
                 elementToRemove = recentKeysList.lastElementChild;
             }
 
-            // 2. 更新历史记录 JS 数组（确保长度不超过 66）
             recentKeyHistory.unshift(newKey);
             if (recentKeyHistory.length > MAX_KEYS) {
-                // 仅裁剪 JS 数组
                 recentKeyHistory = recentKeyHistory.slice(0, MAX_KEYS); 
             }
 
-            // 3. 处理将被移除的按键：**在插入新按键前立即移除 DOM**
             if (elementToRemove) {
-                // 移除最新的标记
                 elementToRemove.classList.remove('recent-key-latest'); 
                 
-                // 应用淡出和向后平移效果 (动画开始)
                 elementToRemove.style.opacity = '0';
                 elementToRemove.style.transform = `translateX(${KEY_STEP_PX}px)`; 
                 
-                // **关键修改：立即移除 DOM 元素，保证在插入新元素之前，DOM 元素数量严格 <= 65**
                 if (elementToRemove.parentElement) {
                     elementToRemove.parentElement.removeChild(elementToRemove);
                 }
             }
             
-            // 4. 移除现有最新标记 (防止多个 recent-key-latest)
             const currentLatest = recentKeysList.querySelector('.recent-key-latest');
             if (currentLatest) {
                 currentLatest.classList.remove('recent-key-latest');
             }
 
-            // 5. 创建新按键并设置初始状态 (滑入)
             const newKeyEl = document.createElement('div');
             newKeyEl.className = 'key recent-history recent-key-latest';
             newKeyEl.setAttribute('data-code', newKey.code);
             newKeyEl.textContent = newKey.key;
             
-            // 初始状态：设置为左侧一个 key 的位置并淡出
             newKeyEl.style.opacity = '0';
             newKeyEl.style.transform = `translateX(-${KEY_STEP_PX}px)`; 
 
-            // 6. 插入到容器开头 (此时 DOM 数量严格为 MAX_KEYS)
             recentKeysList.prepend(newKeyEl);
             
-            // 7. 触发动画
-            // 强制浏览器重绘以确保初始状态已应用
             void newKeyEl.offsetWidth; 
 
-            // 下一帧动画：滑入到最终位置 (0) 并淡入
             requestAnimationFrame(() => {
                 newKeyEl.style.opacity = '1.0';
                 newKeyEl.style.transform = 'translateX(0)';
@@ -866,7 +899,7 @@
                 el.classList.remove('tested');
                 el.classList.remove('active');
             });
-            updateInfoDisplay('-', 'KC_NO', null); // 使用 KC_NO 作为重置后的代码显示
+            updateInfoDisplay('-', 'KC_NO'); 
             logList.innerHTML = ''; 
             recentKeysList.innerHTML = ''; 
             recentKeyHistory = [];         
@@ -963,16 +996,16 @@
             if (key.startsWith('AudioVolume') || (code && code.startsWith('AudioVolume'))) {
                 if (key === 'AudioVolumeUp' || code === 'AudioVolumeUp') code = 'VolumeUp';
                 else if (key === 'AudioVolumeDown' || code === 'AudioVolumeDown') code = 'VolumeDown';
-                else if (key === 'AudioVolumeMute' || code === 'AudioVolumeMute') code = 'VolumeMute';
+                else if (key === 'AudioVolumeMute' || code === 'VolumeMute') code = 'VolumeMute';
             }
 
             if (e.repeat) return; 
             
             const keyDisplay = getKeyDisplay(code, key);
-            const qmkCode = mapCodeToQMK(code);
             
             logEvent('press', keyDisplay); 
-            updateInfoDisplay(keyDisplay, qmkCode, e.location);
+            // 关键修改：不再传递 location
+            updateInfoDisplay(keyDisplay, code); 
             playSound(getKeyFrequency(code));
             
             if (isPulseKey(code)) {
@@ -1003,10 +1036,10 @@
             }
             
             const keyDisplay = getKeyDisplay(code, key);
-            const qmkCode = mapCodeToQMK(code);
             
             logEvent('release', keyDisplay);
-            updateInfoDisplay(keyDisplay, qmkCode, e.location);
+            // 关键修改：不再传递 location
+            updateInfoDisplay(keyDisplay, code);
             setKeyState(code, false);
         }
 
@@ -1025,10 +1058,9 @@
             if (e.button >= 2 && type === 'press') e.preventDefault(); 
             
             if (type === 'press') {
-                const qmkCode = mapCodeToQMK(code);
                 logEvent('press', key);
                 playSound(getKeyFrequency(code));
-                updateInfoDisplay(key, qmkCode);
+                updateInfoDisplay(key, code);
                 setKeyState(code, true);
                 trackKPM(); 
                 updateRecentKeyDisplay(code, key); 
@@ -1053,10 +1085,9 @@
             
             const keyElement = document.querySelector(`.key[data-code="${code}"]`);
             if (keyElement && !keyElement.classList.contains('active')) {
-                const qmkCode = mapCodeToQMK(code);
                 logEvent('press', key);
                 playSound(getKeyFrequency(code));
-                updateInfoDisplay(key, qmkCode);
+                updateInfoDisplay(key, code);
                 setKeyState(code, true); 
                 trackKPM(); 
                 updateRecentKeyDisplay(code, key); 
@@ -1073,11 +1104,9 @@
         function handleMediaAction(action, code, keyDisplay) {
             if (!document.querySelector(`.key[data-code="${code}"]`)) return;
 
-            const qmkCode = mapCodeToQMK(code);
-            
             logEvent('press', keyDisplay); 
             playSound(getKeyFrequency(code));
-            updateInfoDisplay(keyDisplay, qmkCode);
+            updateInfoDisplay(keyDisplay, code);
             
             setKeyState(code, true); 
             if (pulseKeyTimouts[code]) clearTimeout(pulseKeyTimouts[code]);
@@ -1130,7 +1159,6 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
             themeToggle.checked = (savedTheme === 'light');
             
-            // 初始设置主题显示文本
             updateThemeDisplayText(savedTheme);
 
             themeToggle.addEventListener('change', (e) => {
@@ -1138,19 +1166,16 @@
                 document.documentElement.setAttribute('data-theme', theme);
                 localStorage.setItem('kbtest-theme', theme);
                 drawKPMChart();
-                // 切换时更新主题显示文本
                 updateThemeDisplayText(theme); 
             });
 
             // ====================================================================
             // 音效持久化初始化 
             // ====================================================================
-            // 读取保存的状态，如果没有则默认为 true (开启)
             const savedSound = localStorage.getItem('kbtest-sound');
             const initialSoundState = savedSound !== null ? (savedSound === 'true') : true;
             soundToggle.checked = initialSoundState;
 
-            // 监听音效开关变化并保存状态
             soundToggle.addEventListener('change', (e) => {
                 localStorage.setItem('kbtest-sound', e.target.checked);
             });
@@ -1164,6 +1189,7 @@
             totalTestableKeys = document.querySelectorAll('.key[data-code]').length;
             updateProgress(); 
             drawKPMChart(); 
+            updateInfoDisplay('-', 'KC_NO'); 
             mouseXYDisplay.textContent = 'X: - Y: -';
 
             // 事件绑定
@@ -1179,7 +1205,7 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
-<script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
+    <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
     <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
 </html>
