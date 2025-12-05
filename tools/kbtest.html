@@ -655,6 +655,9 @@
         /** 将 JS Event.code 映射为 QMK 风格代码 */
         function mapCodeToQMK(code) {
             if (!code) return 'KC_NO';
+
+            // [修复] 避免对已经是 QMK 格式的代码重复添加 'KC_' 前缀
+            if (code.startsWith('KC_')) return code;
             
             // F-Keys (F1, F13, etc.)
             if (code.startsWith('F') && code.length > 1 && !isNaN(code.substring(1))) return `KC_${code}`;
@@ -1209,3 +1212,4 @@
     <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
 </html>
+
