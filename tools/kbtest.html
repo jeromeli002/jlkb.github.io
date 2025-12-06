@@ -350,7 +350,7 @@
             KC_P1:'0x59',KC_P0:'0x62',KC_PDOT:'0x63',KC_MENU:'0x65',KC_F13:'0x68',KC_F24:'0x73',
             KC_LCTL:'0xE0',KC_LSFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTL:'0xE4',KC_RSFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
             KC_VOLU:'0xA0',KC_VOLD:'0xA1',KC_MUTE:'0xA2',KC_MPLY:'0xCD',KC_MNXT:'0xB5',KC_MPRV:'0xB6',
-            KC_BTN1:'0x81',KC_BTN2:'0x82',KC_BTN3:'0x83',KC_BTN4:'0x84',KC_BTN5:'0x85',KC_WH_U:'0x90',KC_WH_D:'0x91',KC_WH_L:'0x92',KC_WH_R:'0x93',
+            KC_BTN1:'0x81',KC_BTN2:'0x82',KC_BTN3:'0x83',KC_BTN4:'0x84',KC_BTN5:'0x85',KC_WHLU:'0x90',KC_WHLD:'0x91',KC_WHLL:'0x92',KC_WHLR:'0x93',
             KC_P4:'0x5C',KC_P5:'0x5D',KC_P6:'0x5E',KC_P7:'0x5F',KC_P8:'0x60',KC_P9:'0x61'
         };
         const PULSE_KEYS = new Set(['ContextMenu','PrintScreen',...Array.from({length:12},(_,i)=>`F${i+13}`)]);
@@ -590,5 +590,6 @@
     <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
 </html>
+
 
 
