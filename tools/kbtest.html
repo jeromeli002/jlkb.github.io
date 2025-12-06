@@ -3,250 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLKB键盘测试</title>
+    <title>键盘测试</title>
     <style>
-        /* ============ 全局重置 ============ */
-        * { box-sizing: border-box; }
-
         :root {
-            /* ============ 尺寸定义 ============ */
-            --base-size: 40px; 
-            --gap: 4px;       
-            
-            /* ============ 配色方案 (暗黑模式) ============ */
-            --bg-color: #121212;
-            --text-color: #aaa;
-            
-            --panel-bg: #1e1e1e;       
-            --container-bg: #1a1a1a;   
-            --border-color: #333;      
-            
-            --key-bg: #2a2a2a;
-            --key-border: #404040;
-            --key-text: #aaa;
-            
-            --active-color: #ffd700;   
-            --active-text: #000;
-            --active-glow: rgba(255, 215, 0, 0.5); 
-
-            --tested-bg: #1b3a24;      
-            --tested-color: #2ecc71;   
-            
-            --history-bg: #2c2c47;     
-            --history-text: #9b59b6;   
-            --history-border: #5d3f6a;
-
-            --latest-history-bg: #22577a; 
-            --latest-history-text: #59b6b6; 
-            --latest-history-border: #3c9d9b;
-            
-            --chart-color: #8cffec;    
-            --progress-bg: #3a3a3a;    
+            --base-size: 40px; --gap: 4px;
+            --bg-color: #121212; --text-color: #aaa;
+            --panel-bg: #1e1e1e; --container-bg: #1a1a1a; --border-color: #333;
+            --key-bg: #2a2a2a; --key-border: #404040; --key-text: #aaa;
+            --active-color: #ffd700; --active-text: #000; --active-glow: rgba(255, 215, 0, 0.5);
+            --tested-bg: #1b3a24; --tested-color: #2ecc71;
+            --history-bg: #2c2c47; --history-text: #9b59b6; --history-border: #5d3f6a;
+            --latest-history-bg: #22577a; --latest-history-text: #59b6b6; --latest-history-border: #3c9d9b;
+            --chart-color: #8cffec; --progress-bg: #3a3a3a;
         }
 
-        /* ============ 浅色模式 ============ */
         [data-theme="light"] {
-            --bg-color: #f0f2f5;
-            --text-color: #333;
-            
-            --panel-bg: #ffffff;
-            --container-bg: #ffffff;
-            --border-color: #d1d5db;
-            
-            --key-bg: #f8f9fa;
-            --key-border: #dee2e6;
-            --key-text: #495057;
-            
-            --active-color: #ffc107;   
-            --active-text: #000;
-            --active-glow: rgba(255, 193, 7, 0.4); 
-
-            --tested-bg: #d1e7dd;      
-            --tested-color: #0f5132;   
-            
-            --history-bg: #e2e3e5;     
-            --history-text: #6f42c1;   
-            --history-border: #d63384; 
-
-            --latest-history-bg: #dbe4ff; 
-            --latest-history-text: #0d6efd; 
-            --latest-history-border: #0d6efd;
-            
-            --chart-color: #0d6efd;    
-            --progress-bg: #e9ecef;
+            --bg-color: #f0f2f5; --text-color: #333;
+            --panel-bg: #ffffff; --container-bg: #ffffff; --border-color: #d1d5db;
+            --key-bg: #f8f9fa; --key-border: #dee2e6; --key-text: #495057;
+            --active-color: #ffc107; --active-text: #000; --active-glow: rgba(255, 193, 7, 0.4);
+            --tested-bg: #d1e7dd; --tested-color: #0f5132;
+            --history-bg: #e2e3e5; --history-text: #6f42c1; --history-border: #d63384;
+            --latest-history-bg: #dbe4ff; --latest-history-text: #0d6efd; --latest-history-border: #0d6efd;
+            --chart-color: #0d6efd; --progress-bg: #e9ecef;
         }
 
+        * { box-sizing: border-box; }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg-color); color: var(--text-color);
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            display: block; text-align: center; min-height: 100vh;
-            margin: 0; padding-bottom: 50px; user-select: none;
-            transition: background-color 0.3s, color 0.3s; 
+            text-align: center; min-height: 100vh; margin: 0; padding-bottom: 50px; user-select: none;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* ============ 顶部标题样式 ============ */
         h1 {
             background: var(--panel-bg); padding: 10px 25px; border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1); color: var(--text-color); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); color: var(--text-color);
             font-size: 28px; letter-spacing: 2px; font-weight: 300;
-            margin-top: 20px; margin-bottom: 20px; display: inline-block; 
-            border: 1px solid var(--border-color); transition: all 0.3s;
-        }
-        
-        /* ============ 布局容器 ============ */
-        .side-by-side-layout {
-            display: flex; justify-content: center; gap: 40px; 
-            align-items: flex-start; margin: 0 auto; 
-        }
-        
-        .main-column-area {
-            display: flex; flex-direction: column; align-items: center; 
-            width: max-content; 
+            margin: 20px 0; display: inline-block; border: 1px solid var(--border-color);
         }
 
-        /* ============ 控制栏 ============ */
+        .side-by-side-layout { display: flex; justify-content: center; gap: 40px; align-items: flex-start; margin: 0 auto; }
+        .main-column-area { display: flex; flex-direction: column; align-items: center; width: max-content; }
+
+        /* Control Panel */
         .control-panel {
             width: 100%; display: flex; gap: 15px; margin-bottom: 20px;
             background: var(--panel-bg); padding: 15px 20px; border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1); align-items: center;
             justify-content: space-between; border: 1px solid var(--border-color);
-            transition: all 0.3s;
         }
-        
         .info-box { min-width: 60px; text-align: left; }
-        .info-box span.label { font-size: 11px; color: #888; margin-bottom: 3px; display: block;} 
-        .info-box strong { font-size: 16px; color: var(--text-color); font-family: monospace;}
+        .info-box span.label { font-size: 11px; color: #888; margin-bottom: 3px; display: block; }
+        .info-box strong { font-size: 16px; color: var(--text-color); font-family: monospace; }
         #key-name { color: var(--active-color); }
         
-        /* 移除 key-location-display 的样式 */
-        
-        .test-progress-container {
-            min-width: 120px; border-right: 1px solid var(--border-color);
-            padding-right: 15px; margin-right: 5px; text-align: center;
-        }
+        .test-progress-container { min-width: 120px; border-right: 1px solid var(--border-color); padding-right: 15px; margin-right: 5px; text-align: center; }
         #progress-text { font-size: 14px; font-weight: bold; color: var(--text-color); margin-bottom: 5px; }
         .progress-bar-wrapper { width: 100%; height: 8px; background-color: var(--progress-bg); border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background-color: var(--tested-color); transition: width 0.3s ease-out; }
-        
-        .switch-group {
-            display: flex; flex-direction: column; align-items: flex-start;
-            gap: 5px; border-right: 1px solid var(--border-color);
-            padding-right: 15px; margin-right: 5px; min-width: 80px;
-        }
-        .switch-row {
-            display: flex; align-items: center; gap: 8px; font-size: 12px;
-            color: var(--text-color);
-        }
 
-        #kpm-chart { display: block; margin-top: 2px; }
-        
-        /* ============ 键盘区域 ============ */
-        .keyboard-container {
-            width: 100%; display: flex; gap: calc(var(--gap) * 4); 
-            padding: 20px; background: var(--container-bg); border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-color);
-            margin-bottom: 20px; justify-content: center; transition: all 0.3s;
-        }
-
-        .section-main, .section-nav, .section-numpad {
-            display: flex; flex-direction: column; gap: var(--gap);
-        }
-        .section-numpad { margin-top: calc(var(--base-size) + var(--gap) * 4); } 
-        .row { display: flex; gap: var(--gap); }
-        .row-f { margin-bottom: calc(var(--gap) * 3); }
-
-        .key {
-            width: var(--base-size); height: var(--base-size);
-            background-color: var(--key-bg); border: 2px solid var(--key-border);
-            border-radius: 5px; color: var(--key-text); font-size: 11px; 
-            font-weight: 600; display: flex; align-items: center;
-            justify-content: center; box-sizing: border-box;
-            transition: background-color 0.05s, transform 0.05s, border-color 0.3s;
-            position: relative;
-        }
-        .key.active {
-            background-color: var(--active-color) !important; border-color: var(--active-color) !important;
-            color: var(--active-text) !important; transform: scale(0.92); 
-            box-shadow: 0 0 15px var(--active-glow); 
-        }
-        .key.tested { background-color: var(--tested-bg); border-color: var(--tested-color); color: var(--tested-color); }
-        .spacer { background-color: transparent !important; border: none !important; box-shadow: none !important; pointer-events: none; }
-        /* 尺寸类 */
-        .u-125 { width: calc(var(--base-size) * 1.25 + var(--gap) * 0.25); }
-        .u-15 { width: calc(var(--base-size) * 1.5 + var(--gap) * 0.5); }
-        .u-175 { width: calc(var(--base-size) * 1.75 + var(--gap) * 0.75); }
-        .u-2 { width: calc(var(--base-size) * 2 + var(--gap)); }
-        .u-225 { width: calc(var(--base-size) * 2.25 + var(--gap) * 1.25); }
-        .u-275 { width: calc(var(--base-size) * 2.75 + var(--gap) * 1.75); }
-        .u-space { width: calc(var(--base-size) * 6.25 + var(--gap) * 5.25); }
-        .h-2 { height: calc(var(--base-size) * 2 + var(--gap)); }
-
-        .extra-keys-container {
-            width: 100%; display: flex; flex-direction: column; gap: var(--gap); 
-            justify-content: center; padding: 10px 20px; background: var(--container-bg); 
-            border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid var(--border-color); margin-bottom: 0; transition: all 0.3s;
-        }
-        .extra-keys-container .row { flex-wrap: wrap; display: flex; gap: var(--gap); align-items: center; justify-content: center; }
-
-        .recent-keys-container {
-            /* 1004px = 22 * 40px (key size) + 21 * 4px (gap) + 2 * 20px (padding) */
-            width: 1030px; 
-            background: var(--container-bg); padding: 15px 20px;
-            border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid var(--border-color); margin-top: 20px; 
-            text-align: left; transition: all 0.3s;
-        }
-        .recent-keys-container h2 {
-            font-size: 16px; color: var(--active-color); margin-top: 0;
-            margin-bottom: 10px; border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-        }
-        .recent-keys-container .row { flex-wrap: wrap; display: flex; gap: var(--gap); }
-        .key.recent-history {
-            pointer-events: none; opacity: 1.0; background-color: var(--history-bg); 
-            color: var(--history-text); border-color: var(--history-border);     
-            width: var(--base-size); height: var(--base-size); font-size: 11px; 
-            transform: none; box-shadow: none;
-            /* --- 新增/修改: 实现平滑的 500ms 移动/淡入淡出过渡 --- */
-            transition: transform 500ms ease-out, opacity 500ms ease-out, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-        }
-
-        /* 绝对最新记录的样式 */
-        .key.recent-history.recent-key-latest {
-            background-color: var(--latest-history-bg); color: var(--latest-history-text);            
-            border-color: var(--latest-history-border); box-shadow: 0 0 10px rgba(0,0,0,0.2), 0 0 5px var(--latest-history-border);
-            font-weight: bold;
-        }
-        
-        /* ============ 活动日志 ============ */
-        .log-area-wrapper {
-            width: 300px; height: 600px; background: var(--panel-bg);
-            padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid var(--border-color); margin-top: 0; text-align: left; 
-            transition: all 0.3s;
-        }
-        .log-area-wrapper h2 {
-            font-size: 16px; color: var(--tested-color); margin-top: 0;
-            margin-bottom: 10px; border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-        }
-        #log-list {
-            height: 530px; overflow-y: scroll; padding-right: 10px;
-            font-family: monospace; font-size: 12px; color: #888; 
-        }
-        #log-list::-webkit-scrollbar { width: 6px; }
-        #log-list::-webkit-scrollbar-thumb { background: var(--key-border); border-radius: 10px; }
-        #log-list::-webkit-scrollbar-track { background: transparent; }
-
-        .log-entry { padding: 2px 0; font-size: 14px; }
-        .log-entry .timestamp { color: #888; margin-right: 5px; }
-        .log-entry.press { color: var(--active-color); } 
-        [data-theme="light"] .log-entry.press { color: #d39e00; } 
-        .log-entry.release { color: var(--tested-color); }
-
-        /* 开关和重置按钮 */
+        .switch-group { display: flex; flex-direction: column; gap: 5px; border-right: 1px solid var(--border-color); padding-right: 15px; margin-right: 5px; min-width: 80px; }
+        .switch-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-color); }
         .switch { position: relative; display: inline-block; width: 36px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
@@ -256,62 +74,135 @@
 
         #reset-btn { background: #c0392b; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
         #reset-btn:hover { background: #e74c3c; }
+
+        /* Keyboard Area */
+        .keyboard-container {
+            width: 100%; display: flex; gap: calc(var(--gap) * 4); padding: 20px;
+            background: var(--container-bg); border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-color);
+            margin-bottom: 20px; justify-content: center;
+        }
+        .section-main, .section-nav, .section-numpad { display: flex; flex-direction: column; gap: var(--gap); }
+        .section-numpad { margin-top: calc(var(--base-size) + var(--gap) * 4); }
+        .row { display: flex; gap: var(--gap); }
+        .row-f { margin-bottom: calc(var(--gap) * 3); }
+
+        .key {
+            width: var(--base-size); height: var(--base-size);
+            background-color: var(--key-bg); border: 2px solid var(--key-border);
+            border-radius: 5px; color: var(--key-text); font-size: 11px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.05s, transform 0.05s, border-color 0.3s;
+        }
+        .key.active {
+            background-color: var(--active-color) !important; border-color: var(--active-color) !important;
+            color: var(--active-text) !important; transform: scale(0.92); box-shadow: 0 0 15px var(--active-glow);
+        }
+        .key.tested { background-color: var(--tested-bg); border-color: var(--tested-color); color: var(--tested-color); }
+        .spacer { background-color: transparent !important; border: none !important; box-shadow: none !important; pointer-events: none; }
+        
+        /* Utility Widths */
+        .u-125 { width: calc(var(--base-size)*1.25 + var(--gap)*0.25); }
+        .u-15 { width: calc(var(--base-size)*1.5 + var(--gap)*0.5); }
+        .u-175 { width: calc(var(--base-size)*1.75 + var(--gap)*0.75); }
+        .u-2 { width: calc(var(--base-size)*2 + var(--gap)); }
+        .u-225 { width: calc(var(--base-size)*2.25 + var(--gap)*1.25); }
+        .u-275 { width: calc(var(--base-size)*2.75 + var(--gap)*1.75); }
+        .u-space { width: calc(var(--base-size)*6.25 + var(--gap)*5.25); }
+        .h-2 { height: calc(var(--base-size)*2 + var(--gap)); }
+
+        .extra-keys-container, .recent-keys-container {
+            width: 100%; background: var(--container-bg); padding: 10px 20px;
+            border-radius: 15px; border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .extra-keys-container { display: flex; flex-direction: column; gap: var(--gap); justify-content: center; }
+        .extra-keys-container .row { flex-wrap: wrap; justify-content: center; align-items: center; }
+        
+        .recent-keys-container { margin-top: 20px; width: 1030px; text-align: left; padding: 15px 20px; }
+        .recent-keys-container h2, .log-area-wrapper h2 {
+            font-size: 16px; margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid var(--border-color);
+        }
+        .recent-keys-container h2 { color: var(--active-color); }
+        .recent-keys-container .row { flex-wrap: wrap; }
+        
+        .key.recent-history {
+            pointer-events: none; opacity: 1; background-color: var(--history-bg); color: var(--history-text);
+            border-color: var(--history-border); width: var(--base-size); height: var(--base-size); font-size: 11px;
+            box-shadow: none; transform: none;
+            transition: transform 500ms ease-out, opacity 500ms ease-out, background-color 0.3s, border-color 0.3s;
+        }
+        .key.recent-history.recent-key-latest {
+            background-color: var(--latest-history-bg); color: var(--latest-history-text);
+            border-color: var(--latest-history-border); font-weight: bold;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2), 0 0 5px var(--latest-history-border);
+        }
+
+        /* Log & Note Area */
+        .log-area-wrapper {
+            width: 300px; height: 600px; background: var(--panel-bg); padding: 20px;
+            border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color); text-align: left;
+        }
+        .log-area-wrapper h2 { color: var(--tested-color); }
+        #log-list { height: 530px; overflow-y: scroll; padding-right: 10px; font-family: monospace; font-size: 12px; color: #888; }
+        #log-list::-webkit-scrollbar { width: 6px; }
+        #log-list::-webkit-scrollbar-thumb { background: var(--key-border); border-radius: 10px; }
+        
+        .log-entry { padding: 2px 0; font-size: 14px; }
+        .log-entry.press { color: var(--active-color); }
+        [data-theme="light"] .log-entry.press { color: #d39e00; }
+        .log-entry.release { color: var(--tested-color); }
+
+        /* Browser Note Style (Optimized) */
+        .browser-note {
+            margin-top: 15px; margin-left: -20px; margin-right: -20px; width: calc(100% + 40px);
+            background-color: var(--container-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 12px; color: #888; text-align: center; padding: 10px 35px;
+        }
+        .browser-note p { margin: 5px 0; }
     </style>
 </head>
 <body>
-    
     <h1>JLKB键盘测试</h1>
-    
     <audio id="silent-audio" loop></audio>
 
     <div class="side-by-side-layout">
-
         <div class="main-column-area">
             <div class="control-panel">
                 <div class="switch-group">
                     <div class="switch-row">
                         <span>音效</span>
-                        <label class="switch">
-                            <input type="checkbox" id="sound-toggle" checked>
-                            <span class="slider"></span>
-                        </label>
+                        <label class="switch"><input type="checkbox" id="sound-toggle" checked><span class="slider"></span></label>
                     </div>
                     <div class="switch-row">
-                        <span id="theme-display-text">深色</span><label class="switch">
-                            <input type="checkbox" id="theme-toggle">
-                            <span class="slider" style="background-color: #666;"></span>
-                        </label>
+                        <span id="theme-display-text">深色</span>
+                        <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider" style="background-color: #666;"></span></label>
                     </div>
                 </div>
                 <div class="test-progress-container">
                     <span class="label">测试进度</span>
                     <div id="progress-text">0 / 0 键</div>
-                    <div class="progress-bar-wrapper">
-                        <div id="test-progress-bar" class="progress-bar"></div>
-                    </div>
+                    <div class="progress-bar-wrapper"><div id="test-progress-bar" class="progress-bar"></div></div>
                 </div>
                 <div class="info-box">
-                    <span class="label">当前按键</span>
-                    <strong id="key-name">-</strong>
+                    <span class="label">当前按键</span><strong id="key-name">-</strong>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
                     <span class="label">QMK 代码 (HEX)</span>
                     <div style="display: flex; align-items: baseline;">
-                        <strong id="key-code">-</strong>
-                        <strong id="key-hex-display" style="color: #666; margin-left: 5px;"></strong>
+                        <strong id="key-code">-</strong><strong id="key-hex-display" style="color: #666; margin-left: 5px;"></strong>
                     </div>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">实时 KPM</span>
-                    <strong id="kpm-stat" style="color: var(--tested-color)">0</strong>
+                    <span class="label">实时 KPM</span><strong id="kpm-stat" style="color: var(--tested-color)">0</strong>
                 </div>
                 <div class="info-box" style="min-width: 150px; border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">KPM 实时曲线 (1s)</span>
-                    <canvas id="kpm-chart" width="150" height="40"></canvas>
+                    <span class="label">KPM 实时曲线 (50点)</span><canvas id="kpm-chart" width="150" height="40"></canvas>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">鼠标 XY (屏幕)</span>
-                    <strong id="mouse-xy-stat" style="color: var(--active-color)">X: - Y: -</strong>
+                    <span class="label">鼠标 XY (屏幕)</span><strong id="mouse-xy-stat" style="color: var(--active-color)">X: - Y: -</strong>
                 </div>
                 <button id="reset-btn">重置 ↺</button>
             </div>
@@ -319,892 +210,379 @@
             <div class="keyboard-container">
                 <div class="section-main">
                     <div class="row row-f">
-                        <div class="key" data-code="Escape">ESC</div>
-                        <div class="key spacer" style="width: var(--base-size);"></div>
-                        <div class="key" data-code="F1">F1</div>
-                        <div class="key" data-code="F2">F2</div>
-                        <div class="key" data-code="F3">F3</div>
-                        <div class="key" data-code="F4">F4</div> 
+                        <div class="key" data-code="Escape">ESC</div><div class="key spacer" style="width: var(--base-size);"></div>
+                        <div class="key" data-code="F1">F1</div><div class="key" data-code="F2">F2</div><div class="key" data-code="F3">F3</div><div class="key" data-code="F4">F4</div> 
                         <div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
-                        <div class="key" data-code="F5">F5</div>
-                        <div class="key" data-code="F6">F6</div>
-                        <div class="key" data-code="F7">F7</div>
-                        <div class="key" data-code="F8">F8</div>
+                        <div class="key" data-code="F5">F5</div><div class="key" data-code="F6">F6</div><div class="key" data-code="F7">F7</div><div class="key" data-code="F8">F8</div>
                         <div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
-                        <div class="key" data-code="F9">F9</div>
-                        <div class="key" data-code="F10">F10</div>
-                        <div class="key" data-code="F11">F11</div>
-                        <div class="key" data-code="F12">F12</div>
+                        <div class="key" data-code="F9">F9</div><div class="key" data-code="F10">F10</div><div class="key" data-code="F11">F11</div><div class="key" data-code="F12">F12</div>
                     </div>
                     <div class="row">
                         <div class="key key-dual" data-code="Backquote"><span>~</span><span>`</span></div>
-                        <div class="key key-dual" data-code="Digit1"><span>!</span><span>1</span></div>
-                        <div class="key key-dual" data-code="Digit2"><span>@</span><span>2</span></div>
-                        <div class="key key-dual" data-code="Digit3"><span>#</span><span>3</span></div>
-                        <div class="key key-dual" data-code="Digit4"><span>$</span><span>4</span></div>
-                        <div class="key key-dual" data-code="Digit5"><span>%</span><span>5</span></div>
-                        <div class="key key-dual" data-code="Digit6"><span>^</span><span>6</span></div>
-                        <div class="key key-dual" data-code="Digit7"><span>&</span><span>7</span></div>
-                        <div class="key key-dual" data-code="Digit8"><span>*</span><span>8</span></div>
-                        <div class="key key-dual" data-code="Digit9"><span>)</span><span>9</span></div>
-                        <div class="key key-dual" data-code="Digit0"><span>(</span><span>0</span></div>
-                        <div class="key key-dual" data-code="Minus"><span>_</span><span>-</span></div>
-                        <div class="key key-dual" data-code="Equal"><span>+</span><span>=</span></div>
-                        <div class="key u-2" data-code="Backspace">BACK</div>
+                        <div class="key key-dual" data-code="Digit1"><span>!</span><span>1</span></div><div class="key key-dual" data-code="Digit2"><span>@</span><span>2</span></div><div class="key key-dual" data-code="Digit3"><span>#</span><span>3</span></div><div class="key key-dual" data-code="Digit4"><span>$</span><span>4</span></div><div class="key key-dual" data-code="Digit5"><span>%</span><span>5</span></div><div class="key key-dual" data-code="Digit6"><span>^</span><span>6</span></div><div class="key key-dual" data-code="Digit7"><span>&</span><span>7</span></div><div class="key key-dual" data-code="Digit8"><span>*</span><span>8</span></div><div class="key key-dual" data-code="Digit9"><span>)</span><span>9</span></div><div class="key key-dual" data-code="Digit0"><span>(</span><span>0</span></div>
+                        <div class="key key-dual" data-code="Minus"><span>_</span><span>-</span></div><div class="key key-dual" data-code="Equal"><span>+</span><span>=</span></div><div class="key u-2" data-code="Backspace">BACK</div>
                     </div>
                     <div class="row">
-                        <div class="key u-15" data-code="Tab">TAB</div>
-                        <div class="key" data-code="KeyQ">Q</div>
-                        <div class="key" data-code="KeyW">W</div>
-                        <div class="key" data-code="KeyE">E</div>
-                        <div class="key" data-code="KeyR">R</div>
-                        <div class="key" data-code="KeyT">T</div>
-                        <div class="key" data-code="KeyY">Y</div>
-                        <div class="key" data-code="KeyU">U</div>
-                        <div class="key" data-code="KeyI">I</div>
-                        <div class="key" data-code="KeyO">O</div>
-                        <div class="key" data-code="KeyP">P</div>
-                        <div class="key key-dual" data-code="BracketLeft"><span>{</span><span>[</span></div>
-                        <div class="key key-dual" data-code="BracketRight"><span>}</span><span>]</span></div>
-                        <div class="key u-15 key-dual" data-code="Backslash"><span>|</span><span>\</span></div>
+                        <div class="key u-15" data-code="Tab">TAB</div><div class="key" data-code="KeyQ">Q</div><div class="key" data-code="KeyW">W</div><div class="key" data-code="KeyE">E</div><div class="key" data-code="KeyR">R</div><div class="key" data-code="KeyT">T</div><div class="key" data-code="KeyY">Y</div><div class="key" data-code="KeyU">U</div><div class="key" data-code="KeyI">I</div><div class="key" data-code="KeyO">O</div><div class="key" data-code="KeyP">P</div>
+                        <div class="key key-dual" data-code="BracketLeft"><span>{</span><span>[</span></div><div class="key key-dual" data-code="BracketRight"><span>}</span><span>]</span></div><div class="key u-15 key-dual" data-code="Backslash"><span>|</span><span>\</span></div>
                     </div>
                     <div class="row">
-                        <div class="key u-175" data-code="CapsLock">CAPS</div>
-                        <div class="key" data-code="KeyA">A</div>
-                        <div class="key" data-code="KeyS">S</div>
-                        <div class="key" data-code="KeyD">D</div>
-                        <div class="key" data-code="KeyF">F</div>
-                        <div class="key" data-code="KeyG">G</div>
-                        <div class="key" data-code="KeyH">H</div>
-                        <div class="key" data-code="KeyJ">J</div>
-                        <div class="key" data-code="KeyK">K</div>
-                        <div class="key" data-code="KeyL">L</div>
-                        <div class="key key-dual" data-code="Semicolon"><span>:</span><span>;</span></div>
-                        <div class="key key-dual" data-code="Quote"><span>"</span><span>'</span></div>
-                        <div class="key u-225" data-code="Enter">ENTER</div>
+                        <div class="key u-175" data-code="CapsLock">CAPS</div><div class="key" data-code="KeyA">A</div><div class="key" data-code="KeyS">S</div><div class="key" data-code="KeyD">D</div><div class="key" data-code="KeyF">F</div><div class="key" data-code="KeyG">G</div><div class="key" data-code="KeyH">H</div><div class="key" data-code="KeyJ">J</div><div class="key" data-code="KeyK">K</div><div class="key" data-code="KeyL">L</div>
+                        <div class="key key-dual" data-code="Semicolon"><span>:</span><span>;</span></div><div class="key key-dual" data-code="Quote"><span>"</span><span>'</span></div><div class="key u-225" data-code="Enter">ENTER</div>
                     </div>
                     <div class="row">
-                        <div class="key u-225" data-code="ShiftLeft">SHIFT</div>
-                        <div class="key" data-code="KeyZ">Z</div>
-                        <div class="key" data-code="KeyX">X</div>
-                        <div class="key" data-code="KeyC">C</div>
-                        <div class="key" data-code="KeyV">V</div>
-                        <div class="key" data-code="KeyB">B</div>
-                        <div class="key" data-code="KeyN">N</div>
-                        <div class="key" data-code="KeyM">M</div>
-                        <div class="key key-dual" data-code="Comma"><span>&lt;</span><span>,</span></div>
-                        <div class="key key-dual" data-code="Period"><span>&gt;</span><span>.</span></div>
-                        <div class="key key-dual" data-code="Slash"><span>?</span><span>/</span></div>
-                        <div class="key u-275" data-code="ShiftRight">SHIFT</div>
+                        <div class="key u-225" data-code="ShiftLeft">SHIFT</div><div class="key" data-code="KeyZ">Z</div><div class="key" data-code="KeyX">X</div><div class="key" data-code="KeyC">C</div><div class="key" data-code="KeyV">V</div><div class="key" data-code="KeyB">B</div><div class="key" data-code="KeyN">N</div><div class="key" data-code="KeyM">M</div>
+                        <div class="key key-dual" data-code="Comma"><span>&lt;</span><span>,</span></div><div class="key key-dual" data-code="Period"><span>&gt;</span><span>.</span></div><div class="key key-dual" data-code="Slash"><span>?</span><span>/</span></div><div class="key u-275" data-code="ShiftRight">SHIFT</div>
                     </div>
                     <div class="row">
-                        <div class="key u-125" data-code="ControlLeft">CTRL</div>
-                        <div class="key u-125" data-code="MetaLeft">WIN</div>
-                        <div class="key u-125" data-code="AltLeft">ALT</div>
-                        <div class="key u-space" data-code="Space"></div>
-                        <div class="key u-125" data-code="AltRight">ALT</div>
-                        <div class="key u-125" data-code="MetaRight">WIN</div>
-                        <div class="key u-125" data-code="ContextMenu">MENU</div>
-                        <div class="key u-125" data-code="ControlRight">CTRL</div>
+                        <div class="key u-125" data-code="ControlLeft">CTRL</div><div class="key u-125" data-code="MetaLeft">WIN</div><div class="key u-125" data-code="AltLeft">ALT</div><div class="key u-space" data-code="Space"></div><div class="key u-125" data-code="AltRight">ALT</div><div class="key u-125" data-code="MetaRight">WIN</div><div class="key u-125" data-code="ContextMenu">MENU</div><div class="key u-125" data-code="ControlRight">CTRL</div>
                     </div>
                 </div>
                 
                 <div class="section-nav">
                     <div class="row row-f">
-                        <div class="key" data-code="PrintScreen">PRT</div>
-                        <div class="key" data-code="ScrollLock">SCR</div>
-                        <div class="key" data-code="Pause">PAU</div>
+                        <div class="key" data-code="PrintScreen">PRT</div><div class="key" data-code="ScrollLock">SCR</div><div class="key" data-code="Pause">PAU</div>
                     </div>
                     <div class="row">
-                        <div class="key" data-code="Insert">INS</div>
-                        <div class="key" data-code="Home">HM</div>
-                        <div class="key" data-code="PageUp">PU</div>
+                        <div class="key" data-code="Insert">INS</div><div class="key" data-code="Home">HM</div><div class="key" data-code="PageUp">PU</div>
                     </div>
                     <div class="row" style="margin-bottom: calc(var(--base-size) + var(--gap));">
-                        <div class="key" data-code="Delete">DEL</div>
-                        <div class="key" data-code="End">END</div>
-                        <div class="key" data-code="PageDown">PD</div>
+                        <div class="key" data-code="Delete">DEL</div><div class="key" data-code="End">END</div><div class="key" data-code="PageDown">PD</div>
                     </div>
-                    <div class="row">
-                        <div class="key spacer" style="width: var(--base-size);"></div> 
-                        <div class="key" data-code="ArrowUp">↑</div>
-                    </div>
-                    <div class="row">
-                        <div class="key" data-code="ArrowLeft">←</div>
-                        <div class="key" data-code="ArrowDown">↓</div>
-                        <div class="key" data-code="ArrowRight">→</div>
-                    </div>
+                    <div class="row"><div class="key spacer" style="width: var(--base-size);"></div><div class="key" data-code="ArrowUp">↑</div></div>
+                    <div class="row"><div class="key" data-code="ArrowLeft">←</div><div class="key" data-code="ArrowDown">↓</div><div class="key" data-code="ArrowRight">→</div></div>
                 </div>
 
                 <div class="section-numpad">
                     <div class="row">
-                        <div class="key" data-code="NumLock">NUM</div>
-                        <div class="key" data-code="NumpadDivide">/</div>
-                        <div class="key" data-code="NumpadMultiply">*</div>
-                        <div class="key" data-code="NumpadSubtract">-</div>
+                        <div class="key" data-code="NumLock">NUM</div><div class="key" data-code="NumpadDivide">/</div><div class="key" data-code="NumpadMultiply">*</div><div class="key" data-code="NumpadSubtract">-</div>
                     </div>
                     <div class="row">
-                        <div class="key" data-code="Numpad7">7</div>
-                        <div class="key" data-code="Numpad8">8</div>
-                        <div class="key" data-code="Numpad9">9</div>
-                        <div class="key h-2" data-code="NumpadAdd">+</div>
+                        <div class="key" data-code="Numpad7">7</div><div class="key" data-code="Numpad8">8</div><div class="key" data-code="Numpad9">9</div><div class="key h-2" data-code="NumpadAdd">+</div>
                     </div>
                     <div class="row" style="margin-top: calc((var(--base-size) + var(--gap)) * -1);">
-                        <div class="key" data-code="Numpad4">4</div>
-                        <div class="key" data-code="Numpad5">5</div>
-                        <div class="key" data-code="Numpad6">6</div>
+                        <div class="key" data-code="Numpad4">4</div><div class="key" data-code="Numpad5">5</div><div class="key" data-code="Numpad6">6</div>
                     </div>
                     <div class="row">
-                        <div class="key" data-code="Numpad1">1</div>
-                        <div class="key" data-code="Numpad2">2</div>
-                        <div class="key" data-code="Numpad3">3</div>
-                        <div class="key h-2" data-code="NumpadEnter">ENT</div>
+                        <div class="key" data-code="Numpad1">1</div><div class="key" data-code="Numpad2">2</div><div class="key" data-code="Numpad3">3</div><div class="key h-2" data-code="NumpadEnter">ENT</div>
                     </div>
                     <div class="row" style="margin-top: calc((var(--base-size) + var(--gap)) * -1);">
-                        <div class="key u-2" data-code="Numpad0">0</div>
-                        <div class="key" data-code="NumpadDecimal">.</div>
+                        <div class="key u-2" data-code="Numpad0">0</div><div class="key" data-code="NumpadDecimal">.</div>
                     </div>
                 </div>
             </div>
             
             <div class="extra-keys-container">
                 <div class="row">
-                    <div class="key" data-code="F13">F13</div>
-                    <div class="key" data-code="F14">F14</div>
-                    <div class="key" data-code="F15">F15</div>
-                    <div class="key" data-code="F16">F16</div> 
-                    <div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
-                    <div class="key" data-code="F17">F17</div>
-                    <div class="key" data-code="F18">F18</div>
-                    <div class="key" data-code="F19">F19</div>
-                    <div class="key" data-code="F20">F20</div>
-                    <div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
-                    <div class="key" data-code="F21">F21</div>
-                    <div class="key" data-code="F22">F22</div>
-                    <div class="key" data-code="F23">F23</div>
-                    <div class="key" data-code="F24">F24</div>
+                    <div class="key" data-code="F13">F13</div><div class="key" data-code="F14">F14</div><div class="key" data-code="F15">F15</div><div class="key" data-code="F16">F16</div><div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
+                    <div class="key" data-code="F17">F17</div><div class="key" data-code="F18">F18</div><div class="key" data-code="F19">F19</div><div class="key" data-code="F20">F20</div><div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
+                    <div class="key" data-code="F21">F21</div><div class="key" data-code="F22">F22</div><div class="key" data-code="F23">F23</div><div class="key" data-code="F24">F24</div>
                 </div>
                 <div class="row">
-                    <div class="key u-15" data-code="MouseLeft">左键</div>
-                    <div class="key u-15" data-code="MouseMiddle">中键</div>
-                    <div class="key u-15" data-code="MouseRight">右键</div>
-                    <div class="key u-15" data-code="MouseBackward">后退键</div> 
-                    <div class="key u-15" data-code="MouseForward">前进键</div>
-                    <div class="key" data-code="MouseWheelUp">滚轮↑</div> 
-                    <div class="key" data-code="MouseWheelDown">滚轮↓</div>
-                    <div class="key" data-code="MouseWheelLeft">滚轮←</div> 
-                    <div class="key" data-code="MouseWheelRight">滚轮→</div>
+                    <div class="key u-15" data-code="MouseLeft">左键</div><div class="key u-15" data-code="MouseMiddle">中键</div><div class="key u-15" data-code="MouseRight">右键</div>
+                    <div class="key u-15" data-code="MouseBackward">后退键</div><div class="key u-15" data-code="MouseForward">前进键</div>
+                    <div class="key" data-code="MouseWheelUp">滚轮↑</div><div class="key" data-code="MouseWheelDown">滚轮↓</div><div class="key" data-code="MouseWheelLeft">滚轮←</div><div class="key" data-code="MouseWheelRight">滚轮→</div>
                     <div class="key spacer" style="width: 20px;"></div>
-                    <div class="key u-15" data-code="MediaPreviousTrack">上一曲</div>
-                    <div class="key u-15" data-code="MediaPlayPause">播放/暂停</div>
-                    <div class="key u-15" data-code="MediaNextTrack">下一曲</div>
+                    <div class="key u-15" data-code="MediaPreviousTrack">上一曲</div><div class="key u-15" data-code="MediaPlayPause">播放/暂停</div><div class="key u-15" data-code="MediaNextTrack">下一曲</div>
                     <div class="key spacer" style="width: 20px;"></div>
-                    <div class="key" data-code="VolumeDown">音量-</div>
-                    <div class="key" data-code="VolumeMute">静音</div>
-                    <div class="key" data-code="VolumeUp">音量+</div>
+                    <div class="key" data-code="VolumeDown">音量-</div><div class="key" data-code="VolumeMute">静音</div><div class="key" data-code="VolumeUp">音量+</div>
                 </div>
             </div>
 
             <div class="recent-keys-container">
                 <h2>最近点击按键</h2>
-                <div id="recent-keys-list" class="row">
-                    </div>
+                <div id="recent-keys-list" class="row"></div>
             </div>
-
         </div>
 
         <div class="log-area-wrapper">
             <h2>活动日志</h2>
-            <div id="log-list">
-                </div>
+            <div id="log-list"></div>
+            <div class="browser-note">
+                <p>⚠️ **浏览器限制声明** ⚠️</p>
+                <p>部分系统级或浏览器快捷键 (如 PrintScreen, Alt+Tab, Win/Meta 键组合等) 可能因操作系统或浏览器自身的安全/快捷键机制而无法被此工具完全或持续地检测到。</p>
+                <p>此外，媒体键和音量键可能被其他正在运行的媒体播放器或后台应用 (如 Spotify, 视频网站等) 优先捕获并干扰识别。</p>
+            </div>
         </div>
-
     </div>
 
     <script>
-        // ====================================================================
-        // I. 变量和常量 (DOM 引用, Canvas, Audio, State)
-        // ====================================================================
-        
-        // DOM 引用
-        const keyNameDisplay = document.getElementById('key-name');
-        const keyCodeDisplay = document.getElementById('key-code');
-        const keyHexDisplay = document.getElementById('key-hex-display'); // 新增：十六进制显示
-        const kpmDisplay = document.getElementById('kpm-stat');
-        const resetBtn = document.getElementById('reset-btn');
-        const soundToggle = document.getElementById('sound-toggle');
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeDisplayText = document.getElementById('theme-display-text'); 
-        const logList = document.getElementById('log-list'); 
-        const recentKeysList = document.getElementById('recent-keys-list'); 
-        const progressBar = document.getElementById('test-progress-bar');
-        const progressText = document.getElementById('progress-text');
-        const mouseXYDisplay = document.getElementById('mouse-xy-stat');
-        const silentAudio = document.getElementById('silent-audio'); 
-        
-        // Canvas/KPM 状态
-        const kpmChartCanvas = document.getElementById('kpm-chart');
-        const kpmChartCtx = kpmChartCanvas.getContext('2d');
-        const CHART_WIDTH = kpmChartCanvas.width;
-        const CHART_HEIGHT = kpmChartCanvas.height;
-        const MAX_CHART_POINTS = 50; 
-        const MAX_KPM_Y = 600; 
-        let kpmHistory = [];
-        let keyPressTimestamps = []; 
-        let kpmInterval = null;
-
-        // Audio 状态
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext();
-
-        // 其它状态
-        const wheelTimeouts = {}; 
-        const pulseKeyTimouts = {}; 
-        const MAX_RECENT_KEYS = 66; 
-        let totalTestableKeys = 0;
-        let recentKeyHistory = [];
-        
-        // QMK 映射表
-        const QMK_CODE_MAP = {
-            // Core Keys
-            'Escape': 'KC_ESC', 'Enter': 'KC_ENT', 'Backspace': 'KC_BSPC', 'Tab': 'KC_TAB',
-            'Space': 'KC_SPC', 'CapsLock': 'KC_CAPS',
-
-            // Modifiers (L/R)
-            'ShiftLeft': 'KC_LSFT', 'ShiftRight': 'KC_RSFT',
-            'ControlLeft': 'KC_LCTL', 'ControlRight': 'KC_RCTL',
-            'AltLeft': 'KC_LALT', 'AltRight': 'KC_RALT',
-            'MetaLeft': 'KC_LGUI', 'MetaRight': 'KC_RGUI', // GUI is QMK's default Win/Meta key
-
-            // Punctuation
-            'Minus': 'KC_MINS', 'Equal': 'KC_EQL', 'BracketLeft': 'KC_LBRC', 'BracketRight': 'KC_RBRC',
-            'Backslash': 'KC_BSLS', 'Semicolon': 'KC_SCLN', 'Quote': 'KC_QUOT', 'Comma': 'KC_COMM',
-            'Period': 'KC_DOT', 'Slash': 'KC_SLSH', 'Backquote': 'KC_GRV',
-
-            // Navigation/Special
-            'PrintScreen': 'KC_PSCR', 'ScrollLock': 'KC_SLCK', 'Pause': 'KC_PAUS',
-            'Insert': 'KC_INS', 'Delete': 'KC_DEL', 'Home': 'KC_HOME', 'End': 'KC_END',
-            'PageUp': 'KC_PGUP', 'PageDown': 'KC_PGDN', 'ContextMenu': 'KC_MENU',
-            
-            // Arrows
-            'ArrowUp': 'KC_UP', 'ArrowDown': 'KC_DOWN', 'ArrowLeft': 'KC_LEFT', 'ArrowRight': 'KC_RIGHT',
-
-            // Numpad (special cases)
-            'NumpadEnter': 'KC_PENT', 'NumpadDivide': 'KC_PSLS', 'NumpadMultiply': 'KC_PAST',
-            'NumpadSubtract': 'KC_PMNS', 'NumpadAdd': 'KC_PPLS', 'NumpadDecimal': 'KC_PDOT',
-            'NumLock': 'KC_NLCK',
-
-            // Media
-            'VolumeUp': 'KC_VOLU', 'VolumeDown': 'KC_VOLD', 'VolumeMute': 'KC_MUTE',
-            'MediaPlayPause': 'KC_MPLY', 'MediaNextTrack': 'KC_MNXT', 'MediaPreviousTrack': 'KC_MPRV',
-
-            // Mouse (QMK style buttons and wheel)
-            'MouseLeft': 'KC_BTN1', 'MouseRight': 'KC_BTN2', 'MouseMiddle': 'KC_BTN3', 
-            'MouseBackward': 'KC_BTN4', 'MouseForward': 'KC_BTN5',
-            'MouseWheelUp': 'KC_WH_U', 'MouseWheelDown': 'KC_WH_D',
-            'MouseWheelLeft': 'KC_WH_L', 'MouseWheelRight': 'KC_WH_R',
-        };
-        
-        // QMK 十六进制映射表 (USB HID Keycodes)
-        const QMK_HEX_MAP = {
-            'KC_NO': '0x00', 'KC_ERR_OVF': '0x01', 'KC_A': '0x04', 'KC_B': '0x05', 'KC_C': '0x06', 
-            'KC_D': '0x07', 'KC_E': '0x08', 'KC_F': '0x09', 'KC_G': '0x0A', 'KC_H': '0x0B', 
-            'KC_I': '0x0C', 'KC_J': '0x0D', 'KC_K': '0x0E', 'KC_L': '0x0F', 'KC_M': '0x10', 
-            'KC_N': '0x11', 'KC_O': '0x12', 'KC_P': '0x13', 'KC_Q': '0x14', 'KC_R': '0x15', 
-            'KC_S': '0x16', 'KC_T': '0x17', 'KC_U': '0x18', 'KC_V': '0x19', 'KC_W': '0x1A', 
-            'KC_X': '0x1B', 'KC_Y': '0x1C', 'KC_Z': '0x1D', 'KC_1': '0x1E', 'KC_2': '0x1F', 
-            'KC_3': '0x20', 'KC_4': '0x21', 'KC_5': '0x22', 'KC_6': '0x23', 'KC_7': '0x24', 
-            'KC_8': '0x25', 'KC_9': '0x26', 'KC_0': '0x27', 'KC_ENT': '0x28', 'KC_ESC': '0x29', 
-            'KC_BSPC': '0x2A', 'KC_TAB': '0x2B', 'KC_SPC': '0x2C', 'KC_MINS': '0x2D', 'KC_EQL': '0x2E', 
-            'KC_LBRC': '0x2F', 'KC_RBRC': '0x30', 'KC_BSLS': '0x31', 'KC_NUHS': '0x32', 'KC_SCLN': '0x33', 
-            'KC_QUOT': '0x34', 'KC_GRV': '0x35', 'KC_COMM': '0x36', 'KC_DOT': '0x37', 'KC_SLSH': '0x38', 
-            'KC_CAPS': '0x39', 'KC_F1': '0x3A', 'KC_F2': '0x3B', 'KC_F3': '0x3C', 'KC_F4': '0x3D', 
-            'KC_F5': '0x3E', 'KC_F6': '0x3F', 'KC_F7': '0x40', 'KC_F8': '0x41', 'KC_F9': '0x42', 
-            'KC_F10': '0x43', 'KC_F11': '0x44', 'KC_F12': '0x45', 'KC_PSCR': '0x46', 'KC_SLCK': '0x47', 
-            'KC_PAUS': '0x48', 'KC_INS': '0x49', 'KC_HOME': '0x4A', 'KC_PGUP': '0x4B', 'KC_DEL': '0x4C', 
-            'KC_END': '0x4D', 'KC_PGDN': '0x4E', 'KC_RIGHT': '0x4F', 'KC_LEFT': '0x50', 'KC_DOWN': '0x51', 
-            'KC_UP': '0x52', 'KC_NLCK': '0x53', 'KC_PSLS': '0x54', 'KC_PAST': '0x55', 'KC_PMNS': '0x56', 
-            'KC_PPLS': '0x57', 'KC_PENT': '0x58', 'KC_P1': '0x59', 'KC_P2': '0x5A', 'KC_P3': '0x5B', 
-            'KC_P0': '0x62', 'KC_PDOT': '0x63', 'KC_NUBS': '0x64', 'KC_MENU': '0x65',
-            'KC_LCTL': '0xE0', 'KC_LSFT': '0xE1', 'KC_LALT': '0xE2', 'KC_LGUI': '0xE3', 
-            'KC_RCTL': '0xE4', 'KC_RSFT': '0xE5', 'KC_RALT': '0xE6', 'KC_RGUI': '0xE7',
-            
-            // F13-F24 (QMK extended range)
-            'KC_F13': '0x68', 'KC_F14': '0x69', 'KC_F15': '0x6A', 'KC_F16': '0x6B', 
-            'KC_F17': '0x6C', 'KC_F18': '0x6D', 'KC_F19': '0x6E', 'KC_F20': '0x6F', 
-            'KC_F21': '0x70', 'KC_F22': '0x71', 'KC_F23': '0x72', 'KC_F24': '0x73',
-            
-            // Media Keys (Consumer control usage page) - NOTE: QMK maps these to 0x01xx range, using 0xXX for display simplicity here.
-            'KC_VOLU': '0xA0', 'KC_VOLD': '0xA1', 'KC_MUTE': '0xA2',
-            'KC_MPLY': '0xCD', 'KC_MNXT': '0xB5', 'KC_MPRV': '0xB6',
-            
-            // Mouse Keys (QMK specific names for HID buttons)
-            'KC_BTN1': '0x81', 'KC_BTN2': '0x82', 'KC_BTN3': '0x83', 
-            'KC_BTN4': '0x84', 'KC_BTN5': '0x85',
-            'KC_WH_U': '0x90', 'KC_WH_D': '0x91', 'KC_WH_L': '0x92', 'KC_WH_R': '0x93',
-            
-            // Numpad 4, 5, 6, 7, 8, 9
-            'KC_P4': '0x5C', 'KC_P5': '0x5D', 'KC_P6': '0x5E', 'KC_P7': '0x5F', 'KC_P8': '0x60', 'KC_P9': '0x61',
+        // --- Configuration & Constants ---
+        const CONFIG = {
+            chart: { width: 150, height: 40, maxPoints: 50, maxKPM: 600 },
+            recentKeys: { max: 66, stepPx: 44 },
+            audio: { duration: 0.05, type: 'square' },
+            colors: { chartDark: '#8cffec', chartLight: '#0d6efd', fillDark: 'rgba(140, 255, 236, 0.1)', fillLight: 'rgba(13, 110, 253, 0.1)' }
         };
 
+        // Data Structures (Optimized)
+        const DOM = {
+            keyName: document.getElementById('key-name'), keyCode: document.getElementById('key-code'),
+            keyHex: document.getElementById('key-hex-display'), kpm: document.getElementById('kpm-stat'),
+            reset: document.getElementById('reset-btn'), sound: document.getElementById('sound-toggle'),
+            theme: document.getElementById('theme-toggle'), themeText: document.getElementById('theme-display-text'),
+            log: document.getElementById('log-list'), recent: document.getElementById('recent-keys-list'),
+            progress: document.getElementById('test-progress-bar'), progressText: document.getElementById('progress-text'),
+            mouseXY: document.getElementById('mouse-xy-stat'), audio: document.getElementById('silent-audio'),
+            chart: document.getElementById('kpm-chart').getContext('2d')
+        };
+        
+        let state = { kpmHistory: [], timestamps: [], kpmInterval: null, currentKPM: 0, recentKeys: [], totalKeys: 0, timers: {} };
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // ====================================================================
-        // II. 核心工具函数
-        // ====================================================================
+        // QMK Mappings (Compressed)
+        const QMK_MAP = {
+            Escape:'KC_ESC',Enter:'KC_ENT',Backspace:'KC_BSPC',Tab:'KC_TAB',Space:'KC_SPC',CapsLock:'KC_CAPS',
+            ShiftLeft:'KC_LSFT',ShiftRight:'KC_RSFT',ControlLeft:'KC_LCTL',ControlRight:'KC_RCTL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
+            Minus:'KC_MINS',Equal:'KC_EQL',BracketLeft:'KC_LBRC',BracketRight:'KC_RBRC',Backslash:'KC_BSLS',Semicolon:'KC_SCLN',Quote:'KC_QUOT',Comma:'KC_COMM',Period:'KC_DOT',Slash:'KC_SLSH',Backquote:'KC_GRV',
+            PrintScreen:'KC_PSCR',ScrollLock:'KC_SLCK',Pause:'KC_PAUS',Insert:'KC_INS',Delete:'KC_DEL',Home:'KC_HOME',End:'KC_END',PageUp:'KC_PGUP',PageDown:'KC_PGDN',ContextMenu:'KC_MENU',
+            ArrowUp:'KC_UP',ArrowDown:'KC_DOWN',ArrowLeft:'KC_LEFT',ArrowRight:'KC_RIGHT',
+            NumpadEnter:'KC_PENT',NumpadDivide:'KC_PSLS',NumpadMultiply:'KC_PAST',NumpadSubtract:'KC_PMNS',NumpadAdd:'KC_PPLS',NumpadDecimal:'KC_PDOT',NumLock:'KC_NLCK',
+            VolumeUp:'KC_VOLU',VolumeDown:'KC_VOLD',VolumeMute:'KC_MUTE',MediaPlayPause:'KC_MPLY',MediaNextTrack:'KC_MNXT',MediaPreviousTrack:'KC_MPRV',
+            MouseLeft:'KC_BTN1',MouseRight:'KC_BTN2',MouseMiddle:'KC_BTN3',MouseBackward:'KC_BTN4',MouseForward:'KC_BTN5',
+            MouseWheelUp:'KC_WH_U',MouseWheelDown:'KC_WH_D',MouseWheelLeft:'KC_WH_L',MouseWheelRight:'KC_WH_R'
+        };
+        const QMK_HEX = {
+            KC_NO:'0x00',KC_A:'0x04',KC_Z:'0x1D',KC_1:'0x1E',KC_0:'0x27',KC_ENT:'0x28',KC_ESC:'0x29',KC_BSPC:'0x2A',KC_TAB:'0x2B',KC_SPC:'0x2C',
+            KC_MINS:'0x2D',KC_EQL:'0x2E',KC_LBRC:'0x2F',KC_RBRC:'0x30',KC_BSLS:'0x31',KC_SCLN:'0x33',KC_QUOT:'0x34',KC_GRV:'0x35',KC_COMM:'0x36',KC_DOT:'0x37',KC_SLSH:'0x38',KC_CAPS:'0x39',
+            KC_F1:'0x3A',KC_F12:'0x45',KC_PSCR:'0x46',KC_SLCK:'0x47',KC_PAUS:'0x48',KC_INS:'0x49',KC_HOME:'0x4A',KC_PGUP:'0x4B',KC_DEL:'0x4C',KC_END:'0x4D',KC_PGDN:'0x4E',
+            KC_RIGHT:'0x4F',KC_LEFT:'0x50',KC_DOWN:'0x51',KC_UP:'0x52',KC_NLCK:'0x53',KC_PSLS:'0x54',KC_PAST:'0x55',KC_PMNS:'0x56',KC_PPLS:'0x57',KC_PENT:'0x58',
+            KC_P1:'0x59',KC_P0:'0x62',KC_PDOT:'0x63',KC_MENU:'0x65',KC_F13:'0x68',KC_F24:'0x73',
+            KC_LCTL:'0xE0',KC_LSFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTL:'0xE4',KC_RSFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
+            KC_VOLU:'0xA0',KC_VOLD:'0xA1',KC_MUTE:'0xA2',KC_MPLY:'0xCD',KC_MNXT:'0xB5',KC_MPRV:'0xB6',
+            KC_BTN1:'0x81',KC_BTN2:'0x82',KC_BTN3:'0x83',KC_BTN4:'0x84',KC_BTN5:'0x85',KC_WH_U:'0x90',KC_WH_D:'0x91',KC_WH_L:'0x92',KC_WH_R:'0x93',
+            KC_P4:'0x5C',KC_P5:'0x5D',KC_P6:'0x5E',KC_P7:'0x5F',KC_P8:'0x60',KC_P9:'0x61'
+        };
+        const PULSE_KEYS = new Set(['ContextMenu','PrintScreen',...Array.from({length:12},(_,i)=>`F${i+13}`)]);
 
-        /** 将 JS Event.code 映射为 QMK 风格代码 */
-        function mapCodeToQMK(code) {
+        // --- Core Functions ---
+        const mapCodeToQMK = (code) => {
             if (!code) return 'KC_NO';
-
-            // [修复] 避免对已经是 QMK 格式的代码重复添加 'KC_' 前缀
             if (code.startsWith('KC_')) return code;
-            
-            // F-Keys (F1, F13, etc.)
-            if (code.startsWith('F') && code.length > 1 && !isNaN(code.substring(1))) return `KC_${code}`;
+            if (code.match(/^F(1[3-9]|2[0-4])$/)) return `KC_${code}`;
+            if (code.startsWith('Key')) return 'KC_' + code.slice(3);
+            if (code.startsWith('Digit')) return 'KC_' + code.slice(5);
+            if (code.match(/^Numpad\d$/)) return 'KC_P' + code.slice(6);
+            if (code.match(/^F\d+$/)) return 'KC_' + code;
+            return QMK_MAP[code] || ('KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, ''));
+        };
 
-            // Letters (KeyA -> KC_A)
-            if (code.startsWith('Key')) return 'KC_' + code.substring(3);
-            
-            // Digits (Digit1 -> KC_1)
-            if (code.startsWith('Digit')) return 'KC_' + code.substring(5);
-            
-            // Numpad Digits (Numpad1 -> KC_P1)
-            if (code.startsWith('Numpad') && code.length === 7 && !isNaN(code.substring(6))) return 'KC_P' + code.substring(6);
-            
-            // 查表查找特殊键
-            const mapped = QMK_CODE_MAP[code];
-            if (mapped) return mapped;
-            
-            // 默认回退 (不常见按键)
-            return 'KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, '');
-        }
-        
-        /** 将 QMK 代码映射为十六进制代码 */
-        function getQMKHexCode(qmkCode) {
-            return QMK_HEX_MAP[qmkCode] || '0x??';
-        }
+        const getHex = (c) => QMK_HEX[c] || (c.startsWith('KC_F') && c.length<7 ? '0x'+(parseInt(c.slice(4))+57).toString(16).toUpperCase() : '0x??');
 
-        /** 获取格式化时间 */
-        function formatTime() {
-            const now = new Date();
-            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-        }
+        const playSound = (freq) => {
+            if (!DOM.sound.checked) return;
+            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.type = CONFIG.audio.type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + CONFIG.audio.duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + CONFIG.audio.duration);
+        };
 
-        /** 播放音效 */
-        function playSound(f, d = 0.05, t = 'square') {
-            if (!soundToggle.checked) return;
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = t;
-            oscillator.frequency.setValueAtTime(f, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + d);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + d);
-        }
-
-        /** 根据按键代码获取音调频率 */
-        function getKeyFrequency(code) {
-            if (!code) return 440;
-            if (code.startsWith('Key') || code.startsWith('Digit')) return 440; 
-            if (code.startsWith('F') || ['Insert', 'Delete', 'Home', 'End', 'PageUp', 'PageDown'].includes(code)) return 587.33; 
-            if (code.includes('Shift') || code.includes('Control') || code.includes('Alt') || code.includes('Meta') || code === 'ContextMenu') return 349.23; 
-            if (code === 'Space') return 329.63; 
-            if (['Enter', 'NumpadEnter', 'Tab', 'Backspace'].includes(code)) return 493.88; 
-            if (code.startsWith('Numpad')) return 466.16; 
-            if (code.includes('Mouse') || code.includes('Media') || code.includes('Volume')) return 783.99; 
+        const getFreq = (c) => {
+            if (!c) return 440;
+            if (c.match(/^(Key|Digit)/)) return 440;
+            if (c.startsWith('F') || ['Insert','Delete','Home','End','PageUp','PageDown'].includes(c)) return 587.33;
+            if (['Shift','Control','Alt','Meta','ContextMenu'].some(x=>c.includes(x))) return 349.23;
+            if (c === 'Space') return 329.63;
+            if (['Enter','NumpadEnter','Tab','Backspace'].includes(c)) return 493.88;
+            if (c.startsWith('Numpad')) return 466.16;
+            if (['Mouse','Media','Volume'].some(x=>c.includes(x))) return 783.99;
             return 440;
-        }
-        
-        /** 判断是否为脉冲键（按下立即弹起）*/
-        function isPulseKey(code) {
-            if (!code) return false;
-            return code.startsWith('Media') || 
-                   code.startsWith('Volume') || 
-                   code === 'ContextMenu' || 
-                   code === 'PrintScreen' ||
-                   ['F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20', 'F21', 'F22', 'F23', 'F24'].includes(code);
-        }
+        };
 
-        /** 获取按键的显示名称 */
-        function getKeyDisplay(code, key) {
-            if (code === 'ShiftLeft') return '左SHIFT';
-            if (code === 'ShiftRight') return '右SHIFT';
-            if (code === 'ControlLeft') return '左CTRL';
-            if (code === 'ControlRight') return '右CTRL';
-            if (code === 'AltLeft') return '左ALT';
-            if (code === 'AltRight') return '右ALT';
-            if (code === 'MetaLeft') return '左WIN';
-            if (code === 'MetaRight') return '右WIN';
-            
+        const isPulse = (c) => c && (c.startsWith('Media') || c.startsWith('Volume') || PULSE_KEYS.has(c));
+        
+        const getKeyEl = (code) => document.querySelector(`.key[data-code="${code}"]`);
+        
+        const getKeyName = (code, key) => {
             if (code === 'Space') return 'SPACE';
+            if (['Shift','Control','Alt','Meta'].some(m => code.startsWith(m))) {
+                const map = { Left: '左', Right: '右' };
+                const base = code.replace(/(Left|Right)$/, '');
+                const side = code.match(/(Left|Right)$/)?.[0];
+                return (map[side] || '') + (base === 'Meta' ? 'WIN' : base.toUpperCase());
+            }
+            return getKeyEl(code)?.textContent.trim() || (key.length > 1 ? key.toUpperCase() : key);
+        };
+
+        const normMod = (e) => {
+            const map = { 1: 'Left', 2: 'Right' };
+            if (['Shift','Control','Alt','Meta'].includes(e.key)) return e.key + (map[e.location] || (e.key==='Shift'?'Right':'Left'));
+            if (e.key === 'OS') return 'Meta' + (map[e.location] || 'Left');
+            return e.code;
+        };
+
+        // --- UI Updates ---
+        const log = (type, key) => {
+            const t = new Date(), entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `<span class="timestamp">[${t.toTimeString().split(' ')[0]}]</span> ${type==='press'?'按下':'抬起'} ${key} 键`;
+            DOM.log.prepend(entry);
+        };
+
+        const updateInfo = (name, code) => {
+            const qmk = mapCodeToQMK(code);
+            DOM.keyName.textContent = name; DOM.keyCode.textContent = qmk; DOM.keyHex.textContent = `(${getHex(qmk)})`;
+        };
+
+        const updateRecent = (code, name) => {
+            const newKey = { code, name };
+            const el = document.createElement('div');
+            el.className = 'key recent-history recent-key-latest';
+            el.textContent = name; el.dataset.code = code;
+            el.style.opacity = '0'; el.style.transform = `translateX(-${CONFIG.recentKeys.stepPx}px)`;
             
-            if (code) {
-                const keyElement = document.querySelector(`.key[data-code="${code}"]`);
-                if (keyElement) {
-                    const textContent = keyElement.textContent.trim();
-                    if (textContent) return textContent;
-                }
-            }
-            return key.length > 1 ? key.toUpperCase() : key;
-        }
-
-        /** 修正修饰键代码 (包含右 Shift 强制识别逻辑) */
-        function normalizeModifierCode(e) {
-            let code = e.code || '';
-            const key = e.key;
-            const location = e.location;
-
-            if (key === 'Shift') {
-                if (location === 1) code = 'ShiftLeft'; 
-                else if (location === 2) code = 'ShiftRight';
-                else if (location !== 1) code = 'ShiftRight'; 
-            } else if (key === 'Control') {
-                if (location === 1) code = 'ControlLeft';
-                else if (location === 2) code = 'ControlRight';
-                else if (!code) code = 'Control';
-            } else if (key === 'Alt') {
-                if (location === 1) code = 'AltLeft';
-                else if (location === 2) code = 'AltRight';
-                else if (!code) code = 'Alt';
-            } else if (key === 'Meta' || key === 'OS') {
-                if (location === 1) code = 'MetaLeft';
-                else if (location === 2) code = 'MetaRight';
-                else if (!code) code = 'Meta';
+            // 关键修复：循环移除直到数量达标（严格模式），防止快速按键导致的溢出
+            while (DOM.recent.children.length >= CONFIG.recentKeys.max) {
+                DOM.recent.lastElementChild.remove();
             }
 
-            return code;
-        }
-        
-        /** 更新主题显示文本 (深色/浅色) */
-        function updateThemeDisplayText(theme) {
-            if (theme === 'light' || theme === true) {
-                themeDisplayText.textContent = '浅色';
-            } else {
-                themeDisplayText.textContent = '深色';
-            }
-        }
+            DOM.recent.querySelector('.recent-key-latest')?.classList.remove('recent-key-latest');
+            DOM.recent.prepend(el);
+            requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translateX(0)'; });
+        };
 
+        const updateProg = () => {
+            if (!state.totalKeys) return;
+            const cnt = document.querySelectorAll('.key.tested').length;
+            DOM.progressText.textContent = `${cnt} / ${state.totalKeys} 键`;
+            DOM.progress.style.width = `${(cnt / state.totalKeys) * 100}%`;
+        };
 
-        // ====================================================================
-        // III. UI/状态更新函数
-        // ====================================================================
-
-        /** 记录简洁日志 */
-        function logEvent(type, key) {
-            const time = formatTime();
-            let actionText = type === 'press' ? `按下 ${key} 键` : `抬起 ${key} 键`;
-            const logClass = type === 'press' ? 'press' : 'release';
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${logClass}`;
-            entry.innerHTML = `<span class="timestamp">[${time}]</span> ${actionText}`; 
-            logList.prepend(entry);
-        }
-
-        /** 设置按键在 UI 上的状态 */
-        function setKeyState(code, isDown) {
-            if (!code) return; 
-            const keyElement = document.querySelector(`.key[data-code="${code}"]`);
-            if (keyElement) {
-                if (isDown) {
-                    const wasTested = keyElement.classList.contains('tested');
-                    keyElement.classList.add('active');
-                    keyElement.classList.add('tested');
-                    if (!wasTested) updateProgress(); 
-                } else {
-                    keyElement.classList.remove('active');
-                }
-            }
-        }
-
-        /** 更新顶部的按键信息显示 */
-        function updateInfoDisplay(name, code) {
-            const qmkCode = mapCodeToQMK(code);
-            const hexCode = getQMKHexCode(qmkCode);
-            
-            keyNameDisplay.textContent = name;
-            keyCodeDisplay.textContent = qmkCode || "KC_NO";
-            keyHexDisplay.textContent = `(${hexCode})`;
-        }
-
-        /**
-         * 更新最近点击按键列表（平滑过渡版）
-         */
-        function updateRecentKeyDisplay(code, keyName) {
-            // 根据 CSS 变量计算出的按键尺寸 + 间隙 (40px + 4px)
-            const KEY_STEP_PX = 44; 
-            const MAX_KEYS = MAX_RECENT_KEYS;
-
-            const newKey = { code: code, key: keyName };
-
-            let elementToRemove = null;
-            if (recentKeysList.children.length >= MAX_KEYS) {
-                elementToRemove = recentKeysList.lastElementChild;
-            }
-
-            recentKeyHistory.unshift(newKey);
-            if (recentKeyHistory.length > MAX_KEYS) {
-                recentKeyHistory = recentKeyHistory.slice(0, MAX_KEYS); 
-            }
-
-            if (elementToRemove) {
-                elementToRemove.classList.remove('recent-key-latest'); 
-                
-                elementToRemove.style.opacity = '0';
-                elementToRemove.style.transform = `translateX(${KEY_STEP_PX}px)`; 
-                
-                if (elementToRemove.parentElement) {
-                    elementToRemove.parentElement.removeChild(elementToRemove);
-                }
-            }
-            
-            const currentLatest = recentKeysList.querySelector('.recent-key-latest');
-            if (currentLatest) {
-                currentLatest.classList.remove('recent-key-latest');
-            }
-
-            const newKeyEl = document.createElement('div');
-            newKeyEl.className = 'key recent-history recent-key-latest';
-            newKeyEl.setAttribute('data-code', newKey.code);
-            newKeyEl.textContent = newKey.key;
-            
-            newKeyEl.style.opacity = '0';
-            newKeyEl.style.transform = `translateX(-${KEY_STEP_PX}px)`; 
-
-            recentKeysList.prepend(newKeyEl);
-            
-            void newKeyEl.offsetWidth; 
-
-            requestAnimationFrame(() => {
-                newKeyEl.style.opacity = '1.0';
-                newKeyEl.style.transform = 'translateX(0)';
-            });
-        }
-        
-        /** 更新测试进度条 */
-        function updateProgress() {
-            const testedKeys = document.querySelectorAll('.key[data-code].tested').length;
-            if (totalTestableKeys === 0) {
-                progressText.textContent = '0 / 0 键';
-                progressBar.style.width = '0%';
-                return; 
-            }
-            const percentage = (testedKeys / totalTestableKeys) * 100;
-            progressText.textContent = `${testedKeys} / ${totalTestableKeys} 键`;
-            progressBar.style.width = `${percentage.toFixed(1)}%`;
-        }
-
-        /** 重置测试状态 */
-        function resetTest() {
-            document.querySelectorAll('.key.tested').forEach(el => {
-                el.classList.remove('tested');
-                el.classList.remove('active');
-            });
-            updateInfoDisplay('-', 'KC_NO'); 
-            logList.innerHTML = ''; 
-            recentKeysList.innerHTML = ''; 
-            recentKeyHistory = [];         
-            if (kpmInterval) clearInterval(kpmInterval);
-            kpmInterval = null;
-            keyPressTimestamps = []; 
-            kpmDisplay.textContent = '0';
-            kpmHistory = [];
-            drawKPMChart(); 
-            updateProgress();
-            mouseXYDisplay.textContent = 'X: - Y: -';
-            for (const code in pulseKeyTimouts) {
-                clearTimeout(pulseKeyTimouts[code]);
-                delete pulseKeyTimouts[code];
-            }
-        }
-
-        /** 更新鼠标坐标显示 */
-        function updateMouseXYDisplay(x, y) {
-            mouseXYDisplay.textContent = `X: ${x} Y: ${y}`;
-        }
-        
-        // ====================================================================
-        // IV. KPM 统计和图表
-        // ====================================================================
-
-        /** 记录按键时间戳并启动 KPM 刷新 */
-        function trackKPM() {
-            keyPressTimestamps.push(Date.now());
-            if (kpmInterval === null) {
-                kpmInterval = setInterval(() => {
-                    updateKPMDisplay();
-                    drawKPMChart();
-                }, 200); 
-            }
-        }
-
-        /** 计算并更新 KPM 值 */
-        function updateKPMDisplay() {
+        // --- KPM Logic ---
+        const updateKPM = (interval = false) => {
             const now = Date.now();
-            const oneSecondAgo = now - 1000;
-            keyPressTimestamps = keyPressTimestamps.filter(timestamp => timestamp > oneSecondAgo);
-            let kpm = keyPressTimestamps.length * 60;
-            kpmDisplay.textContent = kpm;
-            kpmHistory.push(kpm);
-            if (kpmHistory.length > MAX_CHART_POINTS) {
-                kpmHistory.shift();
+            state.timestamps = state.timestamps.filter(t => now - t < 1000);
+            const raw = state.timestamps.length * 60;
+            state.currentKPM = state.currentKPM ? state.currentKPM * 0.5 + raw * 0.5 : raw;
+            const val = Math.round(state.currentKPM);
+            DOM.kpm.textContent = val;
+
+            if (interval || state.kpmHistory.length === 0) {
+                state.kpmHistory.push(val);
+                if (state.kpmHistory.length > CONFIG.chart.maxPoints) state.kpmHistory.shift();
             }
-        }
-        
-        /** 绘制 KPM 实时图表 */
-        function drawKPMChart() {
-            kpmChartCtx.clearRect(0, 0, CHART_WIDTH, CHART_HEIGHT);
-            if (kpmHistory.length < 2) return;
-            const maxKPM = Math.max(MAX_KPM_Y, ...kpmHistory); 
+        };
+
+        const drawChart = () => {
+            const { width, height } = CONFIG.chart, ctx = DOM.chart;
+            ctx.clearRect(0, 0, width, height);
+            if (state.kpmHistory.length < 2) return;
+            const max = Math.max(CONFIG.chart.maxKPM, ...state.kpmHistory);
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             
-            const isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
-            const strokeColor = isLightMode ? '#0d6efd' : '#8cffec'; 
-            const fillColor = isLightMode ? 'rgba(13, 110, 253, 0.1)' : 'rgba(140, 255, 236, 0.1)';
+            ctx.beginPath(); ctx.strokeStyle = isLight ? CONFIG.colors.chartLight : CONFIG.colors.chartDark; ctx.lineWidth = 1.5;
+            const step = width / (CONFIG.chart.maxPoints - 1);
+            state.kpmHistory.forEach((k, i) => {
+                const y = height - (Math.min(k, max) / max) * height;
+                i === 0 ? ctx.moveTo(i * step, y) : ctx.lineTo(i * step, y);
+            });
+            ctx.stroke(); ctx.lineTo(width, height); ctx.lineTo(0, height); ctx.closePath();
+            ctx.fillStyle = isLight ? CONFIG.colors.fillLight : CONFIG.colors.fillDark; ctx.fill();
+        };
 
-            kpmChartCtx.beginPath();
-            kpmChartCtx.strokeStyle = strokeColor;
-            kpmChartCtx.lineWidth = 1.5;
+        const trackAct = () => {
+            state.timestamps.push(Date.now());
+            updateKPM();
+            if (!state.kpmInterval) state.kpmInterval = setInterval(() => { updateKPM(true); drawChart(); }, 50);
+        };
 
-            const pointCount = kpmHistory.length;
-            const xStep = CHART_WIDTH / (MAX_CHART_POINTS - 1); 
+        // --- Event Handlers ---
+        const handleInput = (action, code, name, isRepeat = false) => {
+            if (action === 'press') {
+                if (isRepeat) return;
+                log('press', name); updateInfo(name, code); playSound(getFreq(code));
+                updateRecent(code, name); trackAct();
+                
+                const el = getKeyEl(code);
+                if (el) { el.classList.add('active', 'tested'); updateProg(); }
 
-            for (let i = 0; i < pointCount; i++) {
-                const kpm = kpmHistory[i];
-                const y = CHART_HEIGHT - (Math.min(kpm, maxKPM) / maxKPM) * CHART_HEIGHT; 
-                const x = i * xStep;
-                if (i === 0) kpmChartCtx.moveTo(x, y);
-                else kpmChartCtx.lineTo(x, y);
-            }
-            kpmChartCtx.stroke();
-            kpmChartCtx.lineTo(CHART_WIDTH, CHART_HEIGHT);
-            kpmChartCtx.lineTo(0, CHART_HEIGHT);
-            kpmChartCtx.closePath();
-            kpmChartCtx.fillStyle = fillColor; 
-            kpmChartCtx.fill();
-        }
-
-        // ====================================================================
-        // V. 事件处理器
-        // ====================================================================
-
-        /** 键盘按下事件处理器 */
-        function handleKeyDown(e) {
-            e.preventDefault(); 
-            const key = e.key;
-            let code = normalizeModifierCode(e);
-
-            // 媒体/音量键的重映射
-            if (key.startsWith('AudioVolume') || (code && code.startsWith('AudioVolume'))) {
-                if (key === 'AudioVolumeUp' || code === 'AudioVolumeUp') code = 'VolumeUp';
-                else if (key === 'AudioVolumeDown' || code === 'AudioVolumeDown') code = 'VolumeDown';
-                else if (key === 'AudioVolumeMute' || code === 'VolumeMute') code = 'VolumeMute';
-            }
-
-            if (e.repeat) return; 
-            
-            const keyDisplay = getKeyDisplay(code, key);
-            
-            logEvent('press', keyDisplay); 
-            // 关键修改：不再传递 location
-            updateInfoDisplay(keyDisplay, code); 
-            playSound(getKeyFrequency(code));
-            
-            if (isPulseKey(code)) {
-                setKeyState(code, true); 
-                if (pulseKeyTimouts[code]) clearTimeout(pulseKeyTimouts[code]);
-                pulseKeyTimouts[code] = setTimeout(() => {
-                    setKeyState(code, false); 
-                    logEvent('release', keyDisplay); 
-                    delete pulseKeyTimouts[code];
-                }, 150); 
+                if (isPulse(code)) {
+                    clearTimeout(state.timers[code]);
+                    state.timers[code] = setTimeout(() => handleInput('release', code, name), 300);
+                }
             } else {
-                setKeyState(code, true);
+                if (isPulse(code)) {
+                    log('release', name); getKeyEl(code)?.classList.remove('active');
+                    delete state.timers[code];
+                } else {
+                    log('release', name); updateInfo(name, code); getKeyEl(code)?.classList.remove('active');
+                }
             }
-            
-            updateRecentKeyDisplay(code, keyDisplay);
-            trackKPM(); 
-        }
+        };
 
-        /** 键盘抬起事件处理器 */
-        function handleKeyUp(e) {
+        const onKey = (e, type) => {
             e.preventDefault();
-            const key = e.key;
-            let code = normalizeModifierCode(e);
+            let code = normMod(e);
+            const mediaMap = { AudioVolumeUp:'VolumeUp', AudioVolumeDown:'VolumeDown', AudioVolumeMute:'VolumeMute', MediaTrackNext:'MediaNextTrack', MediaTrackPrevious:'MediaPreviousTrack' };
+            code = mediaMap[e.key] || (mediaMap[code] || code);
+            if (e.key === 'MediaPlayPause') code = 'MediaPlayPause';
 
-            // 忽略音量/媒体键和脉冲键的 keyup 事件
-            if (key.startsWith('AudioVolume') || (code && code.startsWith('AudioVolume')) || isPulseKey(code)) {
-                return; 
-            }
-            
-            const keyDisplay = getKeyDisplay(code, key);
-            
-            logEvent('release', keyDisplay);
-            // 关键修改：不再传递 location
-            updateInfoDisplay(keyDisplay, code);
-            setKeyState(code, false);
-        }
+            if (type === 'up' && (code.startsWith('Volume') || isPulse(code))) return;
+            handleInput(type === 'down' ? 'press' : 'release', code, getKeyName(code, e.key), e.repeat);
+        };
 
-        /** 物理鼠标点击事件处理器 */
-        function handlePhysicalMouse(e, type) {
-            let code, key; 
-            if (e.button === 0) { code = 'MouseLeft'; key = '左键'; } 
-            else if (e.button === 1) { code = 'MouseMiddle'; key = '中键'; } 
-            else if (e.button === 2) { code = 'MouseRight'; key = '右键'; } 
-            else if (e.button === 3) { code = 'MouseBackward'; key = '后退键'; } 
-            else if (e.button === 4) { code = 'MouseForward'; key = '前进键'; } 
-            else { return; }
+        const onMouse = (e, type) => {
+            const map = ['MouseLeft','MouseMiddle','MouseRight','MouseBackward','MouseForward'];
+            const names = ['左键','中键','右键','后退键','前进键'];
+            if (!map[e.button]) return;
+            if (type === 'press' && e.button > 1) e.preventDefault();
+            handleInput(type, map[e.button], names[e.button]);
+        };
 
-            if (!document.querySelector(`.key[data-code="${code}"]`)) return;
+        const onWheel = (e) => {
+            e.preventDefault();
+            const dir = e.deltaY < 0 ? ['MouseWheelUp','滚轮↑'] : e.deltaY > 0 ? ['MouseWheelDown','滚轮↓'] : e.deltaX < 0 ? ['MouseWheelLeft','滚轮←'] : ['MouseWheelRight','滚轮→'];
+            if (!dir) return;
+            const [code, name] = dir;
+            if (state.timers[code]) clearTimeout(state.timers[code]);
+            else handleInput('press', code, name);
+            state.timers[code] = setTimeout(() => { handleInput('release', code, name); delete state.timers[code]; }, 300);
+        };
 
-            if (e.button >= 2 && type === 'press') e.preventDefault(); 
-            
-            if (type === 'press') {
-                logEvent('press', key);
-                playSound(getKeyFrequency(code));
-                updateInfoDisplay(key, code);
-                setKeyState(code, true);
-                trackKPM(); 
-                updateRecentKeyDisplay(code, key); 
-            } else { 
-                logEvent('release', key);
-                setKeyState(code, false);
-            }
-        }
-        
-        /** 鼠标滚轮事件处理器 */
-        function handlePhysicalWheel(e) {
-            let code, key;
-            if (e.deltaY < 0) { code = 'MouseWheelUp'; key = '滚轮↑'; } 
-            else if (e.deltaY > 0) { code = 'MouseWheelDown'; key = '滚轮↓'; } 
-            else if (e.deltaX < 0) { code = 'MouseWheelLeft'; key = '滚轮←'; } 
-            else if (e.deltaX > 0) { code = 'MouseWheelRight'; key = '滚轮→'; } 
-            else { return; }
-            
-            e.preventDefault(); 
-            
-            if (wheelTimeouts[code]) { clearTimeout(wheelTimeouts[code]); wheelTimeouts[code] = null; }
-            
-            const keyElement = document.querySelector(`.key[data-code="${code}"]`);
-            if (keyElement && !keyElement.classList.contains('active')) {
-                logEvent('press', key);
-                playSound(getKeyFrequency(code));
-                updateInfoDisplay(key, code);
-                setKeyState(code, true); 
-                trackKPM(); 
-                updateRecentKeyDisplay(code, key); 
-            }
+        // --- Init ---
+        const init = () => {
+            const setThm = t => {
+                document.documentElement.setAttribute('data-theme', t);
+                DOM.theme.checked = t === 'light'; DOM.themeText.textContent = t === 'light' ? '浅色' : '深色';
+                localStorage.setItem('kbtest-theme', t); drawChart();
+            };
+            DOM.theme.addEventListener('change', e => setThm(e.target.checked ? 'light' : 'dark'));
+            setThm(localStorage.getItem('kbtest-theme') || 'dark');
 
-            wheelTimeouts[code] = setTimeout(() => {
-                logEvent('release', key); 
-                setKeyState(code, false);
-                wheelTimeouts[code] = null;
-            }, 150);
-        }
+            DOM.sound.checked = localStorage.getItem('kbtest-sound') !== 'false';
+            DOM.sound.addEventListener('change', e => localStorage.setItem('kbtest-sound', e.target.checked));
 
-        /** 媒体会话动作处理器（用于媒体键）*/
-        function handleMediaAction(action, code, keyDisplay) {
-            if (!document.querySelector(`.key[data-code="${code}"]`)) return;
-
-            logEvent('press', keyDisplay); 
-            playSound(getKeyFrequency(code));
-            updateInfoDisplay(keyDisplay, code);
-            
-            setKeyState(code, true); 
-            if (pulseKeyTimouts[code]) clearTimeout(pulseKeyTimouts[code]);
-            pulseKeyTimouts[code] = setTimeout(() => {
-                setKeyState(code, false); 
-                logEvent('release', keyDisplay); 
-                delete pulseKeyTimouts[code];
-            }, 150); 
-            
-            updateRecentKeyDisplay(code, keyDisplay);
-            trackKPM(); 
-        }
-
-        /** 设置 Media Session API 监听 */
-        function setupMediaSession() {
+            DOM.audio.src = 'data:audio/mp3;base64,SUQzBAAAAAABVVgAAAABAAEA';
+            const mediaH = (act, code, name) => navigator.mediaSession.setActionHandler(act, () => handleInput('press', code, name));
             if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({ title: '键盘测试工具', artist: '正在进行按键测试', album: 'JLKB' });
-                [
-                    { action: 'play', code: 'MediaPlayPause', key: '播放/暂停' },
-                    { action: 'pause', code: 'MediaPlayPause', key: '播放/暂停' },
-                    { action: 'previoustrack', code: 'MediaPreviousTrack', key: '上一曲' },
-                    { action: 'nexttrack', code: 'MediaNextTrack', key: '下一曲' },
-                ].forEach(({ action, code, key }) => {
-                    if (code) navigator.mediaSession.setActionHandler(action, () => handleMediaAction(action, code, key));
-                });
+                navigator.mediaSession.metadata = new MediaMetadata({ title: '键盘测试', artist: 'JLKB' });
+                mediaH('play','MediaPlayPause','播放/暂停'); mediaH('pause','MediaPlayPause','播放/暂停');
+                mediaH('previoustrack','MediaPreviousTrack','上一曲'); mediaH('nexttrack','MediaNextTrack','下一曲');
             }
-        }
+            const actMedia = () => { DOM.audio.volume=0; DOM.audio.play().catch(()=>{}); document.body.removeEventListener('click',actMedia); };
+            document.body.addEventListener('click', actMedia, {once:true});
 
-        /** 激活 Media Session (静音播放音频) */
-        function activateMediaSession() {
-            if (!('mediaSession' in navigator)) return;
-            if (silentAudio.src) {
-                silentAudio.volume = 0;
-                silentAudio.play().catch(e => {});
-            }
-            document.body.removeEventListener('click', activateMediaSession);
-            document.body.removeEventListener('keydown', activateMediaSession);
-        }
+            state.totalKeys = document.querySelectorAll('.key[data-code]').length;
+            updateProg(); drawChart();
 
-        // ====================================================================
-        // VI. 初始化
-        // ====================================================================
-        
-        /** 初始化所有设置和事件监听 */
-        function init() {
-            // ====================================================================
-            // 主题持久化初始化
-            // ====================================================================
-            const savedTheme = localStorage.getItem('kbtest-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            themeToggle.checked = (savedTheme === 'light');
-            
-            updateThemeDisplayText(savedTheme);
-
-            themeToggle.addEventListener('change', (e) => {
-                const theme = e.target.checked ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('kbtest-theme', theme);
-                drawKPMChart();
-                updateThemeDisplayText(theme); 
-            });
-
-            // ====================================================================
-            // 音效持久化初始化 
-            // ====================================================================
-            const savedSound = localStorage.getItem('kbtest-sound');
-            const initialSoundState = savedSound !== null ? (savedSound === 'true') : true;
-            soundToggle.checked = initialSoundState;
-
-            soundToggle.addEventListener('change', (e) => {
-                localStorage.setItem('kbtest-sound', e.target.checked);
-            });
-            
-            // Media Session 设置
-            setupMediaSession(); 
-            document.body.addEventListener('click', activateMediaSession, { once: true });
-            document.body.addEventListener('keydown', activateMediaSession, { once: true });
-            
-            // 状态和进度初始化
-            totalTestableKeys = document.querySelectorAll('.key[data-code]').length;
-            updateProgress(); 
-            drawKPMChart(); 
-            updateInfoDisplay('-', 'KC_NO'); 
-            mouseXYDisplay.textContent = 'X: - Y: -';
-
-            // 事件绑定
-            document.addEventListener('mousemove', (e) => updateMouseXYDisplay(e.screenX, e.screenY));
-            document.addEventListener('mousedown', (e) => handlePhysicalMouse(e, 'press'));
-            document.addEventListener('mouseup', (e) => handlePhysicalMouse(e, 'release'));
-            document.addEventListener('wheel', handlePhysicalWheel, { passive: false });
-            document.addEventListener('keydown', handleKeyDown);
-            document.addEventListener('keyup', handleKeyUp);
+            document.addEventListener('keydown', e => onKey(e, 'down'));
+            document.addEventListener('keyup', e => onKey(e, 'up'));
+            document.addEventListener('mousedown', e => onMouse(e, 'press'));
+            document.addEventListener('mouseup', e => onMouse(e, 'release'));
+            document.addEventListener('wheel', onWheel, {passive:false});
+            document.addEventListener('mousemove', e => DOM.mouseXY.textContent = `X: ${e.screenX} Y: ${e.screenY}`);
             window.addEventListener('blur', () => document.querySelectorAll('.key.active').forEach(el => el.classList.remove('active')));
-            resetBtn.addEventListener('click', resetTest);
-        }
+            DOM.reset.addEventListener('click', () => {
+                document.querySelectorAll('.key.tested, .key.active').forEach(el => el.classList.remove('tested','active'));
+                DOM.log.innerHTML = ''; DOM.recent.innerHTML = ''; state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, timers: {} };
+                updateInfo('-', 'KC_NO'); DOM.kpm.textContent = '0'; updateProg(); drawChart();
+            });
+            
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.onkeydown = e => { if(e.keyCode==123||e.keyCode==116) return false; };
+        };
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
@@ -1212,4 +590,3 @@
     <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
 </html>
-
