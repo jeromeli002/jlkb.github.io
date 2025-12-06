@@ -190,7 +190,7 @@
                     <span class="label">当前按键</span><strong id="key-name">-</strong>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">QMK 代码 (HEX)</span>
+                    <span class="label">键码 (HEX)</span>
                     <div style="display: flex; align-items: baseline;">
                         <strong id="key-code">-</strong><strong id="key-hex-display" style="color: #666; margin-left: 5px;"></strong>
                     </div>
@@ -340,7 +340,7 @@
             NumpadEnter:'KC_PENT',NumpadDivide:'KC_PSLS',NumpadMultiply:'KC_PAST',NumpadSubtract:'KC_PMNS',NumpadAdd:'KC_PPLS',NumpadDecimal:'KC_PDOT',NumLock:'KC_NLCK',
             VolumeUp:'KC_VOLU',VolumeDown:'KC_VOLD',VolumeMute:'KC_MUTE',MediaPlayPause:'KC_MPLY',MediaNextTrack:'KC_MNXT',MediaPreviousTrack:'KC_MPRV',
             MouseLeft:'KC_BTN1',MouseRight:'KC_BTN2',MouseMiddle:'KC_BTN3',MouseBackward:'KC_BTN4',MouseForward:'KC_BTN5',
-            MouseWheelUp:'KC_WH_U',MouseWheelDown:'KC_WH_D',MouseWheelLeft:'KC_WH_L',MouseWheelRight:'KC_WH_R'
+            MouseWheelUp:'KC_WHLU',MouseWheelDown:'KC_WHLD',MouseWheelLeft:'KC_WHLL',MouseWheelRight:'KC_WHLR'
         };
         const QMK_HEX = {
             KC_NO:'0x00',KC_A:'0x04',KC_Z:'0x1D',KC_1:'0x1E',KC_0:'0x27',KC_ENT:'0x28',KC_ESC:'0x29',KC_BSPC:'0x2A',KC_TAB:'0x2B',KC_SPC:'0x2C',
@@ -590,4 +590,5 @@
     <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
 </html>
+
 
