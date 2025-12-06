@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>键盘测试</title>
+    <title>JLKB键盘测试</title>
     <style>
         :root {
             --base-size: 40px; --gap: 4px;
@@ -159,13 +159,13 @@
             margin-top: 15px; margin-left: -20px; margin-right: -20px; width: calc(100% + 40px);
             background-color: var(--container-bg); border: 1px solid var(--border-color);
             border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            font-size: 12px; color: #888; text-align: center; padding: 10px 20px;
+            font-size: 12px; color: #888; text-align: center; padding: 10px 35px;
         }
         .browser-note p { margin: 5px 0; }
     </style>
 </head>
 <body>
-    <h1>JLKB键盘测试</h1>
+    <h1>JLKB键盘测试 (KPM/键码优化)</h1>
     <audio id="silent-audio" loop></audio>
 
     <div class="side-by-side-layout">
@@ -190,7 +190,7 @@
                     <span class="label">当前按键</span><strong id="key-name">-</strong>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">键码 (HEX)</span>
+                    <span class="label">QMK 代码 (HEX)</span>
                     <div style="display: flex; align-items: baseline;">
                         <strong id="key-code">-</strong><strong id="key-hex-display" style="color: #666; margin-left: 5px;"></strong>
                     </div>
@@ -312,7 +312,9 @@
             chart: { width: 150, height: 40, maxPoints: 50, maxKPM: 600 },
             recentKeys: { max: 66, stepPx: 44 },
             audio: { duration: 0.05, type: 'square' },
-            colors: { chartDark: '#8cffec', chartLight: '#0d6efd', fillDark: 'rgba(140, 255, 236, 0.1)', fillLight: 'rgba(13, 110, 253, 0.1)' }
+            colors: { chartDark: '#8cffec', chartLight: '#0d6efd', fillDark: 'rgba(140, 255, 236, 0.1)', fillLight: 'rgba(13, 110, 253, 0.1)' },
+            kpmUpdateInterval: 100, // KPM数字和曲线刷新间隔（毫秒），满足100ms刷新要求
+            kpmSmoothFactor: 0.1 // 平滑因子：新KPM占 10%，旧KPM占 90%。值越低，曲线越平滑，解决整数倍停留问题。
         };
 
         // Data Structures (Optimized)
@@ -327,10 +329,10 @@
             chart: document.getElementById('kpm-chart').getContext('2d')
         };
         
-        let state = { kpmHistory: [], timestamps: [], kpmInterval: null, currentKPM: 0, recentKeys: [], totalKeys: 0, timers: {} };
+        let state = { kpmHistory: [], timestamps: [], kpmDisplayInterval: null, currentKPM: 0, recentKeys: [], totalKeys: 0, timers: {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // QMK Mappings (Compressed)
+        // QMK Mappings (Compressed & Corrected)
         const QMK_MAP = {
             Escape:'KC_ESC',Enter:'KC_ENT',Backspace:'KC_BSPC',Tab:'KC_TAB',Space:'KC_SPC',CapsLock:'KC_CAPS',
             ShiftLeft:'KC_LSFT',ShiftRight:'KC_RSFT',ControlLeft:'KC_LCTL',ControlRight:'KC_RCTL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
@@ -340,18 +342,34 @@
             NumpadEnter:'KC_PENT',NumpadDivide:'KC_PSLS',NumpadMultiply:'KC_PAST',NumpadSubtract:'KC_PMNS',NumpadAdd:'KC_PPLS',NumpadDecimal:'KC_PDOT',NumLock:'KC_NLCK',
             VolumeUp:'KC_VOLU',VolumeDown:'KC_VOLD',VolumeMute:'KC_MUTE',MediaPlayPause:'KC_MPLY',MediaNextTrack:'KC_MNXT',MediaPreviousTrack:'KC_MPRV',
             MouseLeft:'KC_BTN1',MouseRight:'KC_BTN2',MouseMiddle:'KC_BTN3',MouseBackward:'KC_BTN4',MouseForward:'KC_BTN5',
-            MouseWheelUp:'KC_WHLU',MouseWheelDown:'KC_WHLD',MouseWheelLeft:'KC_WHLL',MouseWheelRight:'KC_WHLR'
+            MouseWheelUp:'KC_WHLU',MouseWheelDown:'KC_WHLD',MouseWheelLeft:'KC_WHLL',MouseWheelRight:'KC_WHLR' // 滚轮键码修正
         };
+
+        // QMK HEX 码表 (修正并补全 A-Z, 1-0)
         const QMK_HEX = {
-            KC_NO:'0x00',KC_A:'0x04',KC_Z:'0x1D',KC_1:'0x1E',KC_0:'0x27',KC_ENT:'0x28',KC_ESC:'0x29',KC_BSPC:'0x2A',KC_TAB:'0x2B',KC_SPC:'0x2C',
+            KC_NO:'0x00',
+            // 字母键 A-Z (0x04 - 0x1D)
+            KC_A:'0x04',KC_B:'0x05',KC_C:'0x06',KC_D:'0x07',KC_E:'0x08',KC_F:'0x09',KC_G:'0x0A',KC_H:'0x0B',
+            KC_I:'0x0C',KC_J:'0x0D',KC_K:'0x0E',KC_L:'0x0F',KC_M:'0x10',KC_N:'0x11',KC_O:'0x12',KC_P:'0x13',
+            KC_Q:'0x14',KC_R:'0x15',KC_S:'0x16',KC_T:'0x17',KC_U:'0x18',KC_V:'0x19',KC_W:'0x1A',KC_X:'0x1B',
+            KC_Y:'0x1C',KC_Z:'0x1D',
+            // 数字键 1-0 (0x1E - 0x27)
+            KC_1:'0x1E',KC_2:'0x1F',KC_3:'0x20',KC_4:'0x21',KC_5:'0x22',KC_6:'0x23',KC_7:'0x24',KC_8:'0x25',
+            KC_9:'0x26',KC_0:'0x27',
+            
+            KC_ENT:'0x28',KC_ESC:'0x29',KC_BSPC:'0x2A',KC_TAB:'0x2B',KC_SPC:'0x2C',
             KC_MINS:'0x2D',KC_EQL:'0x2E',KC_LBRC:'0x2F',KC_RBRC:'0x30',KC_BSLS:'0x31',KC_SCLN:'0x33',KC_QUOT:'0x34',KC_GRV:'0x35',KC_COMM:'0x36',KC_DOT:'0x37',KC_SLSH:'0x38',KC_CAPS:'0x39',
             KC_F1:'0x3A',KC_F12:'0x45',KC_PSCR:'0x46',KC_SLCK:'0x47',KC_PAUS:'0x48',KC_INS:'0x49',KC_HOME:'0x4A',KC_PGUP:'0x4B',KC_DEL:'0x4C',KC_END:'0x4D',KC_PGDN:'0x4E',
             KC_RIGHT:'0x4F',KC_LEFT:'0x50',KC_DOWN:'0x51',KC_UP:'0x52',KC_NLCK:'0x53',KC_PSLS:'0x54',KC_PAST:'0x55',KC_PMNS:'0x56',KC_PPLS:'0x57',KC_PENT:'0x58',
-            KC_P1:'0x59',KC_P0:'0x62',KC_PDOT:'0x63',KC_MENU:'0x65',KC_F13:'0x68',KC_F24:'0x73',
+            // 数字区小键盘 (0x59 - 0x63)
+            KC_P1:'0x59',KC_P2:'0x5A',KC_P3:'0x5B',KC_P4:'0x5C',KC_P5:'0x5D',KC_P6:'0x5E',KC_P7:'0x5F',KC_P8:'0x60',
+            KC_P9:'0x61',KC_P0:'0x62',KC_PDOT:'0x63',
+            
+            KC_MENU:'0x65',KC_F13:'0x68',KC_F24:'0x73',
             KC_LCTL:'0xE0',KC_LSFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTL:'0xE4',KC_RSFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
             KC_VOLU:'0xA0',KC_VOLD:'0xA1',KC_MUTE:'0xA2',KC_MPLY:'0xCD',KC_MNXT:'0xB5',KC_MPRV:'0xB6',
-            KC_BTN1:'0x81',KC_BTN2:'0x82',KC_BTN3:'0x83',KC_BTN4:'0x84',KC_BTN5:'0x85',KC_WHLU:'0x90',KC_WHLD:'0x91',KC_WHLL:'0x92',KC_WHLR:'0x93',
-            KC_P4:'0x5C',KC_P5:'0x5D',KC_P6:'0x5E',KC_P7:'0x5F',KC_P8:'0x60',KC_P9:'0x61'
+            KC_BTN1:'0x81',KC_BTN2:'0x82',KC_BTN3:'0x83',KC_BTN4:'0x84',KC_BTN5:'0x85', 
+            KC_WHLU:'0x90',KC_WHLD:'0x91',KC_WHLL:'0x92',KC_WHLR:'0x93',
         };
         const PULSE_KEYS = new Set(['ContextMenu','PrintScreen',...Array.from({length:12},(_,i)=>`F${i+13}`)]);
 
@@ -359,11 +377,17 @@
         const mapCodeToQMK = (code) => {
             if (!code) return 'KC_NO';
             if (code.startsWith('KC_')) return code;
+            // F13-F24
             if (code.match(/^F(1[3-9]|2[0-4])$/)) return `KC_${code}`;
+            // KeyA -> KC_A, KeyB -> KC_B, etc.
             if (code.startsWith('Key')) return 'KC_' + code.slice(3);
+            // Digit1 -> KC_1, Digit2 -> KC_2, etc.
             if (code.startsWith('Digit')) return 'KC_' + code.slice(5);
+            // Numpad1 -> KC_P1, Numpad2 -> KC_P2, etc.
             if (code.match(/^Numpad\d$/)) return 'KC_P' + code.slice(6);
+            // F1-F12
             if (code.match(/^F\d+$/)) return 'KC_' + code;
+            // 查表转换
             return QMK_MAP[code] || ('KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, ''));
         };
 
@@ -450,19 +474,33 @@
             DOM.progress.style.width = `${(cnt / state.totalKeys) * 100}%`;
         };
 
-        // --- KPM Logic ---
-        const updateKPM = (interval = false) => {
+        // --- KPM Logic (Smoothed) ---
+        
+        const updateKPMValue = () => {
             const now = Date.now();
+            // 过滤掉超过 1 秒前的按键时间戳
             state.timestamps = state.timestamps.filter(t => now - t < 1000);
-            const raw = state.timestamps.length * 60;
-            state.currentKPM = state.currentKPM ? state.currentKPM * 0.5 + raw * 0.5 : raw;
-            const val = Math.round(state.currentKPM);
-            DOM.kpm.textContent = val;
+            
+            // 计算过去 1 秒内的实际按键次数，乘以 60 得到当前秒级的 KPM
+            const instantaneousKPM = state.timestamps.length * 60;
 
-            if (interval || state.kpmHistory.length === 0) {
-                state.kpmHistory.push(val);
-                if (state.kpmHistory.length > CONFIG.chart.maxPoints) state.kpmHistory.shift();
-            }
+            // 使用 EMA (指数移动平均) 进行平滑处理，低 alpha 值减少阶跃感
+            const alpha = CONFIG.kpmSmoothFactor;
+            state.currentKPM = state.currentKPM * (1 - alpha) + instantaneousKPM * alpha;
+        };
+
+        // KPM 数字显示和曲线更新（每 100ms 运行一次）
+        const updateKPMDisplayAndChart = () => {
+            updateKPMValue();
+            
+            const val = Math.round(state.currentKPM);
+            DOM.kpm.textContent = val; // 数字显示 100ms 刷新
+
+            // 更新曲线数据 (曲线步进为 100ms)
+            state.kpmHistory.push(val);
+            if (state.kpmHistory.length > CONFIG.chart.maxPoints) state.kpmHistory.shift();
+            
+            drawChart();
         };
 
         const drawChart = () => {
@@ -483,9 +521,13 @@
         };
 
         const trackAct = () => {
+            // 每次按键只记录时间戳
             state.timestamps.push(Date.now());
-            updateKPM();
-            if (!state.kpmInterval) state.kpmInterval = setInterval(() => { updateKPM(true); drawChart(); }, 50);
+            
+            // 启动定时器（如果尚未启动），确保按键后 KPM 持续更新
+            if (!state.kpmDisplayInterval) {
+                state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
+            }
         };
 
         // --- Event Handlers ---
@@ -493,7 +535,7 @@
             if (action === 'press') {
                 if (isRepeat) return;
                 log('press', name); updateInfo(name, code); playSound(getFreq(code));
-                updateRecent(code, name); trackAct();
+                updateRecent(code, name); trackAct(); // 按键时记录时间戳
                 
                 const el = getKeyEl(code);
                 if (el) { el.classList.add('active', 'tested'); updateProg(); }
@@ -574,22 +616,29 @@
             document.addEventListener('wheel', onWheel, {passive:false});
             document.addEventListener('mousemove', e => DOM.mouseXY.textContent = `X: ${e.screenX} Y: ${e.screenY}`);
             window.addEventListener('blur', () => document.querySelectorAll('.key.active').forEach(el => el.classList.remove('active')));
+            
             DOM.reset.addEventListener('click', () => {
                 document.querySelectorAll('.key.tested, .key.active').forEach(el => el.classList.remove('tested','active'));
-                DOM.log.innerHTML = ''; DOM.recent.innerHTML = ''; state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, timers: {} };
+                DOM.log.innerHTML = ''; DOM.recent.innerHTML = ''; 
+                // 重置所有 KPM 相关的状态和定时器
+                if (state.kpmDisplayInterval) clearInterval(state.kpmDisplayInterval);
+                state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, kpmDisplayInterval: null, timers: {} };
                 updateInfo('-', 'KC_NO'); DOM.kpm.textContent = '0'; updateProg(); drawChart();
+                // 重启定时器以保持图表更新
+                state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
             });
             
             document.addEventListener('contextmenu', e => e.preventDefault());
             document.onkeydown = e => { if(e.keyCode==123||e.keyCode==116) return false; };
+
+            // 首次启动定时器，确保没有按键活动时 KPM 也会更新为 0
+            if (!state.kpmDisplayInterval) {
+                state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
+            }
         };
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
-    <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
-    <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
+        <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 </body>
 </html>
-
-
-
