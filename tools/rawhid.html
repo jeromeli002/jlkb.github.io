@@ -76,11 +76,21 @@
         .green { color: #28a745; }
         .yellow { color: #ffc107; font-weight: bold; }
         
-        #deviceInfoContainer { margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch; }
+        #deviceInfoContainer { 
+            margin-bottom: 15px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            /* 【修改点】设备卡片居中显示 */
+            justify-content: center; 
+            align-items: stretch; 
+        }
+        /* 【修改点 1】简化卡片样式，只作为点击/悬停目标 */
         .device-card { 
-            flex: 1 1 180px; 
-            max-width: 180px; /* 设备信息最大宽度 */
-            padding: 8px; 
+            /* 移除 flex-grow/max-width，让卡片更紧凑 */
+            flex-shrink: 0;
+            width: auto; 
+            padding: 8px 12px; 
             border: 1px solid #ced4da; 
             border-radius: 6px; 
             background-color: #f7faff; 
@@ -88,16 +98,43 @@
             cursor: pointer; 
             transition: all 0.2s ease; 
             font-size: 0.8em; 
+            position: relative; /* 为 tooltip 提供定位上下文 */
+            white-space: nowrap; /* 确保标题不换行 */
         }
         .device-card:hover { transform: translateY(-1px); box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
         .device-card.selected { border-color: #007bff; box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2); background-color: #eaf3ff; }
-        .device-card h3 { margin-top: 0; margin-bottom: 4px; font-size: 1.0em; }
-        .device-card p { margin: 2px 0; }
+        .device-card h3 { margin: 0; font-size: 1.0em; }
+        /* 【新增点 1】详细信息浮动卡片样式 */
+        .device-detail-tooltip {
+            position: absolute;
+            top: 100%; /* 放在卡片下方 */
+            left: 0;
+            z-index: 1000; /* 确保浮动在最上层 */
+            background-color: #fff;
+            border: 1px solid #007bff;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 250px;
+            max-width: 350px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease;
+            text-align: left;
+            margin-top: 5px; /* 与设备卡片的间距 */
+            font-size: 0.9em;
+        }
+        .device-card:hover .device-detail-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .device-detail-tooltip p { margin: 2px 0; }
         hr.card-hr { border: 0; border-top: 1px solid #e9ecef; margin: 6px 0; }
         .collection-list { margin: 4px 0 4px 8px; padding: 0; list-style-type: disc; font-size: 1em; }
         .collection-list li { margin-bottom: 2px; }
         .report-info { color: #6c757d; font-size: 0.9em; margin-left: 4px; border-left: 1px solid #adb5bd; padding-left: 2px; margin-top: 4px; }
-
+        
         .raw-data-header {
             display: flex;
             /* Tightly pack items */
@@ -388,6 +425,7 @@
         
         <h2>已连接设备信息 (点击选择目标)</h2>
         <div id="deviceInfoContainer">未连接设备。</div> 
+        <div id="deviceTooltipContainer"></div>
 
         <div class="controls">
             <div class="connect-row">
@@ -504,7 +542,7 @@
         const loopCountInput = $('loopCountInput');
         const infiniteLoopCheckbox = $('infiniteLoopCheckbox');
         const resetIndicatorsButton = $('resetIndicatorsButton'); 
-
+        const deviceTooltipContainer = $('deviceTooltipContainer'); // 【新增点 3】浮动信息容器
 
         // --- 工具函数 ---
 
@@ -710,23 +748,40 @@
             }
         };
 
-        /** 显示单个逻辑设备的信息 */
+        /** 显示单个逻辑设备的信息 - 【修改点 2】只显示简化内容，详情改为浮动卡片内容 */
         const displayDeviceInfo = (dev, index) => {
             const vid = dev.vendorId.toString(16).padStart(4, '0').toUpperCase();
             const pid = dev.productId.toString(16).padStart(4, '0').toUpperCase();
             
+            // 1. 简化显示卡片
             const card = document.createElement('div');
             card.className = 'device-card';
             card.setAttribute('data-device-index', index);
             card.innerHTML = `
-                <h3>设备 #${index}</h3>
+                <h3>设备 #${index}: ${dev.productName || '未知'}</h3>
+            `;
+            
+            // 2. 详细信息 HTML 结构
+            const detailHtml = `
                 <p><strong>名称:</strong> ${dev.productName || '未知'}</p>
                 <p><strong>VID/PID:</strong> 0x${vid}/0x${pid}</p>
                 <hr class="card-hr">
                 <strong style="display:block; margin-bottom:5px;">集合 (Collections):</strong>
                 ${formatCollections(dev.collections)}
             `;
+
+            // 3. 浮动卡片
+            const tooltip = document.createElement('div');
+            tooltip.className = 'device-detail-tooltip';
+            tooltip.innerHTML = detailHtml;
+            card.appendChild(tooltip); // 将浮动卡片作为简易卡片的子元素
+
+            // 4. 绑定事件
             card.addEventListener('click', () => selectDevice(index, true)); 
+            
+            // 【删除】原来的 mouseover/mouseout 逻辑被 CSS `:hover` 取代，但为了定位，需要调整。
+            // 考虑到浮动卡片的定位，这里无需额外的 JS 事件来控制显示/隐藏。
+            
             deviceInfoContainer.appendChild(card);
         };
         
@@ -793,6 +848,7 @@
         /** 更新所有设备信息显示，并执行动态 RAW 设备选中。*/
         const updateDeviceInfoUI = async () => {
             deviceInfoContainer.innerHTML = '';
+            deviceTooltipContainer.innerHTML = ''; // 清空浮动容器
             
             const maxIndex = connectedDevices.length > 0 ? connectedDevices.length - 1 : 0;
             deviceIdInput.max = maxIndex;
@@ -1423,5 +1479,6 @@
 
     </script>
 <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
+<script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 </body>
 </html>
