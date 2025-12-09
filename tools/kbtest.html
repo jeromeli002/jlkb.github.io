@@ -32,26 +32,47 @@
         body {
             background-color: var(--bg-color); color: var(--text-color);
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            text-align: center; min-height: 100vh; margin: 0; padding-bottom: 50px; user-select: none;
+            /* 移除 text-align: center; 以确保内容从左侧开始显示，仅 h1 居中 */
+            min-height: 100vh; margin: 0; padding-bottom: 50px; user-select: none;
             transition: background-color 0.3s, color 0.3s;
+            overflow-x: auto; /* 允许 body 在内容超出时出现水平滚动条 */
         }
 
         h1 {
             background: var(--panel-bg); padding: 10px 25px; border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1); color: var(--text-color);
             font-size: 28px; letter-spacing: 2px; font-weight: 300;
-            margin: 20px 0; display: inline-block; border: 1px solid var(--border-color);
+            margin: 20px auto; /* 使用 auto 确保 h1 居中 */
+            display: table; /* 确保 h1 自身的宽度根据内容调整，并能通过 margin: auto 居中 */
+            border: 1px solid var(--border-color);
         }
 
-        .side-by-side-layout { display: flex; justify-content: center; gap: 40px; align-items: flex-start; margin: 0 auto; }
-        .main-column-area { display: flex; flex-direction: column; align-items: center; width: max-content; }
+        /* 核心修改点：调整布局以适应自适应和滚动 */
+        .side-by-side-layout {
+            display: flex;
+            /* 移除 justify-content: center; 以确保内容在宽度不足时靠左显示 */
+            gap: 40px;
+            align-items: flex-start;
+            margin: 0 20px; /* 添加左右边距，防止内容紧贴浏览器边缘 */
+            /* 设置最小宽度，确保所有内容即使在窄屏也能被容纳，并触发 body 的滚动条 */
+            min-width: 1400px; /* 估算宽度：1030px (键盘区) + 300px (日志区) + 40px (间隙) + 30px (边距) = 1400px */
+            width: max-content; /* 确保容器的宽度能够包含所有子元素 */
+        }
+
+        .main-column-area { 
+            display: flex; 
+            flex-direction: column; 
+            /* 移除 align-items: center; 以防止在 main-column-area 宽度超过内部元素时影响其内部元素对齐 */
+            /* width: max-content; 保持此属性以确保 main-column-area 的宽度由其内容决定 */
+        }
 
         /* Control Panel */
         .control-panel {
             width: 100%; display: flex; gap: 15px; margin-bottom: 20px;
             background: var(--panel-bg); padding: 15px 20px; border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1); align-items: center;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1); align-items: center;
             justify-content: space-between; border: 1px solid var(--border-color);
+            min-width: 1030px; /* 确保控制面板的最小宽度与键盘区保持一致 */
         }
         .info-box { min-width: 60px; text-align: left; }
         .info-box span.label { font-size: 11px; color: #888; margin-bottom: 3px; display: block; }
@@ -81,6 +102,7 @@
             background: var(--container-bg); border-radius: 15px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-color);
             margin-bottom: 20px; justify-content: center;
+            min-width: 1030px; /* 确保键盘容器的最小宽度 */
         }
         .section-main, .section-nav, .section-numpad { display: flex; flex-direction: column; gap: var(--gap); }
         .section-numpad { margin-top: calc(var(--base-size) + var(--gap) * 4); }
@@ -115,6 +137,7 @@
             width: 100%; background: var(--container-bg); padding: 10px 20px;
             border-radius: 15px; border: 1px solid var(--border-color);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 1030px; /* 确保额外键区容器的最小宽度 */
         }
         .extra-keys-container { display: flex; flex-direction: column; gap: var(--gap); justify-content: center; }
         .extra-keys-container .row { flex-wrap: wrap; justify-content: center; align-items: center; }
@@ -721,4 +744,3 @@
 <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 </body>
 </html>
-
