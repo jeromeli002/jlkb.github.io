@@ -190,7 +190,7 @@
                     <span class="label">当前按键</span><strong id="key-name">-</strong>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">QMK 代码 (HEX)</span>
+                    <span class="label">键码 (十六进制)</span>
                     <div style="display: flex; align-items: baseline;">
                         <strong id="key-code">-</strong><strong id="key-hex-display" style="color: #666; margin-left: 5px;"></strong>
                     </div>
@@ -277,6 +277,11 @@
                     <div class="key" data-code="F13">F13</div><div class="key" data-code="F14">F14</div><div class="key" data-code="F15">F15</div><div class="key" data-code="F16">F16</div><div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
                     <div class="key" data-code="F17">F17</div><div class="key" data-code="F18">F18</div><div class="key" data-code="F19">F19</div><div class="key" data-code="F20">F20</div><div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
                     <div class="key" data-code="F21">F21</div><div class="key" data-code="F22">F22</div><div class="key" data-code="F23">F23</div><div class="key" data-code="F24">F24</div>
+                    <div class="key spacer" style="width: 20px;"></div>
+                    <div class="key u-15" data-code="LaunchApp2">计算器</div>
+                    <div class="key u-15" data-code="LaunchMail">邮件</div>
+                    <div class="key u-15" data-code="LaunchApp1">我的电脑</div>
+                    <div class="key u-15" data-code="MediaStop">媒体停止</div>
                 </div>
                 <div class="row">
                     <div class="key u-15" data-code="MouseLeft">左键</div><div class="key u-15" data-code="MouseMiddle">中键</div><div class="key u-15" data-code="MouseRight">右键</div>
@@ -300,8 +305,8 @@
             <div id="log-list"></div>
             <div class="browser-note">
                 <p>⚠️ **浏览器限制声明** ⚠️</p>
-                <p>部分系统级或浏览器快捷键 (如 PrintScreen, Alt+Tab, Win/Meta 键组合等) 可能因操作系统或浏览器自身的安全/快捷键机制而无法被此工具完全或持续地检测到。</p>
-                <p>此外，媒体键和音量键可能被其他正在运行的媒体播放器或后台应用 (如 Spotify, 视频网站等) 优先捕获并干扰识别。</p>
+                <p>部分系统级或浏览器快捷键 (如 Alt+Tab, Win/Meta 键组合等) 可能因操作系统或浏览器自身的安全/快捷键机制而无法被此工具完全或持续地检测到。</p>
+                <p>此版本已修复**仅抬起事件**的按键也能正确显示**已测试**状态并**短暂闪烁**的问题。</p>
             </div>
         </div>
     </div>
@@ -332,62 +337,82 @@
         let state = { kpmHistory: [], timestamps: [], kpmDisplayInterval: null, currentKPM: 0, recentKeys: [], totalKeys: 0, timers: {} };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // QMK Mappings (Compressed & Corrected)
+        // QMK Mappings (Updated to match provided keycodes_v6)
         const QMK_MAP = {
-            Escape:'KC_ESC',Enter:'KC_ENT',Backspace:'KC_BSPC',Tab:'KC_TAB',Space:'KC_SPC',CapsLock:'KC_CAPS',
-            ShiftLeft:'KC_LSFT',ShiftRight:'KC_RSFT',ControlLeft:'KC_LCTL',ControlRight:'KC_RCTL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
-            Minus:'KC_MINS',Equal:'KC_EQL',BracketLeft:'KC_LBRC',BracketRight:'KC_RBRC',Backslash:'KC_BSLS',Semicolon:'KC_SCLN',Quote:'KC_QUOT',Comma:'KC_COMM',Period:'KC_DOT',Slash:'KC_SLSH',Backquote:'KC_GRV',
-            PrintScreen:'KC_PSCR',ScrollLock:'KC_SLCK',Pause:'KC_PAUS',Insert:'KC_INS',Delete:'KC_DEL',Home:'KC_HOME',End:'KC_END',PageUp:'KC_PGUP',PageDown:'KC_PGDN',ContextMenu:'KC_MENU',
+            Escape:'KC_ESCAPE',Enter:'KC_ENTER',Backspace:'KC_BSPACE',Tab:'KC_TAB',Space:'KC_SPACE',CapsLock:'KC_CAPSLOCK',
+            ShiftLeft:'KC_LSHIFT',ShiftRight:'KC_RSHIFT',ControlLeft:'KC_LCTRL',ControlRight:'KC_RCTRL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
+            Minus:'KC_MINUS',Equal:'KC_EQUAL',BracketLeft:'KC_LBRACKET',BracketRight:'KC_RBRACKET',Backslash:'KC_BSLASH',Semicolon:'KC_SCOLON',Quote:'KC_QUOTE',Comma:'KC_COMMA',Period:'KC_DOT',Slash:'KC_SLASH',Backquote:'KC_GRAVE',
+            PrintScreen:'KC_PSCREEN',ScrollLock:'KC_SCROLLLOCK',Pause:'KC_PAUSE',Insert:'KC_INSERT',Delete:'KC_DELETE',Home:'KC_HOME',End:'KC_END',PageUp:'KC_PGUP',PageDown:'KC_PGDOWN',ContextMenu:'KC_APPLICATION',
             ArrowUp:'KC_UP',ArrowDown:'KC_DOWN',ArrowLeft:'KC_LEFT',ArrowRight:'KC_RIGHT',
-            NumpadEnter:'KC_PENT',NumpadDivide:'KC_PSLS',NumpadMultiply:'KC_PAST',NumpadSubtract:'KC_PMNS',NumpadAdd:'KC_PPLS',NumpadDecimal:'KC_PDOT',NumLock:'KC_NLCK',
-            VolumeUp:'KC_VOLU',VolumeDown:'KC_VOLD',VolumeMute:'KC_MUTE',MediaPlayPause:'KC_MPLY',MediaNextTrack:'KC_MNXT',MediaPreviousTrack:'KC_MPRV',
+            NumpadEnter:'KC_KP_ENTER',NumpadDivide:'KC_KP_SLASH',NumpadMultiply:'KC_KP_ASTERISK',NumpadSubtract:'KC_KP_MINUS',NumpadAdd:'KC_KP_PLUS',NumpadDecimal:'KC_KP_DOT',NumLock:'KC_NUMLOCK',
+            Numpad1:'KC_KP_1', Numpad2:'KC_KP_2', Numpad3:'KC_KP_3', Numpad4:'KC_KP_4', Numpad5:'KC_KP_5',
+            Numpad6:'KC_KP_6', Numpad7:'KC_KP_7', Numpad8:'KC_KP_8', Numpad9:'KC_KP_9', Numpad0:'KC_KP_0',
+            
+            VolumeUp:'KC_VOLU',VolumeDown:'KC_VOLD',VolumeMute:'KC_MUTE',MediaPlayPause:'KC_MPLY',MediaNextTrack:'KC_MNXT',MediaPreviousTrack:'KC_MPRV', MediaStop:'KC_MSTP',
             MouseLeft:'KC_BTN1',MouseRight:'KC_BTN2',MouseMiddle:'KC_BTN3',MouseBackward:'KC_BTN4',MouseForward:'KC_BTN5',
-            MouseWheelUp:'KC_WHLU',MouseWheelDown:'KC_WHLD',MouseWheelLeft:'KC_WHLL',MouseWheelRight:'KC_WHLR' // 滚轮键码修正
+            MouseWheelUp:'KC_WH_U',MouseWheelDown:'KC_WH_D',MouseWheelLeft:'KC_WH_L',MouseWheelRight:'KC_WH_R',
+            LaunchMail: 'KC_MAIL', LaunchApp2: 'KC_CALC', LaunchApp1: 'KC_MYCM'
         };
 
-        // QMK HEX 码表 (修正并补全 A-Z, 1-0)
+        // QMK HEX 码表 (Updated strictly based on provided python class keycodes_v6)
         const QMK_HEX = {
             KC_NO:'0x00',
-            // 字母键 A-Z (0x04 - 0x1D)
+            KC_TRNS:'0x01',
+            // Letters
             KC_A:'0x04',KC_B:'0x05',KC_C:'0x06',KC_D:'0x07',KC_E:'0x08',KC_F:'0x09',KC_G:'0x0A',KC_H:'0x0B',
             KC_I:'0x0C',KC_J:'0x0D',KC_K:'0x0E',KC_L:'0x0F',KC_M:'0x10',KC_N:'0x11',KC_O:'0x12',KC_P:'0x13',
             KC_Q:'0x14',KC_R:'0x15',KC_S:'0x16',KC_T:'0x17',KC_U:'0x18',KC_V:'0x19',KC_W:'0x1A',KC_X:'0x1B',
             KC_Y:'0x1C',KC_Z:'0x1D',
-            // 数字键 1-0 (0x1E - 0x27)
+            // Numbers
             KC_1:'0x1E',KC_2:'0x1F',KC_3:'0x20',KC_4:'0x21',KC_5:'0x22',KC_6:'0x23',KC_7:'0x24',KC_8:'0x25',
             KC_9:'0x26',KC_0:'0x27',
             
-            KC_ENT:'0x28',KC_ESC:'0x29',KC_BSPC:'0x2A',KC_TAB:'0x2B',KC_SPC:'0x2C',
-            KC_MINS:'0x2D',KC_EQL:'0x2E',KC_LBRC:'0x2F',KC_RBRC:'0x30',KC_BSLS:'0x31',KC_SCLN:'0x33',KC_QUOT:'0x34',KC_GRV:'0x35',KC_COMM:'0x36',KC_DOT:'0x37',KC_SLSH:'0x38',KC_CAPS:'0x39',
-            KC_F1:'0x3A',KC_F12:'0x45',KC_PSCR:'0x46',KC_SLCK:'0x47',KC_PAUS:'0x48',KC_INS:'0x49',KC_HOME:'0x4A',KC_PGUP:'0x4B',KC_DEL:'0x4C',KC_END:'0x4D',KC_PGDN:'0x4E',
-            KC_RIGHT:'0x4F',KC_LEFT:'0x50',KC_DOWN:'0x51',KC_UP:'0x52',KC_NLCK:'0x53',KC_PSLS:'0x54',KC_PAST:'0x55',KC_PMNS:'0x56',KC_PPLS:'0x57',KC_PENT:'0x58',
-            // 数字区小键盘 (0x59 - 0x63)
-            KC_P1:'0x59',KC_P2:'0x5A',KC_P3:'0x5B',KC_P4:'0x5C',KC_P5:'0x5D',KC_P6:'0x5E',KC_P7:'0x5F',KC_P8:'0x60',
-            KC_P9:'0x61',KC_P0:'0x62',KC_PDOT:'0x63',
+            // Standard Functionality
+            KC_ENTER:'0x28',KC_ESCAPE:'0x29',KC_BSPACE:'0x2A',KC_TAB:'0x2B',KC_SPACE:'0x2C',
+            KC_MINUS:'0x2D',KC_EQUAL:'0x2E',KC_LBRACKET:'0x2F',KC_RBRACKET:'0x30',KC_BSLASH:'0x31',KC_SCOLON:'0x33',KC_QUOTE:'0x34',KC_GRAVE:'0x35',KC_COMMA:'0x36',KC_DOT:'0x37',KC_SLASH:'0x38',KC_CAPSLOCK:'0x39',
             
-            KC_MENU:'0x65',KC_F13:'0x68',KC_F24:'0x73',
-            KC_LCTL:'0xE0',KC_LSFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTL:'0xE4',KC_RSFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
-            KC_VOLU:'0xA0',KC_VOLD:'0xA1',KC_MUTE:'0xA2',KC_MPLY:'0xCD',KC_MNXT:'0xB5',KC_MPRV:'0xB6',
-            KC_BTN1:'0x81',KC_BTN2:'0x82',KC_BTN3:'0x83',KC_BTN4:'0x84',KC_BTN5:'0x85', 
-            KC_WHLU:'0x90',KC_WHLD:'0x91',KC_WHLL:'0x92',KC_WHLR:'0x93',
-        };
-        const PULSE_KEYS = new Set(['ContextMenu','PrintScreen',...Array.from({length:12},(_,i)=>`F${i+13}`)]);
+            // F Keys
+            KC_F1:'0x3A',KC_F2:'0x3B',KC_F3:'0x3C',KC_F4:'0x3D',KC_F5:'0x3E',KC_F6:'0x3F',KC_F7:'0x40',KC_F8:'0x41',KC_F9:'0x42',KC_F10:'0x43',KC_F11:'0x44',KC_F12:'0x45',
+            KC_F13:'0x68',KC_F14:'0x69',KC_F15:'0x6A',KC_F16:'0x6B',KC_F17:'0x6C',KC_F18:'0x6D',KC_F19:'0x6E',KC_F20:'0x6F',KC_F21:'0x70',KC_F22:'0x71',KC_F23:'0x72',KC_F24:'0x73',
+            
+            // Navigation
+            KC_PSCREEN:'0x46',KC_SCROLLLOCK:'0x47',KC_PAUSE:'0x48',KC_INSERT:'0x49',KC_HOME:'0x4A',KC_PGUP:'0x4B',KC_DELETE:'0x4C',KC_END:'0x4D',KC_PGDOWN:'0x4E',
+            KC_RIGHT:'0x4F',KC_LEFT:'0x50',KC_DOWN:'0x51',KC_UP:'0x52',
+            KC_APPLICATION:'0x65',
+            
+            // Numpad
+            KC_NUMLOCK:'0x53',KC_KP_SLASH:'0x54',KC_KP_ASTERISK:'0x55',KC_KP_MINUS:'0x56',KC_KP_PLUS:'0x57',KC_KP_ENTER:'0x58',
+            KC_KP_1:'0x59',KC_KP_2:'0x5A',KC_KP_3:'0x5B',KC_KP_4:'0x5C',KC_KP_5:'0x5D',KC_KP_6:'0x5E',KC_KP_7:'0x5F',KC_KP_8:'0x60',KC_KP_9:'0x61',KC_KP_0:'0x62',KC_KP_DOT:'0x63',
+            
+            // Modifiers
+            KC_LCTRL:'0xE0',KC_LSHIFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTRL:'0xE4',KC_RSHIFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
+            
+            // Media & System (Values corrected based on provided list)
+            KC_VOLU:'0xA9',KC_VOLD:'0xAA',KC_MUTE:'0xA8',
+            KC_MPLY:'0xAE',KC_MNXT:'0xAB',KC_MPRV:'0xAC',KC_MSTP:'0xAD',
+            KC_MAIL:'0xB1', KC_CALC:'0xB2', KC_MYCM:'0xB3',
 
+            // Mouse
+            KC_BTN1:'0xD1',KC_BTN2:'0xD2',KC_BTN3:'0xD3',KC_BTN4:'0xD4',KC_BTN5:'0xD5', 
+            KC_WH_U:'0xD9',KC_WH_D:'0xDA',KC_WH_L:'0xDB',KC_WH_R:'0xDC',
+        };
+        
+        // 仅包含需要"延迟自动抬起"（脉冲）逻辑的按键
+        const MOUSE_WHEEL_KEYS = new Set(['MouseWheelUp', 'MouseWheelDown', 'MouseWheelLeft', 'MouseWheelRight']);
+        const isPulse = (c) => c && MOUSE_WHEEL_KEYS.has(c);
+        
         // --- Core Functions ---
         const mapCodeToQMK = (code) => {
             if (!code) return 'KC_NO';
             if (code.startsWith('KC_')) return code;
-            // F13-F24
-            if (code.match(/^F(1[3-9]|2[0-4])$/)) return `KC_${code}`;
-            // KeyA -> KC_A, KeyB -> KC_B, etc.
-            if (code.startsWith('Key')) return 'KC_' + code.slice(3);
-            // Digit1 -> KC_1, Digit2 -> KC_2, etc.
-            if (code.startsWith('Digit')) return 'KC_' + code.slice(5);
-            // Numpad1 -> KC_P1, Numpad2 -> KC_P2, etc.
-            if (code.match(/^Numpad\d$/)) return 'KC_P' + code.slice(6);
-            // F1-F12
-            if (code.match(/^F\d+$/)) return 'KC_' + code;
-            // 查表转换
+            
+            // Special handling for patterns
+            if (code.match(/^F(1[3-9]|2[0-4])$/)) return `KC_${code}`; // F13-F24
+            if (code.match(/^F\d+$/)) return 'KC_' + code; // F1-F12
+            if (code.startsWith('Key')) return 'KC_' + code.slice(3); // KeyA -> KC_A
+            if (code.startsWith('Digit')) return 'KC_' + code.slice(5); // Digit1 -> KC_1
+            if (code.match(/^Numpad\d$/)) return 'KC_KP_' + code.slice(6); // Numpad1 -> KC_KP_1
+
             return QMK_MAP[code] || ('KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, ''));
         };
 
@@ -406,34 +431,52 @@
         const getFreq = (c) => {
             if (!c) return 440;
             if (c.match(/^(Key|Digit)/)) return 440;
-            if (c.startsWith('F') || ['Insert','Delete','Home','End','PageUp','PageDown'].includes(c)) return 587.33;
-            if (['Shift','Control','Alt','Meta','ContextMenu'].some(x=>c.includes(x))) return 349.23;
+            if (c.startsWith('F') || ['Insert','Delete','Home','End','PageUp','PageDown','PrintScreen','ContextMenu'].includes(c)) return 587.33;
+            if (['Shift','Control','Alt','Meta'].some(x=>c.includes(x))) return 349.23;
             if (c === 'Space') return 329.63;
             if (['Enter','NumpadEnter','Tab','Backspace'].includes(c)) return 493.88;
             if (c.startsWith('Numpad')) return 466.16;
-            if (['Mouse','Media','Volume'].some(x=>c.includes(x))) return 783.99;
+            // 增加 Launch 关键字检测，确保计算器/邮件等按键触发高音提示
+            if (c.startsWith('MouseWheel') || ['Mouse','Media','Volume','Launch'].some(x=>c.includes(x))) return 783.99;
             return 440;
         };
-
-        const isPulse = (c) => c && (c.startsWith('Media') || c.startsWith('Volume') || PULSE_KEYS.has(c));
         
         const getKeyEl = (code) => document.querySelector(`.key[data-code="${code}"]`);
         
         const getKeyName = (code, key) => {
             if (code === 'Space') return 'SPACE';
-            if (['Shift','Control','Alt','Meta'].some(m => code.startsWith(m))) {
+            if (['ShiftLeft', 'ShiftRight', 'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight'].some(c => c === code)) {
                 const map = { Left: '左', Right: '右' };
                 const base = code.replace(/(Left|Right)$/, '');
                 const side = code.match(/(Left|Right)$/)?.[0];
                 return (map[side] || '') + (base === 'Meta' ? 'WIN' : base.toUpperCase());
             }
+            if (code === 'MediaPlayPause') return '播放/暂停';
+            if (code === 'MediaPreviousTrack') return '上一曲';
+            if (code === 'MediaNextTrack') return '下一曲';
+            if (code === 'MediaStop') return '媒体停止';
+            if (code === 'VolumeUp') return '音量+';
+            if (code === 'VolumeDown') return '音量-';
+            if (code === 'VolumeMute') return '静音';
+            
+            // 新增功能键中文名
+            if (code === 'LaunchMail') return '邮件';
+            if (code === 'LaunchApp2') return '计算器';
+            if (code === 'LaunchApp1') return '我的电脑';
+            
+            if (code === 'ControlLeft') return '左CTRL';
+            if (code === 'ControlRight') return '右CTRL';
+
             return getKeyEl(code)?.textContent.trim() || (key.length > 1 ? key.toUpperCase() : key);
         };
 
         const normMod = (e) => {
             const map = { 1: 'Left', 2: 'Right' };
-            if (['Shift','Control','Alt','Meta'].includes(e.key)) return e.key + (map[e.location] || (e.key==='Shift'?'Right':'Left'));
-            if (e.key === 'OS') return 'Meta' + (map[e.location] || 'Left');
+            if (e.key === 'Shift') return 'Shift' + (map[e.location] || 'Right');
+            if (e.key === 'Control') return 'Control' + (map[e.location] || 'Left');
+            if (e.key === 'Alt') return 'Alt' + (map[e.location] || 'Left');
+            if (e.key === 'Meta' || e.key === 'OS') return 'Meta' + (map[e.location] || 'Left');
+            
             return e.code;
         };
 
@@ -457,7 +500,6 @@
             el.textContent = name; el.dataset.code = code;
             el.style.opacity = '0'; el.style.transform = `translateX(-${CONFIG.recentKeys.stepPx}px)`;
             
-            // 关键修复：循环移除直到数量达标（严格模式），防止快速按键导致的溢出
             while (DOM.recent.children.length >= CONFIG.recentKeys.max) {
                 DOM.recent.lastElementChild.remove();
             }
@@ -478,13 +520,8 @@
         
         const updateKPMValue = () => {
             const now = Date.now();
-            // 过滤掉超过 1 秒前的按键时间戳
             state.timestamps = state.timestamps.filter(t => now - t < 1000);
-            
-            // 计算过去 1 秒内的实际按键次数，乘以 60 得到当前秒级的 KPM
             const instantaneousKPM = state.timestamps.length * 60;
-
-            // 使用 EMA (指数移动平均) 进行平滑处理，低 alpha 值减少阶跃感
             const alpha = CONFIG.kpmSmoothFactor;
             state.currentKPM = state.currentKPM * (1 - alpha) + instantaneousKPM * alpha;
         };
@@ -492,11 +529,9 @@
         // KPM 数字显示和曲线更新（每 100ms 运行一次）
         const updateKPMDisplayAndChart = () => {
             updateKPMValue();
-            
             const val = Math.round(state.currentKPM);
-            DOM.kpm.textContent = val; // 数字显示 100ms 刷新
+            DOM.kpm.textContent = val;
 
-            // 更新曲线数据 (曲线步进为 100ms)
             state.kpmHistory.push(val);
             if (state.kpmHistory.length > CONFIG.chart.maxPoints) state.kpmHistory.shift();
             
@@ -521,35 +556,65 @@
         };
 
         const trackAct = () => {
-            // 每次按键只记录时间戳
             state.timestamps.push(Date.now());
-            
-            // 启动定时器（如果尚未启动），确保按键后 KPM 持续更新
             if (!state.kpmDisplayInterval) {
                 state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
             }
         };
 
         // --- Event Handlers ---
+        
+        /**
+         * @function handleInput
+         * @description 核心按键事件处理器
+         * @param {'press'|'release'} action - 事件类型
+         * @param {string} code - KeyboardEvent.code
+         * @param {string} name - 显示的按键名
+         * @param {boolean} isRepeat - 是否为按住重复事件
+         */
         const handleInput = (action, code, name, isRepeat = false) => {
+            const el = getKeyEl(code); // Retrieve element once
+
             if (action === 'press') {
                 if (isRepeat) return;
                 log('press', name); updateInfo(name, code); playSound(getFreq(code));
-                updateRecent(code, name); trackAct(); // 按键时记录时间戳
+                updateRecent(code, name); trackAct();
                 
-                const el = getKeyEl(code);
-                if (el) { el.classList.add('active', 'tested'); updateProg(); }
+                if (el) { el.classList.add('active', 'tested'); updateProg(); } // 1. PRESS: Add active & tested
 
-                if (isPulse(code)) {
+                // 仅滚轮键需要延迟自动抬起 (isPulse 仅检查 MOUSE_WHEEL_KEYS)
+                if (isPulse(code)) { 
                     clearTimeout(state.timers[code]);
-                    state.timers[code] = setTimeout(() => handleInput('release', code, name), 300);
+                    state.timers[code] = setTimeout(() => handleInput('release', code, name), 100);
                 }
-            } else {
+            } else { // action === 'release'
                 if (isPulse(code)) {
-                    log('release', name); getKeyEl(code)?.classList.remove('active');
+                    // Logic for automatic release (Mouse Wheel)
+                    log('release', name); el?.classList.remove('active');
                     delete state.timers[code];
                 } else {
-                    log('release', name); updateInfo(name, code); getKeyEl(code)?.classList.remove('active');
+                    // Logic for physical keyup (Standard Keys, Media Keys, PRT, etc.)
+                    log('release', name); updateInfo(name, code);
+
+                    if (el) {
+                        el.classList.add('tested'); // 2. RELEASE: 确保即使错过了 keydown，也能标记为已测试
+                        updateProg(); // 更新进度
+
+                        // 3. Handle visual 'active' state
+                        if (!el.classList.contains('active')) {
+                            // Keydown missed (only keyup caught) -> Flash 'active'
+                            // 此逻辑也适用于 PrintScreen (PRT) 的特殊处理
+                            el.classList.add('active');
+                            clearTimeout(state.timers['flash-' + code]);
+                            state.timers['flash-' + code] = setTimeout(() => {
+                                el.classList.remove('active');
+                                delete state.timers['flash-' + code];
+                            }, 50); // 闪烁 50ms
+                        } else {
+                            // Keydown caught -> Remove 'active' normally
+                            el.classList.remove('active');
+                        }
+                    }
                 }
             }
         };
@@ -557,11 +622,21 @@
         const onKey = (e, type) => {
             e.preventDefault();
             let code = normMod(e);
-            const mediaMap = { AudioVolumeUp:'VolumeUp', AudioVolumeDown:'VolumeDown', AudioVolumeMute:'VolumeMute', MediaTrackNext:'MediaNextTrack', MediaTrackPrevious:'MediaPreviousTrack' };
+            // 确保将 Audio/Media Key 的 key 映射到正确的 code
+            const mediaMap = { 
+                AudioVolumeUp:'VolumeUp', AudioVolumeDown:'VolumeDown', AudioVolumeMute:'VolumeMute', 
+                MediaTrackNext:'MediaNextTrack', MediaTrackPrevious:'MediaPreviousTrack', MediaPlayPause:'MediaPlayPause', 
+                MediaStop: 'MediaStop', Calculator: 'LaunchApp2', LaunchApplication1: 'LaunchApp1', LaunchApplication2: 'LaunchApp2',
+                LaunchMail: 'LaunchMail'
+            };
             code = mediaMap[e.key] || (mediaMap[code] || code);
-            if (e.key === 'MediaPlayPause') code = 'MediaPlayPause';
+            // 某些浏览器下 MediaStop 直接返回 key='MediaStop'
+            if (e.key === 'MediaStop') code = 'MediaStop';
 
-            if (type === 'up' && (code.startsWith('Volume') || isPulse(code))) return;
+            // 仅阻止滚轮键的 keyup 事件，因为它们会通过计时器自动处理 'release'。
+            // PRT、邮件、计算器等键均不会被 isPulse 捕获，因此会正常触发 handleInput('release')
+            if (type === 'up' && isPulse(code)) return; 
+            
             handleInput(type === 'down' ? 'press' : 'release', code, getKeyName(code, e.key), e.repeat);
         };
 
@@ -578,9 +653,11 @@
             const dir = e.deltaY < 0 ? ['MouseWheelUp','滚轮↑'] : e.deltaY > 0 ? ['MouseWheelDown','滚轮↓'] : e.deltaX < 0 ? ['MouseWheelLeft','滚轮←'] : ['MouseWheelRight','滚轮→'];
             if (!dir) return;
             const [code, name] = dir;
+            
+            // 保持滚轮键的自动抬起逻辑：按下后设置计时器自动抬起
             if (state.timers[code]) clearTimeout(state.timers[code]);
             else handleInput('press', code, name);
-            state.timers[code] = setTimeout(() => { handleInput('release', code, name); delete state.timers[code]; }, 300);
+            state.timers[code] = setTimeout(() => { handleInput('release', code, name); delete state.timers[code]; }, 100);
         };
 
         // --- Init ---
@@ -597,11 +674,13 @@
             DOM.sound.addEventListener('change', e => localStorage.setItem('kbtest-sound', e.target.checked));
 
             DOM.audio.src = 'data:audio/mp3;base64,SUQzBAAAAAABVVgAAAABAAEA';
-            const mediaH = (act, code, name) => navigator.mediaSession.setActionHandler(act, () => handleInput('press', code, name));
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({ title: '键盘测试', artist: 'JLKB' });
-                mediaH('play','MediaPlayPause','播放/暂停'); mediaH('pause','MediaPlayPause','播放/暂停');
-                mediaH('previoustrack','MediaPreviousTrack','上一曲'); mediaH('nexttrack','MediaNextTrack','下一曲');
+                navigator.mediaSession.setActionHandler('play', () => handleInput('press', 'MediaPlayPause', '播放/暂停')); 
+                navigator.mediaSession.setActionHandler('pause', () => handleInput('release', 'MediaPlayPause', '播放/暂停'));
+                navigator.mediaSession.setActionHandler('previoustrack', () => handleInput('press', 'MediaPreviousTrack', '上一曲'));
+                navigator.mediaSession.setActionHandler('nexttrack', () => handleInput('press', 'MediaNextTrack', '下一曲'));
+                navigator.mediaSession.setActionHandler('stop', () => handleInput('press', 'MediaStop', '媒体停止'));
             }
             const actMedia = () => { DOM.audio.volume=0; DOM.audio.play().catch(()=>{}); document.body.removeEventListener('click',actMedia); };
             document.body.addEventListener('click', actMedia, {once:true});
@@ -620,18 +699,18 @@
             DOM.reset.addEventListener('click', () => {
                 document.querySelectorAll('.key.tested, .key.active').forEach(el => el.classList.remove('tested','active'));
                 DOM.log.innerHTML = ''; DOM.recent.innerHTML = ''; 
-                // 重置所有 KPM 相关的状态和定时器
                 if (state.kpmDisplayInterval) clearInterval(state.kpmDisplayInterval);
+                // 确保 flash- timers 也被清除
+                Object.keys(state.timers).forEach(timerKey => clearTimeout(state.timers[timerKey])); 
+
                 state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, kpmDisplayInterval: null, timers: {} };
                 updateInfo('-', 'KC_NO'); DOM.kpm.textContent = '0'; updateProg(); drawChart();
-                // 重启定时器以保持图表更新
                 state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
             });
             
             document.addEventListener('contextmenu', e => e.preventDefault());
             document.onkeydown = e => { if(e.keyCode==123||e.keyCode==116) return false; };
 
-            // 首次启动定时器，确保没有按键活动时 KPM 也会更新为 0
             if (!state.kpmDisplayInterval) {
                 state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
             }
@@ -639,7 +718,6 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
-        <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
+<script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 </body>
 </html>
-
