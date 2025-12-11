@@ -33,7 +33,7 @@
             background-color: var(--bg-color); color: var(--text-color);
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             /* 移除 text-align: center; 以确保内容从左侧开始显示，仅 h1 居中 */
-            /*min-height: 100vh;*/ 
+            /* min-height: 100vh; */
             margin: 0; padding-bottom: 50px; user-select: none;
             transition: background-color 0.3s, color 0.3s;
             overflow-x: auto; /* 允许 body 在内容超出时出现水平滚动条 */
@@ -54,7 +54,7 @@
             /* 移除 justify-content: center; 以确保内容在宽度不足时靠左显示 */
             gap: 40px;
             align-items: flex-start;
-            margin: 0 auto; /* 添加左右边距，防止内容紧贴浏览器边缘 */
+            margin: auto; /* 添加左右边距，防止内容紧贴浏览器边缘 */
             /* 设置最小宽度，确保所有内容即使在窄屏也能被容纳，并触发 body 的滚动条 */
             min-width: 1400px; /* 估算宽度：1030px (键盘区) + 300px (日志区) + 40px (间隙) + 30px (边距) = 1400px */
             width: max-content; /* 确保容器的宽度能够包含所有子元素 */
@@ -94,8 +94,8 @@
         input:checked + .slider { background-color: var(--tested-color); }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        #reset-btn { background: #c0392b; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        #reset-btn:hover { background: #e74c3c; }
+        #reset-btn { background: #3c9d9b; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        #reset-btn:hover { background: #4edfdc; }
 
         /* Keyboard Area */
         .keyboard-container {
@@ -223,10 +223,10 @@
                     <span class="label">实时 KPM</span><strong id="kpm-stat" style="color: var(--tested-color)">0</strong>
                 </div>
                 <div class="info-box" style="min-width: 150px; border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">KPM 实时曲线 (50点)</span><canvas id="kpm-chart" width="150" height="40"></canvas>
+                    <span class="label">KPM 曲线</span><canvas id="kpm-chart" width="150" height="40"></canvas>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">鼠标 XY (屏幕)</span><strong id="mouse-xy-stat" style="color: var(--active-color)">X: - Y: -</strong>
+                    <span class="label">鼠标 XY 坐标</span><strong id="mouse-xy-stat" style="color: var(--active-color)">X: - Y: -</strong>
                 </div>
                 <button id="reset-btn">重置 ↺</button>
             </div>
@@ -234,7 +234,7 @@
             <div class="keyboard-container">
                 <div class="section-main">
                     <div class="row row-f">
-                        <div class="key" data-code="Escape">ESC</div><div class="key spacer" style="width: var(--base-size);"></div>
+                        <div class="key" data-code="Escape">Esc</div><div class="key spacer" style="width: var(--base-size);"></div>
                         <div class="key" data-code="F1">F1</div><div class="key" data-code="F2">F2</div><div class="key" data-code="F3">F3</div><div class="key" data-code="F4">F4</div> 
                         <div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
                         <div class="key" data-code="F5">F5</div><div class="key" data-code="F6">F6</div><div class="key" data-code="F7">F7</div><div class="key" data-code="F8">F8</div>
@@ -242,36 +242,38 @@
                         <div class="key" data-code="F9">F9</div><div class="key" data-code="F10">F10</div><div class="key" data-code="F11">F11</div><div class="key" data-code="F12">F12</div>
                     </div>
                     <div class="row">
-                        <div class="key key-dual" data-code="Backquote"><span>~</span><span>`</span></div>
-                        <div class="key key-dual" data-code="Digit1"><span>!</span><span>1</span></div><div class="key key-dual" data-code="Digit2"><span>@</span><span>2</span></div><div class="key key-dual" data-code="Digit3"><span>#</span><span>3</span></div><div class="key key-dual" data-code="Digit4"><span>$</span><span>4</span></div><div class="key key-dual" data-code="Digit5"><span>%</span><span>5</span></div><div class="key key-dual" data-code="Digit6"><span>^</span><span>6</span></div><div class="key key-dual" data-code="Digit7"><span>&</span><span>7</span></div><div class="key key-dual" data-code="Digit8"><span>*</span><span>8</span></div><div class="key key-dual" data-code="Digit9"><span>)</span><span>9</span></div><div class="key key-dual" data-code="Digit0"><span>(</span><span>0</span></div>
-                        <div class="key key-dual" data-code="Minus"><span>_</span><span>-</span></div><div class="key key-dual" data-code="Equal"><span>+</span><span>=</span></div><div class="key u-2" data-code="Backspace">BACK</div>
+                        <div class="key key-dual" data-code="Backquote"><span>~<br>`</span></div>
+                        <div class="key key-dual" data-code="Digit1"><span>!<br>1</span></div><div class="key key-dual" data-code="Digit2"><span>@<br>2</span></div><div class="key key-dual" data-code="Digit3"><span>#<br>3</span></div><div class="key key-dual" data-code="Digit4"><span>$<br>4</span></div><div class="key key-dual" data-code="Digit5"><span>%<br>5</span></div><div class="key key-dual" data-code="Digit6"><span>^<br>6</span></div><div class="key key-dual" data-code="Digit7"><span>&<br>7</span></div><div class="key key-dual" data-code="Digit8"><span>*<br>8</span></div><div class="key key-dual" data-code="Digit9"><span>)<br>9</span></div><div class="key key-dual" data-code="Digit0"><span>(<br>0</span></div>
+                        <div class="key key-dual" data-code="Minus"><span>_<br>-</span></div><div class="key key-dual" data-code="Equal"><span>+<br>=</span></div><div class="key u-2" data-code="Backspace">Backspace</div>
                     </div>
                     <div class="row">
-                        <div class="key u-15" data-code="Tab">TAB</div><div class="key" data-code="KeyQ">Q</div><div class="key" data-code="KeyW">W</div><div class="key" data-code="KeyE">E</div><div class="key" data-code="KeyR">R</div><div class="key" data-code="KeyT">T</div><div class="key" data-code="KeyY">Y</div><div class="key" data-code="KeyU">U</div><div class="key" data-code="KeyI">I</div><div class="key" data-code="KeyO">O</div><div class="key" data-code="KeyP">P</div>
-                        <div class="key key-dual" data-code="BracketLeft"><span>{</span><span>[</span></div><div class="key key-dual" data-code="BracketRight"><span>}</span><span>]</span></div><div class="key u-15 key-dual" data-code="Backslash"><span>|</span><span>\</span></div>
+                        <div class="key u-15" data-code="Tab">Tab</div><div class="key" data-code="KeyQ">Q</div><div class="key" data-code="KeyW">W</div><div class="key" data-code="KeyE">E</div><div class="key" data-code="KeyR">R</div><div class="key" data-code="KeyT">T</div><div class="key" data-code="KeyY">Y</div><div class="key" data-code="KeyU">U</div><div class="key" data-code="KeyI">I</div><div class="key" data-code="KeyO">O</div><div class="key" data-code="KeyP">P</div>
+                        <div class="key key-dual" data-code="BracketLeft"><span>{<br>[</span></div>
+                        <div class="key key-dual" data-code="BracketRight"><span>}<br>]</span></div>
+                        <div class="key u-15 key-dual" data-code="Backslash"><span>|<br>\</span></div>
                     </div>
                     <div class="row">
-                        <div class="key u-175" data-code="CapsLock">CAPS</div><div class="key" data-code="KeyA">A</div><div class="key" data-code="KeyS">S</div><div class="key" data-code="KeyD">D</div><div class="key" data-code="KeyF">F</div><div class="key" data-code="KeyG">G</div><div class="key" data-code="KeyH">H</div><div class="key" data-code="KeyJ">J</div><div class="key" data-code="KeyK">K</div><div class="key" data-code="KeyL">L</div>
-                        <div class="key key-dual" data-code="Semicolon"><span>:</span><span>;</span></div><div class="key key-dual" data-code="Quote"><span>"</span><span>'</span></div><div class="key u-225" data-code="Enter">ENTER</div>
+                        <div class="key u-175" data-code="CapsLock">Caps Lock</div><div class="key" data-code="KeyA">A</div><div class="key" data-code="KeyS">S</div><div class="key" data-code="KeyD">D</div><div class="key" data-code="KeyF">F</div><div class="key" data-code="KeyG">G</div><div class="key" data-code="KeyH">H</div><div class="key" data-code="KeyJ">J</div><div class="key" data-code="KeyK">K</div><div class="key" data-code="KeyL">L</div>
+                        <div class="key key-dual" data-code="Semicolon"><span>:<br>;</span></div><div class="key key-dual" data-code="Quote"><span>"<br>'</span></div><div class="key u-225" data-code="Enter">Enter</div>
                     </div>
                     <div class="row">
-                        <div class="key u-225" data-code="ShiftLeft">SHIFT</div><div class="key" data-code="KeyZ">Z</div><div class="key" data-code="KeyX">X</div><div class="key" data-code="KeyC">C</div><div class="key" data-code="KeyV">V</div><div class="key" data-code="KeyB">B</div><div class="key" data-code="KeyN">N</div><div class="key" data-code="KeyM">M</div>
-                        <div class="key key-dual" data-code="Comma"><span>&lt;</span><span>,</span></div><div class="key key-dual" data-code="Period"><span>&gt;</span><span>.</span></div><div class="key key-dual" data-code="Slash"><span>?</span><span>/</span></div><div class="key u-275" data-code="ShiftRight">SHIFT</div>
+                        <div class="key u-225" data-code="ShiftLeft">Shift</div><div class="key" data-code="KeyZ">Z</div><div class="key" data-code="KeyX">X</div><div class="key" data-code="KeyC">C</div><div class="key" data-code="KeyV">V</div><div class="key" data-code="KeyB">B</div><div class="key" data-code="KeyN">N</div><div class="key" data-code="KeyM">M</div>
+                        <div class="key key-dual" data-code="Comma"><span>&lt;<br>,</span></div><div class="key key-dual" data-code="Period"><span>&gt;<br>.</span></div><div class="key key-dual" data-code="Slash"><span>?<br>/</span></div><div class="key u-275" data-code="ShiftRight">Shift</div>
                     </div>
                     <div class="row">
-                        <div class="key u-125" data-code="ControlLeft">CTRL</div><div class="key u-125" data-code="MetaLeft">WIN</div><div class="key u-125" data-code="AltLeft">ALT</div><div class="key u-space" data-code="Space"></div><div class="key u-125" data-code="AltRight">ALT</div><div class="key u-125" data-code="MetaRight">WIN</div><div class="key u-125" data-code="ContextMenu">MENU</div><div class="key u-125" data-code="ControlRight">CTRL</div>
+                        <div class="key u-125" data-code="ControlLeft">Ctrl</div><div class="key u-125" data-code="MetaLeft">Win</div><div class="key u-125" data-code="AltLeft">Alt</div><div class="key u-space" data-code="Space">Space</div><div class="key u-125" data-code="AltRight">Alt</div><div class="key u-125" data-code="MetaRight">Win</div><div class="key u-125" data-code="ContextMenu">Menu</div><div class="key u-125" data-code="ControlRight">Ctrl</div>
                     </div>
                 </div>
                 
                 <div class="section-nav">
                     <div class="row row-f">
-                        <div class="key" data-code="PrintScreen">PRT</div><div class="key" data-code="ScrollLock">SCR</div><div class="key" data-code="Pause">PAU</div>
+                        <div class="key" data-code="PrintScreen">PrtSc</div><div class="key" data-code="ScrollLock">ScrLk</div><div class="key" data-code="Pause">Pause</div>
                     </div>
                     <div class="row">
-                        <div class="key" data-code="Insert">INS</div><div class="key" data-code="Home">HM</div><div class="key" data-code="PageUp">PU</div>
+                        <div class="key" data-code="Insert">Insert</div><div class="key" data-code="Home">Home</div><div class="key" data-code="PageUp">PgUp</div>
                     </div>
                     <div class="row" style="margin-bottom: calc(var(--base-size) + var(--gap));">
-                        <div class="key" data-code="Delete">DEL</div><div class="key" data-code="End">END</div><div class="key" data-code="PageDown">PD</div>
+                        <div class="key" data-code="Delete">Delete</div><div class="key" data-code="End">End</div><div class="key" data-code="PageDown">PgDn</div>
                     </div>
                     <div class="row"><div class="key spacer" style="width: var(--base-size);"></div><div class="key" data-code="ArrowUp">↑</div></div>
                     <div class="row"><div class="key" data-code="ArrowLeft">←</div><div class="key" data-code="ArrowDown">↓</div><div class="key" data-code="ArrowRight">→</div></div>
@@ -279,7 +281,7 @@
 
                 <div class="section-numpad">
                     <div class="row">
-                        <div class="key" data-code="NumLock">NUM</div><div class="key" data-code="NumpadDivide">/</div><div class="key" data-code="NumpadMultiply">*</div><div class="key" data-code="NumpadSubtract">-</div>
+                        <div class="key" data-code="NumLock">NmLk</div><div class="key" data-code="NumpadDivide">/</div><div class="key" data-code="NumpadMultiply">*</div><div class="key" data-code="NumpadSubtract">-</div>
                     </div>
                     <div class="row">
                         <div class="key" data-code="Numpad7">7</div><div class="key" data-code="Numpad8">8</div><div class="key" data-code="Numpad9">9</div><div class="key h-2" data-code="NumpadAdd">+</div>
@@ -288,7 +290,7 @@
                         <div class="key" data-code="Numpad4">4</div><div class="key" data-code="Numpad5">5</div><div class="key" data-code="Numpad6">6</div>
                     </div>
                     <div class="row">
-                        <div class="key" data-code="Numpad1">1</div><div class="key" data-code="Numpad2">2</div><div class="key" data-code="Numpad3">3</div><div class="key h-2" data-code="NumpadEnter">ENT</div>
+                        <div class="key" data-code="Numpad1">1</div><div class="key" data-code="Numpad2">2</div><div class="key" data-code="Numpad3">3</div><div class="key h-2" data-code="NumpadEnter">Enter</div>
                     </div>
                     <div class="row" style="margin-top: calc((var(--base-size) + var(--gap)) * -1);">
                         <div class="key u-2" data-code="Numpad0">0</div><div class="key" data-code="NumpadDecimal">.</div>
@@ -298,21 +300,19 @@
             
             <div class="extra-keys-container">
                 <div class="row">
-                    <div class="key" data-code="F13">F13</div><div class="key" data-code="F14">F14</div><div class="key" data-code="F15">F15</div><div class="key" data-code="F16">F16</div><div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
-                    <div class="key" data-code="F17">F17</div><div class="key" data-code="F18">F18</div><div class="key" data-code="F19">F19</div><div class="key" data-code="F20">F20</div><div class="key spacer" style="width: calc(var(--base-size) / 2);"></div>
-                    <div class="key" data-code="F21">F21</div><div class="key" data-code="F22">F22</div><div class="key" data-code="F23">F23</div><div class="key" data-code="F24">F24</div>
+                    <div class="key" data-code="F13">F13</div><div class="key" data-code="F14">F14</div><div class="key" data-code="F15">F15</div><div class="key" data-code="F16">F16</div><div class="key" data-code="F17">F17</div><div class="key" data-code="F18">F18</div><div class="key" data-code="F19">F19</div><div class="key" data-code="F20">F20</div><div class="key" data-code="F21">F21</div><div class="key" data-code="F22">F22</div><div class="key" data-code="F23">F23</div><div class="key" data-code="F24">F24</div>
                     <div class="key spacer" style="width: 20px;"></div>
-                    <div class="key u-15" data-code="LaunchApp2">计算器</div>
-                    <div class="key u-15" data-code="LaunchMail">邮件</div>
-                    <div class="key u-15" data-code="LaunchApp1">我的电脑</div>
-                    <div class="key u-15" data-code="MediaStop">媒体停止</div>
+                    <div class="key" data-code="LaunchApp2">计算器</div>
+                    <div class="key" data-code="LaunchMail">邮件</div>
+                    <div class="key" data-code="LaunchApp1">此电脑</div>
+                    <div class="key" data-code="MediaStop">媒体<br>停止</div>
                 </div>
                 <div class="row">
-                    <div class="key u-15" data-code="MouseLeft">左键</div><div class="key u-15" data-code="MouseMiddle">中键</div><div class="key u-15" data-code="MouseRight">右键</div>
-                    <div class="key u-15" data-code="MouseBackward">后退键</div><div class="key u-15" data-code="MouseForward">前进键</div>
-                    <div class="key" data-code="MouseWheelUp">滚轮↑</div><div class="key" data-code="MouseWheelDown">滚轮↓</div><div class="key" data-code="MouseWheelLeft">滚轮←</div><div class="key" data-code="MouseWheelRight">滚轮→</div>
+                    <div class="key" data-code="MouseLeft">鼠标<br>左键</div><div class="key" data-code="MouseMiddle">鼠标<br>中键</div><div class="key" data-code="MouseRight">鼠标<br>右键</div>
+                    <div class="key" data-code="MouseBackward">鼠标<br>后退</div><div class="key" data-code="MouseForward">鼠标<br>前进</div>
+                    <div class="key" data-code="MouseWheelUp">鼠标<br>滚轮↑</div><div class="key" data-code="MouseWheelDown">鼠标<br>滚轮↓</div><div class="key" data-code="MouseWheelLeft">鼠标<br>滚轮←</div><div class="key" data-code="MouseWheelRight">鼠标<br>滚轮→</div>
                     <div class="key spacer" style="width: 20px;"></div>
-                    <div class="key u-15" data-code="MediaPreviousTrack">上一曲</div><div class="key u-15" data-code="MediaPlayPause">播放/暂停</div><div class="key u-15" data-code="MediaNextTrack">下一曲</div>
+                    <div class="key" data-code="MediaPreviousTrack">上一曲</div><div class="key" data-code="MediaPlayPause">播放<br>暂停</div><div class="key" data-code="MediaNextTrack">下一曲</div>
                     <div class="key spacer" style="width: 20px;"></div>
                     <div class="key" data-code="VolumeDown">音量-</div><div class="key" data-code="VolumeMute">静音</div><div class="key" data-code="VolumeUp">音量+</div>
                 </div>
@@ -325,7 +325,7 @@
         </div>
 
         <div class="log-area-wrapper">
-            <h2>活动日志</h2>
+            <h2>测试日志</h2>
             <div id="log-list"></div>
             <div class="browser-note">
                 <p>⚠️ **浏览器限制声明** ⚠️</p>
@@ -336,113 +336,125 @@
     </div>
 
     <script>
-        // --- Configuration & Constants ---
-        const CONFIG = {
-            chart: { width: 150, height: 40, maxPoints: 50, maxKPM: 600 },
-            recentKeys: { max: 66, stepPx: 44 },
-            audio: { duration: 0.05, type: 'square' },
-            colors: { chartDark: '#8cffec', chartLight: '#0d6efd', fillDark: 'rgba(140, 255, 236, 0.1)', fillLight: 'rgba(13, 110, 253, 0.1)' },
-            kpmUpdateInterval: 100, // KPM数字和曲线刷新间隔（毫秒），满足100ms刷新要求
-            kpmSmoothFactor: 0.1 // 平滑因子：新KPM占 10%，旧KPM占 90%。值越低，曲线越平滑，解决整数倍停留问题。
-        };
+    // =========================================================================================
+    // I. 配置与数据层 (Config & Data)
+    // =========================================================================================
+    const CONFIG = {
+        chart: { width: 150, height: 40, maxPoints: 50, maxKPM: 600 },
+        recentKeys: { max: 66, stepPx: 44 },
+        audio: { duration: 0.05, type: 'square' },
+        colors: { chartDark: '#8cffec', chartLight: '#0d6efd', fillDark: 'rgba(140, 255, 236, 0.1)', fillLight: 'rgba(13, 110, 253, 0.1)' },
+        kpmUpdateInterval: 100, kpmSmoothFactor: 0.1
+    };
+    // 辅助函数：简化 DOM 查找
+    const D = (id) => document.getElementById(id); 
+    const DOM = {
+        keyName: D('key-name'), keyCode: D('key-code'), keyHex: D('key-hex-display'), kpm: D('kpm-stat'),
+        reset: D('reset-btn'), sound: D('sound-toggle'), theme: D('theme-toggle'), themeText: D('theme-display-text'),
+        log: D('log-list'), recent: D('recent-keys-list'), progress: D('test-progress-bar'), progressText: D('progress-text'),
+        mouseXY: D('mouse-xy-stat'), audio: D('silent-audio'), chartCtx: D('kpm-chart').getContext('2d')
+    };
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // QMK Mappings (从原始文件提取并整合)
+    const QMK_MAP = {
+        Escape:'KC_ESCAPE',Enter:'KC_ENTER',Backspace:'KC_BSPACE',Tab:'KC_TAB',Space:'KC_SPACE',CapsLock:'KC_CAPSLOCK',
+        ShiftLeft:'KC_LSHIFT',ShiftRight:'KC_RSHIFT',ControlLeft:'KC_LCTRL',ControlRight:'KC_RCTRL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
+        Minus:'KC_MINUS',Equal:'KC_EQUAL',BracketLeft:'KC_LBRACKET',BracketRight:'KC_RBRACKET',Backslash:'KC_BSLASH',Semicolon:'KC_SCOLON',Quote:'KC_QUOTE',Comma:'KC_COMMA',Period:'KC_DOT',Slash:'KC_SLASH',Backquote:'KC_GRAVE',
+        PrintScreen:'KC_PSCREEN',ScrollLock:'KC_SCROLLLOCK',Pause:'KC_PAUSE',Insert:'KC_INSERT',Delete:'KC_DELETE',Home:'KC_HOME',End:'KC_END',PageUp:'KC_PGUP',PageDown:'KC_PGDOWN',ContextMenu:'KC_APPLICATION',
+        ArrowUp:'KC_UP',ArrowDown:'KC_DOWN',ArrowLeft:'KC_LEFT',ArrowRight:'KC_RIGHT',
+        NumpadEnter:'KC_KP_ENTER',NumpadDivide:'KC_KP_SLASH',NumpadMultiply:'KC_KP_ASTERISK',NumpadSubtract:'KC_KP_MINUS',NumpadAdd:'KC_KP_PLUS',NumpadDecimal:'KC_KP_DOT',NumLock:'KC_NUMLOCK',
+        Numpad1:'KC_KP_1', Numpad2:'KC_KP_2', Numpad3:'KC_KP_3', Numpad4:'KC_KP_4', Numpad5:'KC_KP_5',
+        Numpad6:'KC_KP_6', Numpad7:'KC_KP_7', Numpad8:'KC_KP_8', Numpad9:'KC_KP_9', Numpad0:'KC_KP_0',
+        VolumeUp:'KC_VOLU',VolumeDown:'KC_VOLD',VolumeMute:'KC_MUTE',MediaPlayPause:'KC_MPLY',MediaNextTrack:'KC_MNXT',MediaPreviousTrack:'KC_MPRV', MediaStop:'KC_MSTP',
+        MouseLeft:'KC_BTN1',MouseRight:'KC_BTN2',MouseMiddle:'KC_BTN3',MouseBackward:'KC_BTN4',MouseForward:'KC_BTN5',
+        MouseWheelUp:'KC_WH_U',MouseWheelDown:'KC_WH_D',MouseWheelLeft:'KC_WH_L',MouseWheelRight:'KC_WH_R',
+        LaunchMail: 'KC_MAIL', LaunchApp2: 'KC_CALC', LaunchApp1: 'KC_MYCM'
+    };
 
-        // Data Structures (Optimized)
-        const DOM = {
-            keyName: document.getElementById('key-name'), keyCode: document.getElementById('key-code'),
-            keyHex: document.getElementById('key-hex-display'), kpm: document.getElementById('kpm-stat'),
-            reset: document.getElementById('reset-btn'), sound: document.getElementById('sound-toggle'),
-            theme: document.getElementById('theme-toggle'), themeText: document.getElementById('theme-display-text'),
-            log: document.getElementById('log-list'), recent: document.getElementById('recent-keys-list'),
-            progress: document.getElementById('test-progress-bar'), progressText: document.getElementById('progress-text'),
-            mouseXY: document.getElementById('mouse-xy-stat'), audio: document.getElementById('silent-audio'),
-            chart: document.getElementById('kpm-chart').getContext('2d')
-        };
-        
-        let state = { kpmHistory: [], timestamps: [], kpmDisplayInterval: null, currentKPM: 0, recentKeys: [], totalKeys: 0, timers: {} };
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // QMK HEX 码表 (从原始文件提取并整合)
+    const QMK_HEX = {
+        KC_NO:'0x00',KC_TRNS:'0x01',KC_A:'0x04',KC_B:'0x05',KC_C:'0x06',KC_D:'0x07',KC_E:'0x08',KC_F:'0x09',KC_G:'0x0A',KC_H:'0x0B',
+        KC_I:'0x0C',KC_J:'0x0D',KC_K:'0x0E',KC_L:'0x0F',KC_M:'0x10',KC_N:'0x11',KC_O:'0x12',KC_P:'0x13',
+        KC_Q:'0x14',KC_R:'0x15',KC_S:'0x16',KC_T:'0x17',KC_U:'0x18',KC_V:'0x19',KC_W:'0x1A',KC_X:'0x1B',
+        KC_Y:'0x1C',KC_Z:'0x1D',KC_1:'0x1E',KC_2:'0x1F',KC_3:'0x20',KC_4:'0x21',KC_5:'0x22',KC_6:'0x23',
+        KC_7:'0x24',KC_8:'0x25',KC_9:'0x26',KC_0:'0x27',KC_ENTER:'0x28',KC_ESCAPE:'0x29',KC_BSPACE:'0x2A',KC_TAB:'0x2B',KC_SPACE:'0x2C',
+        KC_MINUS:'0x2D',KC_EQUAL:'0x2E',KC_LBRACKET:'0x2F',KC_RBRACKET:'0x30',KC_BSLASH:'0x31',KC_SCOLON:'0x33',KC_QUOTE:'0x34',KC_GRAVE:'0x35',KC_COMMA:'0x36',KC_DOT:'0x37',KC_SLASH:'0x38',KC_CAPSLOCK:'0x39',
+        KC_F1:'0x3A',KC_F2:'0x3B',KC_F3:'0x3C',KC_F4:'0x3D',KC_F5:'0x3E',KC_F6:'0x3F',KC_F7:'0x40',KC_F8:'0x41',KC_F9:'0x42',KC_F10:'0x43',KC_F11:'0x44',KC_F12:'0x45',
+        KC_F13:'0x68',KC_F14:'0x69',KC_F15:'0x6A',KC_F16:'0x6B',KC_F17:'0x6C',KC_F18:'0x6D',KC_F19:'0x6E',KC_F20:'0x6F',KC_F21:'0x70',KC_F22:'0x71',KC_F23:'0x72',KC_F24:'0x73',
+        KC_PSCREEN:'0x46',KC_SCROLLLOCK:'0x47',KC_PAUSE:'0x48',KC_INSERT:'0x49',KC_HOME:'0x4A',KC_PGUP:'0x4B',KC_DELETE:'0x4C',KC_END:'0x4D',KC_PGDOWN:'0x4E',
+        KC_RIGHT:'0x4F',KC_LEFT:'0x50',KC_DOWN:'0x51',KC_UP:'0x52',KC_APPLICATION:'0x65',KC_NUMLOCK:'0x53',KC_KP_SLASH:'0x54',KC_KP_ASTERISK:'0x55',KC_KP_MINUS:'0x56',KC_KP_PLUS:'0x57',KC_KP_ENTER:'0x58',
+        KC_KP_1:'0x59',KC_KP_2:'0x5A',KC_KP_3:'0x5B',KC_KP_4:'0x5C',KC_KP_5:'0x5D',KC_KP_6:'0x5E',KC_KP_7:'0x5F',KC_KP_8:'0x60',KC_KP_9:'0x61',KC_KP_0:'0x62',KC_KP_DOT:'0x63',
+        KC_LCTRL:'0xE0',KC_LSHIFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTRL:'0xE4',KC_RSHIFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
+        KC_VOLU:'0xA9',KC_VOLD:'0xAA',KC_MUTE:'0xA8',KC_MPLY:'0xAE',KC_MNXT:'0xAB',KC_MPRV:'0xAC',KC_MSTP:'0xAD',
+        KC_MAIL:'0xB1', KC_CALC:'0xB2', KC_MYCM:'0xB3',KC_BTN1:'0xD1',KC_BTN2:'0xD2',KC_BTN3:'0xD3',KC_BTN4:'0xD4',KC_BTN5:'0xD5', 
+        KC_WH_U:'0xD9',KC_WH_D:'0xDA',KC_WH_L:'0xDB',KC_WH_R:'0xDC',
+    };
+    
+    const MOUSE_WHEEL_KEYS = new Set(['MouseWheelUp', 'MouseWheelDown', 'MouseWheelLeft', 'MouseWheelRight']);
+    const isPulse = (c) => MOUSE_WHEEL_KEYS.has(c);
 
-        // QMK Mappings (Updated to match provided keycodes_v6)
-        const QMK_MAP = {
-            Escape:'KC_ESCAPE',Enter:'KC_ENTER',Backspace:'KC_BSPACE',Tab:'KC_TAB',Space:'KC_SPACE',CapsLock:'KC_CAPSLOCK',
-            ShiftLeft:'KC_LSHIFT',ShiftRight:'KC_RSHIFT',ControlLeft:'KC_LCTRL',ControlRight:'KC_RCTRL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
-            Minus:'KC_MINUS',Equal:'KC_EQUAL',BracketLeft:'KC_LBRACKET',BracketRight:'KC_RBRACKET',Backslash:'KC_BSLASH',Semicolon:'KC_SCOLON',Quote:'KC_QUOTE',Comma:'KC_COMMA',Period:'KC_DOT',Slash:'KC_SLASH',Backquote:'KC_GRAVE',
-            PrintScreen:'KC_PSCREEN',ScrollLock:'KC_SCROLLLOCK',Pause:'KC_PAUSE',Insert:'KC_INSERT',Delete:'KC_DELETE',Home:'KC_HOME',End:'KC_END',PageUp:'KC_PGUP',PageDown:'KC_PGDOWN',ContextMenu:'KC_APPLICATION',
-            ArrowUp:'KC_UP',ArrowDown:'KC_DOWN',ArrowLeft:'KC_LEFT',ArrowRight:'KC_RIGHT',
-            NumpadEnter:'KC_KP_ENTER',NumpadDivide:'KC_KP_SLASH',NumpadMultiply:'KC_KP_ASTERISK',NumpadSubtract:'KC_KP_MINUS',NumpadAdd:'KC_KP_PLUS',NumpadDecimal:'KC_KP_DOT',NumLock:'KC_NUMLOCK',
-            Numpad1:'KC_KP_1', Numpad2:'KC_KP_2', Numpad3:'KC_KP_3', Numpad4:'KC_KP_4', Numpad5:'KC_KP_5',
-            Numpad6:'KC_KP_6', Numpad7:'KC_KP_7', Numpad8:'KC_KP_8', Numpad9:'KC_KP_9', Numpad0:'KC_KP_0',
-            
-            VolumeUp:'KC_VOLU',VolumeDown:'KC_VOLD',VolumeMute:'KC_MUTE',MediaPlayPause:'KC_MPLY',MediaNextTrack:'KC_MNXT',MediaPreviousTrack:'KC_MPRV', MediaStop:'KC_MSTP',
-            MouseLeft:'KC_BTN1',MouseRight:'KC_BTN2',MouseMiddle:'KC_BTN3',MouseBackward:'KC_BTN4',MouseForward:'KC_BTN5',
-            MouseWheelUp:'KC_WH_U',MouseWheelDown:'KC_WH_D',MouseWheelLeft:'KC_WH_L',MouseWheelRight:'KC_WH_R',
-            LaunchMail: 'KC_MAIL', LaunchApp2: 'KC_CALC', LaunchApp1: 'KC_MYCM'
-        };
+    // =========================================================================================
+    // II. 状态管理与辅助工具 (State & Utilities)
+    // =========================================================================================
+    let state = { kpmHistory: [], timestamps: [], kpmDisplayInterval: null, currentKPM: 0, totalKeys: 0, timers: {} };
 
-        // QMK HEX 码表 (Updated strictly based on provided python class keycodes_v6)
-        const QMK_HEX = {
-            KC_NO:'0x00',
-            KC_TRNS:'0x01',
-            // Letters
-            KC_A:'0x04',KC_B:'0x05',KC_C:'0x06',KC_D:'0x07',KC_E:'0x08',KC_F:'0x09',KC_G:'0x0A',KC_H:'0x0B',
-            KC_I:'0x0C',KC_J:'0x0D',KC_K:'0x0E',KC_L:'0x0F',KC_M:'0x10',KC_N:'0x11',KC_O:'0x12',KC_P:'0x13',
-            KC_Q:'0x14',KC_R:'0x15',KC_S:'0x16',KC_T:'0x17',KC_U:'0x18',KC_V:'0x19',KC_W:'0x1A',KC_X:'0x1B',
-            KC_Y:'0x1C',KC_Z:'0x1D',
-            // Numbers
-            KC_1:'0x1E',KC_2:'0x1F',KC_3:'0x20',KC_4:'0x21',KC_5:'0x22',KC_6:'0x23',KC_7:'0x24',KC_8:'0x25',
-            KC_9:'0x26',KC_0:'0x27',
+    /** KeyMapper - 简化了字符串查找和修饰键逻辑 */
+    const KeyMapper = {
+        mapCodeToQMK: (code) => {
+            if (!code || code.startsWith('KC_')) return code || 'KC_NO';
+            if (code.match(/^F(1[3-9]|2[0-4])$/)) return `KC_${code}`;
+            if (code.match(/^F\d+$/)) return 'KC_' + code;
+            const qmk = QMK_MAP[code];
+            if (qmk) return qmk;
+            const mapPrefix = code.startsWith('Key') ? 'KC_' : code.startsWith('Digit') ? 'KC_' : code.startsWith('Numpad') ? 'KC_KP_' : '';
+            if (mapPrefix) return mapPrefix + code.replace(/^(Key|Digit|Numpad)/, '');
+            return 'KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+        },
+        getHex: (qmkCode) => QMK_HEX[qmkCode] || (qmkCode.startsWith('KC_F') && qmkCode.length<7 ? '0x'+(parseInt(qmkCode.slice(4))+57).toString(16).toUpperCase() : '0x??'),
+        normMod: (e) => {
+            const map = { 1: 'Left', 2: 'Right' };
+            const mod = e.key.replace(/^(Control|Shift|Alt|Meta|OS)$/, (m) => m === 'OS' ? 'Meta' : m);
+            if (['Shift', 'Control', 'Alt', 'Meta'].includes(mod)) return mod + (map[e.location] || (mod === 'Control' ? 'Left' : 'Right'));
+            return e.code;
+        },
+        getKeyName: (code, key) => {
+            const el = document.querySelector(`.key[data-code="${code}"]`);
+            const baseMap = { Space: 'SPACE', Control: 'CTRL', Alt: 'ALT', Meta: 'WIN' };
+            const chineseMap = {
+                MediaPlayPause: '播放/暂停', MediaPreviousTrack: '上一曲', MediaNextTrack: '下一曲', MediaStop: '媒体停止',
+                VolumeUp: '音量+', VolumeDown: '音量-', VolumeMute: '静音', LaunchMail: '邮件', LaunchApp2: '计算器', LaunchApp1: '此电脑',
+                // ****** 【修改点二】新增：方括号的自定义名称 ******
+                BracketLeft: '{[',
+                BracketRight: '}]'
+            };
             
-            // Standard Functionality
-            KC_ENTER:'0x28',KC_ESCAPE:'0x29',KC_BSPACE:'0x2A',KC_TAB:'0x2B',KC_SPACE:'0x2C',
-            KC_MINUS:'0x2D',KC_EQUAL:'0x2E',KC_LBRACKET:'0x2F',KC_RBRACKET:'0x30',KC_BSLASH:'0x31',KC_SCOLON:'0x33',KC_QUOTE:'0x34',KC_GRAVE:'0x35',KC_COMMA:'0x36',KC_DOT:'0x37',KC_SLASH:'0x38',KC_CAPSLOCK:'0x39',
+            if (chineseMap[code]) return chineseMap[code];
             
-            // F Keys
-            KC_F1:'0x3A',KC_F2:'0x3B',KC_F3:'0x3C',KC_F4:'0x3D',KC_F5:'0x3E',KC_F6:'0x3F',KC_F7:'0x40',KC_F8:'0x41',KC_F9:'0x42',KC_F10:'0x43',KC_F11:'0x44',KC_F12:'0x45',
-            KC_F13:'0x68',KC_F14:'0x69',KC_F15:'0x6A',KC_F16:'0x6B',KC_F17:'0x6C',KC_F18:'0x6D',KC_F19:'0x6E',KC_F20:'0x6F',KC_F21:'0x70',KC_F22:'0x71',KC_F23:'0x72',KC_F24:'0x73',
-            
-            // Navigation
-            KC_PSCREEN:'0x46',KC_SCROLLLOCK:'0x47',KC_PAUSE:'0x48',KC_INSERT:'0x49',KC_HOME:'0x4A',KC_PGUP:'0x4B',KC_DELETE:'0x4C',KC_END:'0x4D',KC_PGDOWN:'0x4E',
-            KC_RIGHT:'0x4F',KC_LEFT:'0x50',KC_DOWN:'0x51',KC_UP:'0x52',
-            KC_APPLICATION:'0x65',
-            
-            // Numpad
-            KC_NUMLOCK:'0x53',KC_KP_SLASH:'0x54',KC_KP_ASTERISK:'0x55',KC_KP_MINUS:'0x56',KC_KP_PLUS:'0x57',KC_KP_ENTER:'0x58',
-            KC_KP_1:'0x59',KC_KP_2:'0x5A',KC_KP_3:'0x5B',KC_KP_4:'0x5C',KC_KP_5:'0x5D',KC_KP_6:'0x5E',KC_KP_7:'0x5F',KC_KP_8:'0x60',KC_KP_9:'0x61',KC_KP_0:'0x62',KC_KP_DOT:'0x63',
-            
-            // Modifiers
-            KC_LCTRL:'0xE0',KC_LSHIFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTRL:'0xE4',KC_RSHIFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
-            
-            // Media & System (Values corrected based on provided list)
-            KC_VOLU:'0xA9',KC_VOLD:'0xAA',KC_MUTE:'0xA8',
-            KC_MPLY:'0xAE',KC_MNXT:'0xAB',KC_MPRV:'0xAC',KC_MSTP:'0xAD',
-            KC_MAIL:'0xB1', KC_CALC:'0xB2', KC_MYCM:'0xB3',
-
-            // Mouse
-            KC_BTN1:'0xD1',KC_BTN2:'0xD2',KC_BTN3:'0xD3',KC_BTN4:'0xD4',KC_BTN5:'0xD5', 
-            KC_WH_U:'0xD9',KC_WH_D:'0xDA',KC_WH_L:'0xDB',KC_WH_R:'0xDC',
-        };
-        
-        // 仅包含需要"延迟自动抬起"（脉冲）逻辑的按键
-        const MOUSE_WHEEL_KEYS = new Set(['MouseWheelUp', 'MouseWheelDown', 'MouseWheelLeft', 'MouseWheelRight']);
-        const isPulse = (c) => c && MOUSE_WHEEL_KEYS.has(c);
-        
-        // --- Core Functions ---
-        const mapCodeToQMK = (code) => {
-            if (!code) return 'KC_NO';
-            if (code.startsWith('KC_')) return code;
-            
-            // Special handling for patterns
-            if (code.match(/^F(1[3-9]|2[0-4])$/)) return `KC_${code}`; // F13-F24
-            if (code.match(/^F\d+$/)) return 'KC_' + code; // F1-F12
-            if (code.startsWith('Key')) return 'KC_' + code.slice(3); // KeyA -> KC_A
-            if (code.startsWith('Digit')) return 'KC_' + code.slice(5); // Digit1 -> KC_1
-            if (code.match(/^Numpad\d$/)) return 'KC_KP_' + code.slice(6); // Numpad1 -> KC_KP_1
-
-            return QMK_MAP[code] || ('KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, ''));
-        };
-
-        const getHex = (c) => QMK_HEX[c] || (c.startsWith('KC_F') && c.length<7 ? '0x'+(parseInt(c.slice(4))+57).toString(16).toUpperCase() : '0x??');
-
-        const playSound = (freq) => {
+            if (code.match(/(Left|Right)$/)) {
+                const map = { Left: '左', Right: '右' };
+                const base = code.replace(/(Left|Right)$/, '');
+                const side = code.match(/(Left|Right)$/)?.[0];
+                return (map[side] || '') + (baseMap[base] || base).toUpperCase();
+            }
+            // 使用 el.textContent.trim() 作为后备，适用于普通键
+            return el?.textContent.trim().replace(/\s/g, '') || (baseMap[code] || (key.length > 1 ? key.toUpperCase() : key));
+        }
+    };
+    
+    /** AudioPlayer - 使用三元运算符链简化频率查找 */
+    const AudioPlayer = {
+        getFreq: (c) => 
+            !c ? 440 :
+            c.match(/^(Key|Digit)/) ? 440 :
+            c.startsWith('F') || ['Insert','Delete','Home','End','PageUp','PageDown','PrintScreen','ContextMenu'].includes(c) ? 587.33 :
+            ['Shift','Control','Alt','Meta'].some(x=>c.includes(x)) ? 349.23 :
+            c === 'Space' ? 329.63 :
+            ['Enter','NumpadEnter','Tab','Backspace'].includes(c) ? 493.88 :
+            c.startsWith('Numpad') ? 466.16 :
+            c.startsWith('MouseWheel') || ['Mouse','Media','Volume','Launch'].some(x=>c.includes(x)) ? 783.99 :
+            440,
+        playSound: (freq) => {
             if (!DOM.sound.checked) return;
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.type = CONFIG.audio.type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
@@ -450,299 +462,246 @@
             gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + CONFIG.audio.duration);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + CONFIG.audio.duration);
-        };
+        }
+    };
 
-        const getFreq = (c) => {
-            if (!c) return 440;
-            if (c.match(/^(Key|Digit)/)) return 440;
-            if (c.startsWith('F') || ['Insert','Delete','Home','End','PageUp','PageDown','PrintScreen','ContextMenu'].includes(c)) return 587.33;
-            if (['Shift','Control','Alt','Meta'].some(x=>c.includes(x))) return 349.23;
-            if (c === 'Space') return 329.63;
-            if (['Enter','NumpadEnter','Tab','Backspace'].includes(c)) return 493.88;
-            if (c.startsWith('Numpad')) return 466.16;
-            // 增加 Launch 关键字检测，确保计算器/邮件等按键触发高音提示
-            if (c.startsWith('MouseWheel') || ['Mouse','Media','Volume','Launch'].some(x=>c.includes(x))) return 783.99;
-            return 440;
-        };
-        
-        const getKeyEl = (code) => document.querySelector(`.key[data-code="${code}"]`);
-        
-        const getKeyName = (code, key) => {
-            if (code === 'Space') return 'SPACE';
-            if (['ShiftLeft', 'ShiftRight', 'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight'].some(c => c === code)) {
-                const map = { Left: '左', Right: '右' };
-                const base = code.replace(/(Left|Right)$/, '');
-                const side = code.match(/(Left|Right)$/)?.[0];
-                return (map[side] || '') + (base === 'Meta' ? 'WIN' : base.toUpperCase());
-            }
-            if (code === 'MediaPlayPause') return '播放/暂停';
-            if (code === 'MediaPreviousTrack') return '上一曲';
-            if (code === 'MediaNextTrack') return '下一曲';
-            if (code === 'MediaStop') return '媒体停止';
-            if (code === 'VolumeUp') return '音量+';
-            if (code === 'VolumeDown') return '音量-';
-            if (code === 'VolumeMute') return '静音';
-            
-            // 新增功能键中文名
-            if (code === 'LaunchMail') return '邮件';
-            if (code === 'LaunchApp2') return '计算器';
-            if (code === 'LaunchApp1') return '我的电脑';
-            
-            if (code === 'ControlLeft') return '左CTRL';
-            if (code === 'ControlRight') return '右CTRL';
 
-            return getKeyEl(code)?.textContent.trim() || (key.length > 1 ? key.toUpperCase() : key);
-        };
+    // =========================================================================================
+    // III. 界面更新与渲染 (UI & Updater)
+    // =========================================================================================
 
-        const normMod = (e) => {
-            const map = { 1: 'Left', 2: 'Right' };
-            if (e.key === 'Shift') return 'Shift' + (map[e.location] || 'Right');
-            if (e.key === 'Control') return 'Control' + (map[e.location] || 'Left');
-            if (e.key === 'Alt') return 'Alt' + (map[e.location] || 'Left');
-            if (e.key === 'Meta' || e.key === 'OS') return 'Meta' + (map[e.location] || 'Left');
-            
-            return e.code;
-        };
-
-        // --- UI Updates ---
-        const log = (type, key) => {
-            const t = new Date(), entry = document.createElement('div');
+    const UIUpdater = {
+        updateInfo: (name, code) => {
+            const qmk = KeyMapper.mapCodeToQMK(code);
+            DOM.keyName.textContent = name; DOM.keyCode.textContent = qmk; DOM.keyHex.textContent = `(${KeyMapper.getHex(qmk)})`;
+        },
+        log: (type, key) => {
+            const entry = document.createElement('div');
             entry.className = `log-entry ${type}`;
-            entry.innerHTML = `<span class="timestamp">[${t.toTimeString().split(' ')[0]}]</span> ${type==='press'?'按下':'抬起'} ${key} 键`;
+            entry.innerHTML = `<span class="timestamp">[${new Date().toTimeString().split(' ')[0]}]</span> ${type==='press'?'按下':'抬起'} ${key} 键`;
             DOM.log.prepend(entry);
-        };
-
-        const updateInfo = (name, code) => {
-            const qmk = mapCodeToQMK(code);
-            DOM.keyName.textContent = name; DOM.keyCode.textContent = qmk; DOM.keyHex.textContent = `(${getHex(qmk)})`;
-        };
-
-        const updateRecent = (code, name) => {
-            const newKey = { code, name };
+        },
+        updateRecent: (code, name) => {
             const el = document.createElement('div');
             el.className = 'key recent-history recent-key-latest';
             el.textContent = name; el.dataset.code = code;
             el.style.opacity = '0'; el.style.transform = `translateX(-${CONFIG.recentKeys.stepPx}px)`;
             
-            while (DOM.recent.children.length >= CONFIG.recentKeys.max) {
-                DOM.recent.lastElementChild.remove();
-            }
-
+            while (DOM.recent.children.length >= CONFIG.recentKeys.max) DOM.recent.lastElementChild.remove();
             DOM.recent.querySelector('.recent-key-latest')?.classList.remove('recent-key-latest');
             DOM.recent.prepend(el);
             requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translateX(0)'; });
-        };
-
-        const updateProg = () => {
-            if (!state.totalKeys) return;
-            const cnt = document.querySelectorAll('.key.tested').length;
-            DOM.progressText.textContent = `${cnt} / ${state.totalKeys} 键`;
-            DOM.progress.style.width = `${(cnt / state.totalKeys) * 100}%`;
-        };
-
-        // --- KPM Logic (Smoothed) ---
-        
-        const updateKPMValue = () => {
+        },
+        updateProg: () => {
+            const cnt = document.querySelectorAll('.key[data-code]:not(.spacer)').length; // 修正统计逻辑，排除 .spacer
+            const testedCnt = document.querySelectorAll('.key[data-code]:not(.spacer).tested').length;
+            DOM.progressText.textContent = `${testedCnt} / ${state.totalKeys} 键`;
+            DOM.progress.style.width = `${(testedCnt / state.totalKeys) * 100}%`;
+        },
+        updateKPMValue: () => {
             const now = Date.now();
             state.timestamps = state.timestamps.filter(t => now - t < 1000);
-            const instantaneousKPM = state.timestamps.length * 60;
+            const instKPM = state.timestamps.length * 60;
             const alpha = CONFIG.kpmSmoothFactor;
-            state.currentKPM = state.currentKPM * (1 - alpha) + instantaneousKPM * alpha;
-        };
-
-        // KPM 数字显示和曲线更新（每 100ms 运行一次）
-        const updateKPMDisplayAndChart = () => {
-            updateKPMValue();
-            const val = Math.round(state.currentKPM);
-            DOM.kpm.textContent = val;
-
-            state.kpmHistory.push(val);
+            state.currentKPM = state.currentKPM * (1 - alpha) + instKPM * alpha;
+        },
+        updateKPMDisplayAndChart: () => {
+            UIUpdater.updateKPMValue();
+            DOM.kpm.textContent = Math.round(state.currentKPM);
+            
+            state.kpmHistory.push(Math.round(state.currentKPM));
             if (state.kpmHistory.length > CONFIG.chart.maxPoints) state.kpmHistory.shift();
             
-            drawChart();
-        };
-
-        const drawChart = () => {
-            const { width, height } = CONFIG.chart, ctx = DOM.chart;
+            UIUpdater.drawChart();
+        },
+        drawChart: () => {
+            const { width, height, maxPoints, maxKPM } = CONFIG.chart, ctx = DOM.chartCtx, history = state.kpmHistory;
             ctx.clearRect(0, 0, width, height);
-            if (state.kpmHistory.length < 2) return;
-            const max = Math.max(CONFIG.chart.maxKPM, ...state.kpmHistory);
+            if (history.length < 2) return;
+            const max = Math.max(maxKPM, ...history);
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const { chartDark, chartLight, fillDark, fillLight } = CONFIG.colors;
             
-            ctx.beginPath(); ctx.strokeStyle = isLight ? CONFIG.colors.chartLight : CONFIG.colors.chartDark; ctx.lineWidth = 1.5;
-            const step = width / (CONFIG.chart.maxPoints - 1);
-            state.kpmHistory.forEach((k, i) => {
+            ctx.beginPath(); 
+            ctx.strokeStyle = isLight ? chartLight : chartDark; ctx.lineWidth = 1.5;
+            const step = width / (maxPoints - 1);
+
+            history.forEach((k, i) => {
                 const y = height - (Math.min(k, max) / max) * height;
                 i === 0 ? ctx.moveTo(i * step, y) : ctx.lineTo(i * step, y);
             });
-            ctx.stroke(); ctx.lineTo(width, height); ctx.lineTo(0, height); ctx.closePath();
-            ctx.fillStyle = isLight ? CONFIG.colors.fillLight : CONFIG.colors.fillDark; ctx.fill();
-        };
 
-        const trackAct = () => {
+            ctx.stroke(); 
+            ctx.lineTo(width, height); ctx.lineTo(0, height); ctx.closePath();
+            ctx.fillStyle = isLight ? fillLight : fillDark; 
+            ctx.fill();
+        }
+    };
+
+    /** KPMTracker - 紧凑的 KPM 定时器管理 */
+    const KPMTracker = {
+        trackAct: () => {
             state.timestamps.push(Date.now());
             if (!state.kpmDisplayInterval) {
-                state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
+                state.kpmDisplayInterval = setInterval(UIUpdater.updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
             }
-        };
+        },
+        stopTracking: () => {
+             if (state.kpmDisplayInterval) {
+                clearInterval(state.kpmDisplayInterval);
+                state.kpmDisplayInterval = null;
+            }
+        }
+    };
+    
+    // =========================================================================================
+    // IV. 核心输入处理 (Core Input Handler)
+    // =========================================================================================
 
-        // --- Event Handlers ---
-        
-        /**
-         * @function handleInput
-         * @description 核心按键事件处理器
-         * @param {'press'|'release'} action - 事件类型
-         * @param {string} code - KeyboardEvent.code
-         * @param {string} name - 显示的按键名
-         * @param {boolean} isRepeat - 是否为按住重复事件
-         */
-        const handleInput = (action, code, name, isRepeat = false) => {
-            const el = getKeyEl(code); // Retrieve element once
+    const handleInput = (action, code, name, isRepeat = false) => {
+        const el = document.querySelector(`.key[data-code="${code}"]`);
 
-            if (action === 'press') {
-                if (isRepeat) return;
-                log('press', name); updateInfo(name, code); playSound(getFreq(code));
-                updateRecent(code, name); trackAct();
-                
-                if (el) { el.classList.add('active', 'tested'); updateProg(); } // 1. PRESS: Add active & tested
+        if (action === 'press') {
+            if (isRepeat) return;
 
-                // 仅滚轮键需要延迟自动抬起 (isPulse 仅检查 MOUSE_WHEEL_KEYS)
-                if (isPulse(code)) { 
-                    clearTimeout(state.timers[code]);
-                    state.timers[code] = setTimeout(() => handleInput('release', code, name), 100);
-                }
-            } else { // action === 'release'
+            UIUpdater.log('press', name); UIUpdater.updateInfo(name, code); 
+            AudioPlayer.playSound(AudioPlayer.getFreq(code));
+            UIUpdater.updateRecent(code, name); KPMTracker.trackAct();
+            
+            if (el) { el.classList.add('active', 'tested'); UIUpdater.updateProg(); }
+
+            // 脉冲键 (滚轮键) 延迟自动抬起逻辑
+            if (isPulse(code)) { 
+                clearTimeout(state.timers[code]);
+                state.timers[code] = setTimeout(() => handleInput('release', code, name), 100);
+            }
+        } else { // action === 'release'
+            UIUpdater.log('release', name); 
+            UIUpdater.updateInfo(name, code);
+
+            if (el) {
+                el.classList.add('tested'); 
+                UIUpdater.updateProg();
+
                 if (isPulse(code)) {
-                    // Logic for automatic release (Mouse Wheel)
-                    log('release', name); el?.classList.remove('active');
+                    el.classList.remove('active');
                     delete state.timers[code];
+                } else if (!el.classList.contains('active')) { // Keydown missed -> 闪烁
+                    el.classList.add('active');
+                    clearTimeout(state.timers['flash-' + code]);
+                    state.timers['flash-' + code] = setTimeout(() => el.classList.remove('active'), 50);
                 } else {
-                    // Logic for physical keyup (Standard Keys, Media Keys, PRT, etc.)
-                    log('release', name); updateInfo(name, code);
-
-                    if (el) {
-                        el.classList.add('tested'); // 2. RELEASE: 确保即使错过了 keydown，也能标记为已测试
-                        updateProg(); // 更新进度
-
-                        // 3. Handle visual 'active' state
-                        if (!el.classList.contains('active')) {
-                            // Keydown missed (only keyup caught) -> Flash 'active'
-                            // 此逻辑也适用于 PrintScreen (PRT) 的特殊处理
-                            el.classList.add('active');
-                            clearTimeout(state.timers['flash-' + code]);
-                            state.timers['flash-' + code] = setTimeout(() => {
-                                el.classList.remove('active');
-                                delete state.timers['flash-' + code];
-                            }, 50); // 闪烁 50ms
-                        } else {
-                            // Keydown caught -> Remove 'active' normally
-                            el.classList.remove('active');
-                        }
-                    }
+                    el.classList.remove('active');
                 }
             }
-        };
+        }
+    };
 
-        const onKey = (e, type) => {
+    // =========================================================================================
+    // V. 事件监听与初始化 (Event Listeners & Init)
+    // =========================================================================================
+
+    const EventListeners = {
+        onKey: (e, type) => {
             e.preventDefault();
-            let code = normMod(e);
-            // 确保将 Audio/Media Key 的 key 映射到正确的 code
+            let code = KeyMapper.normMod(e);
             const mediaMap = { 
                 AudioVolumeUp:'VolumeUp', AudioVolumeDown:'VolumeDown', AudioVolumeMute:'VolumeMute', 
                 MediaTrackNext:'MediaNextTrack', MediaTrackPrevious:'MediaPreviousTrack', MediaPlayPause:'MediaPlayPause', 
                 MediaStop: 'MediaStop', Calculator: 'LaunchApp2', LaunchApplication1: 'LaunchApp1', LaunchApplication2: 'LaunchApp2',
                 LaunchMail: 'LaunchMail'
             };
-            code = mediaMap[e.key] || (mediaMap[code] || code);
-            // 某些浏览器下 MediaStop 直接返回 key='MediaStop'
-            if (e.key === 'MediaStop') code = 'MediaStop';
-
-            // 仅阻止滚轮键的 keyup 事件，因为它们会通过计时器自动处理 'release'。
-            // PRT、邮件、计算器等键均不会被 isPulse 捕获，因此会正常触发 handleInput('release')
+            code = mediaMap[e.key] || mediaMap[code] || code;
+            
             if (type === 'up' && isPulse(code)) return; 
             
-            handleInput(type === 'down' ? 'press' : 'release', code, getKeyName(code, e.key), e.repeat);
-        };
+            handleInput(type === 'down' ? 'press' : 'release', code, KeyMapper.getKeyName(code, e.key), e.repeat);
+        },
 
-        const onMouse = (e, type) => {
-            const map = ['MouseLeft','MouseMiddle','MouseRight','MouseBackward','MouseForward'];
+        onMouse: (e, type) => {
+            const codes = ['MouseLeft','MouseMiddle','MouseRight','MouseBackward','MouseForward'];
             const names = ['左键','中键','右键','后退键','前进键'];
-            if (!map[e.button]) return;
-            if (type === 'press' && e.button > 1) e.preventDefault();
-            handleInput(type, map[e.button], names[e.button]);
-        };
+            if (!codes[e.button]) return;
+            if (type === 'press' && e.button > 1) e.preventDefault(); 
+            handleInput(type, codes[e.button], names[e.button]);
+        },
 
-        const onWheel = (e) => {
+        onWheel: (e) => {
             e.preventDefault();
-            const dir = e.deltaY < 0 ? ['MouseWheelUp','滚轮↑'] : e.deltaY > 0 ? ['MouseWheelDown','滚轮↓'] : e.deltaX < 0 ? ['MouseWheelLeft','滚轮←'] : ['MouseWheelRight','滚轮→'];
-            if (!dir) return;
-            const [code, name] = dir;
+            const [code, name] = e.deltaY < 0 ? ['MouseWheelUp','滚轮↑'] : e.deltaY > 0 ? ['MouseWheelDown','滚轮↓'] : e.deltaX < 0 ? ['MouseWheelLeft','滚轮←'] : ['MouseWheelRight','滚轮→'];
+            if (!code) return;
             
-            // 保持滚轮键的自动抬起逻辑：按下后设置计时器自动抬起
             if (state.timers[code]) clearTimeout(state.timers[code]);
             else handleInput('press', code, name);
-            state.timers[code] = setTimeout(() => { handleInput('release', code, name); delete state.timers[code]; }, 100);
-        };
+            state.timers[code] = setTimeout(() => { 
+                handleInput('release', code, name); 
+                delete state.timers[code]; 
+            }, 100);
+        },
 
-        // --- Init ---
-        const init = () => {
-            const setThm = t => {
-                document.documentElement.setAttribute('data-theme', t);
-                DOM.theme.checked = t === 'light'; DOM.themeText.textContent = t === 'light' ? '浅色' : '深色';
-                localStorage.setItem('kbtest-theme', t); drawChart();
-            };
-            DOM.theme.addEventListener('change', e => setThm(e.target.checked ? 'light' : 'dark'));
-            setThm(localStorage.getItem('kbtest-theme') || 'dark');
+        onReset: () => {
+            document.querySelectorAll('.key.tested, .key.active').forEach(el => el.classList.remove('tested','active'));
+            DOM.log.innerHTML = ''; DOM.recent.innerHTML = ''; 
+            KPMTracker.stopTracking();
+            Object.keys(state.timers).forEach(timerKey => clearTimeout(state.timers[timerKey])); 
 
-            DOM.sound.checked = localStorage.getItem('kbtest-sound') !== 'false';
-            DOM.sound.addEventListener('change', e => localStorage.setItem('kbtest-sound', e.target.checked));
-
-            DOM.audio.src = 'data:audio/mp3;base64,SUQzBAAAAAABVVgAAAABAAEA';
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({ title: '键盘测试', artist: 'JLKB' });
-                navigator.mediaSession.setActionHandler('play', () => handleInput('press', 'MediaPlayPause', '播放/暂停')); 
-                navigator.mediaSession.setActionHandler('pause', () => handleInput('release', 'MediaPlayPause', '播放/暂停'));
-                navigator.mediaSession.setActionHandler('previoustrack', () => handleInput('press', 'MediaPreviousTrack', '上一曲'));
-                navigator.mediaSession.setActionHandler('nexttrack', () => handleInput('press', 'MediaNextTrack', '下一曲'));
-                navigator.mediaSession.setActionHandler('stop', () => handleInput('press', 'MediaStop', '媒体停止'));
-            }
-            const actMedia = () => { DOM.audio.volume=0; DOM.audio.play().catch(()=>{}); document.body.removeEventListener('click',actMedia); };
-            document.body.addEventListener('click', actMedia, {once:true});
-
-            state.totalKeys = document.querySelectorAll('.key[data-code]').length;
-            updateProg(); drawChart();
-
-            document.addEventListener('keydown', e => onKey(e, 'down'));
-            document.addEventListener('keyup', e => onKey(e, 'up'));
-            document.addEventListener('mousedown', e => onMouse(e, 'press'));
-            document.addEventListener('mouseup', e => onMouse(e, 'release'));
-            document.addEventListener('wheel', onWheel, {passive:false});
-            document.addEventListener('mousemove', e => DOM.mouseXY.textContent = `X: ${e.screenX} Y: ${e.screenY}`);
-            window.addEventListener('blur', () => document.querySelectorAll('.key.active').forEach(el => el.classList.remove('active')));
+            state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, timers: {} };
             
-            DOM.reset.addEventListener('click', () => {
-                document.querySelectorAll('.key.tested, .key.active').forEach(el => el.classList.remove('tested','active'));
-                DOM.log.innerHTML = ''; DOM.recent.innerHTML = ''; 
-                if (state.kpmDisplayInterval) clearInterval(state.kpmDisplayInterval);
-                // 确保 flash- timers 也被清除
-                Object.keys(state.timers).forEach(timerKey => clearTimeout(state.timers[timerKey])); 
-
-                state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, kpmDisplayInterval: null, timers: {} };
-                updateInfo('-', 'KC_NO'); DOM.kpm.textContent = '0'; updateProg(); drawChart();
-                state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
-            });
-            
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.onkeydown = e => { if(e.keyCode==123||e.keyCode==116) return false; };
-
-            if (!state.kpmDisplayInterval) {
-                state.kpmDisplayInterval = setInterval(updateKPMDisplayAndChart, CONFIG.kpmUpdateInterval);
-            }
+            UIUpdater.updateInfo('-', 'KC_NO'); DOM.kpm.textContent = '0'; UIUpdater.updateProg(); UIUpdater.drawChart();
+            KPMTracker.trackAct();
+        }
+    };
+    
+    /** 程序初始化入口 */
+    const init = () => {
+        // --- 主题和音效初始化 ---
+        const setTheme = t => {
+            document.documentElement.setAttribute('data-theme', t);
+            DOM.theme.checked = t === 'light'; DOM.themeText.textContent = t === 'light' ? '浅色' : '深色';
+            localStorage.setItem('kbtest-theme', t); 
+            UIUpdater.drawChart();
         };
+        DOM.theme.addEventListener('change', e => setTheme(e.target.checked ? 'light' : 'dark'));
+        setTheme(localStorage.getItem('kbtest-theme') || 'dark');
 
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+        DOM.sound.checked = localStorage.getItem('kbtest-sound') !== 'false';
+        DOM.sound.addEventListener('change', e => localStorage.setItem('kbtest-sound', e.target.checked));
+
+        // 媒体控制/音效初始化
+        DOM.audio.src = 'data:audio/mp3;base64,SUQzBAAAAAABVVgAAAABAAEA';
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({ title: '键盘测试', artist: 'JLKB' });
+            navigator.mediaSession.setActionHandler('play', () => handleInput('press', 'MediaPlayPause', '播放/暂停')); 
+            navigator.mediaSession.setActionHandler('pause', () => handleInput('release', 'MediaPlayPause', '播放/暂停'));
+            navigator.mediaSession.setActionHandler('previoustrack', () => handleInput('press', 'MediaPreviousTrack', '上一曲'));
+            navigator.mediaSession.setActionHandler('nexttrack', () => handleInput('press', 'MediaNextTrack', '下一曲'));
+            navigator.mediaSession.setActionHandler('stop', () => handleInput('press', 'MediaStop', '媒体停止'));
+        }
+        document.body.addEventListener('click', () => { 
+            DOM.audio.volume=0; DOM.audio.play().catch(()=>{}); 
+        }, {once:true});
+
+
+        // --- 状态初始化 & 绑定事件监听器 ---
+        state.totalKeys = document.querySelectorAll('.key[data-code]:not(.spacer)').length; // 修正统计逻辑，排除 .spacer
+        UIUpdater.updateProg(); UIUpdater.drawChart(); KPMTracker.trackAct(); 
+
+        document.addEventListener('keydown', e => EventListeners.onKey(e, 'down'));
+        document.addEventListener('keyup', e => EventListeners.onKey(e, 'up'));
+        document.addEventListener('mousedown', e => EventListeners.onMouse(e, 'press'));
+        document.addEventListener('mouseup', e => EventListeners.onMouse(e, 'release'));
+        document.addEventListener('wheel', EventListeners.onWheel, {passive:false});
+        document.addEventListener('mousemove', e => DOM.mouseXY.textContent = `X: ${e.screenX} Y: ${e.screenY}`);
+        
+        window.addEventListener('blur', () => document.querySelectorAll('.key.active').forEach(el => el.classList.remove('active')));
+        DOM.reset.addEventListener('click', EventListeners.onReset);
+        
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = e => { if(e.keyCode==123||e.keyCode==116) return false; };
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
 <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 </body>
 </html>
-
