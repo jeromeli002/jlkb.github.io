@@ -13,6 +13,15 @@
         .connect-row { display: flex; align-items: center; justify-content: flex-start; gap: 15px; margin-bottom: 15px; }
         #connectButton { background-color: #007bff; flex-shrink: 0; min-width: 120px; }
         #connectButton:hover:not(:disabled) { background-color: #0056b3; }
+        
+        /* 【新增样式】未连接状态下的按钮颜色（灰色）*/
+        #connectButton.disconnected {
+            background-color: #6c757d; /* 柔和的灰色 */
+        }
+        #connectButton.disconnected:hover:not(:disabled) {
+            background-color: #5a6268; /* 稍深一点的灰色 */
+        }
+
         .validation-control { display: flex; align-items: center; flex-shrink: 0; }
         .validation-control input[type="checkbox"] { margin-right: 8px; width: 18px; height: 18px; flex-shrink: 0; }
         .validation-control label { font-weight: 600; color: #007bff; cursor: pointer; font-size: 0.9em; white-space: nowrap; }
@@ -429,7 +438,7 @@
 
         <div class="controls">
             <div class="connect-row">
-                <button id="connectButton">连接设备</button>
+                <button id="connectButton" class="disconnected">连接设备</button>
                 <div class="validation-control">
                     <input type="checkbox" id="enableValidationCheckbox">
                     <label for="enableValidationCheckbox">启用 RAW 设备通信验证</label>
@@ -687,7 +696,7 @@
             const interval = parseInt(promptIntervalMs) || 200; 
 
             // 1. 限制闪烁次数和声音/等待间隔 (MAX 5000ms)
-            const flashTimes = Math.max(1, Math.min(count, 5)); 
+            const flashTimes = Math.max(1, Math.min(count, 999)); 
             const finalInterval = Math.max(50, Math.min(interval, 5000)); // 用户设置的间隔时间
 
             // 2. 视觉/声音持续时间：现在设置为与设置的间隔时间相同
@@ -850,14 +859,17 @@
             deviceInfoContainer.innerHTML = '';
             deviceTooltipContainer.innerHTML = ''; // 清空浮动容器
             
-            const maxIndex = connectedDevices.length > 0 ? connectedDevices.length - 1 : 0;
+            const isConnected = connectedDevices.length > 0;
+            
+            const maxIndex = isConnected ? connectedDevices.length - 1 : 0;
             deviceIdInput.max = maxIndex;
             deviceIdInput.title = `目标设备 ID (0 到 ${maxIndex})`;
 
-            if (connectedDevices.length === 0) {
+            if (!isConnected) {
                 deviceInfoContainer.innerHTML = "<p style='margin:10px 0; color:#666; text-align: center;'>未连接设备。</p>";
                 deviceIdInput.value = 0;
                 updateSendButtonsState(false, false); 
+                connectButton.classList.add('disconnected'); // 【修改点 1】未连接时添加灰色类
                 return;
             }
             
@@ -865,6 +877,7 @@
             const rawIndex = await findRawDeviceIndex();
             selectDevice(rawIndex, false);
             updateSendButtonsState(true, false);
+            connectButton.classList.remove('disconnected'); // 【修改点 2】已连接时移除灰色类
         };
 
         /** 选中一个设备 */
@@ -923,6 +936,7 @@
         /** 连接/断开设备 */
         const toggleConnection = async () => {
             if (connectedDevices.length > 0) {
+                // 执行断开逻辑
                 connectedDevices.forEach(dev => {
                     dev.removeEventListener('inputreport', handleInputReport);
                     dev.removeEventListener('disconnect', handleDisconnect);
@@ -931,10 +945,13 @@
                 stopSendingFlag = true; 
                 updateSendButtonsState(false, false); 
                 updateDeviceInfoUI(); 
+                connectButton.textContent = '连接设备'; // 【修改点 3】断开后按钮文本
+                connectButton.classList.add('disconnected'); // 【修改点 4】断开后变灰色
                 log('所有设备已断开。');
                 return;
             }
 
+            // 执行连接逻辑
             try {
                 const devices = await navigator.hid.requestDevice({ filters: [] }); 
                 if (devices.length === 0) return log('未选择任何设备。', false);
@@ -952,12 +969,15 @@
                 }
                 
                 await updateDeviceInfoUI(); 
-                connectButton.textContent = connectedDevices.length > 0 ? '断开所有设备' : '连接设备';
+                connectButton.textContent = '断开所有设备'; // 【修改点 5】连接后按钮文本
+                connectButton.classList.remove('disconnected'); // 【修改点 6】连接后移除灰色类
 
             } catch (error) {
                 log(`连接设备失败: ${error.name}: ${error.message}`, true);
                 connectedDevices = [];
                 updateDeviceInfoUI(); 
+                connectButton.textContent = '连接设备'; // 失败后保持“连接设备”文本
+                connectButton.classList.add('disconnected'); // 失败后保持灰色
             }
         };
         
@@ -981,6 +1001,8 @@
                     connectedDevices.push(device);
                     log(`设备 ${device.productName} 成功自动打开并重连。`, false);
                     await updateDeviceInfoUI(); 
+                    connectButton.textContent = '断开所有设备';
+                    connectButton.classList.remove('disconnected'); // 【修改点 7】重连后移除灰色类
 
                 } catch (error) {
                     log(`自动重连设备 ${device.productName} 失败: ${error.message}`, true);
@@ -998,6 +1020,9 @@
             
             await updateDeviceInfoUI(); 
             connectButton.textContent = connectedDevices.length > 0 ? '断开所有设备' : '连接设备';
+            if (connectedDevices.length === 0) {
+                 connectButton.classList.add('disconnected'); // 【修改点 8】断开后如果无设备，变灰色
+            }
         };
         
         /** 处理接收到的 Input Report */
@@ -1406,6 +1431,12 @@
             // 初始化声音状态，并记录日志
             enableSound = enableSoundCheckbox.checked;
             log('页面加载完成。声音提示已开启。请点击 "连接设备" 按钮开始。');
+            
+            // 确保初始状态为未连接时的灰色
+            if (connectedDevices.length === 0) {
+                 connectButton.classList.add('disconnected');
+                 connectButton.textContent = '连接设备';
+            }
         });
 
         // 全局事件绑定
