@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLKB键盘测试</title>
+    <title>键盘测试 - 优化版</title>
     <style>
+        /* 保持原样式不变 */
         :root {
             --base-size: 40px; --gap: 4px;
             --bg-color: #121212; --text-color: #aaa;
@@ -32,48 +33,29 @@
         body {
             background-color: var(--bg-color); color: var(--text-color);
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            /* 移除 text-align: center; 以确保内容从左侧开始显示，仅 h1 居中 */
-            /* min-height: 100vh; */
             margin: 0; padding-bottom: 50px; user-select: none;
             transition: background-color 0.3s, color 0.3s;
-            overflow-x: auto; /* 允许 body 在内容超出时出现水平滚动条 */
+            overflow-x: auto;
         }
 
         h1 {
             background: var(--panel-bg); padding: 10px 25px; border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1); color: var(--text-color);
             font-size: 28px; letter-spacing: 2px; font-weight: 300;
-            margin: 20px auto; /* 使用 auto 确保 h1 居中 */
-            display: table; /* 确保 h1 自身的宽度根据内容调整，并能通过 margin: auto 居中 */
+            margin: 20px auto;
+            display: table;
             border: 1px solid var(--border-color);
         }
 
-        /* 核心修改点：调整布局以适应自适应和滚动 */
-        .side-by-side-layout {
-            display: flex;
-            /* 移除 justify-content: center; 以确保内容在宽度不足时靠左显示 */
-            gap: 40px;
-            align-items: flex-start;
-            margin: auto; /* 添加左右边距，防止内容紧贴浏览器边缘 */
-            /* 设置最小宽度，确保所有内容即使在窄屏也能被容纳，并触发 body 的滚动条 */
-            min-width: 1400px; /* 估算宽度：1030px (键盘区) + 300px (日志区) + 40px (间隙) + 30px (边距) = 1400px */
-            width: max-content; /* 确保容器的宽度能够包含所有子元素 */
-        }
+        .side-by-side-layout { display: flex; gap: 40px; align-items: flex-start; margin: auto; min-width: 1400px; width: max-content; }
+        .main-column-area { display: flex; flex-direction: column; }
 
-        .main-column-area { 
-            display: flex; 
-            flex-direction: column; 
-            /* 移除 align-items: center; 以防止在 main-column-area 宽度超过内部元素时影响其内部元素对齐 */
-            /* width: max-content; 保持此属性以确保 main-column-area 的宽度由其内容决定 */
-        }
-
-        /* Control Panel */
         .control-panel {
             width: 100%; display: flex; gap: 15px; margin-bottom: 20px;
             background: var(--panel-bg); padding: 15px 20px; border-radius: 12px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1); align-items: center;
             justify-content: space-between; border: 1px solid var(--border-color);
-            min-width: 1030px; /* 确保控制面板的最小宽度与键盘区保持一致 */
+            min-width: 1030px;
         }
         .info-box { min-width: 60px; text-align: left; }
         .info-box span.label { font-size: 11px; color: #888; margin-bottom: 3px; display: block; }
@@ -97,13 +79,12 @@
         #reset-btn { background: #3c9d9b; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
         #reset-btn:hover { background: #4edfdc; }
 
-        /* Keyboard Area */
         .keyboard-container {
             width: 100%; display: flex; gap: calc(var(--gap) * 4); padding: 20px;
             background: var(--container-bg); border-radius: 15px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-color);
             margin-bottom: 20px; justify-content: center;
-            min-width: 1030px; /* 确保键盘容器的最小宽度 */
+            min-width: 1030px;
         }
         .section-main, .section-nav, .section-numpad { display: flex; flex-direction: column; gap: var(--gap); }
         .section-numpad { margin-top: calc(var(--base-size) + var(--gap) * 4); }
@@ -124,7 +105,6 @@
         .key.tested { background-color: var(--tested-bg); border-color: var(--tested-color); color: var(--tested-color); }
         .spacer { background-color: transparent !important; border: none !important; box-shadow: none !important; pointer-events: none; }
         
-        /* Utility Widths */
         .u-125 { width: calc(var(--base-size)*1.25 + var(--gap)*0.25); }
         .u-15 { width: calc(var(--base-size)*1.5 + var(--gap)*0.5); }
         .u-175 { width: calc(var(--base-size)*1.75 + var(--gap)*0.75); }
@@ -138,7 +118,7 @@
             width: 100%; background: var(--container-bg); padding: 10px 20px;
             border-radius: 15px; border: 1px solid var(--border-color);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            min-width: 1030px; /* 确保额外键区容器的最小宽度 */
+            min-width: 1030px;
         }
         .extra-keys-container { display: flex; flex-direction: column; gap: var(--gap); justify-content: center; }
         .extra-keys-container .row { flex-wrap: wrap; justify-content: center; align-items: center; }
@@ -162,7 +142,6 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.2), 0 0 5px var(--latest-history-border);
         }
 
-        /* Log & Note Area */
         .log-area-wrapper {
             width: 300px; height: 600px; background: var(--panel-bg); padding: 20px;
             border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -178,7 +157,6 @@
         [data-theme="light"] .log-entry.press { color: #d39e00; }
         .log-entry.release { color: var(--tested-color); }
 
-        /* Browser Note Style (Optimized) */
         .browser-note {
             margin-top: 15px; margin-left: -20px; margin-right: -20px; width: calc(100% + 40px);
             background-color: var(--container-bg); border: 1px solid var(--border-color);
@@ -189,7 +167,7 @@
     </style>
 </head>
 <body>
-    <h1>JLKB键盘测试</h1>
+    <h1>键盘测试</h1>
     <audio id="silent-audio" loop></audio>
 
     <div class="side-by-side-layout">
@@ -336,9 +314,6 @@
     </div>
 
     <script>
-    // =========================================================================================
-    // I. 配置与数据层 (Config & Data)
-    // =========================================================================================
     const CONFIG = {
         chart: { width: 150, height: 40, maxPoints: 50, maxKPM: 600 },
         recentKeys: { max: 66, stepPx: 44 },
@@ -346,7 +321,6 @@
         colors: { chartDark: '#8cffec', chartLight: '#0d6efd', fillDark: 'rgba(140, 255, 236, 0.1)', fillLight: 'rgba(13, 110, 253, 0.1)' },
         kpmUpdateInterval: 100, kpmSmoothFactor: 0.1
     };
-    // 辅助函数：简化 DOM 查找
     const D = (id) => document.getElementById(id); 
     const DOM = {
         keyName: D('key-name'), keyCode: D('key-code'), keyHex: D('key-hex-display'), kpm: D('kpm-stat'),
@@ -356,7 +330,7 @@
     };
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // QMK Mappings (从原始文件提取并整合)
+    // QMK 映射等数据保持不变...
     const QMK_MAP = {
         Escape:'KC_ESCAPE',Enter:'KC_ENTER',Backspace:'KC_BSPACE',Tab:'KC_TAB',Space:'KC_SPACE',CapsLock:'KC_CAPSLOCK',
         ShiftLeft:'KC_LSHIFT',ShiftRight:'KC_RSHIFT',ControlLeft:'KC_LCTRL',ControlRight:'KC_RCTRL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
@@ -372,7 +346,6 @@
         LaunchMail: 'KC_MAIL', LaunchApp2: 'KC_CALC', LaunchApp1: 'KC_MYCM'
     };
 
-    // QMK HEX 码表 (从原始文件提取并整合)
     const QMK_HEX = {
         KC_NO:'0x00',KC_TRNS:'0x01',KC_A:'0x04',KC_B:'0x05',KC_C:'0x06',KC_D:'0x07',KC_E:'0x08',KC_F:'0x09',KC_G:'0x0A',KC_H:'0x0B',
         KC_I:'0x0C',KC_J:'0x0D',KC_K:'0x0E',KC_L:'0x0F',KC_M:'0x10',KC_N:'0x11',KC_O:'0x12',KC_P:'0x13',
@@ -394,12 +367,12 @@
     const MOUSE_WHEEL_KEYS = new Set(['MouseWheelUp', 'MouseWheelDown', 'MouseWheelLeft', 'MouseWheelRight']);
     const isPulse = (c) => MOUSE_WHEEL_KEYS.has(c);
 
-    // =========================================================================================
-    // II. 状态管理与辅助工具 (State & Utilities)
-    // =========================================================================================
-    let state = { kpmHistory: [], timestamps: [], kpmDisplayInterval: null, currentKPM: 0, totalKeys: 0, timers: {} };
+    let state = { 
+        kpmHistory: [], timestamps: [], kpmDisplayInterval: null, currentKPM: 0, totalKeys: 0, 
+        timers: {},
+        activeWheels: new Set() // 记录正在激活的滚轮方向，防止重复触发日志
+    };
 
-    /** KeyMapper - 简化了字符串查找和修饰键逻辑 */
     const KeyMapper = {
         mapCodeToQMK: (code) => {
             if (!code || code.startsWith('KC_')) return code || 'KC_NO';
@@ -424,25 +397,19 @@
             const chineseMap = {
                 MediaPlayPause: '播放/暂停', MediaPreviousTrack: '上一曲', MediaNextTrack: '下一曲', MediaStop: '媒体停止',
                 VolumeUp: '音量+', VolumeDown: '音量-', VolumeMute: '静音', LaunchMail: '邮件', LaunchApp2: '计算器', LaunchApp1: '此电脑',
-                // ****** 【修改点二】新增：方括号的自定义名称 ******
-                BracketLeft: '{[',
-                BracketRight: '}]'
+                BracketLeft: '{[', BracketRight: ']}'
             };
-            
             if (chineseMap[code]) return chineseMap[code];
-            
             if (code.match(/(Left|Right)$/)) {
                 const map = { Left: '左', Right: '右' };
                 const base = code.replace(/(Left|Right)$/, '');
                 const side = code.match(/(Left|Right)$/)?.[0];
                 return (map[side] || '') + (baseMap[base] || base).toUpperCase();
             }
-            // 使用 el.textContent.trim() 作为后备，适用于普通键
             return el?.textContent.trim().replace(/\s/g, '') || (baseMap[code] || (key.length > 1 ? key.toUpperCase() : key));
         }
     };
     
-    /** AudioPlayer - 使用三元运算符链简化频率查找 */
     const AudioPlayer = {
         getFreq: (c) => 
             !c ? 440 :
@@ -465,20 +432,18 @@
         }
     };
 
-
-    // =========================================================================================
-    // III. 界面更新与渲染 (UI & Updater)
-    // =========================================================================================
-
     const UIUpdater = {
         updateInfo: (name, code) => {
             const qmk = KeyMapper.mapCodeToQMK(code);
             DOM.keyName.textContent = name; DOM.keyCode.textContent = qmk; DOM.keyHex.textContent = `(${KeyMapper.getHex(qmk)})`;
         },
         log: (type, key) => {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0]; 
+            const ms = String(now.getMilliseconds()).padStart(3, '0');
             const entry = document.createElement('div');
             entry.className = `log-entry ${type}`;
-            entry.innerHTML = `<span class="timestamp">[${new Date().toTimeString().split(' ')[0]}]</span> ${type==='press'?'按下':'抬起'} ${key} 键`;
+            entry.innerHTML = `<span class="timestamp">[${timeStr}.${ms}]</span> ${type==='press'?'按下':'抬起'} ${key} 键`;
             DOM.log.prepend(entry);
         },
         updateRecent: (code, name) => {
@@ -486,14 +451,12 @@
             el.className = 'key recent-history recent-key-latest';
             el.textContent = name; el.dataset.code = code;
             el.style.opacity = '0'; el.style.transform = `translateX(-${CONFIG.recentKeys.stepPx}px)`;
-            
             while (DOM.recent.children.length >= CONFIG.recentKeys.max) DOM.recent.lastElementChild.remove();
             DOM.recent.querySelector('.recent-key-latest')?.classList.remove('recent-key-latest');
             DOM.recent.prepend(el);
             requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translateX(0)'; });
         },
         updateProg: () => {
-            const cnt = document.querySelectorAll('.key[data-code]:not(.spacer)').length; // 修正统计逻辑，排除 .spacer
             const testedCnt = document.querySelectorAll('.key[data-code]:not(.spacer).tested').length;
             DOM.progressText.textContent = `${testedCnt} / ${state.totalKeys} 键`;
             DOM.progress.style.width = `${(testedCnt / state.totalKeys) * 100}%`;
@@ -508,10 +471,8 @@
         updateKPMDisplayAndChart: () => {
             UIUpdater.updateKPMValue();
             DOM.kpm.textContent = Math.round(state.currentKPM);
-            
             state.kpmHistory.push(Math.round(state.currentKPM));
             if (state.kpmHistory.length > CONFIG.chart.maxPoints) state.kpmHistory.shift();
-            
             UIUpdater.drawChart();
         },
         drawChart: () => {
@@ -521,16 +482,13 @@
             const max = Math.max(maxKPM, ...history);
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             const { chartDark, chartLight, fillDark, fillLight } = CONFIG.colors;
-            
             ctx.beginPath(); 
             ctx.strokeStyle = isLight ? chartLight : chartDark; ctx.lineWidth = 1.5;
             const step = width / (maxPoints - 1);
-
             history.forEach((k, i) => {
                 const y = height - (Math.min(k, max) / max) * height;
                 i === 0 ? ctx.moveTo(i * step, y) : ctx.lineTo(i * step, y);
             });
-
             ctx.stroke(); 
             ctx.lineTo(width, height); ctx.lineTo(0, height); ctx.closePath();
             ctx.fillStyle = isLight ? fillLight : fillDark; 
@@ -538,7 +496,6 @@
         }
     };
 
-    /** KPMTracker - 紧凑的 KPM 定时器管理 */
     const KPMTracker = {
         trackAct: () => {
             state.timestamps.push(Date.now());
@@ -554,39 +511,34 @@
         }
     };
     
-    // =========================================================================================
-    // IV. 核心输入处理 (Core Input Handler)
-    // =========================================================================================
-
     const handleInput = (action, code, name, isRepeat = false) => {
         const el = document.querySelector(`.key[data-code="${code}"]`);
-
+        
         if (action === 'press') {
             if (isRepeat) return;
+            // 状态锁：如果是滚轮且已经在激活状态，不触发按下日志
+            if (isPulse(code) && state.activeWheels.has(code)) return;
+            if (isPulse(code)) state.activeWheels.add(code);
 
-            UIUpdater.log('press', name); UIUpdater.updateInfo(name, code); 
+            UIUpdater.log('press', name); 
+            UIUpdater.updateInfo(name, code); 
             AudioPlayer.playSound(AudioPlayer.getFreq(code));
-            UIUpdater.updateRecent(code, name); KPMTracker.trackAct();
-            
+            UIUpdater.updateRecent(code, name); 
+            KPMTracker.trackAct();
             if (el) { el.classList.add('active', 'tested'); UIUpdater.updateProg(); }
+        } else {
+            // 状态锁：如果已经抬起或不在激活状态（针对滚轮），不触发抬起日志
+            if (isPulse(code) && !state.activeWheels.has(code)) return;
+            if (isPulse(code)) state.activeWheels.delete(code);
 
-            // 脉冲键 (滚轮键) 延迟自动抬起逻辑
-            if (isPulse(code)) { 
-                clearTimeout(state.timers[code]);
-                state.timers[code] = setTimeout(() => handleInput('release', code, name), 100);
-            }
-        } else { // action === 'release'
             UIUpdater.log('release', name); 
             UIUpdater.updateInfo(name, code);
-
             if (el) {
                 el.classList.add('tested'); 
                 UIUpdater.updateProg();
-
                 if (isPulse(code)) {
                     el.classList.remove('active');
-                    delete state.timers[code];
-                } else if (!el.classList.contains('active')) { // Keydown missed -> 闪烁
+                } else if (!el.classList.contains('active')) {
                     el.classList.add('active');
                     clearTimeout(state.timers['flash-' + code]);
                     state.timers['flash-' + code] = setTimeout(() => el.classList.remove('active'), 50);
@@ -596,10 +548,6 @@
             }
         }
     };
-
-    // =========================================================================================
-    // V. 事件监听与初始化 (Event Listeners & Init)
-    // =========================================================================================
 
     const EventListeners = {
         onKey: (e, type) => {
@@ -612,12 +560,8 @@
                 LaunchMail: 'LaunchMail'
             };
             code = mediaMap[e.key] || mediaMap[code] || code;
-            
-            if (type === 'up' && isPulse(code)) return; 
-            
             handleInput(type === 'down' ? 'press' : 'release', code, KeyMapper.getKeyName(code, e.key), e.repeat);
         },
-
         onMouse: (e, type) => {
             const codes = ['MouseLeft','MouseMiddle','MouseRight','MouseBackward','MouseForward'];
             const names = ['左键','中键','右键','后退键','前进键'];
@@ -625,36 +569,43 @@
             if (type === 'press' && e.button > 1) e.preventDefault(); 
             handleInput(type, codes[e.button], names[e.button]);
         },
-
         onWheel: (e) => {
             e.preventDefault();
-            const [code, name] = e.deltaY < 0 ? ['MouseWheelUp','滚轮↑'] : e.deltaY > 0 ? ['MouseWheelDown','滚轮↓'] : e.deltaX < 0 ? ['MouseWheelLeft','滚轮←'] : ['MouseWheelRight','滚轮→'];
+            let code, name;
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                [code, name] = e.deltaY < 0 ? ['MouseWheelUp','滚轮↑'] : ['MouseWheelDown','滚轮↓'];
+            } else {
+                [code, name] = e.deltaX < 0 ? ['MouseWheelLeft','滚轮←'] : ['MouseWheelRight','滚轮→'];
+            }
             if (!code) return;
-            
+
+            // 1. 如果这个方向还没标记为“按下”，先触发按下
+            if (!state.activeWheels.has(code)) {
+                handleInput('press', code, name);
+            }
+
+            // 2. 清除之前的抬起计时器（实现防抖：只有停止滚动 200ms 后才视为抬起）
             if (state.timers[code]) clearTimeout(state.timers[code]);
-            else handleInput('press', code, name);
+
+            // 3. 设置新的计时器
             state.timers[code] = setTimeout(() => { 
                 handleInput('release', code, name); 
                 delete state.timers[code]; 
-            }, 100);
+            }, 100); 
         },
-
         onReset: () => {
             document.querySelectorAll('.key.tested, .key.active').forEach(el => el.classList.remove('tested','active'));
             DOM.log.innerHTML = ''; DOM.recent.innerHTML = ''; 
             KPMTracker.stopTracking();
             Object.keys(state.timers).forEach(timerKey => clearTimeout(state.timers[timerKey])); 
-
-            state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, timers: {} };
-            
+            state = { ...state, kpmHistory: [], timestamps: [], currentKPM: 0, timers: {}, activeWheels: new Set() };
             UIUpdater.updateInfo('-', 'KC_NO'); DOM.kpm.textContent = '0'; UIUpdater.updateProg(); UIUpdater.drawChart();
             KPMTracker.trackAct();
         }
     };
     
-    /** 程序初始化入口 */
+    // 初始化逻辑保持不变...
     const init = () => {
-        // --- 主题和音效初始化 ---
         const setTheme = t => {
             document.documentElement.setAttribute('data-theme', t);
             DOM.theme.checked = t === 'light'; DOM.themeText.textContent = t === 'light' ? '浅色' : '深色';
@@ -663,11 +614,8 @@
         };
         DOM.theme.addEventListener('change', e => setTheme(e.target.checked ? 'light' : 'dark'));
         setTheme(localStorage.getItem('kbtest-theme') || 'dark');
-
         DOM.sound.checked = localStorage.getItem('kbtest-sound') !== 'false';
         DOM.sound.addEventListener('change', e => localStorage.setItem('kbtest-sound', e.target.checked));
-
-        // 媒体控制/音效初始化
         DOM.audio.src = 'data:audio/mp3;base64,SUQzBAAAAAABVVgAAAABAAEA';
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({ title: '键盘测试', artist: 'JLKB' });
@@ -680,26 +628,19 @@
         document.body.addEventListener('click', () => { 
             DOM.audio.volume=0; DOM.audio.play().catch(()=>{}); 
         }, {once:true});
-
-
-        // --- 状态初始化 & 绑定事件监听器 ---
-        state.totalKeys = document.querySelectorAll('.key[data-code]:not(.spacer)').length; // 修正统计逻辑，排除 .spacer
+        state.totalKeys = document.querySelectorAll('.key[data-code]:not(.spacer)').length;
         UIUpdater.updateProg(); UIUpdater.drawChart(); KPMTracker.trackAct(); 
-
         document.addEventListener('keydown', e => EventListeners.onKey(e, 'down'));
         document.addEventListener('keyup', e => EventListeners.onKey(e, 'up'));
         document.addEventListener('mousedown', e => EventListeners.onMouse(e, 'press'));
         document.addEventListener('mouseup', e => EventListeners.onMouse(e, 'release'));
         document.addEventListener('wheel', EventListeners.onWheel, {passive:false});
         document.addEventListener('mousemove', e => DOM.mouseXY.textContent = `X: ${e.screenX} Y: ${e.screenY}`);
-        
         window.addEventListener('blur', () => document.querySelectorAll('.key.active').forEach(el => el.classList.remove('active')));
         DOM.reset.addEventListener('click', EventListeners.onReset);
-        
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.onkeydown = e => { if(e.keyCode==123||e.keyCode==116) return false; };
     };
-
     document.addEventListener('DOMContentLoaded', init);
 </script>
 <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
