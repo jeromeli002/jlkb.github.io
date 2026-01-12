@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="310x310" href="./logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIA 配置工具</title>
+    <style>
+        /* >>>>>>> 核心变量定义 <<<<<<< */
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --text-main: #334155;
+            --text-secondary: #64748b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --primary-light: #eff6ff;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --border-color: #e2e8f0;
+            
+            --key-bg: #2b6981; 
+            --key-border: #cbd5e1;
+            --key-text: #ffffff;
+            --key-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            
+            --key-label-bg: #8b5cf6; 
+            --key-hidden-label-bg: #94a3b8;
+            
+            --selected-bg: #fbbf24;
+            --selected-border: #f59e0b;
+            --selected-text: #fff;
+            
+            --encoder-bg: #e9d5ff;
+            --encoder-border: #c084fc;
+            --encoder-text: #7e22ce;
+            
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #0f172a;
+                --bg-card: #1e293b;
+                --bg-input: #334155;
+                --text-main: #f1f5f9;
+                --text-secondary: #94a3b8;
+                --primary: #60a5fa;
+                --border-color: #334155;
+                
+                --key-bg: #2d3748;
+                --key-border: #475569;
+                --key-text: #e2e8f0;
+                --key-label-bg: #5b21b6;
+                --key-hidden-label-bg: #475569;
+                --selected-bg: #d97706;
+                --selected-border: #b45309;
+                --encoder-bg: #6b21a8;
+                --encoder-border: #7e22ce;
+                --encoder-text: #e9d5ff;
+            }
+        }
+
+        body { font-family: "Inter", "Microsoft YaHei", sans-serif; background: var(--bg-body); color: var(--text-main); line-height: 1.5; margin: 0; padding: 20px 0; font-size: 14px; }
+        .main-container { display: flex; gap: 20px; width: 96%; max-width: 1600px; margin: 0 auto; align-items: stretch; }
+        .left-column { flex: 2; background-color: var(--bg-card); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .right-column { flex: 1; background-color: var(--bg-card); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 20px; font-size: 1.5rem; font-weight: 700; }
+        .section { margin-bottom: 16px; }
+        .input-section textarea { min-height: 120px; resize: vertical; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--text-main); font-size: 0.9em; }
+        .config-toggle-label { display: flex; align-items: center; cursor: pointer; gap: 6px; font-weight: 500; }
+        textarea, input[type="text"], input[type="number"], select { font-family: 'Roboto Mono', monospace; font-size: 13px; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background-color: var(--bg-input); color: var(--text-main); box-sizing: border-box; outline: none; width: 100%; }
+        textarea:focus, input:focus, select:focus { border-color: var(--primary); background-color: var(--bg-card); }
+        input:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; background-color: rgba(0,0,0,0.03); border-color: transparent; }
+        .inline-input-group { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+        .inline-input-group label { margin-bottom: 0; color: var(--text-secondary); white-space: nowrap; }
+        #keyboardNameInput { width: auto; flex: 0 1 200px; min-width: 120px; }
+        .short-input { width: 80px !important; flex: none; }
+        .matrix-input { width: 60px !important; flex: none; text-align: center; }
+        select { width: auto; min-width: 100px; }
+        #lightingSelect { flex-grow: 0; }
+        
+        button { padding: 8px 16px; border: 1px solid transparent; border-radius: var(--radius-md); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+        button:hover { opacity: 0.9; } button:active { transform: translateY(1px); }
+        #resetBtn { background-color: transparent; color: var(--text-secondary); border-color: var(--border-color); }
+        #resetBtn:hover { border-color: var(--primary); color: var(--primary); }
+        #copyCodeBtn { background-color: var(--accent); color: white; }
+        #downloadBtn { background-color: var(--primary); color: white; }
+        button.add-btn, button.remove-btn, button.add-sub-label-btn, button.remove-sub-label-btn { width: 24px; height: 24px; padding: 0; display: inline-flex; justify-content: center; align-items: center; border-radius: var(--radius-sm); }
+        button.add-btn, button.add-sub-label-btn { background-color: var(--primary-light); color: var(--primary); border: 1px solid transparent; }
+        button.remove-btn, button.remove-sub-label-btn { background-color: transparent; color: var(--danger); border: 1px solid var(--border-color); }
+        button.remove-btn:hover, button.remove-sub-label-btn:hover { background-color: #fef2f2; border-color: var(--danger); }
+
+        #customKeycodesContainer { background-color: var(--bg-input); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color); min-height: 50px; }
+        .keycode-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .keycode-item { background-color: var(--key-bg); color: var(--key-text); border: 1px solid var(--key-border); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 12px; cursor: grab; user-select: none; transition: all 0.2s; box-shadow: var(--key-shadow); display: flex; align-items: center; justify-content: center; min-width: 40px; text-align: center; white-space: pre-wrap; line-height: 1.1; }
+        .keycode-item:active { cursor: grabbing; }
+        .keycode-item:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .keycode-item.dragging { opacity: 0.4; border: 1px dashed var(--primary); }
+        .keycode-item.drag-over { border-left: 3px solid var(--primary); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: var(--bg-card); padding: 24px; border-radius: var(--radius-lg); width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px; }
+        .modal-header { font-size: 16px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-footer { display: flex; justify-content: space-between; margin-top: 10px; }
+        
+        #keyboard { margin-top: 15px; position: relative; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-lg); min-height: 250px; overflow: auto; padding: 20px; background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px; }
+        .key { position: absolute; background: var(--key-bg); color: var(--key-text); text-align: center; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 500; border-radius: 4px; user-select: none; cursor: default; border: 1px solid var(--key-border); box-shadow: var(--key-shadow); white-space: pre-wrap; line-height: 1.1; z-index: 1; transition: all 0.1s ease; }
+        .key:hover { border-color: var(--primary); z-index: 10; }
+        .key.selected { background: var(--selected-bg) !important; color: var(--selected-text) !important;z-index: 20;box-shadow: inset 0 0 0 2px var(--selected-border), var(--key-shadow);}
+        .key.encoder { border-radius: 50% !important; background: var(--encoder-bg) !important; border: 1px solid var(--encoder-border); color: var(--encoder-text); }
+        .key.label-key { background: var(--key-label-bg) !important; border-style: solid; }
+        .key.hidden-label { background: var(--key-hidden-label-bg) !important; opacity: 0.8; border: 1px dashed var(--text-secondary) !important; color: var(--bg-card); }
+        #selectionBox { position: absolute; border: 1px solid var(--primary); background-color: rgba(59, 130, 246, 0.1); z-index: 50; pointer-events: none; display: none; }
+
+        #matrixSizeDisplaySection { background-color: var(--bg-input); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-top: 10px; }
+        #combinedDisplayContainer { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%; justify-content: flex-start; }
+        #matrixSizeDisplay { font-weight: 600; color: var(--primary); margin: 0; white-space: nowrap; font-size: 13px; }
+        .status-divider-item { border-left: 1px solid var(--border-color); padding-left: 15px; display: flex; align-items: center; gap: 8px; }
+        #selectedKeyDisplay { margin: 0; color: var(--text-secondary); font-size: 13px; font-weight: 500; }
+
+        #labelsContainer, #menusContainer { background-color: var(--bg-input); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color);  grid-template-columns:repeat(3, 1fr);gap: 15px; align-items: start;}
+        .label-group { background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 6px; margin-bottom: 6px; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 8px; }
+        .main-label-input { width: 100px !important;font-family: 'Roboto Mono', monospace;font-size: 13px;padding: 8px 10px;border: 1px solid var(--border-color);border-radius: var(--radius-md);background-color: var(--bg-input);color: var(--text-main);box-sizing: border-box;outline: none;}
+        .sub-label-inputs { display: flex; flex-wrap: wrap; gap: 4px; flex-grow: 1; align-items: center; }
+        .sub-label-item { display: flex; align-items: center; gap: 2px; }
+        .sub-label-input { width: 70px !important;font-family: 'Roboto Mono', monospace;font-size: 13px;padding: 8px 10px; border: 1px solid var(--border-color);border-radius: var(--radius-md); background-color: var(--bg-input); color: var(--text-main); box-sizing: border-box;outline: none;}
+
+        .menu-level-1 { border: 1px solid var(--border-color); background: var(--bg-card); padding: 10px; border-radius: var(--radius-md); }
+        .menu-level-2 { border-left: 3px solid var(--primary-light); background: var(--bg-input); margin-top: 8px; padding: 8px; border-radius: var(--radius-sm); }
+        .menu-level-3 { border-left: 3px solid var(--accent); background: var(--bg-card); margin-top: 6px; padding: 8px; border-radius: var(--radius-sm); }
+        .menu-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; width: 100%; }
+        /* 预览容器样式 */
+        .header-preview-container { flex-grow: 1; display: flex; align-items: center; justify-content: flex-start; margin: 0 10px; min-width: 0; }
+        
+        .menu-control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 8px; align-items: start; }
+        
+        .array-input-list { display: flex; flex-direction: column; gap: 4px; }
+        .array-input-row { display: flex; gap: 4px; align-items: center; }
+        .array-input-row input { flex-grow: 1; }
+
+        .result-group { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+        .result-group .label-and-buttons { display: flex; justify-content: space-between; align-items: center; }
+        textarea#rgbResult { flex-grow: 1; resize: vertical; min-height: 150px; font-size: 12px; background-color: var(--bg-input); border: 1px solid var(--border-color); padding: 12px; color: var(--text-secondary); }
+
+        .floating-menu { position: absolute; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 10px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; min-width: 180px; }
+        .floating-menu h3 { margin: 0 0 4px 0; font-size: 12px; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+        .floating-menu .row { display: flex; align-items: center; gap: 6px; }
+        .error-message { color: var(--danger); font-size: 12px; margin-top: 4px; }
+        textarea.error { border-color: var(--danger); }
+        /* 开关样式预览 */
+.switch-preview {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.switch-preview input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-preview {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 4px;
+}
+
+.slider-preview:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 30px;
+    left: 1px;
+    bottom: 1px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 10%;
+}
+
+input:checked + .slider-preview {
+    background-color: #f0ad4e;
+}
+
+input:checked + .slider-preview:before {
+    transform: translateX(27px);
+}
+    </style>
+</head>
+<body>
+
+<div class="main-container"> 
+    <div class="left-column">
+        <h2>VIA 配置工具</h2>
+
+        <div class="section input-section">
+            <label for="rawData">KLE 原始数据 (JSON)</label>
+            <textarea id="rawData" spellcheck="false" placeholder='请在此粘贴 http://www.keyboard-layout-editor.com/ 的 Raw Data...'></textarea>
+            <div id="errorDisplay" class="error-message"></div>
+        </div>
+
+        <div class="section config-section">
+            <label style="margin-bottom:10px; color:var(--text-secondary);">键盘基础信息</label>
+            <div class="inline-input-group">
+                <label>键盘名称:</label>
+                <input type="text" id="keyboardNameInput" placeholder="Name">
+                <label class="config-toggle-label" style="font-size: 12px; margin-right: 8px;">
+                    <input type="checkbox" id="forceUnicodeCheckbox"> 中文转码
+                </label>
+
+                <label style="margin-left: 10px;">VID:</label>
+                <input type="text" id="vendorIdInput" maxlength="4" placeholder="0x..." class="short-input">
+                <label>PID:</label>
+                <input type="text" id="productIdInput" maxlength="4" placeholder="0x..." class="short-input">
+            </div>
+            <div class="inline-input-group">
+                <label>矩阵大小:</label>
+                <input type="number" id="rowsInput" min="1" class="matrix-input" placeholder="行">
+                <span style="color:var(--text-secondary)">x</span>
+                <input type="number" id="colsInput" min="1" class="matrix-input" placeholder="列">
+                <label style="margin-left: 15px;">灯光:</label>
+                <select id="lightingSelect">
+                    <option value="none">无 (None)</option>
+                    <option value="vialrgb">VIAL RGB</option>
+                    <option value="qmk_backlight">QMK Backlight</option>
+                    <option value="qmk_backlight_rgblight">QMK BL + RGB</option>
+                    <option value="qmk_rgblight">QMK RGB Light</option>
+                </select>
+            </div>
+            
+            <div id="keycodesSection" style="margin-top: 10px; background: var(--bg-input); padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <label style="margin-bottom: 5px;">Keycodes:</label>
+                <div class="inline-input-group" style="margin-bottom: 0;">
+                    <label class="config-toggle-label"><input type="checkbox" id="kcQmkLighting" value="qmk_lighting"> QMK Lighting</label>
+                    <label class="config-toggle-label" style="margin-left: 15px;"><input type="checkbox" id="kcWtLighting" value="wt_lighting"> WT Lighting</label>
+                </div>
+            </div>
+
+            <div id="customKeycodesSection" style="margin-top: 15px;">
+                <label class="config-toggle-label" style="margin-bottom:8px;"><input type="checkbox" id="enableCustomKeycodes"> 自定义键码 (Custom Keycodes)</label>
+                <div id="customKeycodesContainer"></div>
+                <div class="button-group" style="text-align: right; margin-top: 6px;">
+                    <button id="addKeycodeBtn" class="add-btn" style="width: auto; padding: 0 8px; font-size: 12px;">+ 添加按键</button>
+                </div>
+            </div>
+
+            <div id="labelsSection" style="margin-top: 15px;">
+                <label class="config-toggle-label" style="margin-bottom:8px;"><input type="checkbox" id="enableLabels"> 配列切换 (Labels)</label>
+                <div id="labelsContainer"></div>
+                <div class="button-group" style="text-align: right; margin-top: 6px;">
+                    <button id="addLabelBtn" class="add-btn" style="width: auto; padding: 0 8px; font-size: 12px;">+ 标签组</button>
+                </div>
+            </div>
+
+            <div id="menusSection" style="margin-top: 15px;">
+                <label class="config-toggle-label" style="margin-bottom:8px;"><input type="checkbox" id="enableMenus"> 自定义菜单 (Menus)</label>
+                <div id="menusContainer" style="display: none;"></div>
+                <div class="button-group" style="text-align: right; margin-top: 6px;">
+                    <button id="addMenuBtn" class="add-btn" style="width: auto; padding: 0 8px; font-size: 12px; display: none;">+ 添加菜单</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="matrixSizeDisplaySection">
+            <div id="combinedDisplayContainer">
+                <p id="matrixSizeDisplay">矩阵行列数: 0 行 x 0 列</p>
+                <div class="status-divider-item"><label class="config-toggle-label" style="font-size: 13px;"><input type="checkbox" id="enableLabelToCoordConversion"> 标签转坐标</label></div>
+                <div class="status-divider-item"><p id="selectedKeyDisplay">未选中</p></div>
+                <div class="status-divider-item"><label class="config-toggle-label" style="font-size: 13px;"><input type="checkbox" id="isEncoderCheckbox" disabled> 设为旋钮</label></div>
+                <div class="status-divider-item"><label class="config-toggle-label" style="font-size: 13px;"><input type="checkbox" id="isLabelCheckbox" disabled> 设为标签</label></div>
+
+                <div id="selectedKeyCoords" class="status-divider-item">
+                    <input type="number" id="selectedKeyRow" min="0" placeholder="行" class="matrix-input" disabled>
+                    <input type="number" id="selectedKeyCol" min="0" placeholder="列" class="matrix-input" disabled>
+                </div>
+
+                <div id="encoderConfigContainer" class="status-divider-item" style="display: none;">
+                    <label style="margin:0; font-weight:400; font-size:12px;">ID:</label>
+                    <input type="number" id="encoderIndexInput" min="0" class="matrix-input">
+                </div>
+
+                <div id="labelConfigContainer" class="status-divider-item" style="display: none;">
+    <label class="config-toggle-label" style="font-size:12px; margin-right:8px;"><input type="checkbox" id="isHiddenLabelCheckbox"> 隐藏</label>
+    <input type="number" id="labelVal0Input" class="matrix-input" placeholder="A" title="Value 0" min="0" step="1">
+    <span style="color:var(--text-secondary); margin:0 2px;">,</span>
+    <input type="number" id="labelVal1Input" class="matrix-input" placeholder="B" title="Value 1" min="0" step="1">
+</div>
+            </div>
+        </div>
+        
+        <div id="keyboard"></div> 
+    </div>
+
+    <div class="right-column">
+        <div class="result-group">
+            <div class="label-and-buttons">
+                <label style="margin:0;">生成结果 (via.json)</label>
+                <div>
+                    <button id="resetBtn">重置</button>
+                    <button id="copyCodeBtn">复制</button>
+                    <button id="downloadBtn">下载</button>
+                </div>
+            </div>
+            <textarea id="rgbResult" spellcheck="false" readonly></textarea>
+        </div>
+    </div>
+</div>
+
+<div id="floatingMenu" class="floating-menu" style="display: none;">
+    <h3>按键设置</h3>
+    <div class="row">
+        <label class="config-toggle-label" style="font-size:12px;"><input type="checkbox" id="floatingEncoderCheckbox"> 旋钮</label>
+        <label class="config-toggle-label" style="font-size:12px; margin-left: 8px;"><input type="checkbox" id="floatingLabelCheckbox"> 标签</label>
+    </div>
+    <div id="floatingKeyCoords" class="row">
+        <label style="font-size:12px;">坐标:</label>
+        <input type="number" id="floatingKeyRow" min="0" placeholder="行" style="width: 50px;">
+        <input type="number" id="floatingKeyCol" min="0" placeholder="列" style="width: 50px;">
+    </div>
+    <div id="floatingEncoderConfig" class="row" style="display: none;">
+        <label style="font-size:12px;">ID:</label>
+        <input type="number" id="floatingEncoderIndex" min="0" style="width: 50px;">
+    </div>
+</div>
+
+<div id="keycodeEditorModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>编辑自定义按键</span>
+            <button id="modalCloseX" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:18px;">&times;</button>
+        </div>
+        <div>
+            <label>名称 (Name) - 显示在按键上:</label>
+            <textarea id="modalKeyName" rows="2" placeholder="如: 下\n一层"></textarea>
+        </div>
+        <div>
+            <label>标题 (Title) - 鼠标悬停提示:</label>
+            <input type="text" id="modalKeyTitle" placeholder="如: 切换到Layer 1">
+        </div>
+        <div>
+            <label>简称 (Short Name):</label>
+            <textarea id="modalKeyShortName" rows="2" placeholder="可选"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button id="modalDeleteBtn" style="background-color: transparent; border: 1px solid var(--danger); color: var(--danger);">删除按键</button>
+            <button id="modalSaveBtn" style="background-color: var(--primary); color: white;">完成</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+    // Constants
+    const UNIT = 40, GAP = 5;
+    const DEFAULT_KEYBOARD_NAME = "XMK";
+    const DEFAULT_VENDOR_ID = "F001";
+    const DEFAULT_PRODUCT_ID = "6001";
+    const DEFAULT_LIGHTING = "none";
+    
+    const makeVialEncoderString = (row, col, index) => {
+        const idStr = (index === undefined || index === null) ? '0' : index;
+        return `${row},${col}\n\n\n\n\n\n\n\n\ne${idStr}`;
+    };
+
+    const makeVialLabelString = (matrixRow, matrixCol, hidden, val0, val1) => {
+        const vals = `${val0},${val1}`;
+        const prefix = hidden ? "" : `${matrixRow},${matrixCol}`;
+        return `${prefix}\n\n\n${vals}`;
+    };
+
+    const convertStoredNewlinesToDisplay = (str) => typeof str === 'string' ? str.replace(/\\n/g, '\n') : '';
+    const convertDisplayNewlinesToStored = (str) => typeof str === 'string' ? str.replace(/\n/g, '\\n') : '';
+
+    const INITIAL_RAW_KLE_DATA = `[{x:0.5},"0,1\\n\\n\\n\\n\\n\\n\\n\\n\\ne","666","0,0\\n\\n\\n\\n\\n\\n\\n\\n\\ne"],
+[{y:0.5},"Num Lock","/","*","-"],
+["7\\nHome","8\\n↑","9\\nPgUp",{h:2},"+"],
+["4\\n←","5","6\\n→"],
+["1\\nEnd","2\\n↓","3\\nPgDn",{h:2},"Enter"],
+[{w:2},"0\\nIns",".\\nDel"]
+`;
+    const INITIAL_CUSTOM_KEYCODES = [
+        {"name": "下\\n一层", "title": "增加一层0→1", "shortName": "向下\\n一层"},
+        {"name": "上\\n一层", "title": "减少一层1→0", "shortName": "向上\\n一层"},
+        {"name": "自定\\n义键", "title": "user-XX键", "shortName": "自定\\n义键"},
+    ];
+    const INITIAL_LABELS = [["左上旋钮"], ["勾选菜单"], ["下拉菜单", "选项0", "选项1"]];
+    const INITIAL_MENUS = [{ label: "RGB Lighting", content: [{ label: "Single LED", content: [{ label: "点击", type: "range", options: [0, 255], content: ["id_qmk_rgblight_brightness", 2, 1] }] }] }];
+
+    const elements = {
+        keyboard: document.getElementById("keyboard"),
+        rawDataInput: document.getElementById("rawData"),
+        rgbResult: document.getElementById("rgbResult"),
+        resetBtn: document.getElementById("resetBtn"),
+        copyCodeBtn: document.getElementById("copyCodeBtn"),
+        downloadBtn: document.getElementById("downloadBtn"),
+        errorDisplay: document.getElementById("errorDisplay"),
+        keyboardNameInput: document.getElementById("keyboardNameInput"),
+        forceUnicodeCheckbox: document.getElementById("forceUnicodeCheckbox"), 
+        vendorIdInput: document.getElementById("vendorIdInput"),
+        productIdInput: document.getElementById("productIdInput"),
+        rowsInput: document.getElementById("rowsInput"),
+        colsInput: document.getElementById("colsInput"),
+        lightingSelect: document.getElementById("lightingSelect"),
+        kcQmkLighting: document.getElementById("kcQmkLighting"),
+        kcWtLighting: document.getElementById("kcWtLighting"),
+        customKeycodesContainer: document.getElementById("customKeycodesContainer"),
+        enableCustomKeycodesCheckbox: document.getElementById("enableCustomKeycodes"),
+        labelsContainer: document.getElementById("labelsContainer"),
+        enableLabelsCheckbox: document.getElementById("enableLabels"),
+        menusContainer: document.getElementById("menusContainer"),
+        enableMenusCheckbox: document.getElementById("enableMenus"),
+        addMenuBtn: document.getElementById("addMenuBtn"),
+        addLabelBtn: document.getElementById("addLabelBtn"),
+        addKeycodeBtn: document.getElementById("addKeycodeBtn"), 
+        matrixSizeDisplay: document.getElementById("matrixSizeDisplay"),
+        enableLabelToCoordConversionCheckbox: document.getElementById("enableLabelToCoordConversion"),
+        selectedKeyRowInput: document.getElementById("selectedKeyRow"),
+        selectedKeyColInput: document.getElementById("selectedKeyCol"),
+        selectedKeyDisplay: document.getElementById("selectedKeyDisplay"),
+        isEncoderCheckbox: document.getElementById("isEncoderCheckbox"),
+        encoderConfigContainer: document.getElementById("encoderConfigContainer"),
+        encoderIndexInput: document.getElementById("encoderIndexInput"),
+        isLabelCheckbox: document.getElementById("isLabelCheckbox"),
+        labelConfigContainer: document.getElementById("labelConfigContainer"),
+        isHiddenLabelCheckbox: document.getElementById("isHiddenLabelCheckbox"),
+        labelVal0Input: document.getElementById("labelVal0Input"),
+        labelVal1Input: document.getElementById("labelVal1Input"),
+        selectedKeyCoords: document.getElementById("selectedKeyCoords"),
+        floatingMenu: document.getElementById("floatingMenu"),
+        floatingEncoderCheckbox: document.getElementById("floatingEncoderCheckbox"),
+        floatingLabelCheckbox: document.getElementById("floatingLabelCheckbox"),
+        floatingKeyCoords: document.getElementById("floatingKeyCoords"),
+        floatingKeyRow: document.getElementById("floatingKeyRow"),
+        floatingKeyCol: document.getElementById("floatingKeyCol"),
+        floatingEncoderConfig: document.getElementById("floatingEncoderConfig"),
+        floatingEncoderIndex: document.getElementById("floatingEncoderIndex"),
+        keycodeEditorModal: document.getElementById("keycodeEditorModal"),
+        modalKeyName: document.getElementById("modalKeyName"),
+        modalKeyTitle: document.getElementById("modalKeyTitle"),
+        modalKeyShortName: document.getElementById("modalKeyShortName"),
+        modalCloseX: document.getElementById("modalCloseX"),
+        modalSaveBtn: document.getElementById("modalSaveBtn"),
+        modalDeleteBtn: document.getElementById("modalDeleteBtn"),
+    };
+    
+    let keysData = [];
+    let keymapDataForOutput = []; 
+    let selectedVisualIndices = []; 
+    let manualCoordOverrides = {}; 
+    let encoderOverrides = {}; 
+    let labelOverrides = {}; 
+    let currentEditingKeycodeIndex = -1;
+
+    // Init data
+    const initialKeycodesRaw = JSON.parse(JSON.stringify(INITIAL_CUSTOM_KEYCODES));
+    initialKeycodesRaw.forEach(item => { item.name = convertStoredNewlinesToDisplay(item.name); item.shortName = convertStoredNewlinesToDisplay(item.shortName); });
+    let customKeycodesData = initialKeycodesRaw; 
+    let labelsData = JSON.parse(JSON.stringify(INITIAL_LABELS));
+    let menusData = JSON.parse(JSON.stringify(INITIAL_MENUS));
+    let isDrawing = false; let startX, startY; let selectionBox; 
+
+    const clearError = () => { elements.rawDataInput.classList.remove('error'); elements.errorDisplay.textContent = ''; };
+    const showParsingError = (message) => { elements.rawDataInput.classList.add('error'); elements.errorDisplay.textContent = '解析错误: ' + message; };
+    const updateMatrixSizeDisplay = (rows, cols) => { if (elements.matrixSizeDisplay) elements.matrixSizeDisplay.textContent = `矩阵行列数: ${rows} 行 x ${cols} 列`; };
+
+    const parseInput = (text) => {
+        const trimmed = text.trim();
+        try {
+            if (trimmed.startsWith('[[') && trimmed.endsWith(']]')) {
+                const parsed = JSON.parse(trimmed);
+                if (!Array.isArray(parsed) || parsed.some(row => !Array.isArray(row))) throw new Error("Format error");
+                return parsed;
+            }
+            const cleanedLines = trimmed.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            const joinedLines = cleanedLines.map((line, i, arr) => (i < arr.length - 1 && !line.endsWith(',') && line !== '[') ? line + ',' : line).join('\n');
+            return Function(`"use strict";return (${'[' + joinedLines + ']'})`)();
+        } catch (e) { throw new Error("KLE数据格式不正确。", { cause: e }); }
+    };
+
+    const computeKeysForVisualization = (data) => {
+        const result = [];
+        let currentY = 0, accumulatedYOffset = 0;
+        let matrixRow = 0, maxCols = 0;
+        let currentProps = { d: false };
+
+        data.forEach((row, rowIndex) => {
+            let xPos = 0, nextW = 1, nextH = 1, nextXOffset = 0, rowYOffset = 0, matrixCol = 0;
+            const yOffsetItem = row.find(item => typeof item === "object" && "y" in item);
+            if (yOffsetItem) rowYOffset = yOffsetItem.y;
+            const rowY = currentY + accumulatedYOffset + rowYOffset;
+            let hasNormalKeys = false; 
+
+            row.forEach((item, itemIndex) => {
+                if (typeof item === "object") {
+                    if ("w" in item) nextW = item.w;
+                    if ("h" in item) nextH = item.h;
+                    if ("x" in item) nextXOffset = item.x;
+                    if ("y" in item) rowYOffset = item.y;
+                    if ("d" in item) currentProps.d = item.d;
+                    return;
+                }
+                const label = typeof item === 'string' ? item : '';
+                let isEncoder = false, encoderIndex = 0;
+                let isLabel = false, isHiddenLabel = false, labelVals = [0, 0];
+                let displayLabel = convertStoredNewlinesToDisplay(label);
+                
+                const labelParts = displayLabel.split('\n');
+                
+                // Check Encoder
+                if (labelParts.length > 0) {
+                    const lastPart = labelParts[labelParts.length - 1].trim();
+                    if (lastPart.startsWith('e')) {
+                        const idPart = lastPart.substring(1);
+                        if (idPart === '' || !isNaN(parseInt(idPart))) { isEncoder = true; encoderIndex = idPart === '' ? 0 : parseInt(idPart); }
+                    }
+                }
+
+                // Check Label
+                if (labelParts.length >= 4) {
+                    const potentialCoords = labelParts[3].trim(); 
+                    if (potentialCoords.match(/^\d+,\d+$/)) {
+                        if (!isEncoder) {
+                            isLabel = true;
+                            labelVals = potentialCoords.split(',').map(Number);
+                            // 判定隐藏: d:true 且 第一行文本(prefix)为空
+                            if (currentProps.d && labelParts[0].trim() === "") {
+                                isHiddenLabel = true;
+                            }
+                        }
+                    }
+                }
+
+                let parsedMatrixCoord = null;
+                const firstPart = labelParts[0].trim();
+                const coordMatch = firstPart.match(/^(\d+),(\d+)$/);
+                if (coordMatch) { parsedMatrixCoord = `${coordMatch[1]},${coordMatch[2]}`; }
+
+                const key = {
+                    x: xPos + nextXOffset, y: rowY, w: nextW, h: nextH,
+                    label: displayLabel, kleRowIndex: rowIndex, kleItemIndex: itemIndex,
+                    matrixCoord: parsedMatrixCoord ? parsedMatrixCoord : `${matrixRow},${matrixCol}`,
+                    isEncoder, encoderIndex,
+                    isLabel, isHiddenLabel, labelVals
+                };
+                result.push(key);
+                xPos = key.x + key.w;
+                matrixCol += 1; hasNormalKeys = true;
+                nextW = 1; nextH = 1; nextXOffset = 0;
+            });
+            maxCols = Math.max(maxCols, matrixCol);
+            if (hasNormalKeys) matrixRow += 1;
+            accumulatedYOffset += rowYOffset;
+            currentY += 1;
+        });
+        return { keys: result, rows: matrixRow, cols: maxCols };
+    };
+    
+    const selectKey = (indices, focusIndex = -1) => {
+        elements.keyboard.querySelectorAll('.key.selected').forEach(div => div.classList.remove('selected'));
+        selectedVisualIndices = indices;
+        
+        const resetInputs = () => {
+             elements.selectedKeyDisplay.textContent = "未选中";
+             elements.isEncoderCheckbox.disabled = true; elements.isEncoderCheckbox.checked = false;
+             elements.isLabelCheckbox.disabled = true; elements.isLabelCheckbox.checked = false;
+             elements.encoderConfigContainer.style.display = "none";
+             elements.labelConfigContainer.style.display = "none";
+             elements.selectedKeyCoords.style.display = "flex";
+             elements.selectedKeyRowInput.disabled = true; elements.selectedKeyColInput.disabled = true;
+             elements.selectedKeyRowInput.value = ''; elements.selectedKeyColInput.value = '';
+        };
+
+        if (selectedVisualIndices.length === 0) { resetInputs(); return; }
+        
+        selectedVisualIndices.forEach(visualIndex => {
+            const keyDiv = elements.keyboard.querySelector(`.key[data-visual-index="${visualIndex}"]`);
+            if (keyDiv) keyDiv.classList.add('selected');
+        });
+
+        const displayIndex = focusIndex !== -1 ? focusIndex : selectedVisualIndices[0];
+        const currentKey = keysData[displayIndex];
+        
+        const encOverride = encoderOverrides[displayIndex];
+        const isEncoder = encOverride ? encOverride.isEncoder : currentKey.isEncoder;
+        
+        const lblOverride = labelOverrides[displayIndex];
+        const isLabel = lblOverride ? lblOverride.isLabel : currentKey.isLabel;
+
+        elements.isEncoderCheckbox.disabled = false; elements.isEncoderCheckbox.checked = isEncoder;
+        elements.isLabelCheckbox.disabled = false; elements.isLabelCheckbox.checked = isLabel;
+        
+        if (selectedVisualIndices.length > 1) { 
+            elements.selectedKeyDisplay.textContent = `选中 ${selectedVisualIndices.length} 个`; 
+        } else {
+             let typeStr = "按键"; if(isEncoder) typeStr = "旋钮"; else if(isLabel) typeStr = "标签";
+             elements.selectedKeyDisplay.textContent = `${typeStr} #${displayIndex}`;
+        }
+        
+        elements.selectedKeyCoords.style.display = "flex";
+        elements.selectedKeyRowInput.disabled = false; elements.selectedKeyColInput.disabled = false;
+        
+        let row, col;
+        if (manualCoordOverrides[displayIndex]) { row = manualCoordOverrides[displayIndex].row; col = manualCoordOverrides[displayIndex].col; }
+        else { [row, col] = currentKey.matrixCoord.split(',').map(Number); }
+        elements.selectedKeyRowInput.value = row; elements.selectedKeyColInput.value = col;
+
+        if (isEncoder) {
+            elements.encoderConfigContainer.style.display = "flex";
+            const idx = encOverride ? encOverride.index : currentKey.encoderIndex;
+            elements.encoderIndexInput.value = idx;
+            elements.isLabelCheckbox.checked = false; 
+        } else { elements.encoderConfigContainer.style.display = "none"; }
+
+        if (isLabel && !isEncoder) {
+            elements.labelConfigContainer.style.display = "flex";
+            const hidden = lblOverride ? lblOverride.hidden : currentKey.isHiddenLabel;
+            const v0 = lblOverride ? lblOverride.val0 : currentKey.labelVals[0];
+            const v1 = lblOverride ? lblOverride.val1 : currentKey.labelVals[1];
+            elements.isHiddenLabelCheckbox.checked = hidden;
+            elements.labelVal0Input.value = v0; elements.labelVal1Input.value = v1;
+        } else { elements.labelConfigContainer.style.display = "none"; }
+    };
+
+    const showFloatingMenu = (e, index) => {
+        const menu = elements.floatingMenu; selectKey([index], index);
+        const currentKey = keysData[index];
+        const encO = encoderOverrides[index]; const isEncoder = encO ? encO.isEncoder : currentKey.isEncoder;
+        const lblO = labelOverrides[index]; const isLabel = lblO ? lblO.isLabel : currentKey.isLabel;
+
+        elements.floatingEncoderCheckbox.checked = isEncoder; elements.floatingLabelCheckbox.checked = isLabel;
+        elements.floatingKeyCoords.style.display = 'flex';
+        elements.floatingKeyRow.value = elements.selectedKeyRowInput.value; elements.floatingKeyCol.value = elements.selectedKeyColInput.value;
+
+        if (isEncoder) {
+            elements.floatingEncoderConfig.style.display = 'flex';
+            elements.floatingEncoderIndex.value = elements.encoderIndexInput.value;
+        } else { elements.floatingEncoderConfig.style.display = 'none'; }
+        
+        menu.style.display = 'flex';
+        let left = e.pageX + 10; let top = e.pageY + 10;
+        const menuRect = menu.getBoundingClientRect();
+        if (left + menuRect.width > window.innerWidth) left = e.pageX - menuRect.width - 10;
+        if (top + menuRect.height > window.innerHeight) top = e.pageY - menuRect.height - 10;
+        menu.style.left = `${left}px`; menu.style.top = `${top}px`;
+    };
+    const hideFloatingMenu = () => { elements.floatingMenu.style.display = 'none'; };
+
+    const renderKeys = (keys) => {
+        elements.keyboard.innerHTML = "";
+        selectionBox = document.createElement("div"); selectionBox.id = "selectionBox"; elements.keyboard.appendChild(selectionBox);
+        const maxKeyX = Math.max(0, ...keys.map(k => k.x + k.w));
+        const requiredWidth = maxKeyX * (UNIT + GAP) + GAP;
+        const innerKeyboardContent = document.createElement('div');
+        innerKeyboardContent.style.minWidth = `${requiredWidth}px`; innerKeyboardContent.style.position = 'relative';
+        const enableConversion = elements.enableLabelToCoordConversionCheckbox.checked;
+
+        keys.forEach((key, idx) => {
+            const keyWidth = key.w * UNIT + (key.w - 1) * GAP; const keyHeight = key.h * UNIT + (key.h - 1) * GAP;
+            const div = document.createElement("div");
+            Object.assign(div.style, { left: `${key.x * (UNIT + GAP)}px`, top: `${key.y * (UNIT + GAP)}px`, width: `${keyWidth}px`, height: `${keyHeight}px` });
+            div.className = "key"; if (selectedVisualIndices.includes(idx)) div.classList.add("selected");
+            
+            const encOverride = encoderOverrides[idx]; const isEffectiveEncoder = encOverride ? encOverride.isEncoder : key.isEncoder;
+            const lblOverride = labelOverrides[idx]; const isEffectiveLabel = lblOverride ? lblOverride.isLabel : key.isLabel;
+            
+            let displayContent = ""; let r, c;
+            const override = manualCoordOverrides[idx];
+            if (override) { r = override.row; c = override.col; } else { [r, c] = key.matrixCoord.split(',').map(Number); }
+
+            if (isEffectiveEncoder) {
+                div.classList.add("encoder"); 
+                const eIdx = encOverride ? encOverride.index : key.encoderIndex;
+                displayContent = `旋钮:${eIdx}\n(${r},${c})`; 
+                div.title = `旋钮 ID: ${eIdx}, 矩阵: ${r},${c}`;
+            } else if (isEffectiveLabel && !isEffectiveEncoder) {
+                const hidden = lblOverride ? lblOverride.hidden : key.isHiddenLabel;
+                const v0 = lblOverride ? lblOverride.val0 : key.labelVals[0];
+                const v1 = lblOverride ? lblOverride.val1 : key.labelVals[1];
+                if (hidden) {
+                    div.classList.add("hidden-label"); displayContent = `隐藏\n${v0},${v1}`;
+                } else {
+                    div.classList.add("label-key"); displayContent = `配列\n${v0},${v1}`;
+                }
+                div.title = `Label: ${v0}, ${v1} (Hidden: ${hidden})`;
+            } else {
+                if (override) { displayContent = `${r},${c}`; } 
+                else if (enableConversion) { displayContent = key.matrixCoord; } 
+                else {
+                    const currentRawItem = keymapDataForOutput[key.kleRowIndex][key.kleItemIndex];
+                    if (typeof currentRawItem === 'string' && currentRawItem.match(/^(\d+),(\d+)$/)) { displayContent = currentRawItem; } else { displayContent = key.label; }
+                }
+                div.title = `矩阵坐标: ${key.matrixCoord}`;
+            }
+            div.textContent = displayContent; div.draggable = true; div.dataset.visualIndex = idx;
+            
+            div.addEventListener('click', e => {
+                const visualIndex = idx;
+                if (e.shiftKey || e.ctrlKey || e.metaKey) { const isSelected = selectedVisualIndices.includes(visualIndex); if (isSelected) selectKey(selectedVisualIndices.filter(i => i !== visualIndex), -1); else selectKey([...selectedVisualIndices, visualIndex], visualIndex); } 
+                else { selectKey([visualIndex], visualIndex); }
+                e.stopPropagation(); 
+            });
+            div.addEventListener('dblclick', e => { e.stopPropagation(); e.preventDefault(); showFloatingMenu(e, idx); });
+            div.addEventListener('dragstart', e => { e.dataTransfer.setData("text/plain", idx); e.dataTransfer.setData("type", "keyboard-key"); div.classList.add("dragging"); selectKey([], -1); hideFloatingMenu(); });
+            div.addEventListener('dragend', () => div.classList.remove("dragging"));
+            div.addEventListener('dragover', e => { if (e.dataTransfer.types.includes("type") && e.dataTransfer.getData("type") === "keyboard-key") return; e.preventDefault(); div.classList.add("dragover"); });
+            div.addEventListener('dragleave', () => div.classList.remove("dragover"));
+            div.addEventListener('drop', e => {
+                e.preventDefault(); div.classList.remove("dragover");
+                const type = e.dataTransfer.getData("type"); if (type && type !== "keyboard-key") return;
+                const fromVisualIdx = parseInt(e.dataTransfer.getData("text/plain")); const toVisualIdx = idx;
+                if (!isNaN(fromVisualIdx) && fromVisualIdx !== toVisualIdx) {
+                    const fromKey = keysData[fromVisualIdx]; const toKey = keysData[toVisualIdx];
+                    let parsedOriginalKLE = parseInput(elements.rawDataInput.value);
+                    const tempKLEItem = JSON.parse(JSON.stringify(parsedOriginalKLE[fromKey.kleRowIndex][fromKey.kleItemIndex]));
+                    parsedOriginalKLE[fromKey.kleRowIndex][fromKey.kleItemIndex] = JSON.parse(JSON.stringify(parsedOriginalKLE[toKey.kleRowIndex][toKey.kleItemIndex]));
+                    parsedOriginalKLE[toKey.kleRowIndex][toKey.kleItemIndex] = tempKLEItem;
+                    const swap = (obj, i1, i2) => { const t = obj[i1]; obj[i1] = obj[i2]; obj[i2] = t; };
+                    const getCoord = (vIdx, kObj) => { if (manualCoordOverrides[vIdx]) return { ...manualCoordOverrides[vIdx] }; const r_c = kObj.matrixCoord.split(',').map(Number); return { row: r_c[0], col: r_c[1] }; };
+                    const coordFrom = getCoord(fromVisualIdx, fromKey); const coordTo = getCoord(toVisualIdx, toKey);
+                    manualCoordOverrides[fromVisualIdx] = coordTo; manualCoordOverrides[toVisualIdx] = coordFrom;
+                    swap(encoderOverrides, fromVisualIdx, toVisualIdx); swap(labelOverrides, fromVisualIdx, toVisualIdx);
+                    const formattedKLE = parsedOriginalKLE.map(row => { let rowStr = JSON.stringify(row); rowStr = rowStr.replace(/"(x|y|w|h|x2|y2|w2|h2|l|n|c|t|a|f|fa|sm|d|r|rx|ry|p)":/g, '$1:'); return rowStr; }).join(',\n');
+                    elements.rawDataInput.value = formattedKLE; selectKey([toVisualIdx], toVisualIdx); processInput(); 
+                }
+            });
+            innerKeyboardContent.appendChild(div);
+        });
+        elements.keyboard.appendChild(innerKeyboardContent);
+        const maxY = Math.max(...keys.map(k => k.y + (k.h || 1)), 0); const contentHeight = (UNIT + GAP) * maxY + GAP;
+        elements.keyboard.style.height = `${Math.max(100, contentHeight)}px`; 
+    };
+    
+    // ... [Mouse Handlers] ... (Same as before)
+    const isKeyInSelectionBox = (keyRect, selectionRect) => { return (keyRect.x < selectionRect.x + selectionRect.width && keyRect.x + keyRect.width > selectionRect.x && keyRect.y < selectionRect.y + selectionRect.height && keyRect.y + keyRect.height > selectionRect.y); };
+    const handleSelection = () => {
+        if (!isDrawing) return;
+        const keyboardRect = elements.keyboard.getBoundingClientRect(); const selectionLeft = parseFloat(selectionBox.style.left) - elements.keyboard.scrollLeft; const selectionTop = parseFloat(selectionBox.style.top) - elements.keyboard.scrollTop;
+        const selectionRect = { x: selectionLeft, y: selectionTop, width: parseFloat(selectionBox.style.width), height: parseFloat(selectionBox.style.height) };
+        let newSelectedIndices = [...selectedVisualIndices]; const isAdditive = window.event.shiftKey || window.event.ctrlKey || window.event.metaKey;
+        if (!isAdditive) newSelectedIndices = []; 
+        keysData.forEach((key, idx) => {
+            const keyRect = { x: key.x * (UNIT + GAP), y: key.y * (UNIT + GAP), width: key.w * UNIT + (key.w - 1) * GAP, height: key.h * UNIT + (key.h - 1) * GAP };
+            if (isKeyInSelectionBox(keyRect, selectionRect)) { if (!newSelectedIndices.includes(idx)) newSelectedIndices.push(idx); }
+        });
+        selectKey(newSelectedIndices, newSelectedIndices.length > 0 ? newSelectedIndices[0] : -1);
+    };
+    const handleMouseDown = (e) => {
+        if (e.button !== 0 || e.target.classList.contains('key')) return; e.preventDefault(); hideFloatingMenu(); isDrawing = true;
+        const keyboardRect = elements.keyboard.getBoundingClientRect(); const startOffsetLeft = e.clientX - keyboardRect.left + elements.keyboard.scrollLeft; const startOffsetTop = e.clientY - keyboardRect.top + elements.keyboard.scrollTop;
+        startX = startOffsetLeft; startY = startOffsetTop; selectionBox.style.left = `${startOffsetLeft}px`; selectionBox.style.top = `${startOffsetTop}px`; selectionBox.style.width = '0px'; selectionBox.style.height = '0px'; selectionBox.style.display = 'block';
+        if (!e.shiftKey && !e.ctrlKey && !e.metaKey) selectKey([], -1);
+    };
+    const handleMouseMove = (e) => {
+        if (!isDrawing) return;
+        const keyboardRect = elements.keyboard.getBoundingClientRect(); const currentX = e.clientX - keyboardRect.left + elements.keyboard.scrollLeft; const currentY = e.clientY - keyboardRect.top + elements.keyboard.scrollTop;
+        const width = Math.abs(currentX - startX); const height = Math.abs(currentY - startY);
+        selectionBox.style.left = `${Math.min(startX, currentX)}px`; selectionBox.style.top = `${Math.min(startY, currentY)}px`; selectionBox.style.width = `${width}px`; selectionBox.style.height = `${height}px`; handleSelection();
+    };
+    const handleMouseUp = () => { if (!isDrawing) return; isDrawing = false; selectionBox.style.display = 'none'; };
+    const handleWheelChange = (e) => {
+        const target = e.currentTarget; if (target.disabled || target.readOnly) return; e.preventDefault(); e.stopPropagation(); 
+        const delta = Math.sign(e.deltaY); const step = e.shiftKey ? 10 : 1; 
+        if (target.tagName === 'INPUT' && target.type === 'number') {
+            let currentValue = parseInt(target.value) || parseInt(target.min) || 0; let newValue = currentValue - delta * step;
+            const min = parseInt(target.min); const max = parseInt(target.max); if (!isNaN(min) && newValue < min) newValue = min; if (!isNaN(max) && newValue > max) newValue = max;
+            if (parseInt(target.value) !== newValue) { target.value = newValue; target.dispatchEvent(new Event('input', { bubbles: true })); }
+        } else if (target.tagName === 'SELECT') {
+            let index = target.selectedIndex; let newIndex = Math.max(0, Math.min(target.options.length - 1, index + delta));
+            if (newIndex !== index) { target.selectedIndex = newIndex; target.dispatchEvent(new Event('change', { bubbles: true })); }
+        }
+    };
+
+    const processInput = () => {
+        try {
+            const parsedOriginalKLE = parseInput(elements.rawDataInput.value); const { keys: keyData } = computeKeysForVisualization(parsedOriginalKLE);
+            if (keyData.length !== keysData.length) { selectedVisualIndices = []; manualCoordOverrides = {}; encoderOverrides = {}; labelOverrides = {}; hideFloatingMenu(); }
+            keysData = keyData;
+            let maxRowIndex = -1; let maxColIndex = -1; const enableConversion = elements.enableLabelToCoordConversionCheckbox.checked;
+            keymapDataForOutput = JSON.parse(JSON.stringify(parsedOriginalKLE)); 
+            
+            keysData.forEach((key, visualIndex) => {
+                const targetRow = key.kleRowIndex; 
+                const targetCol = key.kleItemIndex;  // 保持 const，不再修改索引
+                
+                const encOverride = encoderOverrides[visualIndex]; 
+                const isEffectiveEncoder = encOverride ? encOverride.isEncoder : key.isEncoder;
+                const lblOverride = labelOverrides[visualIndex]; 
+                const isEffectiveLabel = lblOverride ? lblOverride.isLabel : key.isLabel;
+
+                let r, c;
+                const coordOverride = manualCoordOverrides[visualIndex];
+                if (coordOverride) { 
+                    r = coordOverride.row; c = coordOverride.col; 
+                } else { 
+                    [r, c] = key.matrixCoord.split(',').map(Number); 
+                }
+                if (typeof r === 'number' && typeof c === 'number') { 
+                    maxRowIndex = Math.max(maxRowIndex, r); 
+                    maxColIndex = Math.max(maxColIndex, c); 
+                }
+
+                if (isEffectiveEncoder) {
+                    const eIdx = encOverride ? encOverride.index : key.encoderIndex;
+                    keymapDataForOutput[targetRow][targetCol] = makeVialEncoderString(r, c, eIdx);
+                } else if (isEffectiveLabel) {
+                    const hidden = lblOverride ? lblOverride.hidden : key.isHiddenLabel;
+                    const v0 = lblOverride ? lblOverride.val0 : key.labelVals[0];
+                    const v1 = lblOverride ? lblOverride.val1 : key.labelVals[1];
+                    
+                    // 只负责生成正确的标签字符串，不处理 d:true
+                    keymapDataForOutput[targetRow][targetCol] = makeVialLabelString(r, c, hidden, v0, v1);
+
+                    // 【新逻辑】：标记这一行这一列需要在前方设置 d:true（仅当 hidden 为 true）
+                    if (hidden) {
+                        // 用一个临时属性标记，稍后统一处理
+                        if (!keymapDataForOutput[targetRow]._hiddenLabels) {
+                            keymapDataForOutput[targetRow]._hiddenLabels = [];
+                        }
+                        keymapDataForOutput[targetRow]._hiddenLabels.push(targetCol);
+                    }
+                } else {
+                    // 普通键：写入坐标（如果启用转换或手动覆盖）
+                    if (coordOverride || enableConversion) { 
+                        keymapDataForOutput[targetRow][targetCol] = `${r},${c}`; 
+                    } else {
+                        const rawLabel = keymapDataForOutput[targetRow][targetCol];
+                        const match = typeof rawLabel === 'string' ? rawLabel.match(/^(\d+),(\d+)$/) : null;
+                        if (match || coordOverride) { 
+                            keymapDataForOutput[targetRow][targetCol] = `${r},${c}`;
+                        }
+                    }
+                }
+            });
+
+            // 【新增】统一处理所有隐藏标签的 {"d": true} 注入（在所有键处理完成后）
+            keymapDataForOutput.forEach((row, rowIndex) => {
+                if (!row._hiddenLabels || row._hiddenLabels.length === 0) return;
+
+                // 按列索引从小到大排序，确保从左到右处理
+                const hiddenCols = row._hiddenLabels.sort((a, b) => a - b);
+
+                hiddenCols.forEach(col => {
+                    let insertPos = col;
+                    let targetObj = null;
+
+                    if (col > 0) {
+                        const prev = row[col - 1];
+                        if (typeof prev === 'object') {
+                            prev.d = true;
+                            targetObj = prev;
+                        }
+                    }
+
+                    // 如果前面没有对象，或前一个不是对象，则插入 {"d": true}
+                    if (!targetObj) {
+                        const newObj = { d: true };
+                        row.splice(insertPos, 0, newObj);
+                        // 插入后，所有后续隐藏标签的 col 都需要 +1
+                        for (let i = hiddenCols.indexOf(col) + 1; i < hiddenCols.length; i++) {
+                            hiddenCols[i] += 1;
+                        }
+                    }
+                });
+
+                // 清理临时标记
+                delete row._hiddenLabels;
+            });
+
+            // >>>>>> 数据清洗：移除a属性和空对象 <<<<<<
+            keymapDataForOutput = keymapDataForOutput.map(row => {
+                const cleanRow = [];
+                row.forEach(item => {
+                    if (typeof item === 'object') {
+                        if ('a' in item) delete item.a;
+                        // 只保留有内容的属性对象（d:true 也要保留！）
+                        if (Object.keys(item).length > 0) {
+                            cleanRow.push(item);
+                        }
+                    } else {
+                        cleanRow.push(item);
+                    }
+                });
+                return cleanRow;
+            });
+
+            const finalRows = maxRowIndex + 1; const finalCols = maxColIndex + 1;
+            elements.rowsInput.value = finalRows; elements.colsInput.value = finalCols;
+            renderKeys(keysData); updateFormattedKLEOutput(); updateMatrixSizeDisplay(finalRows, finalCols); clearError();
+            if (selectedVisualIndices.length > 0 && keysData.length > selectedVisualIndices[0]) selectKey(selectedVisualIndices, selectedVisualIndices[0]); else selectKey([], -1);
+        } catch (e) { showParsingError(e.message); elements.keyboard.innerHTML = ""; elements.rgbResult.value = ""; selectedVisualIndices = []; updateMatrixSizeDisplay(0, 0); selectKey([], -1); }
+    };
+
+    // Event Listeners for Configs (Same)
+    elements.isEncoderCheckbox.addEventListener('change', () => { if (selectedVisualIndices.length === 0) return; const isChecked = elements.isEncoderCheckbox.checked; selectedVisualIndices.forEach(idx => { const k = keysData[idx]; if (!encoderOverrides[idx]) encoderOverrides[idx] = { isEncoder: isChecked, index: k.isEncoder ? k.encoderIndex : 0 }; else encoderOverrides[idx].isEncoder = isChecked; if (isChecked) { if (!labelOverrides[idx]) labelOverrides[idx] = { isLabel: false, hidden: false, val0: 0, val1: 0 }; else labelOverrides[idx].isLabel = false; } }); processInput(); });
+    elements.isLabelCheckbox.addEventListener('change', () => { if (selectedVisualIndices.length === 0) return; const isChecked = elements.isLabelCheckbox.checked; selectedVisualIndices.forEach(idx => { const k = keysData[idx]; if (!labelOverrides[idx]) labelOverrides[idx] = { isLabel: isChecked, hidden: k.isHiddenLabel, val0: k.labelVals[0] || 0, val1: k.labelVals[1] || 0 }; else labelOverrides[idx].isLabel = isChecked; if (isChecked) { if (!encoderOverrides[idx]) encoderOverrides[idx] = { isEncoder: false, index: 0 }; else encoderOverrides[idx].isEncoder = false; } }); processInput(); });
+    const updateLabelParams = () => { 
+    if (selectedVisualIndices.length === 0 || !elements.isLabelCheckbox.checked) return; 
+    const hidden = elements.isHiddenLabelCheckbox.checked; 
+    
+    // 强制非负整数：如果输入负数或非数字，默认为 0
+    let v0 = parseInt(elements.labelVal0Input.value);
+    if (isNaN(v0) || v0 < 0) {
+        v0 = 0;
+        elements.labelVal0Input.value = 0; // 同步修正输入框显示
+    }
+    
+    let v1 = parseInt(elements.labelVal1Input.value);
+    if (isNaN(v1) || v1 < 0) {
+        v1 = 0;
+        elements.labelVal1Input.value = 0; // 同步修正输入框显示
+    }
+    
+    selectedVisualIndices.forEach(idx => { 
+        if (!labelOverrides[idx]) {
+            labelOverrides[idx] = { isLabel: true, hidden, val0: v0, val1: v1 };
+        } else {
+            labelOverrides[idx].isLabel = true;
+            labelOverrides[idx].hidden = hidden;
+            labelOverrides[idx].val0 = v0;
+            labelOverrides[idx].val1 = v1;
+        }
+    }); 
+    processInput(); 
+};
+    const updateEncoderParams = () => { if (selectedVisualIndices.length === 0 || !elements.isEncoderCheckbox.checked) return; const idxVal = parseInt(elements.encoderIndexInput.value) || 0; selectedVisualIndices.forEach(visualIndex => { if (!encoderOverrides[visualIndex]) encoderOverrides[visualIndex] = { isEncoder: true, index: idxVal }; else { encoderOverrides[visualIndex].isEncoder = true; encoderOverrides[visualIndex].index = idxVal; } }); elements.floatingEncoderIndex.value = idxVal; processInput(); };
+    elements.encoderIndexInput.addEventListener('input', updateEncoderParams); elements.isHiddenLabelCheckbox.addEventListener('change', updateLabelParams); elements.labelVal0Input.addEventListener('input', updateLabelParams); elements.labelVal1Input.addEventListener('input', updateLabelParams);
+    const updateKeyCoordOverride = (e) => { if (selectedVisualIndices.length === 0) return; if (!e || !e.target) return; const target = e.target; const valStr = target.value.trim(); if (valStr === "") return; const newVal = parseInt(valStr); if (isNaN(newVal) || newVal < 0) return; const isRowInput = target === elements.selectedKeyRowInput || target === elements.floatingKeyRow; const isColInput = target === elements.selectedKeyColInput || target === elements.floatingKeyCol; if (!isRowInput && !isColInput) return; selectedVisualIndices.forEach(visualIndex => { const key = keysData[visualIndex]; let currentR, currentC; if (manualCoordOverrides[visualIndex]) { currentR = manualCoordOverrides[visualIndex].row; currentC = manualCoordOverrides[visualIndex].col; } else { [currentR, currentC] = key.matrixCoord.split(',').map(Number); } if (isRowInput) currentR = newVal; if (isColInput) currentC = newVal; manualCoordOverrides[visualIndex] = { row: currentR, col: currentC }; }); if (isRowInput) { elements.selectedKeyRowInput.value = newVal; elements.floatingKeyRow.value = newVal; } else { elements.selectedKeyColInput.value = newVal; elements.floatingKeyCol.value = newVal; } processInput(); };
+
+    const formatHexId = (value) => { let hex = value.toUpperCase().replace(/[^0-9A-F]/g, ''); return `0x${hex.padStart(4, '0').substring(0, 4)}`; };
+    const createArrayInputList = (values, type, path, isContent) => { const container = document.createElement('div'); container.className = 'array-input-list'; if (!isContent) { if (type === 'range') { const row = document.createElement('div'); row.className = 'array-input-row'; const v0 = (values && values[0] !== undefined) ? values[0] : 0; const v1 = (values && values[1] !== undefined) ? values[1] : 255; row.innerHTML = `<input type="number" value="${v0}" placeholder="Min"><span style="color:var(--text-secondary)">-</span><input type="number" value="${v1}" placeholder="Max">`; row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => updateMenuData(path, [parseInt(row.querySelectorAll('input')[0].value)||0, parseInt(row.querySelectorAll('input')[1].value)||0]))); container.appendChild(row); return container; } else if (type === 'dropdown') { const list = Array.isArray(values) ? values : ["Option 1"]; const render = () => { container.innerHTML = ''; list.forEach((opt, idx) => { const r = document.createElement('div'); r.className='array-input-row'; r.innerHTML=`<input type="text" value="${opt}"><button class="remove-btn">-</button>`; r.querySelector('input').addEventListener('input',e=>{list[idx]=e.target.value;updateMenuData(path,list)}); r.querySelector('.remove-btn').addEventListener('click',()=>{list.splice(idx,1);updateMenuData(path,list);render()}); container.appendChild(r); }); const add=document.createElement('button'); add.className='add-btn'; add.textContent='+'; add.style.width='100%'; add.addEventListener('click',()=>{list.push("New");updateMenuData(path,list);render()}); container.appendChild(add); }; render(); return container; } container.textContent = "无配置项"; container.style.color = "var(--text-secondary)"; return container; } const list = Array.isArray(values) ? values : ["id", 0, 0]; const render = () => { container.innerHTML = ''; list.forEach((val, idx) => { const r = document.createElement('div'); r.className='array-input-row'; if(idx===0){r.innerHTML=`<input type="text" value="${val}" style="font-weight:600;">`;r.querySelector('input').addEventListener('input',e=>{list[idx]=e.target.value;updateMenuData(path,list)})}else{r.innerHTML=`<input type="number" value="${val}"><button class="remove-btn">-</button>`;r.querySelector('input').addEventListener('input',e=>{list[idx]=parseInt(e.target.value)||0;updateMenuData(path,list)});r.querySelector('.remove-btn').addEventListener('click',()=>{list.splice(idx,1);updateMenuData(path,list);render()})} container.appendChild(r); }); const add=document.createElement('button'); add.className='add-btn'; add.textContent='+ 参数'; add.style.width='auto'; add.style.marginLeft='auto'; add.addEventListener('click',()=>{list.push(0);updateMenuData(path,list);render()}); container.appendChild(add); }; render(); return container; };
+    const updateMenuData = (pathStr, newValue) => { const path = pathStr.split(','); let target = menusData; for(let i=0; i<path.length-1; i++) { const key = path[i].match(/^\d+$/) ? parseInt(path[i]) : path[i]; target = target[key]; } target[path[path.length-1]] = newValue; updateFormattedKLEOutput(); };
+    
+    // >>>>>>> Helper function for generating visual preview (Interactive & In-line) <<<<<<<
+    const getPreviewHTML = (type, options, label) => {
+        let contentHtml = '';
+        const safeLabel = label || 'Label';
+        
+        // Remove 'disabled' and 'pointer-events:none' to allow interaction
+        switch (type) {
+            case 'range':
+                const min = (options && options[0] !== undefined) ? options[0] : 0;
+                const max = (options && options[1] !== undefined) ? options[1] : 255;
+                contentHtml = `<div style="display:flex;align-items:center;gap:8px;width:100%"><span style="font-size:11px;color:var(--text-secondary)">${min}</span><input type="range" min="${min}" max="${max}" style="flex-grow:1;cursor:pointer;"><span style="font-size:11px;color:var(--text-secondary)">${max}</span></div>`;
+                break;
+            case 'dropdown':
+                const opts = Array.isArray(options) ? options : ["Option 1"];
+                contentHtml = `<select style="width:100%;cursor:pointer;background:var(--bg-card);">${opts.map(o => `<option>${o}</option>`).join('')}</select>`;
+                break;
+            case 'color':
+                contentHtml = `<div style="display:flex;align-items:center;gap:8px;"><input type="color" value="#ff0000" style="width:40px;height:24px;padding:0;border:none;cursor:pointer;"> <span style="font-size:12px;color:var(--text-secondary)">Color Picker</span></div>`;
+                break;
+            case 'button':
+                contentHtml = `<button style="width:100%;cursor:pointer;background:var(--primary);color:white;opacity:1;">${safeLabel}</button>`;
+                break;
+            // 在 getPreviewHTML 函数内部修改：
+			case 'toggle':
+    contentHtml = `
+        <div style="display:flex; align-items:center; gap:8px;">
+            <label class="switch-preview">
+                <input type="checkbox" checked>
+                <span class="slider-preview"></span>
+            </label>
+            <span style="font-size:12px; color:var(--text-secondary); white-space:nowrap;">${safeLabel}</span>
+        </div>`;
+    break;
+            case 'keycode':
+                contentHtml = `<div style="border:1px solid var(--border-color);border-radius:4px;padding:4px 10px;background:var(--key-bg);color:var(--key-text);text-align:center;box-shadow:var(--key-shadow);font-size:12px;min-width:40px;">KC_A</div>`;
+                break;
+            default:
+                contentHtml = `<span style="font-size:12px;color:var(--text-secondary);font-style:italic;">No preview</span>`;
+        }
+        return contentHtml;
+    };
+
+    const renderMenus = () => { 
+        const container = elements.menusContainer; 
+        container.innerHTML = ''; 
+        menusData.forEach((l1, i1) => { 
+            const l1Div = document.createElement('div'); 
+            l1Div.className = 'menu-level-1'; 
+            l1Div.innerHTML = `<div class="menu-header"><label>L1 标签:</label><input type="text" value="${l1.label||''}" data-path="${i1},label" class="simple-input"><button class="add-btn" data-add="${i1}">+</button><button class="remove-btn" data-del="${i1}">-</button></div>`; 
+            const l1Content = document.createElement('div'); 
+            l1Content.className = 'menu-content'; 
+            if (l1.content) l1.content.forEach((l2, i2) => { 
+                const l2Div = document.createElement('div'); 
+                l2Div.className = 'menu-level-2'; 
+                l2Div.innerHTML = `<div class="menu-header"><label>L2 标签:</label><input type="text" value="${l2.label||''}" data-path="${i1},content,${i2},label" class="simple-input"><button class="add-btn" data-add="${i1},${i2}">+</button><button class="remove-btn" data-del="${i1},${i2}">-</button></div>`; 
+                const l2Content = document.createElement('div'); 
+                l2Content.className = 'menu-content'; 
+                if (l2.content) l2.content.forEach((l3, i3) => { 
+                    const l3Div = document.createElement('div'); 
+                    l3Div.className = 'menu-level-3'; 
+                    // Generate Preview HTML based on type
+                    const previewHtml = getPreviewHTML(l3.type, l3.options, l3.label);
+                    
+                    // Modified Header: Includes Preview Inline
+                    l3Div.innerHTML = `<div class="menu-header">
+                        <label style="white-space:nowrap;margin-right:8px;">L3 控件:</label>
+                        <div class="header-preview-container">${previewHtml}</div>
+                        <button class="remove-btn" style="margin-left:8px;" data-del="${i1},${i2},${i3}">-</button>
+                    </div>
+                    <div class="menu-control-grid">
+                        <div><label>Label</label><input type="text" value="${l3.label||''}" data-path="${i1},content,${i2},content,${i3},label" class="simple-input"></div>
+                        <div><label>Type</label><select class="type-select" data-path="${i1},content,${i2},content,${i3},type"><option value="range" ${l3.type==='range'?'selected':''}>Range</option><option value="dropdown" ${l3.type==='dropdown'?'selected':''}>Dropdown</option><option value="color" ${l3.type==='color'?'selected':''}>Color</option><option value="button" ${l3.type==='button'?'selected':''}>Button</option><option value="toggle" ${l3.type==='toggle'?'selected':''}>Toggle</option><option value="keycode" ${l3.type==='keycode'?'selected':''}>Keycode</option></select></div>
+                        <div class="content-container" style="grid-column:span 2;"><label>Content</label></div>
+                        <div class="options-container" style="grid-column:span 2;"><label>Options</label></div>
+                        <div><label>ShowIf</label><input type="text" value="${l3.showIf||''}" data-path="${i1},content,${i2},content,${i3},showIf" class="simple-input"></div>
+                    </div>`; 
+                    l3Div.querySelector('.content-container').appendChild(createArrayInputList(l3.content, l3.type, `${i1},content,${i2},content,${i3},content`, true)); 
+                    l3Div.querySelector('.options-container').appendChild(createArrayInputList(l3.options, l3.type, `${i1},content,${i2},content,${i3},options`, false)); 
+                    l2Content.appendChild(l3Div); 
+                }); 
+                l2Div.appendChild(l2Content); 
+                l1Content.appendChild(l2Div); 
+            }); 
+            l1Div.appendChild(l1Content); 
+            container.appendChild(l1Div); 
+        }); 
+        container.querySelectorAll('.simple-input').forEach(el => el.addEventListener('input', (e) => updateMenuData(e.target.dataset.path, e.target.value))); 
+        container.querySelectorAll('.type-select').forEach(el => el.addEventListener('change', (e) => { updateMenuData(e.target.dataset.path, e.target.value); renderMenus(); })); 
+        container.querySelectorAll('.add-btn').forEach(btn => { if(!btn.dataset.add) return; btn.addEventListener('click', (e) => { const p=e.target.dataset.add.split(',').map(Number); if(p.length===1){if(!menusData[p[0]].content)menusData[p[0]].content=[];menusData[p[0]].content.push({label:"Group",content:[]})}else{if(!menusData[p[0]].content[p[1]].content)menusData[p[0]].content[p[1]].content=[];menusData[p[0]].content[p[1]].content.push({label:"Item",type:"range",content:["id",0,0],options:[0,255]})} renderMenus(); updateFormattedKLEOutput(); })}); 
+        container.querySelectorAll('.remove-btn').forEach(btn => { if(!btn.dataset.del) return; btn.addEventListener('click', (e) => { const p=e.target.dataset.del.split(',').map(Number); if(p.length===1)menusData.splice(p[0],1); else if(p.length===2)menusData[p[0]].content.splice(p[1],1); else menusData[p[0]].content[p[1]].content.splice(p[2],1); renderMenus(); updateFormattedKLEOutput(); })}); 
+    };
+    
+    // >>>>>>> UPDATE: 优化了 JSON 输出格式逻辑 + Unicode转换 + 修复双斜杠问题 <<<<<<<
+    const updateFormattedKLEOutput = () => { 
+        const { keyboardNameInput, vendorIdInput, productIdInput, rowsInput, colsInput, lightingSelect, enableCustomKeycodesCheckbox, enableLabelsCheckbox, enableMenusCheckbox, kcQmkLighting, kcWtLighting, forceUnicodeCheckbox } = elements; 
+        
+        // Helper: Convert string to Unicode escape if checkbox is checked
+        // NOTE: We rely on string replacement at the END of generation to fix the double backslash issue.
+        const toUnicode = (str) => {
+            if (!str) return str;
+            if (!forceUnicodeCheckbox.checked) return str;
+            return str.split('').map(char => {
+                const code = char.charCodeAt(0);
+                // ASCII is 0-127, anything above gets escaped
+                return code > 127 ? '\\u' + code.toString(16).padStart(4, '0') : char;
+            }).join('');
+        };
+
+        const outputParts = []; 
+        if (keyboardNameInput.value) outputParts.push(`  "name": "${toUnicode(keyboardNameInput.value)}"`); 
+        if (vendorIdInput.value) outputParts.push(`  "vendorId": "${formatHexId(vendorIdInput.value)}"`); 
+        if (productIdInput.value) outputParts.push(`  "productId": "${formatHexId(productIdInput.value)}"`); 
+        
+        const keycodes = []; 
+        if (kcQmkLighting.checked) keycodes.push("qmk_lighting"); 
+        if (kcWtLighting.checked) keycodes.push("wt_lighting"); 
+        if (keycodes.length > 0) outputParts.push(`  "keycodes": [\n    ${keycodes.map(k => `"${k}"`).join(', ')}\n  ]`); 
+        
+        if (enableCustomKeycodesCheckbox.checked) { 
+            const filtered = customKeycodesData.filter(item => item.name.trim() || item.title.trim() || item.shortName.trim()); 
+            if (filtered.length) {
+                // Apply unicode conversion to custom keycode fields
+                outputParts.push(`  "customKeycodes": [\n      ${filtered.map(i => `{ "name": "${toUnicode(convertDisplayNewlinesToStored(i.name))}", "title": "${toUnicode(i.title)}", "shortName": "${toUnicode(convertDisplayNewlinesToStored(i.shortName))}" }`).join(',\n      ')}\n  ]`); 
+            }
+        } 
+        
+        const cleanMenus = (data) => data.map(l1 => ({ 
+            label: toUnicode(l1.label), // Convert L1 Label
+            content: l1.content?.map(l2 => ({ 
+                label: toUnicode(l2.label), // Convert L2 Label
+                content: l2.content?.map(l3 => { 
+                    const o={label: toUnicode(l3.label), type:l3.type, content:l3.content}; // Convert L3 Label
+                    if(l3.type==='range'||l3.type==='dropdown') {
+                        // For dropdown options, we might want to convert them if they are strings
+                        o.options = Array.isArray(l3.options) ? l3.options.map(opt => typeof opt === 'string' ? toUnicode(opt) : opt) : l3.options;
+                    }
+                    if(l3.showIf)o.showIf=l3.showIf; 
+                    return o; 
+                }) 
+            })) 
+        })); 
+        
+        // Compact Menus Generation Logic
+        if (enableMenusCheckbox.checked && menusData.length) {
+            const cleanData = cleanMenus(menusData);
+            // 使用2空格缩进，更紧凑
+            let menusJson = JSON.stringify(cleanData, null, 2);
+            // 正则表达式：查找只包含基本类型（非对象/数组）的数组，将其压缩为一行
+            // 匹配 [ ... ]，且内部不包含 { 或 [
+            menusJson = menusJson.replace(/\[\s+([^\[\]\{\}]*?)\s+\]/g, (match, content) => {
+                const collapsed = content.replace(/\s+/g, ' ').replace(/,\s/g, ', ').trim();
+                return `[ ${collapsed} ]`;
+            });
+            outputParts.push(`  "menus": ${menusJson.replace(/\n/g, '\n  ')}`); 
+        }
+
+        if (rowsInput.value && colsInput.value) outputParts.push(`  "matrix": { "rows": ${rowsInput.value}, "cols": ${colsInput.value} }`); 
+        if (lightingSelect.value !== "none") outputParts.push(`  "lighting": "${lightingSelect.value}"`); 
+        
+        const layoutsContent = []; 
+        if (enableLabelsCheckbox.checked) { 
+            const fl = labelsData.filter(l => l[0].trim()).map(l => { 
+                // Also apply unicode conversion to Labels
+                const m = toUnicode(l[0]); 
+                const s = l.slice(1).filter(x=>x.trim()).map(x => toUnicode(x)); 
+                return s.length?`[ ${JSON.stringify(m)}, ${s.map(x=>JSON.stringify(x)).join(', ')} ]`:JSON.stringify(m); 
+            }); 
+            if (fl.length) layoutsContent.push(`    "labels": [\n      ${fl.join(',\n      ')}\n    ]`); 
+        } 
+        
+        const keymapContent = keymapDataForOutput.map(row => JSON.stringify(row)).join(',\n          '); 
+        outputParts.push(`  "layouts": {\n${layoutsContent.length?layoutsContent[0]+',\n':''}    "keymap": [\n          ${keymapContent}\n    ]\n  }`); 
+        
+        // Final String Assembly
+        let finalJson = `{\n${outputParts.join(',\n')}\n}`;
+        
+        // >>>>> CRITICAL FIX: Replace double backslash escapes with single backslash <<<<<
+        // JSON.stringify will escape backslashes, turning "\u1234" into "\\u1234".
+        // We need to revert this specifically for the unicode escapes we generated.
+        if (forceUnicodeCheckbox.checked) {
+             finalJson = finalJson.replace(/\\\\u([0-9a-fA-F]{4})/g, '\\u$1');
+        }
+
+        elements.rgbResult.value = finalJson; 
+    };
+
+    // >>>> 自定义键码渲染 (含拖拽) <<<<
+    const renderCustomKeycodes = () => {
+        elements.customKeycodesContainer.innerHTML = '';
+        const list = document.createElement('div'); list.className = 'keycode-list';
+        customKeycodesData.forEach((item, index) => {
+            const k = document.createElement('div'); k.className = 'keycode-item'; k.draggable = true;
+            k.textContent = convertStoredNewlinesToDisplay(item.name) || `Key ${index+1}`;
+            k.addEventListener('click', () => openKeycodeEditor(index));
+            
+            // Drag Start
+            k.addEventListener('dragstart', e => { e.dataTransfer.setData("text/plain", index); e.dataTransfer.setData("type", "custom-keycode"); k.classList.add('dragging'); });
+            k.addEventListener('dragend', () => { k.classList.remove('dragging'); document.querySelectorAll('.keycode-item').forEach(el => el.classList.remove('drag-over')); });
+            
+            // Drag Over (Allow Drop)
+            k.addEventListener('dragover', e => { 
+                if(e.dataTransfer.getData("type") !== "custom-keycode") e.preventDefault(); 
+                k.classList.add('drag-over'); 
+            });
+            k.addEventListener('dragleave', () => k.classList.remove('drag-over'));
+            
+            // Drop
+            k.addEventListener('drop', e => {
+                e.preventDefault(); 
+                k.classList.remove('drag-over');
+                const fromIdx = parseInt(e.dataTransfer.getData("text/plain"));
+                if (!isNaN(fromIdx) && fromIdx !== index) {
+                    // Reorder Logic
+                    const movedItem = customKeycodesData.splice(fromIdx, 1)[0];
+                    customKeycodesData.splice(index, 0, movedItem);
+                    renderCustomKeycodes(); 
+                    updateFormattedKLEOutput(); 
+                }
+            });
+            
+            list.appendChild(k);
+        });
+        elements.customKeycodesContainer.appendChild(list);
+        elements.customKeycodesContainer.style.display = elements.enableCustomKeycodesCheckbox.checked ? 'block' : 'none';
+        elements.addKeycodeBtn.style.display = elements.enableCustomKeycodesCheckbox.checked ? 'inline-block' : 'none';
+    };
+
+    const renderLabels = () => { elements.labelsContainer.innerHTML = ''; labelsData.forEach((item, index) => { const g = document.createElement('div'); g.className = 'label-group'; g.innerHTML = `<input class="main-label-input" value="${item[0]}"><div class="sub-label-inputs">${item.slice(1).map((s,i)=>`<div class="sub-label-item"><input class="sub-label-input" value="${s}" data-i="${i}"><button class="remove-sub-label-btn">-</button></div>`).join('')}<button class="add-sub-label-btn">+</button></div><button class="remove-btn">-</button>`; g.querySelector('.main-label-input').addEventListener('input',e=>{labelsData[index][0]=e.target.value;updateFormattedKLEOutput()}); g.querySelectorAll('.sub-label-input').forEach(inp=>inp.addEventListener('input',e=>{labelsData[index][parseInt(e.target.dataset.i)+1]=e.target.value;updateFormattedKLEOutput()})); g.querySelectorAll('.remove-sub-label-btn').forEach((b,i)=>b.addEventListener('click',()=>{labelsData[index].splice(i+1,1);renderLabels();updateFormattedKLEOutput()})); g.querySelector('.add-sub-label-btn').addEventListener('click',()=>{labelsData[index].push("");renderLabels();updateFormattedKLEOutput()}); g.querySelector('.remove-btn').addEventListener('click',()=>{labelsData.splice(index,1);renderLabels();updateFormattedKLEOutput()}); elements.labelsContainer.appendChild(g); }); elements.labelsContainer.style.display = elements.enableLabelsCheckbox.checked ? 'block' : 'none'; elements.addLabelBtn.style.display = elements.enableLabelsCheckbox.checked ? 'inline-block' : 'none'; };
+
+    const openKeycodeEditor = (i) => { currentEditingKeycodeIndex = i; elements.modalKeyName.value = convertStoredNewlinesToDisplay(customKeycodesData[i].name); elements.modalKeyTitle.value = customKeycodesData[i].title; elements.modalKeyShortName.value = convertStoredNewlinesToDisplay(customKeycodesData[i].shortName); elements.keycodeEditorModal.style.display = 'flex'; };
+    const closeKeycodeEditor = () => { elements.keycodeEditorModal.style.display = 'none'; currentEditingKeycodeIndex = -1; };
+    elements.modalSaveBtn.addEventListener('click', () => { if(currentEditingKeycodeIndex!==-1){ const d=customKeycodesData[currentEditingKeycodeIndex]; d.name=elements.modalKeyName.value; d.title=elements.modalKeyTitle.value; d.shortName=elements.modalKeyShortName.value; renderCustomKeycodes(); updateFormattedKLEOutput(); closeKeycodeEditor(); } });
+    elements.modalDeleteBtn.addEventListener('click', () => { if(currentEditingKeycodeIndex!==-1){ customKeycodesData.splice(currentEditingKeycodeIndex, 1); renderCustomKeycodes(); updateFormattedKLEOutput(); closeKeycodeEditor(); } });
+    elements.modalCloseX.addEventListener('click', closeKeycodeEditor);
+    elements.addKeycodeBtn.addEventListener('click', () => { customKeycodesData.push({name:"",title:"",shortName:""}); renderCustomKeycodes(); updateFormattedKLEOutput(); openKeycodeEditor(customKeycodesData.length-1); });
+    elements.addLabelBtn.addEventListener('click', () => { labelsData.push([""]); renderLabels(); updateFormattedKLEOutput(); });
+    elements.addMenuBtn.addEventListener('click', () => { menusData.push({label:"New Menu",content:[{label:"Group",content:[{label:"Item",type:"range",content:["id",0,0],options:[0,255]}]}]}); renderMenus(); updateFormattedKLEOutput(); });
+    elements.resetBtn.addEventListener('click', () => { elements.rawDataInput.value = INITIAL_RAW_KLE_DATA; resetAll(); });
+
+    const resetAll = () => {
+		elements.rawDataInput.value = INITIAL_RAW_KLE_DATA;
+		elements.keyboardNameInput.value = DEFAULT_KEYBOARD_NAME;
+		elements.vendorIdInput.value = DEFAULT_VENDOR_ID;
+		elements.productIdInput.value = DEFAULT_PRODUCT_ID;
+        elements.lightingSelect.value = DEFAULT_LIGHTING; 	
+        elements.enableCustomKeycodesCheckbox.checked = false;
+        elements.enableLabelsCheckbox.checked = false;
+        elements.enableMenusCheckbox.checked = false;
+        elements.forceUnicodeCheckbox.checked = false; // Reset Unicode toggle
+        elements.menusContainer.style.display = "none";
+        customKeycodesData = JSON.parse(JSON.stringify(initialKeycodesRaw));
+        labelsData = JSON.parse(JSON.stringify(INITIAL_LABELS));
+        menusData = JSON.parse(JSON.stringify(INITIAL_MENUS));
+        selectedVisualIndices = [];
+        manualCoordOverrides = {};
+        encoderOverrides = {};
+        labelOverrides = {};
+        hideFloatingMenu();
+        renderCustomKeycodes();
+        renderLabels();
+        renderMenus();
+        processInput(); 
+    };
+
+    elements.floatingEncoderCheckbox.addEventListener('change', (e) => { elements.isEncoderCheckbox.checked = e.target.checked; elements.isEncoderCheckbox.dispatchEvent(new Event('change')); });
+    elements.floatingLabelCheckbox.addEventListener('change', (e) => { elements.isLabelCheckbox.checked = e.target.checked; elements.isLabelCheckbox.dispatchEvent(new Event('change')); });
+    elements.floatingEncoderIndex.addEventListener('input', (e) => { elements.encoderIndexInput.value = e.target.value; elements.encoderIndexInput.dispatchEvent(new Event('input')); });
+    elements.floatingKeyRow.addEventListener('input', updateKeyCoordOverride); elements.floatingKeyCol.addEventListener('input', updateKeyCoordOverride);
+    document.addEventListener('click', (e) => { if (!elements.floatingMenu.contains(e.target) && !e.target.classList.contains('key')) hideFloatingMenu(); if (e.target === elements.keycodeEditorModal) closeKeycodeEditor(); });
+    document.addEventListener('keydown', (e) => { if (e.key === "Escape") { hideFloatingMenu(); closeKeycodeEditor(); } });
+    [elements.rawDataInput, elements.enableLabelToCoordConversionCheckbox].forEach(el => el.addEventListener('input', processInput));
+    [elements.enableLabelToCoordConversionCheckbox].forEach(el => el.addEventListener('change', processInput));
+    [elements.rowsInput, elements.colsInput, elements.lightingSelect, elements.keyboardNameInput, elements.vendorIdInput, elements.productIdInput, elements.kcQmkLighting, elements.kcWtLighting].forEach(el => el.addEventListener('input', updateFormattedKLEOutput));
+    [elements.lightingSelect].forEach(el => el.addEventListener('change', updateFormattedKLEOutput));
+    elements.enableCustomKeycodesCheckbox.addEventListener('change', () => { renderCustomKeycodes(); updateFormattedKLEOutput(); });
+    elements.enableLabelsCheckbox.addEventListener('change', () => { renderLabels(); updateFormattedKLEOutput(); });
+    elements.enableMenusCheckbox.addEventListener('change', () => { elements.menusContainer.style.display = elements.enableMenusCheckbox.checked ? 'grid' : 'none'; elements.addMenuBtn.style.display = elements.enableMenusCheckbox.checked ? 'inline-block' : 'none'; renderMenus(); updateFormattedKLEOutput(); });
+    elements.selectedKeyRowInput.addEventListener('input', updateKeyCoordOverride); elements.selectedKeyColInput.addEventListener('input', updateKeyCoordOverride);
+    elements.keyboard.addEventListener('mousedown', handleMouseDown); elements.keyboard.addEventListener('mousemove', handleMouseMove); elements.keyboard.addEventListener('mouseup', handleMouseUp);
+    elements.copyCodeBtn.addEventListener('click', async () => { try { await navigator.clipboard.writeText(elements.rgbResult.value); elements.copyCodeBtn.textContent = '已复制'; setTimeout(() => elements.copyCodeBtn.textContent = '复制', 2000); } catch(e){} });
+    elements.downloadBtn.addEventListener('click', () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([elements.rgbResult.value], {type: "application/json"})); a.download = (elements.keyboardNameInput.value.trim()||'vial') + '.json'; a.click(); });
+    [elements.rowsInput, elements.colsInput, elements.selectedKeyRowInput, elements.selectedKeyColInput, elements.encoderIndexInput, elements.lightingSelect, elements.floatingEncoderIndex, elements.floatingKeyRow, elements.floatingKeyCol, elements.labelVal0Input, elements.labelVal1Input].filter(el=>el).forEach(input => input.addEventListener('wheel', handleWheelChange, { passive: false }));
+    document.addEventListener('dragstart', (e) => { if (!['INPUT','TEXTAREA'].includes(e.target.tagName) && !e.target.classList.contains('key') && !e.target.classList.contains('keycode-item') && !e.target.closest('.label-group') && !e.target.closest('.menu-level-1')) e.preventDefault(); });
+    
+    // Add Listener for Unicode Checkbox
+    elements.forceUnicodeCheckbox.addEventListener('change', updateFormattedKLEOutput);
+
+    resetAll();
+})();
+</script>
+<script>
+document.addEventListener('contextmenu',function(e){e.preventDefault();});
+document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; };
+</script>
+</body>
+</html>

@@ -484,8 +484,8 @@
                         <div class="flex items-center gap-3 mb-3">
                             <label class="text-xs text-slate-500 font-bold whitespace-nowrap">槽位数量</label>
                             <div class="flex-1 flex items-center gap-2">
-                                <input type="range" id="sliderTotalSlots" min="1" max="32" value="5" class="flex-1 progress-slider h-1 rounded-full" style="--slider-color: #6366f1;">
-                                <input type="number" id="totalSlots" value="5" min="1" max="32" class="w-8 text-xs border-none text-center bg-slate-100 rounded text-indigo-600 font-bold p-0">
+                                <input type="range" id="sliderTotalSlots" min="1" max="128" value="4" class="flex-1 progress-slider h-1 rounded-full" style="--slider-color: #6366f1;">
+                                <input type="number" id="totalSlots" value="4" min="1" max="128" class="w-8 text-xs border-none text-center bg-slate-100 rounded text-indigo-600 font-bold p-0">
                             </div>
                         </div>
                         
@@ -639,7 +639,7 @@
             isSyncPaused: false,
             width: 128, height: 32,
             leftPanelMode: 'image', 
-            totalSlots: 5, selectedSlot: 0,
+            totalSlots: 4, selectedSlot: 0, // Default to 4
             multiLayer: false, 
             images: [], selectedId: null, 
             textItems: [], activeTextId: null, 
@@ -771,9 +771,33 @@
             }
         });
         
+        // --- 处理输入报告 (获取层数) ---
+        function handleInputReport(e) {
+            const data = new Uint8Array(e.data.buffer);
+            // 0x11是查询层数的指令返回
+            if (data[0] === 0x11) {
+                const layers = data[1];
+                if (layers > 0 && layers <= 128) {
+                    // 更新 State
+                    state.totalSlots = layers;
+                    
+                    // 更新 UI
+                    els.totalSlots.value = layers;
+                    els.sliderTotalSlots.value = layers;
+                    
+                    // 刷新界面
+                    updateSlotButtons();
+                    updateProgressSliders(); // 关键：确保进度条颜色跟随变化
+                    
+                    console.log(`从设备获取层数: ${layers}`);
+                    els.log.innerText = `设备层数: ${layers}`;
+                }
+            }
+        }
+
         function updateSlotButtons() {
             let count = parseInt(els.totalSlots.value) || 1;
-            count = Math.max(1, Math.min(32, count));
+            count = Math.max(1, Math.min(128, count));
             els.totalSlots.value = count;
             els.sliderTotalSlots.value = count;
             state.totalSlots = count;
@@ -1757,10 +1781,29 @@
                     // 打开新设备
                     await state.device.open(); 
                     
+                    // 监听设备输入回报 (用于获取层数)
+                    state.device.addEventListener('inputreport', handleInputReport);
+
                     // 重置发送状态
                     state.lastSentBuffer = null; 
                     state.isSending = false;
                     
+                    // 连接后先默认设置为4层（如果获取失败则保持这个值）
+                    state.totalSlots = 4;
+                    els.totalSlots.value = 4;
+                    els.sliderTotalSlots.value = 4;
+                    updateSlotButtons();
+                    updateProgressSliders();
+
+                    // 发送查询层数指令 0x11
+                    const layerCmd = new Uint8Array(state.packetSize);
+                    layerCmd[0] = 0x11;
+                    try {
+                        await state.device.sendReport(0, layerCmd);
+                    } catch(e) {
+                        console.error("发送获取层数指令失败", e);
+                    }
+
                     // 更新 UI 为连接成功
                     els.btnConnect.innerHTML = `
                         <div id="statusDot" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
@@ -1812,5 +1855,4 @@
         };
     </script>
 </body>
-
 </html>

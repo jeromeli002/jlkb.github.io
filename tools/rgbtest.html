@@ -3,29 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QMK 灯光控制台</title>
+    <title>灯光控制台</title>
     <style>
         /* 浅色系主题变量 */
         :root {
-            --bg-color: #f4f4f4; /* 浅色背景 */
-            --panel-bg: #ffffff; /* 白色面板 */
-            --text-color: #333333; /* 深色文本 */
-            --accent-color: #1e88e5; /* 基础蓝色 (用于按钮和强调) */
-            --highlight-color: #ffc107; /* 强调黄色 */
-            --border-color: #ccc; /* 浅边框 */
+            --bg-color: #f4f4f4;
+            --panel-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #1e88e5;
+            --highlight-color: #ffc107;
+            --border-color: #ccc;
 
-            /* 进度条颜色主题 - 保持不变 */
-            --color-h: #d9534f; /* 红色系 */
-            --color-s: #5cb85c; /* 绿色系 */
-            --color-v: #f0ad4e; /* 黄色系 */
-            --color-spd: #1e88e5; /* 蓝色系 */
+            --color-h: #d9534f;
+            --color-s: #5cb85c;
+            --color-v: #f0ad4e;
+            --color-spd: #1e88e5;
             
-            /* 新增 RGB 进度条颜色 */
-            --color-r: #d9534f; /* Red */
-            --color-g: #5cb85c; /* Green */
-            --color-b: #1e88e5; /* Blue */
+            --color-r: #d9534f;
+            --color-g: #5cb85c;
+            --color-b: #1e88e5;
             
-            /* 新增：用于 Hue 滑块手柄的动态颜色变量 */
             --progress-color-hue: #ff0000; 
         }
 
@@ -44,7 +41,6 @@
 
         h1, h2, h3 { margin: 0 0 10px 0; }
 
-        /* 通用容器 */
         .container {
             background-color: var(--panel-bg);
             border-radius: 12px;
@@ -55,7 +51,6 @@
             box-sizing: border-box;
         }
 
-        /* 顶部连接区 */
         .header-controls {
             display: flex;
             justify-content: space-between;
@@ -81,54 +76,105 @@
         .status { font-size: 0.9em; color: #888; margin-left: 10px; }
         .status.connected { color: #5cb85c; font-weight: bold; }
 
-        /* 输入框通用样式 - 调整宽度以适应三位数字 */
-        input[type="number"], input[type="range"] {
-            -webkit-appearance: none;
-            background: transparent;
-        }
-        input[type="number"] {
-            background: #f0f0f0; /* 浅色输入框背景 */
+        /* 输入框样式调整：改为 text 类型以支持 Hex 显示 */
+        input[type="text"], input[type="number"] {
+            background: #f0f0f0;
             border: 1px solid var(--border-color);
             color: var(--text-color);
             padding: 5px;
             border-radius: 4px;
-            width: 45px; /* 调整宽度，适应三位数字 (0-255) */
+            width: 50px;
             text-align: center;
             transition: border-color 0.2s;
             flex-shrink: 0;
+            font-family: monospace; /* 等宽字体方便看 Hex */
         }
-        input[type="number"]:focus {
+        input[type="text"]:focus, input[type="number"]:focus {
             border-color: var(--accent-color);
             outline: none;
         }
         
         /* LED 网格区域 */
-        .led-section { margin-bottom: 20px; position: relative; }
-        .led-controls { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .led-section { margin-bottom: 10px; position: relative; }
+        
+        /* 第一行：灯珠总数与进制切换 */
+        .led-controls-row1 { 
+            margin-bottom: 10px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            flex-wrap: wrap; 
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        /* 第二行：模式选择 */
+        .mode-controls-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .mode-btn {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+        .mode-btn:hover { background-color: #d0d0d0; }
+        .mode-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* 指示灯参数区域 (仅在非全灯模式显示) */
+        .indicator-params {
+            display: none; /* 默认隐藏 */
+            align-items: center;
+            gap: 10px;
+            margin-left: 10px;
+            padding-left: 10px;
+            border-left: 2px solid #ddd;
+        }
+        .indicator-params.visible { display: flex; }
+
+        /* 全灯模式下的操作按钮 */
+        .all-led-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
         
         .led-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
             gap: 6px;
             padding: 10px;
-            background: #e8e8e8; /* 浅色网格背景 */
+            background: #e8e8e8;
             border-radius: 8px;
             max-height: 280px;
             overflow-y: auto;
             border: 1px solid #ccc;
             position: relative;
         }
+        .led-grid.hidden { display: none; }
 
         .led-item {
             width: 35px;
             height: 35px;
-            background-color: #ddd; /* 浅色默认 LED */
+            background-color: #ddd;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 10px;
-            color: #666; /* 深色数字 */
+            color: #666;
             cursor: pointer;
             transition: all 0.1s;
             border: 2px solid transparent;
@@ -137,7 +183,7 @@
         /* 选中框样式 */
         .selection-marquee {
             position: fixed;
-            background: rgba(30, 136, 229, 0.3); /* 浅色模式下的蓝色透明框 */
+            background: rgba(30, 136, 229, 0.3);
             border: 1px dashed #1e88e5; 
             display: none;
             pointer-events: none;
@@ -145,37 +191,30 @@
             border-radius: 4px;
         }
 
-        /* 移除 .active 的固定 color: #fff; 让 JS 控制数字颜色 */
         .led-item.active {
             box-shadow: 0 0 10px var(--highlight-color), 0 0 4px rgba(0,0,0,0.2);
             font-weight: bold;
-            border-color: var(--text-color); /* 深色边框 */
+            border-color: var(--text-color);
         }
         
-        /* 框选时的预览样式 */
         .led-item.preview-select {
             filter: brightness(1.2);
             transform: scale(1.1);
         }
 
-        /* 效果配置区 - Flex 布局调整 */
+        /* 效果配置区 */
         .effect-config {
             display: flex;
             gap: 30px;
             flex-wrap: wrap;
             align-items: flex-start; 
             padding: 15px;
-            background: #f0f0f0; /* 浅色配置背景 */
+            background: #f0f0f0;
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
         
-        /* 颜色色轮部分 (左侧固定) */
-        .color-wheel-section {
-            flex-shrink: 0;
-        }
-
-        /* 右侧控制区 (滑块、预览、操作) */
+        .color-wheel-section { flex-shrink: 0; }
         .control-and-preview-area {
             display: flex;
             flex-direction: column;
@@ -184,15 +223,13 @@
             min-width: 300px;
         }
         
-        /* 色轮 Canvas */
         #colorWheelCanvas {
             border-radius: 50%;
-            background-color: #ffffff; /* 白色背景 */
+            background-color: #ffffff;
             cursor: crosshair;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        /* 滑块组容器 */
         .slider-group {
             display: flex;
             flex-direction: column;
@@ -200,7 +237,6 @@
             width: 100%;
         }
         
-        /* HSV/Speed 的行（Label/Range/Input 水平排列）*/
         .slider-row {
             display: flex;
             align-items: center;
@@ -208,14 +244,8 @@
             width: 100%;
         }
         
-        /* HSV/Speed 的 Label 宽度 */
-        .slider-row label { 
-            width: 50px;
-            font-size: 0.9em; 
-            flex-shrink: 0;
-        }
+        .slider-row label { width: 50px; font-size: 0.9em; flex-shrink: 0; }
         
-        /* --- 修改：RGB 单行布局 - 父容器保持不变 --- */
         .rgb-controls-row {
             display: flex;
             justify-content: space-between;
@@ -227,102 +257,72 @@
 
         .rgb-item {
             display: flex;
-            flex-direction: column; /* R/G/B 内部元素垂直堆叠 */
-            align-items: center; /* 居中对齐 */
-            flex-grow: 1; /* 平均分配空间 */
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
             flex-basis: 0;
-            gap: 5px; /* 内部元素间距 */
+            gap: 5px;
             min-width: 80px; 
             text-align: center;
         }
 
-        .rgb-item label { 
-            width: 100%; /* 让 label 居中显示 */
-            font-weight: 600;
-            margin-bottom: 2px;
-            font-size: 0.9em;
-        }
+        .rgb-item label { width: 100%; font-weight: 600; margin-bottom: 2px; font-size: 0.9em; }
         
-        /* 新增：范围滑块和数字输入框的水平容器 */
         .range-number-row {
             display: flex;
             align-items: center;
-            gap: 8px; /* 滑块和数字框之间的间距 */
-            width: 100%; /* 占据父容器宽度 */
-        }
-        
-        /* 确保 Range Input 在水平布局中占据剩余宽度 */
-        .range-number-row input[type="range"] {
+            gap: 8px;
             width: 100%;
         }
-        /* --- 结束：RGB 单行布局 CSS 调整 --- */
+        .range-number-row input[type="range"] { width: 100%; }
 
-
-        /* --- Range Input 进度条效果 --- */
         input[type="range"] { 
             flex-grow: 1;
             height: 8px; 
             border-radius: 4px; 
-            background: #ccc; /* 浅色轨道 */
+            background: #ccc;
             cursor: grab; 
-            --track-color: #ccc; /* 浅色轨道 */
+            --track-color: #ccc;
             --progress-color: var(--accent-color);
             --value: 0;
-            
-            /* 通用滑块的进度条 (用于 S, V, Spd, R, G, B) */
             background: linear-gradient(to right, 
                 var(--progress-color) 0%, 
                 var(--progress-color) var(--value), 
                 var(--track-color) var(--value), 
                 var(--track-color) 100%
             );
-            /* 移除过渡效果，让进度条实时响应 */
         }
         
-        /* Range Input 颜色主题定义 */
-        /* H 滑块轨道改为全色谱 */
         #hueRange { 
-            /* Force override of the generic progress bar gradient */
             background: linear-gradient(to right, 
                 #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, 
                 #0000ff 67%, #ff00ff 83%, #ff0000 100%
             ) !important;
-            border: 1px solid var(--border-color); /* Add border for definition */
+            border: 1px solid var(--border-color);
         }
         #satRange { --progress-color: var(--color-s); }
         #valRange { --progress-color: var(--color-v); }
         #spdRange { --progress-color: var(--color-spd); }
-        
-        /* 新增 RGB Range Input 颜色主题定义 */
         #redRange { --progress-color: var(--color-r); }
         #greenRange { --progress-color: var(--color-g); }
         #blueRange { --progress-color: var(--color-b); }
 
-
-        /* 通用滑块手柄样式 */
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             width: 16px;
             height: 16px;
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
-
-        /* S, V, Spd, R, G, B 的手柄使用进度条颜色 */
         input[type="range"]:not(#hueRange)::-webkit-slider-thumb {
-             background: var(--progress-color); 
-             border: none;
+             background: var(--progress-color); border: none;
         }
-
-        /* H 的手柄使用动态的 --progress-color-hue 变量 */
         #hueRange::-webkit-slider-thumb {
             background: var(--progress-color-hue); 
-            border: 2px solid #fff; /* 增加白色边框以确保对比度 */
+            border: 2px solid #fff;
         }
 
-        /* 新增：预览条区域 */
         .preview-bar-row {
             display: flex;
             align-items: center;
@@ -331,18 +331,15 @@
             margin-top: 5px;
         }
 
-        /* 新增：圆角长方形预览条样式 */
         .preview-bar {
             height: 20px; 
             border-radius: 6px; 
-            border: 1px solid #999; /* 稍深边框 */
+            border: 1px solid #999;
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
             flex-grow: 1;
-            /* 移除过渡效果，让预览条实时响应 */
-            opacity: 1 !important; /* 强制不透明 */
+            opacity: 1 !important;
         }
 
-        /* 新增：操作行 */
         .config-action-row {
             display: flex;
             justify-content: space-between;
@@ -352,7 +349,6 @@
             border-top: 1px solid var(--border-color); 
         }
         
-        /* 实时同步开关样式 */
         .sync-control {
             display: flex;
             align-items: center;
@@ -366,59 +362,29 @@
             width: 40px;
             height: 22px;
         }
-
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
+        .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc; /* 浅色开关背景 */
-            -webkit-transition: .4s;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
             transition: .4s;
             border-radius: 34px;
         }
-
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
-            left: 3px;
-            bottom: 3px;
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
             background-color: white;
-            -webkit-transition: .4s;
             transition: .4s;
             border-radius: 50%;
         }
-
-        input:checked + .slider {
-            background-color: var(--accent-color);
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px var(--accent-color);
-        }
-
-        input:checked + .slider:before {
-            -webkit-transform: translateX(18px);
-            -ms-transform: translateX(18px);
-            transform: translateX(18px);
-        }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:focus + .slider { box-shadow: 0 0 1px var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(18px); }
         
-        .sync-label {
-            font-size: 0.9em;
-            color: #666; /* 深色标签 */
-            user-select: none;
-        }
-
+        .sync-label { font-size: 0.9em; color: #666; user-select: none; }
 
         /* 列表区域 */
         .config-list-container {
@@ -436,40 +402,33 @@
         }
 
         .config-row {
-            /* 10 列: N, H, S, V, R, G, B, Spd, Current, Controls */
             grid-template-columns: 80px repeat(3, 1fr) repeat(3, 1fr) 1fr 100px 120px; 
             display: grid;
             align-items: center;
             gap: 10px;
-            background: #f8f8f8; /* 浅色列表项 */
+            background: #f8f8f8;
             padding: 10px;
             border-radius: 6px;
             border-left: 6px solid transparent;
             transition: background 0.1s, border-left 0.1s;
         }
         
-        /* RGB Display Span Style (固定背景色) */
         .config-color-display {
             text-align: center;
             padding: 5px 0;
             border-radius: 4px;
             font-weight: bold;
-            background-color: #f0f0f0; /* 固定浅色背景，模仿输入框 */
-            color: var(--text-color); /* 使用默认深色文本 */
+            background-color: #f0f0f0;
+            color: var(--text-color);
         }
         
         .config-row:hover { background: #e9e9e9; cursor: pointer; }
         .config-row.selected { border-left-color: var(--highlight-color); background: #e0e0e0; }
-
-        .config-row span { font-size: 0.85em; color: var(--text-color); } /* 深色文本 */
+        .config-row span { font-size: 0.85em; color: var(--text-color); }
         .config-row-controls { display: flex; gap: 5px; justify-content: flex-end; }
-
         .btn-icon { padding: 5px 12px; font-size: 1.2em; line-height: 1; }
+        .config-row input { width: 100%; box-sizing: border-box; }
 
-        /* 列表中的输入框较小 */
-        .config-row input[type="number"] { width: 100%; box-sizing: border-box; }
-
-        /* 底部控制区，加入了全部发送按钮 */
         .footer-controls {
             margin-top: 20px;
             display: flex;
@@ -477,6 +436,27 @@
             gap: 15px;
             border-top: 1px solid var(--border-color);
             padding-top: 20px;
+        }
+
+        /* 格式切换开关样式 */
+        .format-switch-container {
+            display: flex;
+            align-items: center;
+            background: #e0e0e0;
+            border-radius: 4px;
+            padding: 2px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+        .format-option {
+            padding: 4px 8px;
+            border-radius: 3px;
+        }
+        .format-option.active {
+            background: #fff;
+            color: var(--accent-color);
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -495,16 +475,38 @@
     </div>
 
     <div class="led-section">
-        <div class="led-controls">
-            <label>灯珠总数 (最大208):</label>
-            <input type="number" id="ledTotalInput" value="8" min="1" max="208" onfocus="this.select()">
-            <span style="font-size: 0.8em; color: #888;">(按住鼠标左键拉动框选或点击切换选中状态)</span>
-            <div style="flex-grow:1"></div>
-            <button id="selectAllBtn" style="font-size:0.8em; padding:6px 12px; background:#4CAF50;">全选</button>
-            <button id="clearSelectionBtn" style="font-size:0.8em; padding:6px 12px; background:#666;">清空</button>
-        </div>
-        <div id="ledGrid" class="led-grid">
+        <div class="led-controls-row1">
+            <label>灯珠总数 (Max 208):</label>
+            <input type="text" id="ledTotalInput" value="8" data-max="208">
+            
+            <div class="format-switch-container" id="formatSwitch" title="切换数值显示格式">
+                <div class="format-option active" data-mode="dec">十进制</div>
+                <div class="format-option" data-mode="hex">十六进制</div>
             </div>
+        </div>
+
+        <div class="mode-controls-row">
+            <button class="mode-btn active" data-mode="all">全灯 (All)</button>
+            <button class="mode-btn" data-mode="caps">Caps Lock</button>
+            <button class="mode-btn" data-mode="num">Num Lock</button>
+            <button class="mode-btn" data-mode="scr">Scroll Lock</button>
+
+            <div id="indicatorParams" class="indicator-params">
+                <label>起始:</label>
+                <input type="text" id="indStartInput" value="0" title="起始灯珠索引">
+                <label>覆盖:</label>
+                <input type="text" id="indCountInput" value="1" title="覆盖灯珠数量">
+                <button id="saveIndicatorBtn" style="background: #28a745; font-size: 0.9em; padding: 5px 10px;">保存配置</button>
+            </div>
+
+            <div id="allLedActions" class="all-led-actions">
+                <span style="font-size: 0.8em; color: #888; display:flex; align-items:center;">(拖拽框选/点击切换)</span>
+                <button id="selectAllBtn" style="font-size:0.8em; padding:6px 12px; background:#4CAF50;">全选</button>
+                <button id="clearSelectionBtn" style="font-size:0.8em; padding:6px 12px; background:#666;">清空</button>
+            </div>
+        </div>
+
+        <div id="ledGrid" class="led-grid"></div>
     </div>
 
     <div class="effect-config">
@@ -519,22 +521,22 @@
                 <div class="slider-row">
                     <label>色相 (H)</label>
                     <input type="range" id="hueRange" min="0" max="255" value="0">
-                    <input type="number" id="hueInput" min="0" max="255" value="0" onfocus="this.select()">
+                    <input type="text" id="hueInput" value="0">
                 </div>
                 <div class="slider-row">
                     <label>饱和 (S)</label>
                     <input type="range" id="satRange" min="0" max="255" value="255">
-                    <input type="number" id="satInput" min="0" max="255" value="255" onfocus="this.select()">
+                    <input type="text" id="satInput" value="255">
                 </div>
                 <div class="slider-row">
                     <label>亮度 (V)</label>
                     <input type="range" id="valRange" min="0" max="255" value="255">
-                    <input type="number" id="valInput" min="0" max="255" value="255" onfocus="this.select()">
+                    <input type="text" id="valInput" value="255">
                 </div>
                 <div class="slider-row">
                     <label>速度</label>
                     <input type="range" id="spdRange" min="0" max="255" value="128">
-                    <input type="number" id="spdInput" min="0" max="255" value="128" onfocus="this.select()">
+                    <input type="text" id="spdInput" value="128">
                 </div>
             </div>
 
@@ -549,21 +551,21 @@
                         <label>红 (R)</label>
                         <div class="range-number-row">
                             <input type="range" id="redRange" min="0" max="255" value="0">
-                            <input type="number" id="redInput" min="0" max="255" value="0" onfocus="this.select()">
+                            <input type="text" id="redInput" value="0">
                         </div>
                     </div>
                     <div class="rgb-item">
                         <label>绿 (G)</label>
                         <div class="range-number-row">
                             <input type="range" id="greenRange" min="0" max="255" value="0">
-                            <input type="number" id="greenInput" min="0" max="255" value="0" onfocus="this.select()">
+                            <input type="text" id="greenInput" value="0">
                         </div>
                     </div>
                     <div class="rgb-item">
                         <label>蓝 (B)</label>
                         <div class="range-number-row">
                             <input type="range" id="blueRange" min="0" max="255" value="0">
-                            <input type="number" id="blueInput" min="0" max="255" value="0" onfocus="this.select()">
+                            <input type="text" id="blueInput" value="0">
                         </div>
                     </div>
                 </div>
@@ -574,7 +576,7 @@
                 </span>
 
                 <div class="sync-control">
-                    <span class="sync-label">实时同步选中项</span>
+                    <span class="sync-label">实时同步</span>
                     <label class="switch">
                         <input type="checkbox" id="realtimeSyncToggle">
                         <span class="slider"></span>
@@ -587,7 +589,7 @@
     </div>
 
     <div class="config-list-container">
-        <h3>灯光配置列表 (点击行加载并编辑)</h3>
+        <h3>灯光配置列表 (全灯模式)</h3>
         <div class="config-row" style="background: transparent; cursor: default; font-weight: bold; color: var(--accent-color);">
             <span style="text-align: center;">灯珠数量</span>
             <span style="text-align: center;">色相(H)</span>
@@ -597,15 +599,14 @@
             <span style="text-align: center;">绿(G)</span>
             <span style="text-align: center;">蓝(B)</span>
             <span style="text-align: center;">速度</span>
-            <span style="text-align: right;">预计电流(mA)</span>
+            <span style="text-align: right;">预计电流</span>
             <span style="text-align: right;">操作</span>
         </div>
-        <div id="configList" class="config-list">
-            </div>
+        <div id="configList" class="config-list"></div>
     </div>
 
     <div class="footer-controls">
-        <button id="sendAllBtn" style="background-color: #3f72af;">全部发送</button>
+        <button id="sendAllBtn" style="background-color: #3f72af;">全部发送 (列表)</button>
         <button id="closeLightBtn" class="danger">关闭灯光</button>
     </div>
 </div>
@@ -615,83 +616,210 @@
  * 全局状态变量
  */
 let device = null;
-let disconnectListener = null; // 用于跟踪断开连接监听器
+let disconnectListener = null;
 let ledTotal = 8;
-// 关键常量：每个 RGB 通道的最大电流是 20mA (用户指定)
-const PEAK_CURRENT_PER_CHANNEL = 20; // mA 
-let selectedLeds = new Set(); // 存储选中的LED索引 (0-based)
-let currentConfigId = null; // 当前正在编辑的列表项ID (用于同步)
+const PEAK_CURRENT_PER_CHANNEL = 20; 
+let selectedLeds = new Set(); 
+let currentConfigId = null; 
 
-// 默认配置 (新增 r, g, b)
+// 显示模式: 'dec' 或 'hex'
+let displayMode = 'dec';
+// 当前操作模式: 'all', 'caps', 'num', 'scr'
+let currentMode = 'all';
+
+// 默认配置
 let currentSettings = {
-    h: 0,
-    s: 255,
-    v: 255,
-    spd: 128,
-    r: 255, 
-    g: 0,   
-    b: 0    
+    h: 0, s: 255, v: 255, spd: 128,
+    r: 255, g: 0, b: 0
 };
 
-// 配置列表数据
+// 指示灯单独的配置存储 (Start, Count)
+let indicatorSettings = {
+    caps: { start: 0, count: 1 },
+    num:  { start: 0, count: 1 },
+    scr:  { start: 0, count: 1 }
+};
+
 let configList = [];
-
-// --- 性能优化新增全局变量 ---
-let vChanged = false; // V 值是否改变的标记，用于控制色轮背景重绘
-let isDraggingWheel = false; // 色轮是否正在拖拽
-// ----------------------------
-
-// 实时同步状态
+let vChanged = false; 
+let isDraggingWheel = false; 
 let isRealTimeSyncSending = false;
 let pendingRealTimeSync = false;
-
-/**
- * 框选逻辑所需的全局变量
- */
 let isSelecting = false;
 let startX = 0;
 let startY = 0;
-let isClick = true; // 跟踪是否是单纯的点击 (未拖动)
-let initialTargetEl = null; // 存储 mousedown 时的原始目标元素
+let isClick = true; 
+let initialTargetEl = null;
 
-/**
- * 初始化
- */
 document.addEventListener('DOMContentLoaded', () => {
     initLedGrid();
     setupEventListeners();
     setupSyncInputs();
-    setupColorWheel(); // 初始化色轮
+    setupColorWheel(); 
+    setupModeControls(); // 初始化模式控制
+    setupFormatSwitch(); // 初始化格式切换
     
-    // 首次加载时，确保 HSV 和 RGB 状态一致，并同步所有 UI
     updateColorSettings('h', currentSettings.h); 
     syncAllInputsFromSettings(); 
-    
-    // 首次加载时，确保连接按钮是可点击的
     updateConnectionStatus(false); 
 });
 
-// --- 实用工具函数 ---
+// --- 数值/格式处理辅助函数 ---
 
-/**
- * 转换 0-255 HSV 到 0-255 RGB
- * @param {number} h 0-255
- * @param {number} s 0-255
- * @param {number} v 0-255
- * @returns {{r: number, g: number, b: number}}
- */
+function formatValue(val) {
+    if (displayMode === 'hex') {
+        return "0x" + parseInt(val).toString(16).toUpperCase();
+    }
+    return val.toString();
+}
+
+function parseValue(valStr) {
+    if (!valStr) return 0;
+    valStr = valStr.toString().trim();
+    if (valStr.toLowerCase().startsWith('0x')) {
+        return parseInt(valStr, 16);
+    }
+    // 如果没有 0x 前缀，但当前是 hex 模式，尝试解析为 16 进制，否则 10 进制
+    // 这里为了用户体验，如果包含 a-f 则视为 hex，否则根据 displayMode
+    if (/[a-f]/i.test(valStr)) return parseInt(valStr, 16);
+    return parseInt(valStr); // 默认 10 进制
+}
+
+// 刷新所有相关输入框的显示格式
+function updateAllInputFormats() {
+    // 1. 灯珠总数
+    const ledTotalInput = document.getElementById('ledTotalInput');
+    ledTotalInput.value = formatValue(ledTotal);
+
+    // 2. 指示灯输入框
+    const startInput = document.getElementById('indStartInput');
+    const countInput = document.getElementById('indCountInput');
+    if (currentMode !== 'all') {
+        startInput.value = formatValue(indicatorSettings[currentMode].start);
+        countInput.value = formatValue(indicatorSettings[currentMode].count);
+    }
+
+    // 3. 颜色/速度输入框
+    const inputs = ['hue', 'sat', 'val', 'spd', 'red', 'green', 'blue'];
+    inputs.forEach(prefix => {
+        const el = document.getElementById(`${prefix}Input`);
+        const range = document.getElementById(`${prefix}Range`);
+        if (el && range) {
+            el.value = formatValue(range.value);
+        }
+    });
+
+    // 4. 列表中的输入框 (如果需要，暂不强制列表也变，列表保持原样或统一)
+    // 为了简单，这里暂不遍历更新列表中的 input，用户编辑时再处理
+}
+
+// --- 模式切换与UI逻辑 ---
+
+function setupFormatSwitch() {
+    const container = document.getElementById('formatSwitch');
+    const options = container.querySelectorAll('.format-option');
+    
+    options.forEach(opt => {
+        opt.addEventListener('click', () => {
+            options.forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            displayMode = opt.dataset.mode;
+            updateAllInputFormats();
+        });
+    });
+}
+
+function setupModeControls() {
+    const btns = document.querySelectorAll('.mode-btn');
+    const indicatorParams = document.getElementById('indicatorParams');
+    const allLedActions = document.getElementById('allLedActions');
+    const ledGrid = document.getElementById('ledGrid');
+    const startInput = document.getElementById('indStartInput');
+    const countInput = document.getElementById('indCountInput');
+    const saveBtn = document.getElementById('saveIndicatorBtn');
+
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // UI Update
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const mode = btn.dataset.mode;
+            currentMode = mode;
+
+            if (mode === 'all') {
+                // 切换回全灯模式
+                indicatorParams.classList.remove('visible');
+                allLedActions.style.display = 'flex';
+                ledGrid.classList.remove('hidden');
+                document.querySelector('.config-list-container').style.opacity = '1';
+                document.querySelector('.config-list-container').style.pointerEvents = 'auto';
+            } else {
+                // 切换到指示灯模式
+                indicatorParams.classList.add('visible');
+                allLedActions.style.display = 'none';
+                ledGrid.classList.add('hidden');
+                
+                // 禁用列表区域以防混淆
+                document.querySelector('.config-list-container').style.opacity = '0.5';
+                document.querySelector('.config-list-container').style.pointerEvents = 'none';
+
+                // 载入该模式的保存值
+                startInput.value = formatValue(indicatorSettings[mode].start);
+                countInput.value = formatValue(indicatorSettings[mode].count);
+            }
+            
+            // 触发一次同步以发送当前模式的预览
+            triggerRealTimeSync();
+        });
+    });
+
+    // 指示灯输入框事件
+    const handleIndInputChange = () => {
+        if (currentMode === 'all') return;
+        
+        let sVal = parseValue(startInput.value);
+        let cVal = parseValue(countInput.value);
+        
+        if (isNaN(sVal) || sVal < 0) sVal = 0;
+        if (isNaN(cVal) || cVal < 0) cVal = 1;
+
+        indicatorSettings[currentMode].start = sVal;
+        indicatorSettings[currentMode].count = cVal;
+        
+        // 格式化回显
+        // startInput.value = formatValue(sVal);
+        // countInput.value = formatValue(cVal);
+        
+        triggerRealTimeSync(); // 实时预览
+    };
+
+    startInput.addEventListener('change', () => {
+        handleIndInputChange();
+        startInput.value = formatValue(indicatorSettings[currentMode].start);
+    });
+    countInput.addEventListener('change', () => {
+        handleIndInputChange();
+        countInput.value = formatValue(indicatorSettings[currentMode].count);
+    });
+    
+    // 保存按钮事件
+    saveBtn.addEventListener('click', () => {
+        if (currentMode === 'all') return;
+        sendIndicatorCommand(true); // true = save
+    });
+}
+
+// --- 核心逻辑 ---
+
 function hsvToRgb(h, s, v) {
-    h /= 255; // Normalize H (0-1)
-    s /= 255; // Normalize S (0-1)
-    v /= 255; // Normalize V (0-1)
-
+    h /= 255; s /= 255; v /= 255;
     let r, g, b;
     const i = Math.floor(h * 6);
     const f = h * 6 - i;
     const p = v * (1 - s);
     const q = v * (1 - f * s);
     const t = v * (1 - (1 - f) * s);
-
     switch (i % 6) {
         case 0: r = v, g = t, b = p; break;
         case 1: r = q, g = v, b = p; break;
@@ -700,524 +828,319 @@ function hsvToRgb(h, s, v) {
         case 4: r = t, g = p, b = v; break;
         case 5: r = v, g = p, b = q; break;
     }
-
-    return {
-        r: Math.round(r * 255),
-        g: Math.round(g * 255),
-        b: Math.round(b * 255)
-    };
+    return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
 }
 
-
-/**
- * 转换 0-255 RGB 到 0-255 HSV
- * @param {number} r 0-255
- * @param {number} g 0-255
- * @param {number} b 0-255
- * @returns {{h: number, s: number, v: number}}
- */
 function rgbToHsv(r, g, b) {
-    r /= 255;
-    g /= 255;
-    b /= 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
     const delta = max - min;
     let h, s, v = max;
-
-    if (delta === 0) {
-        h = 0;
-        s = 0;
-    } else {
+    if (delta === 0) { h = 0; s = 0; } else {
         s = delta / max;
-        if (max === r) {
-            h = (g - b) / delta + (g < b ? 6 : 0);
-        } else if (max === g) {
-            h = (b - r) / delta + 2; 
-        } else if (max === b) {
-            h = (r - g) / delta + 4; 
-        }
-        h /= 6; // h is now 0-1
-        h *= 255; // h is now 0-255
+        if (max === r) h = (g - b) / delta + (g < b ? 6 : 0);
+        else if (max === g) h = (b - r) / delta + 2;
+        else if (max === b) h = (r - g) / delta + 4;
+        h /= 6; h *= 255;
     }
-
-    return {
-        h: Math.round(h),
-        s: Math.round(s * 255),
-        v: Math.round(v * 255)
-    };
+    return { h: Math.round(h), s: Math.round(s * 255), v: Math.round(v * 255) };
 }
 
-/**
- * 统一更新颜色设置，确保 HSV 和 RGB 状态一致
- * @param {string} sourceKey 触发更新的键 ('h', 's', 'v', 'r', 'g', 'b')
- * @param {number} value 
- */
 function updateColorSettings(sourceKey, value) {
-    // 确保值在 0-255 之间
     const clampedVal = Math.min(255, Math.max(0, value));
     currentSettings[sourceKey] = clampedVal;
-
     let newHsv, newRgb;
-
     if (['r', 'g', 'b'].includes(sourceKey)) {
-        // RGB 变动 -> 重新计算 HSV
         newHsv = rgbToHsv(currentSettings.r, currentSettings.g, currentSettings.b);
         currentSettings.h = newHsv.h;
         currentSettings.s = newHsv.s;
         currentSettings.v = newHsv.v;
-        
-        // V 值可能改变，需要标记色轮重绘
         vChanged = true;
-
     } else if (['h', 's', 'v'].includes(sourceKey)) {
-        // HSV 变动 -> 重新计算 RGB
         newRgb = hsvToRgb(currentSettings.h, currentSettings.s, currentSettings.v);
         currentSettings.r = newRgb.r;
         currentSettings.g = newRgb.g;
         currentSettings.b = newRgb.b;
-
-        // V 值改变，需要标记色轮重绘
-        if (sourceKey === 'v') {
-            vChanged = true; 
-        }
+        if (sourceKey === 'v') vChanged = true; 
     }
 }
 
-
-/**
- * 根据 LED 数量、颜色和亮度 (HSV) 计算预计总电流
- */
 function calculateCurrent(numLeds, h, s, v) {
     if (numLeds === 0) return '0.0';
-
     const { r, g, b } = hsvToRgb(h, s, v);
-    
-    // R, G, B 归一化后，乘以各自的峰值电流 (20mA)
-    const currentR = (r / 255) * PEAK_CURRENT_PER_CHANNEL;
-    const currentG = (g / 255) * PEAK_CURRENT_PER_CHANNEL;
-    const currentB = (b / 255) * PEAK_CURRENT_PER_CHANNEL;
-
-    // 单颗灯的总电流
-    const currentPerLed = currentR + currentG + currentB;
-    
-    // 总电流
-    const totalCurrent = numLeds * currentPerLed;
-    return totalCurrent.toFixed(1); 
+    const currentPerLed = ((r/255) + (g/255) + (b/255)) * PEAK_CURRENT_PER_CHANNEL;
+    return (numLeds * currentPerLed).toFixed(1); 
 }
 
-/**
- * 更新 range input 的 CSS 变量以显示进度条
- */
 function updateRangeProgress(rangeEl, value) {
     const percentage = (value / 255) * 100 + '%';
     rangeEl.style.setProperty('--value', percentage);
 }
 
-/**
- * 专门更新 Hue Range 的滑块颜色
- */
 function updateHueProgress(rangeEl, hValue) {
-    // 使用高饱和度和高亮度来显示 H 值的纯色
-    // 这里使用 max S=255, max V=255 来确保手柄颜色饱和且可见
     const { r, g, b } = hsvToRgb(hValue, 255, 255); 
-    const rgbColor = `rgb(${r}, ${g}, ${b})`;
-    
-    // 设置 CSS 变量，供 #hueRange::-webkit-slider-thumb 使用
-    rangeEl.style.setProperty('--progress-color-hue', rgbColor);
+    rangeEl.style.setProperty('--progress-color-hue', `rgb(${r}, ${g}, ${b})`);
 }
 
-
-// --- 视觉更新辅助函数 (优化更新流程) ---
-
-/**
- * 根据 currentSettings 和 selectedLeds 状态更新单个 LED 元素的视觉效果
- */
 function updateLedVisuals(ledEl, index) {
     if (selectedLeds.has(index)) {
         ledEl.classList.add('active');
-        
-        // 1. 使用 full H/S/V 从 currentSettings 来计算 RGB 颜色
         const { r, g, b } = hsvToRgb(currentSettings.h, currentSettings.s, currentSettings.v);
-        
-        // 2. 设置背景颜色
         ledEl.style.backgroundColor = `rgb(${r}, ${g}, ${b})`; 
-        
-        // 3. 根据亮度 V 确定文本颜色以确保对比度
-        // V < 100 视为暗色背景，数字用白色
-        if (currentSettings.v < 100) { 
-            ledEl.style.color = '#fff'; 
-        } else {
-            ledEl.style.color = '#333'; // V 高时，数字用深色
-        }
-        
+        ledEl.style.color = currentSettings.v < 100 ? '#fff' : '#333'; 
     } else {
         ledEl.classList.remove('active');
-        ledEl.style.backgroundColor = '#ddd'; // 浅色模式下的默认背景色
-        ledEl.style.removeProperty('color'); // 移除动态 color，让 CSS 默认的 #666 生效
+        ledEl.style.backgroundColor = '#ddd';
+        ledEl.style.removeProperty('color');
     }
 }
 
-/**
- * 遍历所有已被选中的 LED，更新它们的颜色
- */
 function updateAllActiveLedColors() {
-    // 强制更新所有 LED 的视觉效果
     const ledItems = document.querySelectorAll('.led-item');
     ledItems.forEach(ledEl => {
-        const index = parseInt(ledEl.dataset.index);
-        updateLedVisuals(ledEl, index); 
+        updateLedVisuals(ledEl, parseInt(ledEl.dataset.index)); 
     });
 }
 
-/**
- * 使用 H/S/V 计算的实际 R/G/B 值来设置预览颜色。
- */
 function updateColorPreview() {
-    const r = currentSettings.r;
-    const g = currentSettings.g;
-    const b = currentSettings.b;
-    
+    const { r, g, b } = currentSettings;
     const box = document.getElementById('colorPreview');
-    
     box.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-    box.style.opacity = 1; // 确保预览条始终不透明
-
-    // 调整边框颜色，确保在极亮或极暗时仍可见
-    const averageBrightness = (r + g + b) / 3;
-    if (averageBrightness > 200) { 
-        box.style.borderColor = '#333'; 
-    } else {
-        box.style.borderColor = '#aaa'; 
-    }
+    box.style.borderColor = (r+g+b)/3 > 200 ? '#333' : '#aaa'; 
 }
 
 function updateCurrentDrawDisplay() {
-    const numLeds = selectedLeds.size;
-    const h = currentSettings.h;
-    const s = currentSettings.s;
-    const v = currentSettings.v;
-    
-    const current = calculateCurrent(numLeds, h, s, v);
+    // 只有全灯模式计算电流才有意义，或者指示灯模式计算那几颗
+    let numLeds = 0;
+    if (currentMode === 'all') {
+        numLeds = selectedLeds.size;
+    } else {
+        numLeds = indicatorSettings[currentMode].count;
+    }
+    const current = calculateCurrent(numLeds, currentSettings.h, currentSettings.s, currentSettings.v);
     document.getElementById('currentDrawDisplay').textContent = `预计电流: ${current} mA`;
 }
 
-
-// --- 核心同步函数：色轮/滑块/输入框/列表同步 (性能优化) ---
+// --- 数据发送与同步 ---
 
 /**
- * 尝试触发实时同步（带简单的防抖/状态锁）
+ * 发送指示灯数据 (Caps/Num/Scr)
+ * @param {boolean} isSave 是否是保存操作 (false=预览)
  */
+async function sendIndicatorCommand(isSave) {
+    if (!device || !device.opened) return;
+    if (currentMode === 'all') return;
+
+    const config = indicatorSettings[currentMode];
+    let cmd = 0;
+
+    // 确定命令字
+    switch(currentMode) {
+        case 'caps': cmd = isSave ? 0xC1 : 0xC0; break;
+        case 'num':  cmd = isSave ? 0xC3 : 0xC2; break;
+        case 'scr':  cmd = isSave ? 0xC5 : 0xC4; break;
+    }
+
+    const data = new Uint8Array(32);
+    data[0] = 0xAB;
+    data[1] = cmd;
+    data[2] = config.start; // Byte 2: Start Index
+    data[3] = config.count; // Byte 3: Count
+    data[4] = currentSettings.h;
+    data[5] = currentSettings.s;
+    data[6] = currentSettings.v;
+    // 剩余补0 (默认即0)
+
+    try {
+        await device.sendReport(0, data);
+        if (isSave) {
+            showCustomAlert("保存成功", `${currentMode.toUpperCase()} 指示灯配置已保存！`, false);
+            setTimeout(() => document.getElementById('customAlert').style.display='none', 1000);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+
 async function triggerRealTimeSync() {
+    // 检查模式
+    if (currentMode !== 'all') {
+        // 指示灯模式：直接发送预览，忽略同步开关
+        // 为了防止过于频繁，可以加防抖，但这里为了响应速度直接发
+        if (device && device.opened) {
+            sendIndicatorCommand(false); // 发送预览
+        }
+        return;
+    }
+
+    // 全灯模式逻辑 (原逻辑)
     const syncCheckbox = document.getElementById('realtimeSyncToggle');
-    // 只有当开关开启、设备已连接、且当前有选中的配置时才发送
     if (!syncCheckbox || !syncCheckbox.checked || !device || !device.opened || !selectedLeds.size) return;
 
-    // 如果正在发送中，标记为有待处理的发送请求，然后直接返回
     if (isRealTimeSyncSending) {
         pendingRealTimeSync = true;
         return;
     }
-
     isRealTimeSyncSending = true;
 
-    // 获取当前的数据
     const mask = generateBitmask(selectedLeds);
-    const h = currentSettings.h;
-    const s = currentSettings.s;
-    const v = currentSettings.v;
-    const spd = currentSettings.spd;
-
-    // 发送数据
-    await sendDataToDevice(0xB0, h, s, v, spd, mask);
+    await sendDataToDevice(0xB0, currentSettings.h, currentSettings.s, currentSettings.v, currentSettings.spd, mask);
 
     isRealTimeSyncSending = false;
-
-    // 如果在发送过程中有新的请求进来，立即再次触发（取最新的值）
     if (pendingRealTimeSync) {
         pendingRealTimeSync = false;
         triggerRealTimeSync();
     }
 }
 
-/**
- * 轻量级同步：只更新实时响应快的 UI 元素 (在 input/mousemove 事件中调用)
- */
 function syncLightweightUIFromSettings() {
-    // 1. 同步范围滑块和数字输入框的进度和值 (HSV + Spd)
-    const hsvSpdParams = ['hue', 'sat', 'val', 'spd'];
     const hsvSpdKeys = ['h', 's', 'v', 'spd'];
+    const hsvSpdPrefix = ['hue', 'sat', 'val', 'spd'];
 
-    hsvSpdParams.forEach((prefix, idx) => {
+    hsvSpdPrefix.forEach((prefix, idx) => {
         const key = hsvSpdKeys[idx];
         const val = currentSettings[key];
         const range = document.getElementById(`${prefix}Range`);
-        const num = document.getElementById(`${prefix}Input`);
+        const textInput = document.getElementById(`${prefix}Input`);
 
-        const clampedVal = Math.min(255, Math.max(0, val));
-
-        range.value = clampedVal; 
+        range.value = val;
+        updateRangeProgress(range, val);
+        textInput.value = formatValue(val); // 使用 formatValue 处理 Hex
         
-        updateRangeProgress(range, clampedVal);
-        num.value = clampedVal; 
-        
-        if (prefix === 'hue') {
-            updateHueProgress(range, clampedVal);
-        }
+        if (prefix === 'hue') updateHueProgress(range, val);
     });
 
-    // NEW: 2. 同步范围滑块和数字输入框的进度和值 (RGB)
-    const rgbParams = ['red', 'green', 'blue'];
     const rgbKeys = ['r', 'g', 'b'];
-
-    rgbParams.forEach((prefix, idx) => {
+    const rgbPrefix = ['red', 'green', 'blue'];
+    rgbPrefix.forEach((prefix, idx) => {
         const key = rgbKeys[idx];
         const val = currentSettings[key];
         const range = document.getElementById(`${prefix}Range`);
-        const num = document.getElementById(`${prefix}Input`);
-
-        const clampedVal = Math.min(255, Math.max(0, val));
+        const textInput = document.getElementById(`${prefix}Input`);
         
-        if (range) range.value = clampedVal; 
-        
-        if (range) updateRangeProgress(range, clampedVal);
-        if (num) num.value = clampedVal; 
+        if (range) {
+            range.value = val;
+            updateRangeProgress(range, val);
+        }
+        if (textInput) textInput.value = formatValue(val);
     });
 
-
-    // 3. 更新颜色预览
     updateColorPreview();
-
-    // 4. 更新色轮指示器 (不重绘背景)
-    if (!isDraggingWheel) { 
-        updateWheelIndicator(currentSettings.h, currentSettings.s);
-    }
-    
-    // 5. 实时更新选中 LED 的颜色
-    updateAllActiveLedColors();
-
-    // 6. 更新电流显示 
+    if (!isDraggingWheel) updateWheelIndicator(currentSettings.h, currentSettings.s);
+    if (currentMode === 'all') updateAllActiveLedColors(); // 仅全灯模式更新网格颜色
     updateCurrentDrawDisplay();
-    
-    // 7. 触发实时同步
     triggerRealTimeSync();
 }
 
-/**
- * 重量级同步：更新耗时的 UI 元素 (在 change/mouseup 事件中调用)
- */
 function syncHeavyUIFromSettings() {
-    // 1. 强制重新绘制色轮指示器 (会重绘背景如果 V 值变化了)
     updateWheelIndicator(currentSettings.h, currentSettings.s);
-
-    // 2. 同步到当前选中的配置列表项，并强制渲染列表 DOM (最耗时)
-    autoSyncSelectedConfig(true); 
+    if (currentMode === 'all') autoSyncSelectedConfig(true);
 }
 
-/**
- * 完整同步：用于加载配置或初始化
- */
 function syncAllInputsFromSettings() {
-    vChanged = true; // 强制 V 值导致的色轮背景重绘
-    
-    // 确保所有 settings 的值都被更新 (例如从 loadConfig)
+    vChanged = true; 
     const allKeys = ['h', 's', 'v', 'spd', 'r', 'g', 'b'];
     allKeys.forEach((key) => {
-        const val = currentSettings[key];
-        const clampedVal = Math.min(255, Math.max(0, val));
-        currentSettings[key] = clampedVal; 
+        currentSettings[key] = Math.min(255, Math.max(0, currentSettings[key]));
     });
-    
-    // 首次加载或载入配置时，确保 HSV 和 RGB 状态一致
-    // 优先使用 HSV 重新计算 RGB (因为 QMK 使用 HSV)，这也会标记 vChanged
     updateColorSettings('h', currentSettings.h); 
-
     syncLightweightUIFromSettings();
     syncHeavyUIFromSettings();
 }
 
-
-// --- WebHID 连接与发送逻辑 (保持不变) ---
-
-/**
- * 更新连接状态
- */
+// --- WebHID ---
 function updateConnectionStatus(connected) {
     const statusEl = document.getElementById('connectionStatus');
     const btn = document.getElementById('connectBtn');
-    
     if (connected) {
         statusEl.textContent = "已连接: " + device.productName;
         statusEl.className = "status connected";
-        btn.textContent = "已连接 (重连)"; // 按钮变成已连接，但仍可点击重新连接新设备
-        btn.disabled = false; // 允许再次点击选择新设备
+        btn.textContent = "已连接 (重连)";
+        btn.disabled = false;
     } else {
         statusEl.textContent = "未连接";
         statusEl.className = "status";
         btn.textContent = "连接键盘";
         btn.disabled = false;
-        // 如果断开连接，清除 device 对象，以便下次尝试连接是新的
-        if (device && !connected) {
-            device = null;
-        }
+        if (device && !connected) device = null;
     }
 }
 
-/**
- * 连接设备 (保持不变)
- */
 async function connectDevice() {
     try {
         const filters = [{ usagePage: 0xFF60 }];
-        // 允许用户选择设备，即使用户已经连接了一个设备
         const devices = await navigator.hid.requestDevice({ filters });
-
         if (devices.length > 0) {
-            // --- 成功连接新设备 ---
             const newDevice = devices[0];
-            
-            // 1. 如果存在旧设备，先关闭并移除监听器
             if (device) {
-                if (disconnectListener) {
-                    navigator.hid.removeEventListener('disconnect', disconnectListener);
-                }
-                // 确保旧设备关闭
-                if (device.opened) { 
-                    await device.close(); 
-                }
+                if (disconnectListener) navigator.hid.removeEventListener('disconnect', disconnectListener);
+                if (device.opened) await device.close();
             }
-            
             device = newDevice;
-
-            if (!device.opened) {
-                await device.open();
-            }
+            if (!device.opened) await device.open();
             
-            // 2. 设置新的断开连接监听器
             disconnectListener = (e) => {
                 if (e.device === device) {
-                    console.log("设备已断开:", device.productName);
-                    // 移除监听器以防止重复触发
                     navigator.hid.removeEventListener('disconnect', disconnectListener); 
-                    // 更新连接状态
                     updateConnectionStatus(false);
                 }
             };
             navigator.hid.addEventListener('disconnect', disconnectListener);
-
             updateConnectionStatus(true);
-            console.log("设备已连接:", device.productName);
-            
         } else {
-            // --- 未选择新设备或取消选择 ---
-            console.log("未选择新设备或连接被取消。");
-            
-            // **核心修改：如果当前已连接设备，则断开它**
             if (device && device.opened) {
-                console.log(`用户取消选择/未选新设备，断开当前设备: ${device.productName}`);
-                
-                // 1. 移除断开监听器 (防止 close() 触发 disconnect event)
-                if (disconnectListener) {
-                    navigator.hid.removeEventListener('disconnect', disconnectListener);
-                }
-                
-                // 2. 关闭设备
+                if (disconnectListener) navigator.hid.removeEventListener('disconnect', disconnectListener);
                 await device.close();
-                
-                // 3. 更新状态
                 updateConnectionStatus(false);
-            } else {
-                 // 如果原本就没连接，也调用一次更新，确保状态为“连接键盘”
-                 updateConnectionStatus(false); 
             }
         }
-        
     } catch (error) {
-        // 连接失败 (如权限拒绝、打开失败等)
-        console.error("连接失败:", error);
-        showCustomAlert("连接失败", "请确保键盘已连接且未被其他软件占用: " + error.message);
-        
-        // 错误发生时，尝试清理当前连接并重置状态
-        if (device && device.opened) {
-             if (disconnectListener) {
-                navigator.hid.removeEventListener('disconnect', disconnectListener);
-             }
-             // 尝试关闭设备，但如果设备已丢失可能抛出异常，忽略
-             try { await device.close(); } catch {} 
-             updateConnectionStatus(false);
-        } else {
-             updateConnectionStatus(false);
-        }
+        console.error(error);
+        showCustomAlert("连接失败", "请确保键盘已连接: " + error.message);
+        updateConnectionStatus(false);
     }
 }
 
 async function sendDataToDevice(cmd, h, s, v, spd, maskBytes) {
-    if (!device || !device.opened) {
-        // 静默失败
-        return false; 
-    }
-
+    if (!device || !device.opened) return false;
     const data = new Uint8Array(32);
-    
     data[0] = 0xAB;
     data[1] = cmd; 
-
     if (cmd === 0xB0) {
-        data[2] = h; 
-        data[3] = s;
-        data[4] = v;
-        data[5] = spd;
-
+        data[2] = h; data[3] = s; data[4] = v; data[5] = spd;
         for (let i = 0; i < 26; i++) {
-            if (maskBytes && maskBytes[i] !== undefined) {
-                data[6 + i] = maskBytes[i];
-            } else {
-                data[6 + i] = 0;
-            }
+            data[6 + i] = (maskBytes && maskBytes[i] !== undefined) ? maskBytes[i] : 0;
         }
-    } 
-
+    } else if (cmd === 0xB1) {
+        // Close lights
+    }
     try {
         await device.sendReport(0, data);
         return true;
     } catch (error) {
-        console.error("发送失败:", error);
         return false;
     }
 }
 
 function generateBitmask(ledSet) {
     const mask = new Uint8Array(26).fill(0);
-    
     ledSet.forEach(index => {
         if (index >= 208) return; 
-
         const byteIndex = Math.floor(index / 8);
         const bitIndex = index % 8; 
-
-        const bitValue = 1 << (7 - bitIndex); // MSB First
-
-        if (byteIndex < 26) {
-             mask[byteIndex] |= bitValue;
-        }
+        if (byteIndex < 26) mask[byteIndex] |= (1 << (7 - bitIndex));
     });
     return mask;
 }
 
-
-// --- LED 网格渲染与框选逻辑 (保持不变) ---
-
+// --- LED Grid ---
 function toggleLed(index) {
-    if (selectedLeds.has(index)) {
-        selectedLeds.delete(index);
-    } else {
-        selectedLeds.add(index);
-    }
+    if (currentMode !== 'all') return; 
+    if (selectedLeds.has(index)) selectedLeds.delete(index);
+    else selectedLeds.add(index);
     const ledEl = document.querySelector(`.led-item[data-index="${index}"]`);
-    if (ledEl) {
-        updateLedVisuals(ledEl, index);
-    }
+    if (ledEl) updateLedVisuals(ledEl, index);
     autoSyncSelectedLedMask();
     updateCurrentDrawDisplay();
     triggerRealTimeSync();
@@ -1228,162 +1151,99 @@ function initLedGrid() {
     const gridEl = document.getElementById('ledGrid');
     const marquee = document.getElementById('selectionMarquee');
     
-    // 初始化数字框调节逻辑
-    input.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        let currentValue = parseInt(e.target.value);
-        const step = e.shiftKey ? 10 : 1; 
-        if (e.deltaY < 0) currentValue += step; 
-        else currentValue -= step; 
-        input.value = currentValue;
-        // 触发 change 事件，执行同步和重绘
-        input.dispatchEvent(new Event('change')); 
-    });
-
-    input.addEventListener('change', (e) => {
-        let val = parseInt(e.target.value);
+    const handleTotalChange = () => {
+        let val = parseValue(input.value);
         if (isNaN(val) || val < 1) val = 1;
         if (val > 208) val = 208;
-        e.target.value = val;
+        
+        input.value = formatValue(val); // 格式化回显
         ledTotal = val;
+        
         selectedLeds = new Set([...selectedLeds].filter(i => i < ledTotal));
         renderGrid();
         autoSyncSelectedLedMask();
         updateCurrentDrawDisplay(); 
         triggerRealTimeSync();
+    };
+
+    input.addEventListener('change', handleTotalChange);
+    input.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        let val = parseValue(input.value);
+        const step = e.shiftKey ? 10 : 1; 
+        if (e.deltaY < 0) val += step; else val -= step; 
+        input.value = formatValue(val);
+        handleTotalChange();
     });
 
-    ledTotal = parseInt(input.value);
+    ledTotal = parseValue(input.value);
     
-    // --- 框选逻辑 (Selection Marquee) ---
-    // 1. 鼠标按下 (在 Grid 区域内)
+    // 框选逻辑
     gridEl.addEventListener('mousedown', (e) => {
-        if (e.offsetX > gridEl.clientWidth || e.offsetY > gridEl.clientHeight) return;
-        if (e.button !== 0) return; 
-
-        isSelecting = true;
-        isClick = true; 
-        startX = e.clientX;
-        startY = e.clientY;
+        if (currentMode !== 'all') return;
+        if (e.offsetX > gridEl.clientWidth || e.offsetY > gridEl.clientHeight || e.button !== 0) return; 
+        isSelecting = true; isClick = true; 
+        startX = e.clientX; startY = e.clientY;
         initialTargetEl = e.target; 
-        
         marquee.style.display = 'none'; 
         e.preventDefault();
     });
 
-    // 2. 鼠标移动 (全局)
     document.addEventListener('mousemove', (e) => {
         if (!isSelecting) return;
-        
         const dist = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2));
         if (dist > 5) {
             isClick = false; 
             marquee.style.display = 'block';
-
-            const currentX = e.clientX;
-            const currentY = e.clientY;
-            
-            const width = Math.abs(currentX - startX);
-            const height = Math.abs(currentY - startY);
-            const left = Math.min(currentX, startX);
-            const top = Math.min(currentY, startY);
-
-            marquee.style.width = width + 'px';
-            marquee.style.height = height + 'px';
-            marquee.style.left = left + 'px';
-            marquee.style.top = top + 'px';
+            const width = Math.abs(e.clientX - startX);
+            const height = Math.abs(e.clientY - startY);
+            const left = Math.min(e.clientX, startX);
+            const top = Math.min(e.clientY, startY);
+            marquee.style.width = width + 'px'; marquee.style.height = height + 'px';
+            marquee.style.left = left + 'px'; marquee.style.top = top + 'px';
 
             const marqueeRect = { left, top, right: left + width, bottom: top + height };
-            const ledItems = document.querySelectorAll('.led-item');
-            
-            ledItems.forEach(item => {
-                const itemRect = item.getBoundingClientRect();
-                const isIntersecting = !(itemRect.right < marqueeRect.left || 
-                                       itemRect.left > marqueeRect.right || 
-                                       itemRect.bottom < marqueeRect.top || 
-                                       itemRect.top > marqueeRect.bottom);
-                
+            document.querySelectorAll('.led-item').forEach(item => {
+                const r = item.getBoundingClientRect();
+                const intersect = !(r.right < marqueeRect.left || r.left > marqueeRect.right || r.bottom < marqueeRect.top || r.top > marqueeRect.bottom);
                 item.classList.remove('preview-select');
                 item.style.backgroundColor = ''; 
-
-                if (isIntersecting) {
-                    const index = parseInt(item.dataset.index);
-                    const isCurrentlySelected = selectedLeds.has(index);
-                    
+                if (intersect) {
                     item.classList.add('preview-select');
-
-                    if (isCurrentlySelected) {
-                        item.style.backgroundColor = '#d0d0d0'; 
-                    } else {
-                        item.style.backgroundColor = 'rgba(30, 136, 229, 0.8)'; 
-                    }
-
-                } else {
-                    updateLedVisuals(item, parseInt(item.dataset.index));
-                }
+                    item.style.backgroundColor = selectedLeds.has(parseInt(item.dataset.index)) ? '#d0d0d0' : 'rgba(30, 136, 229, 0.8)';
+                } else updateLedVisuals(item, parseInt(item.dataset.index));
             });
         }
     });
 
-    // 3. 鼠标抬起 (全局)
     document.addEventListener('mouseup', (e) => {
         if (!isSelecting) return;
-        isSelecting = false;
-        marquee.style.display = 'none';
-
+        isSelecting = false; marquee.style.display = 'none';
         if (isClick) {
-            // --- 单击行为 ---
-            const target = initialTargetEl; 
-            if (target && target.classList.contains('led-item')) {
-                const index = parseInt(target.dataset.index);
-                toggleLed(index); 
-            }
+            if (initialTargetEl && initialTargetEl.classList.contains('led-item')) toggleLed(parseInt(initialTargetEl.dataset.index));
         } else {
-            // --- 框选行为 (通用切换) ---
             let changed = false;
-            const ledItems = document.querySelectorAll('.led-item');
-            
-            const currentX = e.clientX;
-            const currentY = e.clientY;
-            const width = Math.abs(currentX - startX);
-            const height = Math.abs(currentY - startY);
-            const left = Math.min(currentX, startX);
-            const top = Math.min(currentY, startY);
-            const marqueeRect = { left, top, right: left + width, bottom: top + height };
+            const width = Math.abs(e.clientX - startX);
+            const height = Math.abs(e.clientY - startY);
+            const left = Math.min(e.clientX, startX);
+            const top = Math.min(e.clientY, startY);
+            const r1 = { left, top, right: left + width, bottom: top + height };
 
-            ledItems.forEach(item => {
-                const itemRect = item.getBoundingClientRect();
-                const isIntersecting = !(itemRect.right < marqueeRect.left || 
-                                       itemRect.left > marqueeRect.right || 
-                                       itemRect.bottom < marqueeRect.top || 
-                                       itemRect.top > marqueeRect.bottom);
-
-                const index = parseInt(item.dataset.index);
+            document.querySelectorAll('.led-item').forEach(item => {
+                const r2 = item.getBoundingClientRect();
+                const intersect = !(r2.right < r1.left || r2.left > r1.right || r2.bottom < r1.top || r2.top > r1.bottom);
+                const idx = parseInt(item.dataset.index);
                 item.classList.remove('preview-select');
                 item.style.backgroundColor = ''; 
-
-                if (isIntersecting) {
-                    const isCurrentlySelected = selectedLeds.has(index);
-                    
-                    if (isCurrentlySelected) {
-                        selectedLeds.delete(index); 
-                    } else {
-                        selectedLeds.add(index);    
-                    }
+                if (intersect) {
+                    if (selectedLeds.has(idx)) selectedLeds.delete(idx); else selectedLeds.add(idx);
                     changed = true;
                 }
-                updateLedVisuals(item, index);
+                updateLedVisuals(item, idx);
             });
-
-            if (changed) {
-                autoSyncSelectedConfig(true); // 框选改变后，需要更新列表DOM
-                updateCurrentDrawDisplay();
-                triggerRealTimeSync();
-            }
+            if (changed) { autoSyncSelectedConfig(true); updateCurrentDrawDisplay(); triggerRealTimeSync(); }
         }
-        
-        isClick = true;
-        initialTargetEl = null;
+        isClick = true; initialTargetEl = null;
     });
 
     renderGrid();
@@ -1392,7 +1252,6 @@ function initLedGrid() {
 function renderGrid() {
     const grid = document.getElementById('ledGrid');
     grid.innerHTML = '';
-    
     for (let i = 0; i < ledTotal; i++) {
         const led = document.createElement('div');
         led.className = 'led-item';
@@ -1403,607 +1262,290 @@ function renderGrid() {
     }
 }
 
-/**
- * 自动同步当前的 LED 选择 (selectedLeds) 到选中的列表项
- */
 function autoSyncSelectedLedMask(forceRender = false) {
-    if (!currentConfigId) return;
-
+    if (!currentConfigId || currentMode !== 'all') return;
     const idx = configList.findIndex(c => c.id === currentConfigId);
     if (idx !== -1) {
         configList[idx].leds = new Set(selectedLeds); 
-        if (forceRender) { // 仅在需要时重新渲染列表 DOM
-            renderConfigList();
-        }
+        if (forceRender) renderConfigList();
     }
     updateCurrentDrawDisplay(); 
 }
 
-// --- 色轮功能实现 (优化重绘逻辑) ---
-
-/**
- * 只绘制色轮背景（只在 V 值改变时调用）
- * 【核心修改：将 V 固定为 255，使色轮不随亮度滑块变暗】
- */
+// --- Color Wheel ---
 function drawColorWheelBackground() {
     const canvas = document.getElementById('colorWheelCanvas');
     const ctx = canvas.getContext('2d');
-    const size = canvas.width;
-    const center = size / 2;
-    const radius = center - 5; 
-    
-    // *** 核心修改：将 V 固定为 255 (最大亮度) ***
+    const size = canvas.width, center = size / 2, radius = center - 5; 
     const v_max = 255; 
 
-    // 绘制颜色像素
     for (let x = 0; x < size; x++) {
         for (let y = 0; y < size; y++) {
-            const dx = x - center;
-            const dy = y - center;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-
+            const dx = x - center, dy = y - center, dist = Math.sqrt(dx * dx + dy * dy);
             if (dist <= radius) {
                 let angle = Math.atan2(dy, dx);
-                let h_norm = (angle / (2 * Math.PI) + 1) % 1; 
-                let h_255 = Math.round(h_norm * 255);
-
-                let s_norm = dist / radius; 
-                let s_255 = Math.round(s_norm * 255);
-
-                // 使用固定的 v_max=255 来计算色轮背景颜色
-                const { r, g, b } = hsvToRgb(h_255, s_255, v_max);
-                
+                let h = Math.round(((angle / (2 * Math.PI) + 1) % 1) * 255);
+                let s = Math.round((dist / radius) * 255);
+                const { r, g, b } = hsvToRgb(h, s, v_max);
                 ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                ctx.fillRect(x, y, 1, 1);
-            } else {
-                ctx.fillStyle = '#ffffff'; 
                 ctx.fillRect(x, y, 1, 1);
             }
         }
     }
-    // 绘制灰色边框
-    ctx.beginPath();
-    ctx.arc(center, center, radius, 0, 2 * Math.PI, false);
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#ccc';
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(center, center, radius, 0, 2 * Math.PI);
+    ctx.lineWidth = 1; ctx.strokeStyle = '#ccc'; ctx.stroke();
 }
 
-/**
- * 只更新色轮指示器（在 H/S/V 改变时调用，H/S 变化不重绘背景，V 变化时重绘）
- */
 function updateWheelIndicator(h, s) {
-    // 关键优化：只有 V 变化时才调用 drawColorWheelBackground()
-    if (vChanged) {
-        drawColorWheelBackground();
-        vChanged = false;
-    }
-
+    if (vChanged) { drawColorWheelBackground(); vChanged = false; }
     const canvas = document.getElementById('colorWheelCanvas');
     const ctx = canvas.getContext('2d');
-    const size = canvas.width;
-    const center = size / 2;
-    const radius = center - 5;
+    const size = canvas.width, center = size / 2, radius = center - 5;
     
-    // 清除旧的指示器
     ctx.clearRect(0, 0, size, size);
-    drawColorWheelBackground(); // 重新绘制背景，确保指示器不残留
+    drawColorWheelBackground();
     
-
-    // Convert H/S back to position (x, y)
-    let h_norm = h / 255;
-    let s_norm = s / 255;
-    
-    let angle = h_norm * 2 * Math.PI; 
-    let dist = s_norm * radius;
-    
+    let angle = (h / 255) * 2 * Math.PI; 
+    let dist = (s / 255) * radius;
     const x = center + dist * Math.cos(angle);
     const y = center + dist * Math.sin(angle);
     
-    // Draw indicator circle (黑边+白内圈+颜色中心点)
-    ctx.beginPath();
-    ctx.arc(x, y, 8, 0, 2 * Math.PI, false); // 指示器大小
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#333'; // 深色外圈
-    ctx.fillStyle = 'rgba(255,255,255,0.8)'; // 浅色内圈
-    ctx.fill();
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, 8, 0, 2 * Math.PI);
+    ctx.lineWidth = 3; ctx.strokeStyle = '#333'; ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fill(); ctx.stroke();
 
-    // Draw the final selected color dot in the center of the indicator
     const { r, g, b } = hsvToRgb(h, s, currentSettings.v);
-    ctx.beginPath();
-    ctx.arc(x, y, 4, 0, 2 * Math.PI, false);
-    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI);
+    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`; ctx.fill();
 }
-
 
 function handleWheelInteraction(e) {
     const canvas = document.getElementById('colorWheelCanvas');
     const rect = canvas.getBoundingClientRect(); 
-    
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const size = canvas.width;
-    const center = size / 2;
-    const radius = center - 5;
-
-    const dx = x - center;
-    const dy = y - center;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const size = canvas.width, center = size / 2, radius = center - 5;
+    const dx = x - center, dy = y - center, dist = Math.sqrt(dx*dx + dy*dy);
     let angle = Math.atan2(dy, dx); 
-    let h_norm = (angle + 2 * Math.PI) % (2 * Math.PI) / (2 * Math.PI); 
-    let h_255 = Math.round(h_norm * 255);
+    let h = Math.round(((angle + 2 * Math.PI) % (2 * Math.PI) / (2 * Math.PI)) * 255);
+    let s = Math.round(Math.min(dist, radius) / radius * 255);
 
-    let effectiveDist = Math.min(dist, radius);
-    let s_norm = effectiveDist / radius;
-    let s_255 = Math.round(s_norm * 255);
-
-    // NEW: 使用 updateColorSettings 来确保 RGB 也被更新
-    updateColorSettings('h', h_255);
-    updateColorSettings('s', s_255);
-    
-    // 关键优化：拖动时只进行轻量级同步
-    updateWheelIndicator(h_255, s_255); 
+    updateColorSettings('h', h);
+    updateColorSettings('s', s);
+    updateWheelIndicator(h, s); 
     syncLightweightUIFromSettings(); 
 }
 
 function setupColorWheel() {
     const canvas = document.getElementById('colorWheelCanvas');
-    drawColorWheelBackground(); // 首次加载绘制背景
-    
-    const onMove = (e) => {
-        if (isDraggingWheel) {
-            handleWheelInteraction(e);
-        }
-    };
-    
+    drawColorWheelBackground(); 
+    const onMove = (e) => { if (isDraggingWheel) handleWheelInteraction(e); };
     const onDown = (e) => {
-        isDraggingWheel = true;
-        handleWheelInteraction(e); 
-        e.preventDefault(); 
-        
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
+        isDraggingWheel = true; handleWheelInteraction(e); e.preventDefault(); 
+        document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
     };
-
     const onUp = () => {
         if (isDraggingWheel) {
-            isDraggingWheel = false;
-            // 关键优化：释放后执行重量级同步，主要用于列表更新
-            syncHeavyUIFromSettings(); 
-            
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onUp);
+            isDraggingWheel = false; syncHeavyUIFromSettings(); 
+            document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp);
         }
     };
-    
     canvas.addEventListener('mousedown', onDown);
-    
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        onDown(e.touches[0]);
-    }, { passive: false });
-    document.addEventListener('touchmove', (e) => {
-        if (isDraggingWheel) onMove(e.touches[0]);
-    }, { passive: false });
-    document.addEventListener('touchend', onUp);
-
-    // =================================================================
-    // NEW: 鼠标滚轮调节亮度 (V) 逻辑
-    // =================================================================
     canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
-        
-        let currentValue = currentSettings.v;
-        const step = 5; // 步进为 5
-        
-        if (e.deltaY < 0) {
-            // 向上滚动 (通常是增加亮度)
-            currentValue += step; 
-        } else {
-            // 向下滚动 (通常是降低亮度)
-            currentValue -= step; 
-        }
-        
-        // 确保值在 0 到 255 之间
-        currentValue = Math.min(255, Math.max(0, currentValue));
-
-        // 如果值没有变化，则无需继续
-        if (currentValue === currentSettings.v) return;
-
-        // 1. 更新颜色设置 (这将设置 vChanged=true，并更新 RGB 状态)
-        updateColorSettings('v', currentValue); 
-        
-        // 2. 更新轻量级 UI (滑块、输入框、LED 颜色、触发实时同步)
-        syncLightweightUIFromSettings();
-        
-        // 3. 更新重量级 UI (强制重绘色轮指示器和背景，更新列表)
-        syncHeavyUIFromSettings(); 
+        let val = currentSettings.v;
+        if (e.deltaY < 0) val += 5; else val -= 5;
+        updateColorSettings('v', val);
+        syncLightweightUIFromSettings(); syncHeavyUIFromSettings(); 
     });
 }
-
-// --- UI 逻辑：输入框同步与预览 (优化分离 input/change) ---
 
 function setupSyncInputs() {
-    const keyMap = {
-        'hue': 'h', 'sat': 's', 'val': 'v', 'spd': 'spd', 
-        'red': 'r', 'green': 'g', 'blue': 'b'
-    };
-
+    const keyMap = { 'hue': 'h', 'sat': 's', 'val': 'v', 'spd': 'spd', 'red': 'r', 'green': 'g', 'blue': 'b' };
     Object.entries(keyMap).forEach(([prefix, key]) => {
         const range = document.getElementById(`${prefix}Range`);
-        const num = document.getElementById(`${prefix}Input`);
+        const textInput = document.getElementById(`${prefix}Input`);
+        if (!range || !textInput) return;
 
-        if (!range || !num) return; 
-
-        // 统一的同步逻辑：更新 currentSettings
-        const syncHandler = (val, isContinuous) => {
-            val = parseInt(val);
-            if (isNaN(val)) return;
-
-            // NEW: 使用统一的颜色状态更新函数
-            updateColorSettings(key, val); 
-
+        const sync = (valStr, isContinuous) => {
+            // 这里我们通过 range.value 来获取标准化的十进制数值，或者通过 textInput 解析
+            let val;
             if (isContinuous) {
-                // 拖动时，只更新轻量级 UI
-                syncLightweightUIFromSettings();
+                val = parseInt(valStr); // 来自 range 必定是数字
             } else {
-                // 释放或离散改变时，执行完整同步
-                syncLightweightUIFromSettings(); // 确保最终值同步
-                syncHeavyUIFromSettings();
+                val = parseValue(valStr); // 来自 textInput 可能是 hex
             }
+            
+            updateColorSettings(key, val); 
+            if (isContinuous) syncLightweightUIFromSettings();
+            else { syncLightweightUIFromSettings(); syncHeavyUIFromSettings(); }
         };
 
-        // 1. Range 滑块 (拖动: 轻量级; 释放: 重量级)
-        range.addEventListener('input', (e) => syncHandler(e.target.value, true));
-        range.addEventListener('change', (e) => syncHandler(e.target.value, false));
-
-        // 2. 数字输入框 (改变: 重量级)
-        num.addEventListener('input', (e) => {
-            // 实时更新 currentSettings 并触发轻量级同步
-            const val = parseInt(e.target.value);
-            if (!isNaN(val)) {
-                // NEW: 使用统一的颜色状态更新函数 (但只触发轻量级同步)
-                updateColorSettings(key, val); 
-            }
-            syncLightweightUIFromSettings();
+        range.addEventListener('input', (e) => sync(e.target.value, true));
+        range.addEventListener('change', (e) => sync(e.target.value, false));
+        
+        textInput.addEventListener('change', (e) => {
+            sync(e.target.value, false);
+            // 强制重新格式化输入框，以防用户输入不规范
+            textInput.value = formatValue(currentSettings[key]);
         });
         
-        // change 事件用于确保数据最终落定并更新列表（重量级同步）
-        num.addEventListener('change', (e) => syncHandler(e.target.value, false));
-
-
-        // 3. 鼠标滚轮调节 (离散改变: 重量级)
-        const scrollHandler = (e) => {
-            e.preventDefault(); 
-            let currentValue = parseInt(e.target.value);
-            const step = e.shiftKey ? 10 : 1; 
-            
-            if (e.deltaY < 0) {
-                currentValue += step; 
-            } else {
-                currentValue -= step; 
-            }
-            
-            // NEW: 使用统一的颜色状态更新函数
-            updateColorSettings(key, currentValue); 
-            
-            // 更新 UI 并触发重绘
-            syncLightweightUIFromSettings();
-            syncHeavyUIFromSettings();
-        };
-
-        range.addEventListener('wheel', scrollHandler);
-        num.addEventListener('wheel', scrollHandler);
+        textInput.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            let val = parseValue(textInput.value);
+            const step = e.shiftKey ? 10 : 1;
+            if (e.deltaY < 0) val += step; else val -= step;
+            sync(val, false);
+        });
     });
 }
 
-/**
- * 自动同步顶部设置 (HSV/Speed) 到当前选中的列表项
- */
 function autoSyncSelectedConfig(forceRender = false) {
-    if (!currentConfigId) return;
-
+    if (!currentConfigId || currentMode !== 'all') return;
     const idx = configList.findIndex(c => c.id === currentConfigId);
     if (idx !== -1) {
-        // 总是更新数据
         configList[idx].h = currentSettings.h;
         configList[idx].s = currentSettings.s;
         configList[idx].v = currentSettings.v;
         configList[idx].spd = currentSettings.spd;
-        
-        // 关键优化：只有在释放滑块或被强制时才渲染列表
-        if (forceRender) {
-            renderConfigList();
-        }
+        if (forceRender) renderConfigList();
     }
 }
 
-// --- 列表管理与事件监听 (修改 renderConfigList) ---
-
+// --- Config List ---
 async function sendAllConfigs() {
-    if (!device || !device.opened) {
-        showCustomAlert("设备未连接", "请先连接设备，才能发送全部配置！");
-        return;
-    }
-
-    if (configList.length === 0) {
-        showCustomAlert("列表为空", "请先添加配置到列表中。");
-        return;
-    }
+    if (currentMode !== 'all') return; // 只在全灯模式有效
+    if (!device || !device.opened) { showCustomAlert("设备未连接", "请先连接设备"); return; }
+    if (configList.length === 0) { showCustomAlert("列表为空", "请先添加配置"); return; }
     
-    const total = configList.length;
-    console.log(`开始发送 ${total} 个配置...`);
-    window.showCustomAlert("正在发送配置", `正在依次发送 0/${total} 个配置到键盘...`, true); 
-    
-    const delay = 50; 
-    let success = true;
-
-    for (let i = 0; i < total; i++) {
+    showCustomAlert("正在发送", `发送 0/${configList.length}`, true); 
+    for (let i = 0; i < configList.length; i++) {
         const cfg = configList[i];
-        
         const mask = generateBitmask(cfg.leds);
-        const result = await sendDataToDevice(0xB0, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
-        
-        if (!result) {
-            success = false;
-            break;
-        }
-
-        document.getElementById('alertMessage').textContent = `正在依次发送 ${i + 1}/${total} 个配置到键盘...`;
-        
-        if (i < total - 1) { 
-            await new Promise(resolve => setTimeout(resolve, delay));
-        }
+        const res = await sendDataToDevice(0xB0, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
+        if (!res) break;
+        document.getElementById('alertMessage').textContent = `发送 ${i + 1}/${configList.length}`;
+        if (i < configList.length - 1) await new Promise(r => setTimeout(r, 50));
     }
-    
     document.getElementById('customAlert').style.display = 'none';
-    if (success) {
-        console.log("全部配置发送流程成功结束。");
-    } else {
-        console.log("全部配置发送流程因失败而中断。");
-    }
 }
-
 
 function setupEventListeners() {
     document.getElementById('connectBtn').addEventListener('click', connectDevice);
     document.getElementById('sendAllBtn').addEventListener('click', sendAllConfigs); 
-    
-    // 全选/清空
     document.getElementById('selectAllBtn').addEventListener('click', () => {
         for(let i=0; i<ledTotal; i++) selectedLeds.add(i);
-        renderGrid(); 
-        autoSyncSelectedLedMask(true);
-        updateCurrentDrawDisplay();
-        triggerRealTimeSync();
+        renderGrid(); autoSyncSelectedLedMask(true); updateCurrentDrawDisplay(); triggerRealTimeSync();
     });
     document.getElementById('clearSelectionBtn').addEventListener('click', () => {
         selectedLeds.clear();
-        renderGrid(); 
-        autoSyncSelectedLedMask(true);
-        updateCurrentDrawDisplay();
-        triggerRealTimeSync();
+        renderGrid(); autoSyncSelectedLedMask(true); updateCurrentDrawDisplay(); triggerRealTimeSync();
     });
-
-    // 添加配置
     document.getElementById('addConfigBtn').addEventListener('click', () => {
-        const config = {
-            id: Date.now(),
-            leds: new Set(selectedLeds), 
-            h: currentSettings.h,
-            s: currentSettings.s,
-            v: currentSettings.v,
-            spd: currentSettings.spd
-        };
-        configList.push(config);
-        renderConfigList();
-        loadConfig(configList.length - 1);
+        if (currentMode !== 'all') {
+            showCustomAlert("提示", "指示灯模式下请直接使用保存按钮，不需要添加到列表。");
+            return;
+        }
+        configList.push({
+            id: Date.now(), leds: new Set(selectedLeds), 
+            h: currentSettings.h, s: currentSettings.s, v: currentSettings.v, spd: currentSettings.spd
+        });
+        renderConfigList(); loadConfig(configList.length - 1);
     });
+    document.getElementById('closeLightBtn').addEventListener('click', () => sendDataToDevice(0xB1, 0, 0, 0, 0, null));
 
-    // 底部关闭按钮
-    document.getElementById('closeLightBtn').addEventListener('click', () => {
-        sendDataToDevice(0xB1, 0, 0, 0, 0, null);
-    });
-
-    // 简易自定义 Alert 模态框 
     function createCustomAlert() {
-        if (document.getElementById('customAlert')) return;
-
-        const alertDiv = document.createElement('div');
-        alertDiv.id = 'customAlert';
-        alertDiv.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); display: none; /* 浅色模式下降低背景透明度 */
-            justify-content: center; align-items: center; z-index: 1000;
-        `;
-        alertDiv.innerHTML = `
-            <div style="background: var(--panel-bg); color: var(--text-color); padding: 25px; border-radius: 8px; max-width: 400px; width: 90%; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-                <h3 id="alertTitle" style="color: var(--accent-color); margin-top: 0;"></h3>
-                <p id="alertMessage" style="font-size: 0.95em; margin-bottom: 20px;"></p>
-                <div id="alertLoader" style="display: none; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-color); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
-                <button id="alertCloseBtn" style="float: right; padding: 8px 15px;">确定</button>
-            </div>
-        `;
-        document.body.appendChild(alertDiv);
-        document.getElementById('alertCloseBtn').onclick = () => alertDiv.style.display = 'none';
-        alertDiv.onclick = (e) => { 
-            const closeBtn = document.getElementById('alertCloseBtn');
-            if (e.target === alertDiv && closeBtn.style.display !== 'none') {
-                alertDiv.style.display = 'none';
-            }
-        };
-
-        const style = document.createElement('style');
-        style.innerHTML = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
-        document.head.appendChild(style);
+        const d = document.createElement('div');
+        d.id = 'customAlert';
+        d.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;`;
+        d.innerHTML = `<div style="background:#fff; color:#333; padding:25px; border-radius:8px; max-width:400px; width:90%; box-shadow:0 5px 15px rgba(0,0,0,0.3);"><h3 id="alertTitle" style="color:#1e88e5;margin-top:0;"></h3><p id="alertMessage"></p><div id="alertLoader" style="display:none; border:4px solid #f3f3f3; border-top:4px solid #1e88e5; border-radius:50%; width:20px; height:20px; animation:spin 1s linear infinite; margin:0 auto 10px;"></div><button id="alertCloseBtn" style="float:right; padding:8px 15px;">确定</button></div>`;
+        document.body.appendChild(d);
+        document.getElementById('alertCloseBtn').onclick = () => d.style.display = 'none';
+        const s = document.createElement('style'); s.innerHTML = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`; document.head.appendChild(s);
     }
     createCustomAlert();
-    window.showCustomAlert = (title, message, isLoading = false) => {
-        const alertDiv = document.getElementById('customAlert');
-        document.getElementById('alertTitle').textContent = title;
-        document.getElementById('alertMessage').textContent = message;
-        
-        const closeBtn = document.getElementById('alertCloseBtn');
-        const loader = document.getElementById('alertLoader');
-
-        if (isLoading) {
-            loader.style.display = 'block';
-            closeBtn.style.display = 'none';
-        } else {
-            loader.style.display = 'none';
-            closeBtn.style.display = 'block';
-        }
-
-        alertDiv.style.display = 'flex';
+    window.showCustomAlert = (t, m, l=false) => {
+        const d = document.getElementById('customAlert');
+        document.getElementById('alertTitle').textContent = t;
+        document.getElementById('alertMessage').textContent = m;
+        document.getElementById('alertLoader').style.display = l ? 'block' : 'none';
+        document.getElementById('alertCloseBtn').style.display = l ? 'none' : 'block';
+        d.style.display = 'flex';
     };
 }
 
 function renderConfigList() {
     const listEl = document.getElementById('configList');
     listEl.innerHTML = '';
-
     configList.forEach((config, index) => {
         const row = document.createElement('div');
         row.className = 'config-row';
         if (config.id === currentConfigId) row.classList.add('selected');
-
-        const ledCount = config.leds.size;
-        
-        // --- Calculate RGB ---
         const { r, g, b } = hsvToRgb(config.h, config.s, config.v);
+        const current = calculateCurrent(config.leds.size, config.h, config.s, config.v);
         
-        // 使用 CSS 中定义的固定样式
-        const rText = `${r}`;
-        const gText = `${g}`;
-        const bText = `${b}`;
-        // -----------------------------------------------------------
-
-        const currentDraw = calculateCurrent(ledCount, config.h, config.s, config.v);
-        const currentStyleColor = parseFloat(currentDraw) > 1000 ? '#d9534f' : '#f0ad4e'; 
-
         row.innerHTML = `
-            <span title="选中 ${ledCount} 颗">${ledCount} 颗</span>
-            <input type="number" class="row-input" data-key="h" value="${config.h}" min="0" max="255" onfocus="this.select()">
-            <input type="number" class="row-input" data-key="s" value="${config.s}" min="0" max="255" onfocus="this.select()">
-            <input type="number" class="row-input" data-key="v" value="${config.v}" min="0" max="255" onfocus="this.select()">
-            
-            <span class="config-color-display" title="Red">${rText}</span> 
-            <span class="config-color-display" title="Green">${gText}</span>
-            <span class="config-color-display" title="Blue">${bText}</span>
-            
-            <input type="number" class="row-input" data-key="spd" value="${config.spd}" min="0" max="255" onfocus="this.select()">
-            <span style="text-align: right; color: ${currentStyleColor};" title="单通道最高 20mA, 总最高 60mA">
-                ${currentDraw} mA
-            </span>
+            <span>${config.leds.size} 颗</span>
+            <input type="number" class="row-input" data-key="h" value="${config.h}" min="0" max="255">
+            <input type="number" class="row-input" data-key="s" value="${config.s}" min="0" max="255">
+            <input type="number" class="row-input" data-key="v" value="${config.v}" min="0" max="255">
+            <span class="config-color-display">${r}</span> 
+            <span class="config-color-display">${g}</span>
+            <span class="config-color-display">${b}</span>
+            <input type="number" class="row-input" data-key="spd" value="${config.spd}" min="0" max="255">
+            <span style="text-align: right; color: ${current > 1000 ? '#d9534f' : '#f0ad4e'};">${current} mA</span>
             <div class="config-row-controls">
-                <button class="btn-icon" onclick="event.stopPropagation(); window.sendConfig(${index})" title="发送该配置">发送</button>
-                <button class="btn-icon danger" onclick="event.stopPropagation(); window.deleteConfig(${index})" title="删除该配置">-</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); window.sendConfig(${index})" title="发送">发送</button>
+                <button class="btn-icon danger" onclick="event.stopPropagation(); window.deleteConfig(${index})" title="删除">-</button>
             </div>
         `;
-        
         row.addEventListener('click', () => loadConfig(index));
-
-        const inputs = row.querySelectorAll('.row-input');
-        inputs.forEach(input => {
+        
+        row.querySelectorAll('.row-input').forEach(input => {
             const key = input.dataset.key;
-            
-            const syncListRow = (val) => {
-                val = parseInt(val);
-                if (isNaN(val) || val < 0) val = 0; if (val > 255) val = 255;
-                input.value = val;
-                configList[index][key] = val;
-                
-                // 如果当前正在编辑这一行，需要同步到顶部控件 (实时同步)
+            input.addEventListener('change', (e) => {
+                let val = parseInt(e.target.value);
+                if (isNaN(val)) val = 0;
+                configList[index][key] = Math.min(255, Math.max(0, val));
                 if (config.id === currentConfigId) {
-                    // 使用 updateColorSettings 来确保 HSV/RGB 状态一致
                     updateColorSettings(key, val); 
-                    // 使用完整同步，因为列表项的输入是离散的
-                    syncAllInputsFromSettings(); 
+                    syncAllInputsFromSettings();
                 }
-                // 重新渲染列表以更新该行的电流显示和RGB显示
-                renderConfigList(); 
-            };
-
-            input.addEventListener('change', (e) => syncListRow(e.target.value));
-            input.addEventListener('input', (e) => syncListRow(e.target.value)); // 实时更新输入
-            
-            // 滚轮调节
-            input.addEventListener('wheel', (e) => {
-                e.preventDefault(); 
-                let currentValue = parseInt(e.target.value);
-                const step = e.shiftKey ? 10 : 1;
-                
-                if (e.deltaY < 0) {
-                    currentValue += step; 
-                } else {
-                    currentValue -= step; 
-                }
-                syncListRow(currentValue);
+                renderConfigList();
             });
+            input.addEventListener('click', (e) => e.stopPropagation());
         });
-
         listEl.appendChild(row);
     });
 }
 
-// 全局函数供HTML onclick调用
 window.deleteConfig = (index) => {
-    if (configList[index].id === currentConfigId) {
-        currentConfigId = null; 
-    }
+    if (configList[index].id === currentConfigId) currentConfigId = null;
     configList.splice(index, 1);
-    renderConfigList();
-    updateAllActiveLedColors(); 
-    updateCurrentDrawDisplay(); 
+    renderConfigList(); updateAllActiveLedColors(); updateCurrentDrawDisplay();
 };
 
 window.sendConfig = (index) => {
     const cfg = configList[index];
-    
     const mask = generateBitmask(cfg.leds);
     sendDataToDevice(0xB0, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
-    
-    // 发送后，顺便加载这个配置到编辑器
     loadConfig(index);
 };
 
 function loadConfig(index) {
+    // 只能在全灯模式加载列表配置
+    if (currentMode !== 'all') {
+        const allBtn = document.querySelector('.mode-btn[data-mode="all"]');
+        if (allBtn) allBtn.click();
+    }
+
     const cfg = configList[index];
     currentConfigId = cfg.id;
-    
-    // 恢复 LED 选择
     selectedLeds = new Set(cfg.leds);
-    
-    // 恢复 HSV/Speed 设置
-    currentSettings.h = cfg.h;
-    currentSettings.s = cfg.s;
-    currentSettings.v = cfg.v;
-    currentSettings.spd = cfg.spd;
-    
-    // 触发全面的 UI 同步
-    // 这将：更新 HSV/RGB 状态、更新色轮、更新预览、更新顶部滑块、更新LED网格颜色
+    currentSettings.h = cfg.h; currentSettings.s = cfg.s; currentSettings.v = cfg.v; currentSettings.spd = cfg.spd;
     syncAllInputsFromSettings();
-
-    renderGrid(); 
-    renderConfigList(); 
+    renderGrid(); renderConfigList();
 }
 </script>
 <script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
-<script>
-        // Disable right-click menu and F12/Ctrl+Shift+I/Ctrl+U
-        document.addEventListener('contextmenu',function(e){e.preventDefault();});
-        document.onkeydown = function(e) {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
-                return false;
-            }
-            if (e.keyCode == 116) { // Disable F5 (refresh)
-                e.preventDefault();
-            }
-        };
-    </script>
 </body>
 </html>
