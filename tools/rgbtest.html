@@ -668,6 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupColorWheel(); 
     setupModeControls(); 
     setupFormatSwitch(); 
+    setupIndicatorWheelSupport(); // 新增：指示灯滚轮支持
     
     updateColorSettings('h', currentSettings.h); 
     syncAllInputsFromSettings(); 
@@ -721,6 +722,57 @@ function updateAllInputFormats() {
         if (el && range) {
             el.value = formatValue(range.value);
         }
+    });
+}
+
+// --- 新增：指示灯参数滚轮支持 ---
+function setupIndicatorWheelSupport() {
+    const ids = ['indStartInput', 'indCountInput', 'layerIndexInput'];
+    
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        
+        el.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            // 获取当前值
+            let val = parseValue(el.value);
+            // Shift 按下时步长为 10，否则为 1
+            const step = e.shiftKey ? 10 : 1;
+            
+            if (e.deltaY < 0) {
+                val += step;
+            } else {
+                val -= step;
+            }
+
+            // 确定最大值
+            let maxVal = 255;
+            if (id === 'layerIndexInput') {
+                // 如果已连接并获取到 maxLayers，则限制
+                if (device && device.opened && maxLayers > 0) {
+                    maxVal = maxLayers - 1;
+                }
+            }
+            
+            // 限制范围
+            if (val < 0) val = 0;
+            if (val > maxVal) val = maxVal;
+            
+            // 更新输入框显示
+            el.value = formatValue(val);
+            
+            // 触发变更逻辑
+            if (id === 'layerIndexInput') {
+                // 手动触发 change 事件逻辑
+                 const event = new Event('change');
+                 el.dispatchEvent(event);
+            } else {
+                 const event = new Event('change');
+                 el.dispatchEvent(event);
+            }
+        });
     });
 }
 
@@ -795,10 +847,17 @@ function setupModeControls() {
         let cVal = parseValue(countInput.value);
         
         if (isNaN(sVal) || sVal < 0) sVal = 0;
+        if (sVal > 255) sVal = 255; // 限制 0-255
+
         if (isNaN(cVal) || cVal < 0) cVal = 1;
+        if (cVal > 255) cVal = 255; // 限制 0-255
 
         indicatorSettings[currentMode].start = sVal;
         indicatorSettings[currentMode].count = cVal;
+        
+        // 更新显示（如果输入超过范围）
+        startInput.value = formatValue(sVal);
+        countInput.value = formatValue(cVal);
         
         triggerRealTimeSync(); 
     };
@@ -810,23 +869,26 @@ function setupModeControls() {
         
         if (isNaN(lVal) || lVal < 0) lVal = 0;
         
-        // 限制层数不超过获取到的最大值
-        if (maxLayers > 0 && lVal >= maxLayers) {
-            lVal = maxLayers - 1;
-            showCustomAlert("层数限制", `当前设备最大层数为 ${maxLayers} (索引 0-${maxLayers-1})`);
+        // 限制层数
+        if (maxLayers > 0) {
+            // 已连接设备，限制为 maxLayers - 1
+            if (lVal >= maxLayers) {
+                lVal = maxLayers - 1;
+            }
+        } else {
+            // 未连接或未知，限制 0-255
+            if (lVal > 255) lVal = 255;
         }
 
         indicatorSettings.layer.layerIdx = lVal;
+        layerInput.value = formatValue(lVal);
         triggerRealTimeSync();
     };
 
-    startInput.addEventListener('change', () => { handleIndInputChange(); startInput.value = formatValue(indicatorSettings[currentMode].start); });
-    countInput.addEventListener('change', () => { handleIndInputChange(); countInput.value = formatValue(indicatorSettings[currentMode].count); });
+    startInput.addEventListener('change', handleIndInputChange);
+    countInput.addEventListener('change', handleIndInputChange);
     
-    layerInput.addEventListener('change', () => { 
-        handleLayerInputChange(); 
-        layerInput.value = formatValue(indicatorSettings.layer.layerIdx); 
-    });
+    layerInput.addEventListener('change', handleLayerInputChange);
 
     saveBtn.addEventListener('click', () => {
         if (currentMode === 'all') return;
@@ -957,12 +1019,17 @@ async function sendIndicatorCommand(isSave) {
     const config = indicatorSettings[currentMode];
     let cmd = 0;
 
-    // 确定命令字 (根据您的要求)
-    switch(currentMode) {
-        case 'caps':  cmd = isSave ? 0xC1 : 0xC0; break;
-        case 'num':   cmd = isSave ? 0xC3 : 0xC2; break;
-        case 'scr':   cmd = isSave ? 0xC5 : 0xC4; break;
-        case 'layer': cmd = isSave ? 0xD1 : 0xD0; break; // 假设 Layer 保存是 D1
+    if (isSave) {
+        // --- 修改点：保存操作统一发送 0xC0 ---
+        cmd = 0xC0;
+    } else {
+        // 预览操作保持原有逻辑 (Caps=C0, Num=C2, Scr=C4, Layer=D0)
+        switch(currentMode) {
+            case 'caps':  cmd = 0xC1; break;
+            case 'num':   cmd = 0xC2; break;
+            case 'scr':   cmd = 0xC3; break;
+            case 'layer': cmd = 0xD0; break; 
+        }
     }
 
     const data = new Uint8Array(32);
@@ -970,17 +1037,15 @@ async function sendIndicatorCommand(isSave) {
     data[1] = cmd;
 
     if (isSave) {
-        // 保存指令：仅发送命令头，后续全0补齐 (根据要求 0xC1 后面00补齐)
-        // 数组初始化时默认就是0，所以这里不需要填数据，直接发送
-        // 0xAB [CMD] 00 00 ...
+        // 保存指令：0xAB C0 ... (根据要求统一)
+        // 此时数据体为 0 即可，或者如果有必要可以填入当前配置
+        // 根据“保存都是发送0xAB C0数据”的描述，这里我们仅确保头部正确
     } else {
-        // 预览指令：发送数据，向后移位
-        // 结构: AB [CMD] [Byte2] [Start] [Count] [H] [S] [V] ...
-        
+        // 预览指令：发送数据
         if (currentMode === 'layer') {
             data[2] = config.layerIdx; // Layer 模式下 data[2] 是层索引
         } else {
-            data[2] = 0x00; // 其他模式下 data[2] 是 00 (向后移位造成的填充)
+            data[2] = 0x00; 
         }
 
         data[3] = config.start; 
@@ -993,11 +1058,12 @@ async function sendIndicatorCommand(isSave) {
     try {
         await device.sendReport(0, data);
         if (isSave) {
-            showCustomAlert("保存成功", `${currentMode.toUpperCase()} 指示灯配置已发送保存指令！`, false);
+            showCustomAlert("保存成功", `配置已保存！(Command: 0x${cmd.toString(16).toUpperCase()})`, false);
             setTimeout(() => document.getElementById('customAlert').style.display='none', 1000);
         }
     } catch (e) {
         console.error(e);
+        if (isSave) showCustomAlert("保存失败", "发送指令时出错");
     }
 }
 
@@ -1090,9 +1156,6 @@ function syncAllInputsFromSettings() {
 // 处理设备发来的数据
 function handleInputReport(e) {
     const data = e.data;
-    // 假设第一个字节是 ReportID 或 Header，如果协议不包含ReportID则直接从0开始
-    // 根据要求: "data[1]是D0表示层指示灯，data[2]表示设置是的那一层的..."
-    // 但此处是处理 "连接发送0x11然后接收到的数据"
     
     // 如果收到的数据长度足够
     if (data.byteLength > 1) {
@@ -1107,6 +1170,14 @@ function handleInputReport(e) {
             const layerInput = document.getElementById('layerIndexInput');
             if (layerInput) {
                 layerInput.title = `层索引 (0-${maxLayers-1})`;
+                // 如果当前值超过了新获取的最大值，重置一下
+                let currentVal = parseValue(layerInput.value);
+                if (currentVal >= maxLayers) {
+                    layerInput.value = formatValue(maxLayers - 1);
+                    // 触发变更更新设置
+                    const event = new Event('change');
+                    layerInput.dispatchEvent(event);
+                }
             }
         }
     }
@@ -1126,6 +1197,8 @@ function updateConnectionStatus(connected) {
         btn.textContent = "连接键盘";
         btn.disabled = false;
         if (device && !connected) device = null;
+        // 重置最大层数状态
+        maxLayers = 0;
     }
 }
 
@@ -1161,7 +1234,6 @@ async function connectDevice() {
             updateConnectionStatus(true);
             
             // 连接成功后，发送 0x11 获取层数
-            // 构造数据: 0x11 00 00... (没有 AB 前缀)
             const infoData = new Uint8Array(32);
             infoData[0] = 0x11;
             await device.sendReport(0, infoData);
