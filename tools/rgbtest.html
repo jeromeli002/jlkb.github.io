@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>灯光控制台</title>
+    <title>QMK灯光控制台</title>
     <style>
         /* 浅色系主题变量 */
         :root {
@@ -490,8 +490,14 @@
             <button class="mode-btn" data-mode="caps">Caps Lock</button>
             <button class="mode-btn" data-mode="num">Num Lock</button>
             <button class="mode-btn" data-mode="scr">Scroll Lock</button>
+            <button class="mode-btn" data-mode="layer">Layer</button>
 
             <div id="indicatorParams" class="indicator-params">
+                <div id="layerParamGroup" style="display:none; align-items:center; gap:5px;">
+                    <label>层:</label>
+                    <input type="text" id="layerIndexInput" value="0" title="层索引 (0-Based)">
+                </div>
+
                 <label>起始:</label>
                 <input type="text" id="indStartInput" value="0" title="起始灯珠索引">
                 <label>覆盖:</label>
@@ -624,8 +630,11 @@ let currentConfigId = null;
 
 // 显示模式: 'dec' 或 'hex'
 let displayMode = 'dec';
-// 当前操作模式: 'all', 'caps', 'num', 'scr'
+// 当前操作模式: 'all', 'caps', 'num', 'scr', 'layer'
 let currentMode = 'all';
+
+// 设备读取到的最大层数
+let maxLayers = 0; 
 
 // 默认配置
 let currentSettings = {
@@ -633,11 +642,12 @@ let currentSettings = {
     r: 255, g: 0, b: 0
 };
 
-// 指示灯单独的配置存储 (Start, Count)
+// 指示灯单独的配置存储 (Start, Count, Layer)
 let indicatorSettings = {
-    caps: { start: 0, count: 1 },
-    num:  { start: 0, count: 1 },
-    scr:  { start: 0, count: 1 }
+    caps:  { start: 0, count: 1 },
+    num:   { start: 0, count: 1 },
+    scr:   { start: 0, count: 1 },
+    layer: { start: 0, count: 1, layerIdx: 0 }
 };
 
 let configList = [];
@@ -656,8 +666,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupSyncInputs();
     setupColorWheel(); 
-    setupModeControls(); // 初始化模式控制
-    setupFormatSwitch(); // 初始化格式切换
+    setupModeControls(); 
+    setupFormatSwitch(); 
     
     updateColorSettings('h', currentSettings.h); 
     syncAllInputsFromSettings(); 
@@ -679,8 +689,6 @@ function parseValue(valStr) {
     if (valStr.toLowerCase().startsWith('0x')) {
         return parseInt(valStr, 16);
     }
-    // 如果没有 0x 前缀，但当前是 hex 模式，尝试解析为 16 进制，否则 10 进制
-    // 这里为了用户体验，如果包含 a-f 则视为 hex，否则根据 displayMode
     if (/[a-f]/i.test(valStr)) return parseInt(valStr, 16);
     return parseInt(valStr); // 默认 10 进制
 }
@@ -694,9 +702,15 @@ function updateAllInputFormats() {
     // 2. 指示灯输入框
     const startInput = document.getElementById('indStartInput');
     const countInput = document.getElementById('indCountInput');
+    const layerInput = document.getElementById('layerIndexInput');
+
     if (currentMode !== 'all') {
-        startInput.value = formatValue(indicatorSettings[currentMode].start);
-        countInput.value = formatValue(indicatorSettings[currentMode].count);
+        const conf = indicatorSettings[currentMode];
+        startInput.value = formatValue(conf.start);
+        countInput.value = formatValue(conf.count);
+        if (currentMode === 'layer') {
+            layerInput.value = formatValue(conf.layerIdx);
+        }
     }
 
     // 3. 颜色/速度输入框
@@ -708,9 +722,6 @@ function updateAllInputFormats() {
             el.value = formatValue(range.value);
         }
     });
-
-    // 4. 列表中的输入框 (如果需要，暂不强制列表也变，列表保持原样或统一)
-    // 为了简单，这里暂不遍历更新列表中的 input，用户编辑时再处理
 }
 
 // --- 模式切换与UI逻辑 ---
@@ -734,13 +745,15 @@ function setupModeControls() {
     const indicatorParams = document.getElementById('indicatorParams');
     const allLedActions = document.getElementById('allLedActions');
     const ledGrid = document.getElementById('ledGrid');
+    const layerGroup = document.getElementById('layerParamGroup');
+    
     const startInput = document.getElementById('indStartInput');
     const countInput = document.getElementById('indCountInput');
+    const layerInput = document.getElementById('layerIndexInput');
     const saveBtn = document.getElementById('saveIndicatorBtn');
 
     btns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // UI Update
             btns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
@@ -748,33 +761,33 @@ function setupModeControls() {
             currentMode = mode;
 
             if (mode === 'all') {
-                // 切换回全灯模式
                 indicatorParams.classList.remove('visible');
                 allLedActions.style.display = 'flex';
                 ledGrid.classList.remove('hidden');
                 document.querySelector('.config-list-container').style.opacity = '1';
                 document.querySelector('.config-list-container').style.pointerEvents = 'auto';
             } else {
-                // 切换到指示灯模式
                 indicatorParams.classList.add('visible');
                 allLedActions.style.display = 'none';
                 ledGrid.classList.add('hidden');
-                
-                // 禁用列表区域以防混淆
                 document.querySelector('.config-list-container').style.opacity = '0.5';
                 document.querySelector('.config-list-container').style.pointerEvents = 'none';
 
-                // 载入该模式的保存值
+                // Layer 输入框可见性
+                if (mode === 'layer') {
+                    layerGroup.style.display = 'flex';
+                    layerInput.value = formatValue(indicatorSettings.layer.layerIdx);
+                } else {
+                    layerGroup.style.display = 'none';
+                }
+
                 startInput.value = formatValue(indicatorSettings[mode].start);
                 countInput.value = formatValue(indicatorSettings[mode].count);
             }
-            
-            // 触发一次同步以发送当前模式的预览
             triggerRealTimeSync();
         });
     });
 
-    // 指示灯输入框事件
     const handleIndInputChange = () => {
         if (currentMode === 'all') return;
         
@@ -787,23 +800,34 @@ function setupModeControls() {
         indicatorSettings[currentMode].start = sVal;
         indicatorSettings[currentMode].count = cVal;
         
-        // 格式化回显
-        // startInput.value = formatValue(sVal);
-        // countInput.value = formatValue(cVal);
-        
-        triggerRealTimeSync(); // 实时预览
+        triggerRealTimeSync(); 
     };
 
-    startInput.addEventListener('change', () => {
-        handleIndInputChange();
-        startInput.value = formatValue(indicatorSettings[currentMode].start);
-    });
-    countInput.addEventListener('change', () => {
-        handleIndInputChange();
-        countInput.value = formatValue(indicatorSettings[currentMode].count);
-    });
+    // Layer 专用输入处理
+    const handleLayerInputChange = () => {
+        if (currentMode !== 'layer') return;
+        let lVal = parseValue(layerInput.value);
+        
+        if (isNaN(lVal) || lVal < 0) lVal = 0;
+        
+        // 限制层数不超过获取到的最大值
+        if (maxLayers > 0 && lVal >= maxLayers) {
+            lVal = maxLayers - 1;
+            showCustomAlert("层数限制", `当前设备最大层数为 ${maxLayers} (索引 0-${maxLayers-1})`);
+        }
+
+        indicatorSettings.layer.layerIdx = lVal;
+        triggerRealTimeSync();
+    };
+
+    startInput.addEventListener('change', () => { handleIndInputChange(); startInput.value = formatValue(indicatorSettings[currentMode].start); });
+    countInput.addEventListener('change', () => { handleIndInputChange(); countInput.value = formatValue(indicatorSettings[currentMode].count); });
     
-    // 保存按钮事件
+    layerInput.addEventListener('change', () => { 
+        handleLayerInputChange(); 
+        layerInput.value = formatValue(indicatorSettings.layer.layerIdx); 
+    });
+
     saveBtn.addEventListener('click', () => {
         if (currentMode === 'all') return;
         sendIndicatorCommand(true); // true = save
@@ -910,7 +934,6 @@ function updateColorPreview() {
 }
 
 function updateCurrentDrawDisplay() {
-    // 只有全灯模式计算电流才有意义，或者指示灯模式计算那几颗
     let numLeds = 0;
     if (currentMode === 'all') {
         numLeds = selectedLeds.size;
@@ -924,7 +947,7 @@ function updateCurrentDrawDisplay() {
 // --- 数据发送与同步 ---
 
 /**
- * 发送指示灯数据 (Caps/Num/Scr)
+ * 发送指示灯数据 (Caps/Num/Scr/Layer)
  * @param {boolean} isSave 是否是保存操作 (false=预览)
  */
 async function sendIndicatorCommand(isSave) {
@@ -934,27 +957,43 @@ async function sendIndicatorCommand(isSave) {
     const config = indicatorSettings[currentMode];
     let cmd = 0;
 
-    // 确定命令字
+    // 确定命令字 (根据您的要求)
     switch(currentMode) {
-        case 'caps': cmd = isSave ? 0xC1 : 0xC0; break;
-        case 'num':  cmd = isSave ? 0xC3 : 0xC2; break;
-        case 'scr':  cmd = isSave ? 0xC5 : 0xC4; break;
+        case 'caps':  cmd = isSave ? 0xC1 : 0xC0; break;
+        case 'num':   cmd = isSave ? 0xC3 : 0xC2; break;
+        case 'scr':   cmd = isSave ? 0xC5 : 0xC4; break;
+        case 'layer': cmd = isSave ? 0xD1 : 0xD0; break; // 假设 Layer 保存是 D1
     }
 
     const data = new Uint8Array(32);
     data[0] = 0xAB;
     data[1] = cmd;
-    data[2] = config.start; // Byte 2: Start Index
-    data[3] = config.count; // Byte 3: Count
-    data[4] = currentSettings.h;
-    data[5] = currentSettings.s;
-    data[6] = currentSettings.v;
-    // 剩余补0 (默认即0)
+
+    if (isSave) {
+        // 保存指令：仅发送命令头，后续全0补齐 (根据要求 0xC1 后面00补齐)
+        // 数组初始化时默认就是0，所以这里不需要填数据，直接发送
+        // 0xAB [CMD] 00 00 ...
+    } else {
+        // 预览指令：发送数据，向后移位
+        // 结构: AB [CMD] [Byte2] [Start] [Count] [H] [S] [V] ...
+        
+        if (currentMode === 'layer') {
+            data[2] = config.layerIdx; // Layer 模式下 data[2] 是层索引
+        } else {
+            data[2] = 0x00; // 其他模式下 data[2] 是 00 (向后移位造成的填充)
+        }
+
+        data[3] = config.start; 
+        data[4] = config.count;
+        data[5] = currentSettings.h;
+        data[6] = currentSettings.s;
+        data[7] = currentSettings.v;
+    }
 
     try {
         await device.sendReport(0, data);
         if (isSave) {
-            showCustomAlert("保存成功", `${currentMode.toUpperCase()} 指示灯配置已保存！`, false);
+            showCustomAlert("保存成功", `${currentMode.toUpperCase()} 指示灯配置已发送保存指令！`, false);
             setTimeout(() => document.getElementById('customAlert').style.display='none', 1000);
         }
     } catch (e) {
@@ -964,17 +1003,14 @@ async function sendIndicatorCommand(isSave) {
 
 
 async function triggerRealTimeSync() {
-    // 检查模式
     if (currentMode !== 'all') {
-        // 指示灯模式：直接发送预览，忽略同步开关
-        // 为了防止过于频繁，可以加防抖，但这里为了响应速度直接发
         if (device && device.opened) {
             sendIndicatorCommand(false); // 发送预览
         }
         return;
     }
 
-    // 全灯模式逻辑 (原逻辑)
+    // 全灯模式逻辑
     const syncCheckbox = document.getElementById('realtimeSyncToggle');
     if (!syncCheckbox || !syncCheckbox.checked || !device || !device.opened || !selectedLeds.size) return;
 
@@ -1006,7 +1042,7 @@ function syncLightweightUIFromSettings() {
 
         range.value = val;
         updateRangeProgress(range, val);
-        textInput.value = formatValue(val); // 使用 formatValue 处理 Hex
+        textInput.value = formatValue(val);
         
         if (prefix === 'hue') updateHueProgress(range, val);
     });
@@ -1028,7 +1064,7 @@ function syncLightweightUIFromSettings() {
 
     updateColorPreview();
     if (!isDraggingWheel) updateWheelIndicator(currentSettings.h, currentSettings.s);
-    if (currentMode === 'all') updateAllActiveLedColors(); // 仅全灯模式更新网格颜色
+    if (currentMode === 'all') updateAllActiveLedColors();
     updateCurrentDrawDisplay();
     triggerRealTimeSync();
 }
@@ -1050,6 +1086,32 @@ function syncAllInputsFromSettings() {
 }
 
 // --- WebHID ---
+
+// 处理设备发来的数据
+function handleInputReport(e) {
+    const data = e.data;
+    // 假设第一个字节是 ReportID 或 Header，如果协议不包含ReportID则直接从0开始
+    // 根据要求: "data[1]是D0表示层指示灯，data[2]表示设置是的那一层的..."
+    // 但此处是处理 "连接发送0x11然后接收到的数据"
+    
+    // 如果收到的数据长度足够
+    if (data.byteLength > 1) {
+        // 读取第二个字节 (Index 1) 作为最大层数
+        const receivedVal = data.getUint8(1);
+        
+        // 简单的判断：如果收到的值看起来合理 (比如 < 32)，则认为是层数
+        if (receivedVal > 0 && receivedVal < 32) {
+            maxLayers = receivedVal;
+            console.log("Device Max Layers:", maxLayers);
+            // 更新 UI 提示或重置输入框
+            const layerInput = document.getElementById('layerIndexInput');
+            if (layerInput) {
+                layerInput.title = `层索引 (0-${maxLayers-1})`;
+            }
+        }
+    }
+}
+
 function updateConnectionStatus(connected) {
     const statusEl = document.getElementById('connectionStatus');
     const btn = document.getElementById('connectBtn');
@@ -1075,22 +1137,39 @@ async function connectDevice() {
             const newDevice = devices[0];
             if (device) {
                 if (disconnectListener) navigator.hid.removeEventListener('disconnect', disconnectListener);
-                if (device.opened) await device.close();
+                if (device.opened) {
+                    // 移除旧的 report 监听器
+                    device.removeEventListener('inputreport', handleInputReport);
+                    await device.close();
+                }
             }
             device = newDevice;
             if (!device.opened) await device.open();
             
+            // 监听数据返回
+            device.addEventListener('inputreport', handleInputReport);
+
             disconnectListener = (e) => {
                 if (e.device === device) {
                     navigator.hid.removeEventListener('disconnect', disconnectListener); 
+                    device.removeEventListener('inputreport', handleInputReport);
                     updateConnectionStatus(false);
                 }
             };
             navigator.hid.addEventListener('disconnect', disconnectListener);
+            
             updateConnectionStatus(true);
+            
+            // 连接成功后，发送 0x11 获取层数
+            // 构造数据: 0x11 00 00... (没有 AB 前缀)
+            const infoData = new Uint8Array(32);
+            infoData[0] = 0x11;
+            await device.sendReport(0, infoData);
+
         } else {
             if (device && device.opened) {
                 if (disconnectListener) navigator.hid.removeEventListener('disconnect', disconnectListener);
+                device.removeEventListener('inputreport', handleInputReport);
                 await device.close();
                 updateConnectionStatus(false);
             }
@@ -1156,7 +1235,7 @@ function initLedGrid() {
         if (isNaN(val) || val < 1) val = 1;
         if (val > 208) val = 208;
         
-        input.value = formatValue(val); // 格式化回显
+        input.value = formatValue(val); 
         ledTotal = val;
         
         selectedLeds = new Set([...selectedLeds].filter(i => i < ledTotal));
@@ -1367,12 +1446,11 @@ function setupSyncInputs() {
         if (!range || !textInput) return;
 
         const sync = (valStr, isContinuous) => {
-            // 这里我们通过 range.value 来获取标准化的十进制数值，或者通过 textInput 解析
             let val;
             if (isContinuous) {
-                val = parseInt(valStr); // 来自 range 必定是数字
+                val = parseInt(valStr); 
             } else {
-                val = parseValue(valStr); // 来自 textInput 可能是 hex
+                val = parseValue(valStr); 
             }
             
             updateColorSettings(key, val); 
@@ -1385,7 +1463,6 @@ function setupSyncInputs() {
         
         textInput.addEventListener('change', (e) => {
             sync(e.target.value, false);
-            // 强制重新格式化输入框，以防用户输入不规范
             textInput.value = formatValue(currentSettings[key]);
         });
         
@@ -1413,7 +1490,7 @@ function autoSyncSelectedConfig(forceRender = false) {
 
 // --- Config List ---
 async function sendAllConfigs() {
-    if (currentMode !== 'all') return; // 只在全灯模式有效
+    if (currentMode !== 'all') return; 
     if (!device || !device.opened) { showCustomAlert("设备未连接", "请先连接设备"); return; }
     if (configList.length === 0) { showCustomAlert("列表为空", "请先添加配置"); return; }
     
@@ -1532,12 +1609,10 @@ window.sendConfig = (index) => {
 };
 
 function loadConfig(index) {
-    // 只能在全灯模式加载列表配置
     if (currentMode !== 'all') {
         const allBtn = document.querySelector('.mode-btn[data-mode="all"]');
         if (allBtn) allBtn.click();
     }
-
     const cfg = configList[index];
     currentConfigId = cfg.id;
     selectedLeds = new Set(cfg.leds);
