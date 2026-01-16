@@ -1250,7 +1250,7 @@
                 const slot = state.selectedSlot;
                 if (isNaN(slot)) return;
                 const packet = new Uint8Array(state.packetSize);
-                packet[0] = 0xAD;
+                packet[0] = 0xA1;
                 packet[1] = slot;
                 try {
                     const needPause = state.globalSync;
@@ -1688,7 +1688,7 @@
             if (state.isSending) return; 
             state.isSending = true;
             
-            const cmd = commandByte === null ? 0xAC : commandByte;
+            const cmd = commandByte === null ? 0xA0 : commandByte;
             const { width: w, height: h } = state; 
             
             // 1. 生成数据

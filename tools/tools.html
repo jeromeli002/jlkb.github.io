@@ -21,9 +21,11 @@
         .tab-container {
             display: flex;
             justify-content: center;
+            align-items: center; /* 垂直居中 */
             background-color: #fff; /* 标签栏白色背景 */
             box-shadow: 0 2px 5px rgba(0,0,0,0.08);
             padding-left: 20px;
+            padding-right: 20px;
             border-radius: 8px 8px 0 0;
             margin: 10px 20px 0; /* 上10 左右20 下0 */
         }
@@ -44,6 +46,7 @@
             margin-right: 5px;
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
         }
 
         .tab-button:hover {
@@ -51,6 +54,21 @@
             background-color: #f8f8f8; /* hover 背景色 */
             transform: translateY(-2px); /* hover 时按钮轻微上浮 */
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* 重置按钮专用样式 */
+        .reset-button {
+            background-color: #ffccbc; /* 浅橙色背景，区分普通标签 */
+            color: #d84315;
+            width: 80px;
+            font-weight: bold;
+            border-radius: 6px;
+            margin-left: 10px; /* 与标签产生间距 */
+        }
+        
+        .reset-button:hover {
+            background-color: #ffab91;
+            color: #bf360c;
         }
 
         /* 激活状态的标签按钮 */
@@ -73,13 +91,11 @@
             height: 3px;
             background-color: #4dd0e1;
             border-radius: 3px 3px 0 0;
-            /* transform: translateY(100%); /* 初始状态（不再需要，直接使用 show-slider 控制） */
             transition: transform 0.4s ease;
             transform-origin: bottom center;
         }
 
         .tab-button:not(.active)::after {
-             /* 隐藏非激活状态的滑块 */
              transform: translateY(100%);
         }
 
@@ -88,30 +104,27 @@
         }
 
         /* --- 内容区域样式 --- */
-        /* 内容总容器，用来撑满浏览器窗口 */
         .content-wrapper {
             margin: 0 20px 20px;
-            height: calc(100vh - 75px); /* 100vh 减去顶部间距、标签栏高度、底部间距 */
+            height: calc(100vh - 75px); 
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             background-color: #fff;
             border-radius: 0 0 8px 8px;
-            overflow: hidden; /* 裁剪 iframe 溢出 */
+            overflow: hidden; 
         }
 
-        /* 单个标签页内容 (用于定位 iframe) */
         .tab-content {
-            display: none; /* 默认隐藏 */
+            display: none; 
             width: 100%;
             height: 100%;
-            transition: opacity 0.3s ease; /* 切换时的淡入效果 */
+            transition: opacity 0.3s ease; 
         }
 
         .tab-content.show {
-            display: block; /* 显示选中的内容区域 */
+            display: block; 
             opacity: 1;
         }
 
-        /* iframe 样式 */
         .tab-content iframe {
             border: none;
             width: 100%;
@@ -132,43 +145,48 @@
         <button class="tab-button" data-tabname="zb">矩阵坐标</button>
         <button class="tab-button" data-tabname="rgb">RGB灯效</button>
         <button class="tab-button" data-tabname="qmk">QMK配置</button>
+        <button class="tab-button" data-tabname="via">Via配置</button>
         <button class="tab-button" data-tabname="vial">Vial配置</button>
         <button class="tab-button" data-tabname="rmk">RMK配置</button>
+        <button class="tab-button reset-button" id="resetBtn"> 重置</button>
     </div>
 
     <div class="content-wrapper">
         <div id="keytest" class="tab-content">
-            <iframe id="iframe-kbtest" src="/kbtest/index.html"></iframe>
+            <iframe src="/kbtest.html"></iframe>
         </div>
         <div id="rawhid" class="tab-content">
-            <iframe id="iframe-rawhid" src="/rawhid.html"></iframe>
+            <iframe src="/rawhid.html"></iframe>
         </div>
         <div id="oled" class="tab-content">
-            <iframe id="iframe-keyboard" src="oled.html"></iframe>
+            <iframe src="oled.html"></iframe>
         </div>
         <div id="rgbtest" class="tab-content">
-            <iframe id="iframe-keyboard" src="rgbtest.html"></iframe>
+            <iframe src="rgbtest.html"></iframe>
         </div>
         <div id="rcvial" class="tab-content">
-            <iframe id="iframe-keyboard" src="rcvial.html"></iframe>
+            <iframe src="rcvial.html"></iframe>
         </div>
         <div id="p2c" class="tab-content">
-            <iframe id="iframe-keyboard" src="p2c.html"></iframe>
+            <iframe src="p2c.html"></iframe>
         </div>
          <div id="zb" class="tab-content">
-            <iframe id="iframe-keyboard" src="zb.html"></iframe>
+            <iframe src="zb.html"></iframe>
         </div>
         <div id="rgb" class="tab-content">
-            <iframe id="iframe-config" src="rgb.html"></iframe>
+            <iframe src="rgb.html"></iframe>
         </div>
         <div id="qmk" class="tab-content">
-            <iframe id="iframe-mcuconf" src="qmk.html"></iframe>
+            <iframe src="qmk.html"></iframe>
+        </div>
+        <div id="via" class="tab-content">
+            <iframe src="via.html"></iframe>
         </div>
         <div id="vial" class="tab-content">
-            <iframe id="iframe-halconf" src="vial.html"></iframe>
+            <iframe src="vial.html"></iframe>
         </div>
         <div id="rmk" class="tab-content">
-            <iframe id="iframe-chonf" src="rmk.html"></iframe>
+            <iframe src="rmk.html"></iframe>
         </div>
     </div>
 
@@ -176,17 +194,16 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const tabContainer = document.getElementById('tabContainer');
-        const tabButtons = document.getElementsByClassName("tab-button");
+        const tabButtons = document.querySelectorAll(".tab-button:not(.reset-button)");
         const tabContents = document.getElementsByClassName("tab-content");
+        const resetBtn = document.getElementById('resetBtn');
 
         /**
          * 切换标签页和内容
-         * @param {string} tabName - 要显示的标签页ID
          */
         function switchTab(tabName) {
             let targetButton = null;
 
-            // 1. 隐藏所有内容并移除按钮的激活状态
             for (const content of tabContents) {
                 content.style.display = "none";
                 content.classList.remove('show');
@@ -198,32 +215,38 @@
                 }
             }
 
-            // 2. 显示目标内容并激活目标按钮
             const targetContent = document.getElementById(tabName);
             if (targetContent) {
                 targetContent.style.display = "block";
-                // 延迟添加 'show' 类以触发 CSS 过渡
-                setTimeout(() => {
-                    targetContent.classList.add('show');
-                }, 10);
+                setTimeout(() => { targetContent.classList.add('show'); }, 10);
             }
             
             if (targetButton) {
                 targetButton.classList.add("active");
-                // 延迟添加 'show-slider' 类以触发滑块动画
-                setTimeout(() => {
-                    targetButton.classList.add('show-slider');
-                }, 10);
+                setTimeout(() => { targetButton.classList.add('show-slider'); }, 10);
             }
         }
 
-        // 绑定所有标签按钮的点击事件
-        for (const button of tabButtons) {
+        // 绑定普通标签按钮点击事件
+        tabButtons.forEach(button => {
             button.addEventListener('click', (event) => {
                 const tabName = event.currentTarget.getAttribute('data-tabname');
                 switchTab(tabName);
             });
-        }
+        });
+
+        // 绑定重置按钮点击事件
+        resetBtn.addEventListener('click', () => {
+            // 找到当前显示的 content 区域
+            const activeContent = document.querySelector('.tab-content[style*="display: block"]');
+            if (activeContent) {
+                const iframe = activeContent.querySelector('iframe');
+                if (iframe) {
+                    // 重新加载 iframe 内部页面
+                    iframe.contentWindow.location.reload();
+                }
+            }
+        });
 
         // 默认打开第一个标签
         if (tabButtons.length > 0) {
@@ -231,21 +254,24 @@
             switchTab(defaultTabName);
         }
     });
-
-    // 移除原始代码中所有未使用的函数调用和变量（已在优化中删除）
 </script>
-<script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>260)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
+
 <script>
-        // Disable right-click menu and F12/Ctrl+Shift+I/Ctrl+U
-        document.addEventListener('contextmenu',function(e){e.preventDefault();});
-        document.onkeydown = function(e) {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
-                return false;
-            }
-            if (e.keyCode == 116) { // Disable F5 (refresh)
-                e.preventDefault();
-            }
-        };
-    </script>
+    // 禁用开发者工具和右键
+    function isDevToolsOpen(){
+        if(window.outerHeight-window.innerHeight>160)return true;
+        try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}
+        return false;
+    }
+    if(isDevToolsOpen())window.location.href='about:blank';
+    setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1000);
+    
+    document.addEventListener('contextmenu',function(e){e.preventDefault();});
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
+            return false;
+        }
+    };
+</script>
 </body>
 </html>

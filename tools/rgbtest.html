@@ -1036,13 +1036,13 @@ async function sendIndicatorCommand(isSave) {
     let cmd = 0;
 
     if (isSave) {
-        cmd = 0xC0;
+        cmd = 0x80;
     } else {
         switch(currentMode) {
-            case 'caps':  cmd = 0xC1; break;
-            case 'num':   cmd = 0xC2; break;
-            case 'scr':   cmd = 0xC3; break;
-            case 'layer': cmd = 0xD0; break; 
+            case 'caps':  cmd = 0x82; break;
+            case 'num':   cmd = 0x83; break;
+            case 'scr':   cmd = 0x84; break;
+            case 'layer': cmd = 0x81; break; 
         }
     }
 
@@ -1084,12 +1084,12 @@ async function saveAllConfig() {
     
     // 1. 强制发送一次当前的颜色数据，确保设备 RAM 中是最新的
     const mask = generateBitmask(selectedLeds);
-    await sendDataToDevice(0xB0, currentSettings.h, currentSettings.s, currentSettings.v, currentSettings.spd, mask);
+    await sendDataToDevice(0x90, currentSettings.h, currentSettings.s, currentSettings.v, currentSettings.spd, mask);
 
-    // 2. 发送保存指令 0xC0 (复用指示灯保存的指令，通常 0xC0 为全局保存)
+    // 2. 发送保存指令 0x90 (复用指示灯保存的指令，通常 0x90 为全局保存)
     const data = new Uint8Array(32);
     data[0] = 0xAB;
-    data[1] = 0xC0; // Save Command
+    data[1] = 0x80; // Save Command
 
     try {
         await device.sendReport(0, data);
@@ -1120,7 +1120,7 @@ async function triggerRealTimeSync() {
     isRealTimeSyncSending = true;
 
     const mask = generateBitmask(selectedLeds);
-    await sendDataToDevice(0xB0, currentSettings.h, currentSettings.s, currentSettings.v, currentSettings.spd, mask);
+    await sendDataToDevice(0x90, currentSettings.h, currentSettings.s, currentSettings.v, currentSettings.spd, mask);
 
     isRealTimeSyncSending = false;
     if (pendingRealTimeSync) {
@@ -1277,12 +1277,12 @@ async function sendDataToDevice(cmd, h, s, v, spd, maskBytes) {
     const data = new Uint8Array(32);
     data[0] = 0xAB;
     data[1] = cmd; 
-    if (cmd === 0xB0) {
+    if (cmd === 0x90) {
         data[2] = h; data[3] = s; data[4] = v; data[5] = spd;
         for (let i = 0; i < 26; i++) {
             data[6 + i] = (maskBytes && maskBytes[i] !== undefined) ? maskBytes[i] : 0;
         }
-    } else if (cmd === 0xB1) {
+    } else if (cmd === 0x91) {
     }
     try {
         await device.sendReport(0, data);
@@ -1587,7 +1587,7 @@ async function sendAllConfigs() {
     for (let i = 0; i < configList.length; i++) {
         const cfg = configList[i];
         const mask = generateBitmask(cfg.leds);
-        const res = await sendDataToDevice(0xB0, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
+        const res = await sendDataToDevice(0x90, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
         if (!res) break;
         document.getElementById('alertMessage').textContent = `发送 ${i + 1}/${configList.length}`;
         if (i < configList.length - 1) await new Promise(r => setTimeout(r, 50));
@@ -1617,7 +1617,7 @@ function setupEventListeners() {
         });
         renderConfigList(); loadConfig(configList.length - 1);
     });
-    document.getElementById('closeLightBtn').addEventListener('click', () => sendDataToDevice(0xB1, 0, 0, 0, 0, null));
+    document.getElementById('closeLightBtn').addEventListener('click', () => sendDataToDevice(0x91, 0, 0, 0, 0, null));
 
     function createCustomAlert() {
         const d = document.createElement('div');
@@ -1693,7 +1693,7 @@ window.deleteConfig = (index) => {
 window.sendConfig = (index) => {
     const cfg = configList[index];
     const mask = generateBitmask(cfg.leds);
-    sendDataToDevice(0xB0, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
+    sendDataToDevice(0x90, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
     loadConfig(index);
 };
 
@@ -1710,7 +1710,7 @@ function loadConfig(index) {
     renderGrid(); renderConfigList();
 }
 </script>
+<script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
 </html>
-
