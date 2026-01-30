@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>键盘测试</title>
     <style>
-        /* 保持原样式不变 */
         :root {
             --base-size: 40px; --gap: 4px;
             --bg-color: #121212; --text-color: #aaa;
@@ -62,6 +61,20 @@
         .info-box strong { font-size: 16px; color: var(--text-color); font-family: monospace; }
         #key-name { color: var(--active-color); }
         
+        /* 进度条样式 */
+        .slider-group { display: flex; flex-direction: column; gap: 4px; min-width: 140px; border-right: 1px solid var(--border-color); padding-right: 15px; margin-right: 5px; }
+        .slider-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-color); }
+        .slider-control { 
+            -webkit-appearance: none; width: 80px; height: 4px; background: var(--progress-bg); 
+            border-radius: 2px; outline: none; cursor: pointer;
+        }
+        .slider-control::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 12px; height: 12px; 
+            border-radius: 50%; background: var(--tested-color); cursor: pointer; transition: transform 0.1s;
+        }
+        .slider-control::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .slider-val { width: 35px; text-align: right; font-family: monospace; font-weight: bold; }
+
         .test-progress-container { min-width: 120px; border-right: 1px solid var(--border-color); padding-right: 15px; margin-right: 5px; text-align: center; }
         #progress-text { font-size: 14px; font-weight: bold; color: var(--text-color); margin-bottom: 5px; }
         .progress-bar-wrapper { width: 100%; height: 8px; background-color: var(--progress-bg); border-radius: 4px; overflow: hidden; }
@@ -183,6 +196,20 @@
                         <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider" style="background-color: #666;"></span></label>
                     </div>
                 </div>
+                
+                <div class="slider-group">
+                    <div class="slider-row">
+                        <span>音量</span>
+                        <input type="range" min="0" max="200" value="100" class="slider-control" id="volume-slider">
+                        <span id="volume-val" class="slider-val">100%</span>
+                    </div>
+                    <div class="slider-row">
+                        <span>音调</span>
+                        <input type="range" min="50" max="150" value="100" class="slider-control" id="pitch-slider">
+                        <span id="pitch-val" class="slider-val">100%</span>
+                    </div>
+                </div>
+
                 <div class="test-progress-container">
                     <span class="label">测试进度</span>
                     <div id="progress-text">0 / 0 键</div>
@@ -190,12 +217,6 @@
                 </div>
                 <div class="info-box">
                     <span class="label">当前按键</span><strong id="key-name">-</strong>
-                </div>
-                <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
-                    <span class="label">键码 (十六进制)</span>
-                    <div style="display: flex; align-items: baseline;">
-                        <strong id="key-code">-</strong><strong id="key-hex-display" style="color: #666; margin-left: 5px;"></strong>
-                    </div>
                 </div>
                 <div class="info-box" style="border-left: 1px solid var(--border-color); padding-left: 15px;">
                     <span class="label">实时 KPM</span><strong id="kpm-stat" style="color: var(--tested-color)">0</strong>
@@ -317,20 +338,32 @@
     const CONFIG = {
         chart: { width: 150, height: 40, maxPoints: 50, maxKPM: 600 },
         recentKeys: { max: 66, stepPx: 44 },
-        audio: { duration: 0.05, type: 'square' },
         colors: { chartDark: '#8cffec', chartLight: '#0d6efd', fillDark: 'rgba(140, 255, 236, 0.1)', fillLight: 'rgba(13, 110, 253, 0.1)' },
         kpmUpdateInterval: 100, kpmSmoothFactor: 0.1
     };
     const D = (id) => document.getElementById(id); 
     const DOM = {
-        keyName: D('key-name'), keyCode: D('key-code'), keyHex: D('key-hex-display'), kpm: D('kpm-stat'),
+        keyName: D('key-name'), kpm: D('kpm-stat'),
         reset: D('reset-btn'), sound: D('sound-toggle'), theme: D('theme-toggle'), themeText: D('theme-display-text'),
         log: D('log-list'), recent: D('recent-keys-list'), progress: D('test-progress-bar'), progressText: D('progress-text'),
-        mouseXY: D('mouse-xy-stat'), audio: D('silent-audio'), chartCtx: D('kpm-chart').getContext('2d')
+        mouseXY: D('mouse-xy-stat'), audio: D('silent-audio'), chartCtx: D('kpm-chart').getContext('2d'),
+        volSlider: D('volume-slider'), volVal: D('volume-val'), pitchSlider: D('pitch-slider'), pitchVal: D('pitch-val')
     };
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // QMK 映射等数据保持不变...
+    // ---------------- 音量平衡配置 (MIX LEVELS) ----------------
+    // 在这里调整不同乐器的相对音量，确保听感一致
+    const MIX = {
+        piano: 0.5,      // 钢琴保持适中
+        guitar: 0.45,    // 吉他稍微调低，因为锯齿波能量大
+        flute: 0.5,      // 长笛适中
+        bell: 0.4,       // 钟声穿透力强，稍微调低
+        synth: 0.3,      // 合成器容易刺耳，调低
+        pizzicato: 0.8,  // 拨弦声音短，需要大一点
+        drumMaster: 2.0  // 鼓组主增益：大幅提升，确保 Ctrl/Shift 等键清晰可闻
+    };
+    
+    // QMK 映射等数据
     const QMK_MAP = {
         Escape:'KC_ESCAPE',Enter:'KC_ENTER',Backspace:'KC_BSPACE',Tab:'KC_TAB',Space:'KC_SPACE',CapsLock:'KC_CAPSLOCK',
         ShiftLeft:'KC_LSHIFT',ShiftRight:'KC_RSHIFT',ControlLeft:'KC_LCTRL',ControlRight:'KC_RCTRL',AltLeft:'KC_LALT',AltRight:'KC_RALT',MetaLeft:'KC_LGUI',MetaRight:'KC_RGUI',
@@ -345,24 +378,6 @@
         MouseWheelUp:'KC_WH_U',MouseWheelDown:'KC_WH_D',MouseWheelLeft:'KC_WH_L',MouseWheelRight:'KC_WH_R',
         LaunchMail: 'KC_MAIL', LaunchApp2: 'KC_CALC', LaunchApp1: 'KC_MYCM'
     };
-
-    const QMK_HEX = {
-        KC_NO:'0x00',KC_TRNS:'0x01',KC_A:'0x04',KC_B:'0x05',KC_C:'0x06',KC_D:'0x07',KC_E:'0x08',KC_F:'0x09',KC_G:'0x0A',KC_H:'0x0B',
-        KC_I:'0x0C',KC_J:'0x0D',KC_K:'0x0E',KC_L:'0x0F',KC_M:'0x10',KC_N:'0x11',KC_O:'0x12',KC_P:'0x13',
-        KC_Q:'0x14',KC_R:'0x15',KC_S:'0x16',KC_T:'0x17',KC_U:'0x18',KC_V:'0x19',KC_W:'0x1A',KC_X:'0x1B',
-        KC_Y:'0x1C',KC_Z:'0x1D',KC_1:'0x1E',KC_2:'0x1F',KC_3:'0x20',KC_4:'0x21',KC_5:'0x22',KC_6:'0x23',
-        KC_7:'0x24',KC_8:'0x25',KC_9:'0x26',KC_0:'0x27',KC_ENTER:'0x28',KC_ESCAPE:'0x29',KC_BSPACE:'0x2A',KC_TAB:'0x2B',KC_SPACE:'0x2C',
-        KC_MINUS:'0x2D',KC_EQUAL:'0x2E',KC_LBRACKET:'0x2F',KC_RBRACKET:'0x30',KC_BSLASH:'0x31',KC_SCOLON:'0x33',KC_QUOTE:'0x34',KC_GRAVE:'0x35',KC_COMMA:'0x36',KC_DOT:'0x37',KC_SLASH:'0x38',KC_CAPSLOCK:'0x39',
-        KC_F1:'0x3A',KC_F2:'0x3B',KC_F3:'0x3C',KC_F4:'0x3D',KC_F5:'0x3E',KC_F6:'0x3F',KC_F7:'0x40',KC_F8:'0x41',KC_F9:'0x42',KC_F10:'0x43',KC_F11:'0x44',KC_F12:'0x45',
-        KC_F13:'0x68',KC_F14:'0x69',KC_F15:'0x6A',KC_F16:'0x6B',KC_F17:'0x6C',KC_F18:'0x6D',KC_F19:'0x6E',KC_F20:'0x6F',KC_F21:'0x70',KC_F22:'0x71',KC_F23:'0x72',KC_F24:'0x73',
-        KC_PSCREEN:'0x46',KC_SCROLLLOCK:'0x47',KC_PAUSE:'0x48',KC_INSERT:'0x49',KC_HOME:'0x4A',KC_PGUP:'0x4B',KC_DELETE:'0x4C',KC_END:'0x4D',KC_PGDOWN:'0x4E',
-        KC_RIGHT:'0x4F',KC_LEFT:'0x50',KC_DOWN:'0x51',KC_UP:'0x52',KC_APPLICATION:'0x65',KC_NUMLOCK:'0x53',KC_KP_SLASH:'0x54',KC_KP_ASTERISK:'0x55',KC_KP_MINUS:'0x56',KC_KP_PLUS:'0x57',KC_KP_ENTER:'0x58',
-        KC_KP_1:'0x59',KC_KP_2:'0x5A',KC_KP_3:'0x5B',KC_KP_4:'0x5C',KC_KP_5:'0x5D',KC_KP_6:'0x5E',KC_KP_7:'0x5F',KC_KP_8:'0x60',KC_KP_9:'0x61',KC_KP_0:'0x62',KC_KP_DOT:'0x63',
-        KC_LCTRL:'0xE0',KC_LSHIFT:'0xE1',KC_LALT:'0xE2',KC_LGUI:'0xE3',KC_RCTRL:'0xE4',KC_RSHIFT:'0xE5',KC_RALT:'0xE6',KC_RGUI:'0xE7',
-        KC_VOLU:'0xA9',KC_VOLD:'0xAA',KC_MUTE:'0xA8',KC_MPLY:'0xAE',KC_MNXT:'0xAB',KC_MPRV:'0xAC',KC_MSTP:'0xAD',
-        KC_MAIL:'0xB1', KC_CALC:'0xB2', KC_MYCM:'0xB3',KC_BTN1:'0xD1',KC_BTN2:'0xD2',KC_BTN3:'0xD3',KC_BTN4:'0xD4',KC_BTN5:'0xD5', 
-        KC_WH_U:'0xD9',KC_WH_D:'0xDA',KC_WH_L:'0xDB',KC_WH_R:'0xDC',
-    };
     
     const MOUSE_WHEEL_KEYS = new Set(['MouseWheelUp', 'MouseWheelDown', 'MouseWheelLeft', 'MouseWheelRight']);
     const isPulse = (c) => MOUSE_WHEEL_KEYS.has(c);
@@ -370,21 +385,12 @@
     let state = { 
         kpmHistory: [], timestamps: [], kpmDisplayInterval: null, currentKPM: 0, totalKeys: 0, 
         timers: {},
-        activeWheels: new Set() // 记录正在激活的滚轮方向，防止重复触发日志
+        activeWheels: new Set(),
+        globalVolume: 1.0,
+        globalPitch: 1.0
     };
 
     const KeyMapper = {
-        mapCodeToQMK: (code) => {
-            if (!code || code.startsWith('KC_')) return code || 'KC_NO';
-            if (code.match(/^F(1[3-9]|2[0-4])$/)) return `KC_${code}`;
-            if (code.match(/^F\d+$/)) return 'KC_' + code;
-            const qmk = QMK_MAP[code];
-            if (qmk) return qmk;
-            const mapPrefix = code.startsWith('Key') ? 'KC_' : code.startsWith('Digit') ? 'KC_' : code.startsWith('Numpad') ? 'KC_KP_' : '';
-            if (mapPrefix) return mapPrefix + code.replace(/^(Key|Digit|Numpad)/, '');
-            return 'KC_' + code.toUpperCase().replace(/[^A-Z0-9_]/g, '');
-        },
-        getHex: (qmkCode) => QMK_HEX[qmkCode] || (qmkCode.startsWith('KC_F') && qmkCode.length<7 ? '0x'+(parseInt(qmkCode.slice(4))+57).toString(16).toUpperCase() : '0x??'),
         normMod: (e) => {
             const map = { 1: 'Left', 2: 'Right' };
             const mod = e.key.replace(/^(Control|Shift|Alt|Meta|OS)$/, (m) => m === 'OS' ? 'Meta' : m);
@@ -410,32 +416,336 @@
         }
     };
     
+    // ---------------- 升级版音效引擎 ----------------
     const AudioPlayer = {
-        getFreq: (c) => 
-            !c ? 440 :
-            c.match(/^(Key|Digit)/) ? 440 :
-            c.startsWith('F') || ['Insert','Delete','Home','End','PageUp','PageDown','PrintScreen','ContextMenu'].includes(c) ? 587.33 :
-            ['Shift','Control','Alt','Meta'].some(x=>c.includes(x)) ? 349.23 :
-            c === 'Space' ? 329.63 :
-            ['Enter','NumpadEnter','Tab','Backspace'].includes(c) ? 493.88 :
-            c.startsWith('Numpad') ? 466.16 :
-            c.startsWith('MouseWheel') || ['Mouse','Media','Volume','Launch'].some(x=>c.includes(x)) ? 783.99 :
-            440,
-        playSound: (freq) => {
+        noiseBuffer: null,
+
+        initNoise: () => {
+            if (AudioPlayer.noiseBuffer) return;
+            const bufferSize = audioCtx.sampleRate * 2; 
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            AudioPlayer.noiseBuffer = buffer;
+        },
+        createNoiseNode: () => {
+            if (!AudioPlayer.noiseBuffer) AudioPlayer.initNoise();
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = AudioPlayer.noiseBuffer;
+            return noise;
+        },
+
+        getUniqueFreq: (str) => {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            return 200 + (Math.abs(hash) % 800); 
+        },
+
+        getInstrumentInfo: (code) => {
+            const note = (n) => 440 * Math.pow(2, (n - 69) / 12);
+            // 钢琴区
+            const row1 = ['KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash']; // G3
+            const row2 = ['KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon','Quote']; // C4
+            const row3 = ['KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight','Backslash']; // F4
+            const row4 = ['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus','Equal']; // C5
+            
+            if (row1.includes(code)) return { type: 'piano', freq: note(55 + row1.indexOf(code)) };
+            if (row2.includes(code)) return { type: 'piano', freq: note(60 + row2.indexOf(code)) };
+            if (row3.includes(code)) return { type: 'piano', freq: note(65 + row3.indexOf(code)) };
+            if (row4.includes(code)) return { type: 'piano', freq: note(72 + row4.indexOf(code)) };
+            
+            // F区 - 吉他
+            if (code.startsWith('F') && code.length <= 3) return { type: 'guitar', freq: note(50 + parseInt(code.substring(1)) * 2) };
+            
+            // 导航区 - 长笛
+            if (['Insert','Home','PageUp','Delete','End','PageDown','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(code)) 
+                return { type: 'flute', freq: AudioPlayer.getUniqueFreq(code) * 0.8 };
+
+            // 鼠标键 - 钟琴
+            if (code.startsWith('Mouse')) return { type: 'bell', freq: AudioPlayer.getUniqueFreq(code) * 1.5 };
+
+            // 媒体/APP - 合成器
+            if (['Media','Volume','Launch'].some(x => code.includes(x)) || code === 'PrintScreen' || code === 'ScrollLock' || code === 'Pause')
+                return { type: 'synth', freq: AudioPlayer.getUniqueFreq(code) };
+
+            // 数字小键盘 - 拨弦 (Pizzicato)
+            if (code.startsWith('Numpad') && !['NumpadEnter','NumpadAdd','NumpadSubtract','NumpadMultiply','NumpadDivide'].includes(code))
+                return { type: 'pizzicato', freq: note(48 + (parseInt(code.slice(-1)) || 0)) };
+
+            // 鼓组/打击乐 (修饰键+特殊键)
+            return { type: 'drum', freq: 0 }; 
+        },
+
+        trigger: (code) => {
             if (!DOM.sound.checked) return;
-            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-            osc.type = CONFIG.audio.type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + CONFIG.audio.duration);
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const info = AudioPlayer.getInstrumentInfo(code);
+            const finalFreq = info.freq * state.globalPitch;
+
+            switch(info.type) {
+                case 'piano': AudioPlayer.playPiano(finalFreq); break;
+                case 'guitar': AudioPlayer.playGuitar(finalFreq); break;
+                case 'flute': AudioPlayer.playFlute(finalFreq); break;
+                case 'bell': AudioPlayer.playBell(finalFreq); break;
+                case 'synth': AudioPlayer.playSynth(finalFreq); break;
+                case 'pizzicato': AudioPlayer.playPizzicato(finalFreq); break;
+                case 'drum': AudioPlayer.playDrum(code); break;
+            }
+        },
+
+        playTone: (oscType, freq, atk, dec, sus, rel, volMult = 1) => {
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = oscType;
+            osc.frequency.setValueAtTime(freq, t);
+            
+            const maxVol = 0.5 * state.globalVolume * volMult;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(maxVol, t + atk);
+            gain.gain.exponentialRampToValueAtTime(sus * maxVol, t + atk + dec);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + atk + dec + rel);
+
             osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + CONFIG.audio.duration);
+            osc.start(t); osc.stop(t + atk + dec + rel + 0.1);
+        },
+
+        playPiano: (freq) => {
+            const t = audioCtx.currentTime;
+            const osc1 = audioCtx.createOscillator(), osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            
+            osc1.type = 'triangle'; osc1.frequency.value = freq;
+            osc2.type = 'sine'; osc2.frequency.value = freq;
+            
+            filter.type = 'lowpass'; filter.Q.value = 1;
+            filter.frequency.setValueAtTime(freq * 8, t);
+            filter.frequency.exponentialRampToValueAtTime(freq, t + 0.5);
+
+            const vol = MIX.piano * state.globalVolume;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(vol, t + 0.01); 
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+
+            osc1.connect(filter); osc2.connect(filter);
+            filter.connect(gain); gain.connect(audioCtx.destination);
+            osc1.start(t); osc2.start(t); osc1.stop(t + 1.5); osc2.stop(t + 1.5);
+        },
+
+        playGuitar: (freq) => { 
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.value = freq;
+            
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(freq * 4, t);
+            filter.frequency.exponentialRampToValueAtTime(freq, t + 0.3);
+
+            const vol = MIX.guitar * state.globalVolume;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(vol, t + 0.005);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+
+            osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(t); osc.stop(t + 1.0);
+        },
+
+        playFlute: (freq) => { 
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine'; 
+            osc.frequency.value = freq;
+
+            const vol = MIX.flute * state.globalVolume;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(vol, t + 0.1); 
+            gain.gain.linearRampToValueAtTime(vol * 0.8, t + 0.3);
+            gain.gain.linearRampToValueAtTime(0, t + 0.6);
+
+            const vib = audioCtx.createOscillator();
+            const vibGain = audioCtx.createGain();
+            vib.frequency.value = 5; 
+            vibGain.gain.value = 5;
+            vib.connect(vibGain); vibGain.connect(osc.frequency);
+            vib.start(t); vib.stop(t+0.6);
+
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(t); osc.stop(t + 0.6);
+        },
+
+        playBell: (freq) => { 
+            const t = audioCtx.currentTime;
+            const carrier = audioCtx.createOscillator();
+            const modulator = audioCtx.createOscillator();
+            const modGain = audioCtx.createGain();
+            const masterGain = audioCtx.createGain();
+
+            carrier.frequency.value = freq;
+            modulator.frequency.value = freq * 1.4; 
+            modGain.gain.value = freq * 2;
+
+            modulator.connect(modGain); modGain.connect(carrier.frequency);
+            carrier.connect(masterGain); masterGain.connect(audioCtx.destination);
+
+            const vol = MIX.bell * state.globalVolume;
+            masterGain.gain.setValueAtTime(0, t);
+            masterGain.gain.linearRampToValueAtTime(vol, t + 0.01);
+            masterGain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+
+            carrier.start(t); modulator.start(t);
+            carrier.stop(t + 1.0); modulator.stop(t + 1.0);
+        },
+
+        playSynth: (freq) => { 
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, t);
+            osc.frequency.exponentialRampToValueAtTime(freq * 2, t + 0.1); 
+
+            const vol = MIX.synth * state.globalVolume;
+            gain.gain.setValueAtTime(vol, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(t); osc.stop(t + 0.3);
+        },
+        
+        playPizzicato: (freq) => { 
+             AudioPlayer.playTone('triangle', freq, 0.005, 0.1, 0.1, 0.1, MIX.pizzicato);
+        },
+
+        // ---------------- 强化的鼓组逻辑 ----------------
+        playDrum: (code) => {
+            const t = audioCtx.currentTime;
+            const master = audioCtx.createGain();
+            master.connect(audioCtx.destination);
+            // 这里使用了更高的主增益倍率，以解决鼓声太小的问题
+            master.gain.value = MIX.drumMaster * state.globalVolume;
+            
+            const p = state.globalPitch; 
+
+            const makeKick = () => { // Space
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.setValueAtTime(150 * p, t);
+                osc.frequency.exponentialRampToValueAtTime(0.01, t + 0.5);
+                gain.gain.setValueAtTime(1.0, t); // Boosted Kick
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                osc.connect(gain); gain.connect(master);
+                osc.start(t); osc.stop(t + 0.5);
+            };
+
+            const makeSnare = () => { // Enter
+                const noise = AudioPlayer.createNoiseNode();
+                const noiseFilter = audioCtx.createBiquadFilter();
+                const noiseGain = audioCtx.createGain();
+                noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 1000 * p;
+                
+                // Boosted Snare
+                noiseGain.gain.setValueAtTime(0.8, t);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+                noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(master);
+                
+                const osc = audioCtx.createOscillator();
+                const oscGain = audioCtx.createGain();
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(180 * p, t);
+                oscGain.gain.setValueAtTime(0.6, t);
+                oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+                osc.connect(oscGain); oscGain.connect(master);
+                
+                noise.start(t); osc.start(t);
+                noise.stop(t + 0.2); osc.stop(t + 0.2);
+            };
+
+            const makeHiHat = (open) => { // Shift, BS
+                const fundamental = 40 * p;
+                const ratios = [2, 3, 4.16, 5.43, 6.79, 8.21];
+                const bandpass = audioCtx.createBiquadFilter();
+                bandpass.type = "bandpass"; bandpass.frequency.value = 10000 * p;
+                const highpass = audioCtx.createBiquadFilter();
+                highpass.type = "highpass"; highpass.frequency.value = 7000 * p;
+                const gain = audioCtx.createGain();
+                
+                // 显著增强 Hi-Hat 音量，并稍微延长 Closed Hat 的时间，使其更清晰
+                const decay = open ? 0.4 : 0.08; 
+                gain.gain.setValueAtTime(0.8, t); // Boosted Hi-Hat
+                gain.gain.exponentialRampToValueAtTime(0.01, t + decay);
+                
+                ratios.forEach(ratio => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = "square";
+                    osc.frequency.value = fundamental * ratio;
+                    osc.connect(bandpass);
+                    osc.start(t); osc.stop(t + decay);
+                });
+                bandpass.connect(highpass); highpass.connect(gain); gain.connect(master);
+            };
+
+            const makeTom = (freq) => { // Ctrl, Alt
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.setValueAtTime(freq * p, t);
+                osc.frequency.exponentialRampToValueAtTime(freq * p * 0.5, t + 0.3);
+                
+                // Boosted Tom (Ctrl/Alt)
+                gain.gain.setValueAtTime(1.0, t); 
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+                
+                osc.connect(gain); gain.connect(master);
+                osc.start(t); osc.stop(t + 0.3);
+            };
+
+            const makeCrash = () => { // Win/Meta
+                const noise = AudioPlayer.createNoiseNode();
+                const filter = audioCtx.createBiquadFilter();
+                const gain = audioCtx.createGain();
+                filter.type = 'highpass'; filter.frequency.value = 3000 * p;
+                
+                gain.gain.setValueAtTime(0.7, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 1.5);
+                
+                noise.connect(filter); filter.connect(gain); gain.connect(master);
+                noise.start(t); noise.stop(t + 1.5);
+            };
+
+            const makeRimshot = () => { // Tab, Caps
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const filter = audioCtx.createBiquadFilter();
+                osc.frequency.setValueAtTime(600 * p, t);
+                filter.type = 'bandpass'; filter.frequency.value = 1800 * p;
+                
+                // Boosted Rimshot
+                gain.gain.setValueAtTime(0.7, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+                
+                osc.connect(filter); filter.connect(gain); gain.connect(master);
+                osc.start(t); osc.stop(t + 0.1);
+            };
+
+            if (code === 'Space') makeKick();
+            else if (code === 'Enter' || code === 'NumpadEnter') makeSnare();
+            else if (code.includes('Shift')) makeHiHat(false);
+            else if (code === 'Backspace' || code === 'Delete') makeHiHat(true);
+            else if (code.includes('Control')) makeTom(100);
+            else if (code.includes('Alt')) makeTom(160);
+            else if (code.includes('Meta') || code.includes('Win')) makeCrash();
+            else if (code === 'Tab' || code === 'CapsLock' || code === 'Escape') makeRimshot();
+            else makeHiHat(false);
         }
     };
 
     const UIUpdater = {
         updateInfo: (name, code) => {
-            const qmk = KeyMapper.mapCodeToQMK(code);
-            DOM.keyName.textContent = name; DOM.keyCode.textContent = qmk; DOM.keyHex.textContent = `(${KeyMapper.getHex(qmk)})`;
+            DOM.keyName.textContent = name;
         },
         log: (type, key) => {
             const now = new Date();
@@ -516,23 +826,22 @@
         
         if (action === 'press') {
             if (isRepeat) return;
-            // 状态锁：如果是滚轮且已经在激活状态，不触发按下日志
             if (isPulse(code) && state.activeWheels.has(code)) return;
             if (isPulse(code)) state.activeWheels.add(code);
 
             UIUpdater.log('press', name); 
             UIUpdater.updateInfo(name, code); 
-            AudioPlayer.playSound(AudioPlayer.getFreq(code));
+            
+            AudioPlayer.trigger(code);
+            
             UIUpdater.updateRecent(code, name); 
             KPMTracker.trackAct();
             if (el) { el.classList.add('active', 'tested'); UIUpdater.updateProg(); }
         } else {
-            // 状态锁：如果已经抬起或不在激活状态（针对滚轮），不触发抬起日志
             if (isPulse(code) && !state.activeWheels.has(code)) return;
             if (isPulse(code)) state.activeWheels.delete(code);
 
             UIUpdater.log('release', name); 
-            UIUpdater.updateInfo(name, code);
             if (el) {
                 el.classList.add('tested'); 
                 UIUpdater.updateProg();
@@ -579,15 +888,12 @@
             }
             if (!code) return;
 
-            // 1. 如果这个方向还没标记为“按下”，先触发按下
             if (!state.activeWheels.has(code)) {
                 handleInput('press', code, name);
             }
 
-            // 2. 清除之前的抬起计时器（实现防抖：只有停止滚动 200ms 后才视为抬起）
             if (state.timers[code]) clearTimeout(state.timers[code]);
 
-            // 3. 设置新的计时器
             state.timers[code] = setTimeout(() => { 
                 handleInput('release', code, name); 
                 delete state.timers[code]; 
@@ -603,8 +909,31 @@
             KPMTracker.trackAct();
         }
     };
+
+    // 滑块逻辑
+    const SliderLogic = {
+        updateVol: () => {
+            const val = DOM.volSlider.value;
+            state.globalVolume = val / 100;
+            DOM.volVal.textContent = val + '%';
+        },
+        updatePitch: () => {
+            const val = DOM.pitchSlider.value;
+            state.globalPitch = val / 100;
+            DOM.pitchVal.textContent = val + '%';
+        },
+        handleWheel: (e, type) => {
+            e.preventDefault();
+            const el = type === 'vol' ? DOM.volSlider : DOM.pitchSlider;
+            const step = 5;
+            let val = parseInt(el.value);
+            val += (e.deltaY < 0 ? step : -step);
+            val = Math.min(Math.max(val, parseInt(el.min)), parseInt(el.max));
+            el.value = val;
+            if (type === 'vol') SliderLogic.updateVol(); else SliderLogic.updatePitch();
+        }
+    };
     
-    // 初始化逻辑保持不变...
     const init = () => {
         const setTheme = t => {
             document.documentElement.setAttribute('data-theme', t);
@@ -616,6 +945,12 @@
         setTheme(localStorage.getItem('kbtest-theme') || 'dark');
         DOM.sound.checked = localStorage.getItem('kbtest-sound') !== 'false';
         DOM.sound.addEventListener('change', e => localStorage.setItem('kbtest-sound', e.target.checked));
+        
+        DOM.volSlider.addEventListener('input', SliderLogic.updateVol);
+        DOM.volSlider.addEventListener('wheel', e => SliderLogic.handleWheel(e, 'vol'), {passive:false});
+        DOM.pitchSlider.addEventListener('input', SliderLogic.updatePitch);
+        DOM.pitchSlider.addEventListener('wheel', e => SliderLogic.handleWheel(e, 'pitch'), {passive:false});
+
         DOM.audio.src = 'data:audio/mp3;base64,SUQzBAAAAAABVVgAAAABAAEA';
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({ title: '键盘测试', artist: 'JLKB' });
@@ -626,6 +961,8 @@
             navigator.mediaSession.setActionHandler('stop', () => handleInput('press', 'MediaStop', '媒体停止'));
         }
         document.body.addEventListener('click', () => { 
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            AudioPlayer.initNoise(); 
             DOM.audio.volume=0; DOM.audio.play().catch(()=>{}); 
         }, {once:true});
         state.totalKeys = document.querySelectorAll('.key[data-code]:not(.spacer)').length;
@@ -643,8 +980,5 @@
     };
     document.addEventListener('DOMContentLoaded', init);
 </script>
-<script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 </body>
 </html>
-
-
