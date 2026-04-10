@@ -1137,8 +1137,17 @@ async function saveAllConfig() {
 }
 
 async function triggerRealTimeSync() {
+    updateCurrentDrawDisplay();
+    
+    // 指示灯模式：无视同步开关，并且带防抖锁强制实时发送（仅修改RAM预览）
     if (currentMode !== 'all') {
-        if (device && device.opened && document.getElementById('realtimeSyncToggle').checked) {
+        if (device && device.opened) {
+            if (isRealTimeSyncSending) {
+                pendingRealTimeSync = true;
+                return;
+            }
+            isRealTimeSyncSending = true;
+
             let cfg = {
                 type: currentMode,
                 start: indicatorSettings[currentMode].start,
@@ -1146,12 +1155,18 @@ async function triggerRealTimeSync() {
                 layerIdx: currentMode === 'layer' ? indicatorSettings.layer.layerIdx : 0,
                 h: currentSettings.h, s: currentSettings.s, v: currentSettings.v, spd: currentSettings.spd
             };
-            sendSingleConfigItem(cfg, false);
+            await sendSingleConfigItem(cfg, false);
+
+            isRealTimeSyncSending = false;
+            if (pendingRealTimeSync) {
+                pendingRealTimeSync = false;
+                triggerRealTimeSync();
+            }
         }
-        updateCurrentDrawDisplay();
         return;
     }
 
+    // 全灯模式：保留原有的同步开关判断
     const syncCheckbox = document.getElementById('realtimeSyncToggle');
     if (!syncCheckbox || !syncCheckbox.checked || !device || !device.opened || !selectedLeds.size) return;
 
