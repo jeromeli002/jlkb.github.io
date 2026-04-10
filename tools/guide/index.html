@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>OPERATION-GUIDE</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* 原有基础样式保留 */
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+/* ... (保留原有的 VS Code 代码高亮和主题样式) ... */
+#code-csp-warning { position: fixed; top: 0; right: 0; color: white; margin: 16px; text-align: center; font-size: 12px; font-family: sans-serif; background-color:#444444; cursor: pointer; padding: 6px; box-shadow: 1px 1px 1px rgba(0,0,0,.25); }
+#code-csp-warning:hover { text-decoration: none; background-color:#007acc; box-shadow: 2px 2px 2px rgba(0,0,0,.25); }
+body.scrollBeyondLastLine { margin-bottom: calc(100vh - 22px); }
+body.showEditorSelection .code-line { position: relative; }
+body.showEditorSelection .code-active-line:before, body.showEditorSelection .code-line:hover:before { content: ""; display: block; position: absolute; top: 0; left: -12px; height: 100%; }
+body.showEditorSelection li.code-active-line:before, body.showEditorSelection li.code-line:hover:before { left: -30px; }
+.vscode-light.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(0, 0, 0, 0.15); }
+.vscode-light.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(0, 0, 0, 0.40); }
+.vscode-light.showEditorSelection .code-line .code-line:hover:before { border-left: none; }
+.vscode-dark.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 255, 255, 0.4); }
+.vscode-dark.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 255, 255, 0.60); }
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before { border-left: none; }
+.vscode-high-contrast.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 160, 0, 0.7); }
+.vscode-high-contrast.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 160, 0, 1); }
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before { border-left: none; }
+img { max-width: 100%; max-height: 100%; }
+a { text-decoration: none; color: #007acc;}
+a:hover { text-decoration: underline; }
+a:focus, input:focus, select:focus, textarea:focus { outline: 1px solid -webkit-focus-ring-color; outline-offset: -1px; }
+hr { border: 0; height: 2px; border-bottom: 2px solid; }
+h1 { padding-bottom: 0.3em; line-height: 1.2; border-bottom-width: 1px; border-bottom-style: solid; }
+h1, h2, h3 { font-weight: normal;}
+table { border-collapse: collapse; }
+table > thead > tr > th { text-align: left; border-bottom: 1px solid; }
+table > thead > tr > th, table > thead > tr > td, table > tbody > tr > th, table > tbody > tr > td { padding: 5px 10px; }
+table > tbody > tr + tr > td { border-top: 1px solid; }
+blockquote { margin: 0 7px 0 5px; padding: 0 16px 0 10px; border-left-width: 5px; border-left-style: solid; }
+code { font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback"; font-size: 1em; line-height: 1.357em; }
+body.wordWrap pre { white-space: pre-wrap; }
+pre:not(.hljs), pre.hljs code > div { padding: 16px; border-radius: 3px; overflow: auto; }
+pre code { color: var(--vscode-editor-foreground); tab-size: 4; }
+.vscode-light pre { background-color: rgba(220, 220, 220, 0.4); }
+.vscode-dark pre { background-color: rgba(10, 10, 10, 0.4); }
+.vscode-high-contrast pre { background-color: rgb(0, 0, 0); }
+.vscode-high-contrast h1 { border-color: rgb(0, 0, 0); }
+.vscode-light table > thead > tr > th { border-color: rgba(0, 0, 0, 0.69); }
+.vscode-dark table > thead > tr > th { border-color: rgba(255, 255, 255, 0.69); }
+.vscode-light h1, .vscode-light hr, .vscode-light table > tbody > tr + tr > td { border-color: rgba(0, 0, 0, 0.18); }
+.vscode-dark h1, .vscode-dark hr, .vscode-dark table > tbody > tr + tr > td { border-color: rgba(255, 255, 255, 0.18); }
+</style>
+
+<style>
+/* Tomorrow Theme */
+.hljs-comment, .hljs-quote { color: #8e908c; }
+.hljs-variable, .hljs-template-variable, .hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-regexp, .hljs-deletion { color: #c82829; }
+.hljs-number, .hljs-built_in, .hljs-builtin-name, .hljs-literal, .hljs-type, .hljs-params, .hljs-meta, .hljs-link { color: #f5871f; }
+.hljs-attribute { color: #eab700; }
+.hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #718c00; }
+.hljs-title, .hljs-section { color: #4271ae; }
+.hljs-keyword, .hljs-selector-tag { color: #8959a8; }
+.hljs { display: block; overflow-x: auto; color: #4d4d4c; padding: 0.5em; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: bold; }
+</style>
+
+<style>
+/* 新增美化样式与自适应控制 */
+body {
+	background-color: #f4f6f8;
+	color: #333;
+}
+
+.container {
+	max-width: 80%;
+	margin: 40px auto;
+	padding: 40px 60px;
+	background-color: #ffffff;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	border-radius: 12px;
+}
+
+/* 响应式支持 */
+@media (max-width: 768px) {
+	.container {
+		margin: 15px;
+		padding: 20px 25px;
+	}
+}
+
+img {
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	margin: 15px 0;
+	display: block;
+}
+
+/* 表格美化 */
+table {
+	width: 100%;
+	margin: 20px 0;
+	border-collapse: collapse;
+	font-size: 14px;
+}
+table > thead > tr > th {
+	background-color: #f8f9fa;
+	border-bottom: 2px solid #dee2e6;
+	padding: 12px 15px;
+	color: #495057;
+}
+table > tbody > tr > td {
+	padding: 12px 15px;
+	border-bottom: 1px solid #e9ecef;
+}
+table > tbody > tr:hover {
+	background-color: #f8f9fa;
+}
+
+blockquote {
+	background: #f8f9fa;
+	border-left: 5px solid #007acc;
+	padding: 15px 20px;
+	margin: 20px 0;
+	border-radius: 0 8px 8px 0;
+	color: #555;
+}
+
+/* 返回顶部按钮样式 */
+#backToTopBtn {
+	display: none; 
+	position: fixed; 
+	bottom: 40px; 
+	right: 40px; 
+	z-index: 99; 
+	font-size: 24px;
+	border: none; 
+	outline: none; 
+	background-color: #007acc; 
+	color: white; 
+	cursor: pointer; 
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+}
+
+#backToTopBtn.show {
+	opacity: 1;
+	visibility: visible;
+}
+
+#backToTopBtn:hover {
+	background-color: #005f9e;
+	transform: translateY(-3px);
+	box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+/* 适配暗色模式下的美化 */
+.vscode-dark .container {
+	background-color: #1e1e1e;
+	color: #d4d4d4;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.vscode-dark body {
+	background-color: #121212;
+}
+.vscode-dark table > thead > tr > th {
+	background-color: #2d2d2d;
+	border-bottom-color: #444;
+	color: #e0e0e0;
+}
+.vscode-dark table > tbody > tr > td {
+	border-bottom-color: #333;
+}
+.vscode-dark table > tbody > tr:hover {
+	background-color: #2a2d2e;
+}
+.vscode-dark blockquote {
+	background: #252526;
+	color: #ccc;
+}
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+
+<div class="container">
+<h1 >Pipette Operation Guide</h1>
+<h1 >Pipette 操作指南</h1>
+<p>This document explains how to use the Pipette desktop application.
+<br>本文档说明了如何使用 Pipette 桌面应用程序。</p>
+<p>Screenshots were taken using a GPK60-63R keyboard unless otherwise noted.
+<br>除非另有说明，截图均使用 GPK60-63R 键盘拍摄。</p>
+<hr>
+<h2 >Table of Contents / 目录</h2>
+<h2 ><a href="#1-device-connection">1. Device Connection / 设备连接</a></h2>
+<h3 ><a href="#11-device-selection-screen">1.1 Device Selection Screen / 设备选择屏幕</a></h3>
+<h3 ><a href="#12-connecting-a-keyboard">1.2 Connecting a Keyboard / 连接键盘</a></h3>
+<h3 ><a href="#13-data">1.3 Data / 数据</a></h3>
+<h2 ><a href="#2-keymap-editor">2. Keymap Editor / 键位编辑器</a></h2>
+<h3 ><a href="#21-screen-layout">2.1 Screen Layout / 屏幕布局</a></h3>
+<h3 ><a href="#22-changing-keys">2.2 Changing Keys / 更改按键</a></h3>
+<h3 ><a href="#23-layer-switching">2.3 Layer Switching / 层切换</a></h3>
+<h3 ><a href="#24-key-popover">2.4 Key Popover / 按键弹出层</a></h3>
+<h3 ><a href="#25-layout-options">2.5 Layout Options / 布局选项</a></h3>
+<h2 ><a href="#3-keycode-palette">3. Keycode Palette / 键码调色板</a></h2>
+<h3 ><a href="#31-basic">3.1 Basic / 基础</a></h3>
+<h3 ><a href="#32-layers">3.2 Layers / 层</a></h3>
+<h3 ><a href="#33-modifiers">3.3 Modifiers / 修饰键</a></h3>
+<h3 ><a href="#34-system">3.4 System / 系统</a></h3>
+<h3 ><a href="#35-lighting">3.5 Lighting / 灯效</a></h3>
+<h3 ><a href="#36-tap-hold--tap-dance">3.6 Tap-Hold / Tap Dance / 点按-长按 / 点按跳舞</a></h3>
+<h3 ><a href="#37-macro">3.7 Macro / 宏</a></h3>
+<h3 ><a href="#38-combo">3.8 Combo / 组合键</a></h3>
+<h3 ><a href="#39-key-override">3.9 Key Override / 按键覆盖</a></h3>
+<h3 ><a href="#310-alt-repeat-key">3.10 Alt Repeat Key / Alt 重复键</a></h3>
+<h3 ><a href="#311-behavior">3.11 Behavior / 行为</a></h3>
+<h3 ><a href="#312-user">3.12 User / 用户</a></h3>
+<h3 ><a href="#313-keyboard-device-picker">3.13 Keyboard (Device Picker) / 键盘（设备选择器）</a></h3>
+<h3 ><a href="#314-keycodes-overlay-panel">3.14 Keycodes Overlay Panel / 键码覆盖面板</a></h3>
+<h2 ><a href="#4-toolbar">4. Toolbar / 工具栏</a></h2>
+<h3 ><a href="#41-zoom">4.1 Zoom / 缩放</a></h3>
+<h3 ><a href="#42-undo--redo-keymap-history">4.2 Undo / Redo / 撤销 / 重做</a></h3>
+<h3 ><a href="#43-typing-test">4.3 Typing Test / 打字测试</a></h3>
+<h2 ><a href="#5-detail-setting-editors">5. Detail Setting Editors / 详细设置编辑器</a></h2>
+<h3 ><a href="#51-lighting-settings">5.1 Lighting Settings / 灯效设置</a></h3>
+<h3 ><a href="#52-combo">5.2 Combo / 组合键</a></h3>
+<h3 ><a href="#53-key-override">5.3 Key Override / 按键覆盖</a></h3>
+<h3 ><a href="#54-alt-repeat-key">5.4 Alt Repeat Key / Alt 重复键</a></h3>
+<h3 ><a href="#55-favorites">5.5 Favorites / 收藏夹</a></h3>
+<h3 ><a href="#56-json-editor">5.6 JSON Editor / JSON 编辑器</a></h3>
+<h2 ><a href="#6-editor-settings-panel">6. Editor Settings Panel / 编辑器设置面板</a></h2>
+<h3 ><a href="#61-cloud-sync-google-drive-appdatafolder">6.1 Cloud Sync / 云同步</a></h3>
+<h2 ><a href="#7-pipette-hub">7. Pipette Hub / Pipette Hub</a></h2>
+<h2 ><a href="#8-status-bar">8. Status Bar / 状态栏</a></h2>
+<hr>
+<h2 id="1-device-connection">1. Device Connection</h2>
+<h2 id="1-%E8%AE%BE%E5%A4%87%E8%BF%9E%E6%8E%A5">1. 设备连接</h2>
+<h3 id="11-device-selection-screen">1.1 Device Selection Screen</h3>
+<h3 id="11-%E8%AE%BE%E5%A4%87%E9%80%89%E6%8B%A9%E5%B1%8F%E5%B9%95">1.1 设备选择屏幕</h3>
+<p>When you launch the app, a list of connected Vial-compatible keyboards is displayed.
+<br>当您启动应用程序时，将显示已连接的兼容 Vial 的键盘列表。</p>
+<p><img src="screenshots/01-device-selection.png" alt="Device Selection Screen">
+<img src="screenshots/01-device-selection.png" alt="设备选择屏幕"></p>
+<ul>
+<li>USB-connected keyboards are automatically detected</li>
+<li>USB 连接的键盘会被自动检测</li>
+<li>If multiple keyboards are connected, select one from the list</li>
+<li>如果连接了多个键盘，请从列表中选择一个</li>
+<li>On Linux, udev rules may need to be configured if no devices are found</li>
+<li>在 Linux 上，如果找不到设备，可能需要配置 udev 规则</li>
+</ul>
+<p><strong>File Tab</strong>
+<strong>文件选项卡</strong></p>
+<p><img src="screenshots/file-tab.png" alt="File Tab">
+<img src="screenshots/file-tab.png" alt="文件选项卡"></p>
+<p>The File tab allows offline editing of <code>.pipette</code> files without a physical keyboard connected:
+<br>“文件”选项卡允许在未连接物理键盘的情况下脱机编辑 <code>.pipette</code> 文件：</p>
+<ul>
+<li>Browse previously saved keyboards and select an entry to load</li>
+<li>浏览以前保存的键盘并选择要加载的条目</li>
+<li>Load an external <code>.pipette</code> file from disk</li>
+<li>从磁盘加载外部 <code>.pipette</code> 文件</li>
+<li>A virtual keyboard is created from the embedded definition in the file</li>
+<li>根据文件中嵌入的定义创建一个虚拟键盘</li>
+<li>An unsaved changes indicator is shown when edits have not been saved</li>
+<li>未保存更改时，会显示未保存更改指示器</li>
+</ul>
+<blockquote>
+<p><strong>Use case:</strong> You want to tweak your keyboard's keymap, but the keyboard isn't with you right now. If you've previously saved its data, you can load it from the File tab, make your edits offline, and later connect the keyboard and load the modified data to apply your changes.
+<br><strong>使用场景：</strong> 您想调整键盘的键位图，但键盘现在不在身边。如果您以前保存过其数据，则可以从“文件”选项卡加载它，进行脱机编辑，稍后连接键盘并加载修改后的数据以应用更改。</p>
+</blockquote>
+<p><strong>Feature Availability: Device vs File Mode</strong>
+<strong>功能可用性：设备模式 vs 文件模式</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Feature<br>功能</th>
+<th style="text-align:center">Device (USB)<br>设备 (USB)</th>
+<th style="text-align:center">File (.pipette)<br>文件 (.pipette)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Keymap editing<br>键位编辑</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">Yes<br>是</td>
+</tr>
+<tr>
+<td style="text-align:left">Macro / Tap Dance editing<br>宏 / 点按跳舞编辑</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">Yes<br>是</td>
+</tr>
+<tr>
+<td style="text-align:left">Combo / Key Override / Alt Repeat Key<br>组合键 / 按键覆盖 / Alt重复键</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">Yes<br>是</td>
+</tr>
+<tr>
+<td style="text-align:left">QMK Settings<br>QMK 设置</td>
+<td style="text-align:center">Yes (device)<br>是（设备）</td>
+<td style="text-align:center">Yes (local data)<br>是（本地数据）</td>
+</tr>
+<tr>
+<td style="text-align:left">Typing Test<br>打字测试</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">Yes<br>是</td>
+</tr>
+<tr>
+<td style="text-align:left">Export (.vil / .c / .pdf)<br>导出</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">Yes<br>是</td>
+</tr>
+<tr>
+<td style="text-align:left">Lighting control<br>灯效控制</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+<tr>
+<td style="text-align:left">Matrix Tester<br>矩阵测试器</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+<tr>
+<td style="text-align:left">Lock / Unlock<br>锁定 / 解锁</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+<tr>
+<td style="text-align:left">Snapshot save / load<br>快照保存 / 加载</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+<tr>
+<td style="text-align:left">Hub upload<br>Hub 上传</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+<tr>
+<td style="text-align:left">JSON sideload<br>JSON 侧向加载</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+<tr>
+<td style="text-align:left">Device probe (Keyboard tab)<br>设备探测（键盘选项卡）</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+<tr>
+<td style="text-align:left">Cloud Sync<br>云同步</td>
+<td style="text-align:center">Yes<br>是</td>
+<td style="text-align:center">No<br>否</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-connecting-a-keyboard">1.2 Connecting a Keyboard</h3>
+<h3 id="12-%E8%BF%9E%E6%8E%A5%E9%94%AE%E7%9B%98">1.2 连接键盘</h3>
+<p>Click a keyboard name in the list to open the keymap editor. A connecting overlay shows loading progress while the keyboard data is read.
+<br>点击列表中的键盘名称以打开键位编辑器。在读取键盘数据时，会显示连接覆盖层以展示加载进度。</p>
+<p>If Cloud Sync is configured, sync progress is also displayed during connection (favorites first, then keyboard-specific data).
+<br>如果配置了云同步，在连接期间也会显示同步进度（首先是收藏夹，然后是键盘特定数据）。</p>
+<h3 id="13-data">1.3 Data</h3>
+<h3 id="13-%E6%95%B0%E6%8D%AE">1.3 数据</h3>
+<p>The Data button on the device selection screen opens the Data panel for centralized management of keyboards, favorites, sync data, and Hub posts.
+<br>设备选择屏幕上的“数据”按钮可打开数据面板，用于集中管理键盘、收藏夹、同步数据和 Hub 发布内容。</p>
+<p><img src="screenshots/data-sidebar-favorites.png" alt="Data — Favorites">
+<img src="screenshots/data-sidebar-favorites.png" alt="数据 — 收藏夹"></p>
+<p>The left sidebar provides a <strong>tree navigation</strong> with the following structure:
+<br>左侧边栏提供具有以下结构的<strong>树状导航</strong>：</p>
+<ul>
+<li><strong>Local</strong></li>
+<li><strong>本地</strong>
+<ul>
+<li><strong>Keyboards</strong>: Browse saved keyboard snapshots. Click a keyboard to view, load, export, or delete entries</li>
+<li><strong>键盘</strong>：浏览保存的键盘快照。点击键盘以查看、加载、导出或删除条目</li>
+<li><strong>Favorites</strong>: Tap Dance, Macro, Combo, Key Override, Alt Repeat Key — each type shows its saved entries with rename, delete, export, and Hub actions</li>
+<li><strong>收藏夹</strong>：点按跳舞、宏、组合键、按键覆盖、Alt 重复键 —— 每种类型都显示其保存的条目，并带有重命名、删除、导出和 Hub 操作</li>
+<li><strong>Application</strong>: Import/export local data or reset selected targets (keyboard data, favorites, app settings)</li>
+<li><strong>应用程序</strong>：导入/导出本地数据或重置选定目标（键盘数据、收藏夹、应用程序设置）</li>
+</ul>
+</li>
+<li><strong>Sync</strong> (when Cloud Sync is configured): Shows remote-only data not available locally. Scan and delete orphaned sync data from Google Drive</li>
+<li><strong>同步</strong>（配置云同步时）：显示本地不可用的仅限远程的数据。扫描并删除 Google 云端硬盘中孤立的同步数据</li>
+<li><strong>Hub</strong> (when Hub is connected): Manage Hub posts grouped by keyboard name</li>
+<li><strong>Hub</strong>（连接 Hub 时）：管理按键盘名称分组的 Hub 发布内容</li>
+</ul>
+<p><img src="screenshots/data-sidebar-keyboard-saves.png" alt="Data — Keyboard Saves">
+<img src="screenshots/data-sidebar-keyboard-saves.png" alt="数据 — 键盘保存"></p>
+<p><img src="screenshots/data-sidebar-application.png" alt="Data — Application">
+<img src="screenshots/data-sidebar-application.png" alt="数据 — 应用程序"></p>
+<p>Per-entry actions in the favorites list:
+<br>收藏夹列表中的单项操作：</p>
+<ul>
+<li>Click to rename, delete, or <strong>Export</strong> individual entries</li>
+<li>点击以重命名、删除或<strong>导出</strong>单个条目</li>
+<li><strong>Hub actions</strong>: When Hub is connected, each entry shows <strong>Upload to Hub</strong> / <strong>Update on Hub</strong> / <strong>Remove from Hub</strong> buttons</li>
+<li><strong>Hub 操作</strong>：连接 Hub 时，每个条目都会显示<strong>上传到 Hub</strong> / <strong>在 Hub 上更新</strong> / <strong>从 Hub 移除</strong>按钮</li>
+<li><strong>Import</strong> / <strong>Export All</strong> buttons at the footer for bulk operations</li>
+<li>底部页脚有<strong>导入</strong> / <strong>全部导出</strong>按钮，用于批量操作</li>
+</ul>
+<p>A <strong>breadcrumb navigation</strong> at the top of the content area shows the current path (e.g., &quot;Local › Favorites › Tap Dance&quot;)
+<br>内容区域顶部的<strong>面包屑导航</strong>显示当前路径（例如，“本地 › 收藏夹 › 点按跳舞”）</p>
+<hr>
+<h2 id="2-keymap-editor">2. Keymap Editor</h2>
+<h2 id="2-%E9%94%AE%E4%BD%8D%E7%BC%96%E8%BE%91%E5%99%A8">2. 键位编辑器</h2>
+<h3 id="21-screen-layout">2.1 Screen Layout</h3>
+<h3 id="21-%E5%B1%8F%E5%B9%95%E5%B8%83%E5%B1%80">2.1 屏幕布局</h3>
+<p>The keymap editor consists of two main areas: the keyboard layout display and the keycode palette.
+<br>键位编辑器由两个主要区域组成：键盘布局显示区和键码调色板。</p>
+<p><img src="screenshots/02-keymap-editor-overview.png" alt="Keymap Editor Overview">
+<img src="screenshots/02-keymap-editor-overview.png" alt="键位编辑器概览"></p>
+<ul>
+<li>Top area: Physical keyboard layout (shows the current keycode assigned to each key)</li>
+<li>顶部区域：物理键盘布局（显示分配给每个按键的当前键码）</li>
+<li>Left side: Toolbar (zoom, undo/redo, etc.)</li>
+<li>左侧：工具栏（缩放、撤销/重做等）</li>
+<li>Bottom area: Keycode palette (tabbed interface) with overlay panel toggle</li>
+<li>底部区域：键码调色板（选项卡式界面），带有覆盖面板切换开关</li>
+<li>Right side (when open): Keycodes Overlay Panel (tools, save, layout options)</li>
+<li>右侧（打开时）：键码覆盖面板（工具、保存、布局选项）</li>
+<li>Bottom bar: Status bar</li>
+<li>底部栏：状态栏</li>
+</ul>
+<h3 id="22-changing-keys">2.2 Changing Keys</h3>
+<h3 id="22-%E6%9B%B4%E6%94%B9%E6%8C%89%E9%94%AE">2.2 更改按键</h3>
+<ol>
+<li>Click a key on the keyboard layout to select it</li>
+<li>点击键盘布局上的按键以选中它</li>
+<li>Click a keycode from the keycode palette to assign it</li>
+<li>点击键码调色板中的键码以进行分配</li>
+<li>The key display updates immediately</li>
+<li>按键显示立即更新</li>
+<li>Changes are automatically sent to the keyboard</li>
+<li>更改会自动发送到键盘</li>
+</ol>
+<ul>
+<li>Ctrl+click to select multiple keys</li>
+<li>Ctrl+点击可选择多个按键</li>
+<li>Shift+click for range selection</li>
+<li>Shift+点击可进行范围选择</li>
+<li>Press Escape to deselect all keys</li>
+<li>按下 Escape 键取消选择所有按键</li>
+</ul>
+<p><strong>Instant Key Selection</strong> controls how keycode assignment behaves:
+<br><strong>即时按键选择</strong>控制键码分配的行为：</p>
+<ul>
+<li><strong>ON</strong> (default): A single click on a keycode immediately assigns it and closes the selection. Fast workflow for quick edits.</li>
+<li><strong>开启</strong>（默认）：单击键码会立即分配它并关闭选择。适用于快速编辑的流程。</li>
+<li><strong>OFF</strong>: A single click selects a keycode (highlighted), double-click or press Enter to confirm and assign. A hint is shown at the bottom of the palette. Useful when you want to browse keycodes before committing.</li>
+<li><strong>关闭</strong>：单击会选中一个键码（高亮显示），双击或按 Enter 键确认并分配。调色板底部会显示提示。当您想在提交前浏览键码时非常有用。</li>
+</ul>
+<p>This setting can be toggled per-keyboard in the Keycodes Overlay Panel (§3.14), and the global default can be set in Settings → Defaults (§6.1).
+<br>此设置可以在键码覆盖面板 (§3.14) 中针对每个键盘进行切换，全局默认值可以在“设置”→“默认值” (§6.1) 中设置。</p>
+<h3 id="23-layer-switching">2.3 Layer Switching</h3>
+<h3 id="23-%E5%B1%82%E5%88%87%E6%8D%A2">2.3 层切换</h3>
+<p>Layer switching buttons are located on the left side of the keyboard layout.
+<br>层切换按钮位于键盘布局的左侧。</p>
+<p><img src="screenshots/03-layer-0.png" alt="Layer 0">
+<img src="screenshots/03-layer-0.png" alt="层 0"></p>
+<ul>
+<li>Click layer number buttons to switch between layers</li>
+<li>点击层数字按钮可在不同层之间切换</li>
+<li>Layer 0 is the default layer</li>
+<li>层 0 是默认层</li>
+<li>The number of available layers depends on the keyboard configuration</li>
+<li>可用层的数量取决于键盘配置</li>
+</ul>
+<p>The layer panel can be collapsed to save space:
+<br>层面板可以折叠以节省空间：</p>
+<p><img src="screenshots/layer-panel-collapsed.png" alt="Layer Panel Collapsed">
+<img src="screenshots/layer-panel-collapsed.png" alt="层面板已折叠"></p>
+<p>Click the collapse button (chevron) to minimize the layer panel to just numbers. Click the expand button to restore full layer names.
+<br>点击折叠按钮（人字形）将层面板最小化为仅数字。点击展开按钮以恢复完整的层名称。</p>
+<p><img src="screenshots/layer-panel-expanded.png" alt="Layer Panel Expanded">
+<img src="screenshots/layer-panel-expanded.png" alt="层面板已展开"></p>
+<h3 id="24-key-popover">2.4 Key Popover</h3>
+<h3 id="24-%E6%8C%89%E9%94%AE%E5%BC%B9%E5%87%BA%E5%B1%82">2.4 按键弹出层</h3>
+<p>Double-click a key on the keyboard layout to open the Key Popover — a quick way to search and assign keycodes without scrolling through the palette.
+<br>双击键盘布局上的按键以打开按键弹出层 —— 这是一种在不滚动调色板的情况下快速搜索和分配键码的方法。</p>
+<p><strong>Key Tab</strong>
+<strong>按键选项卡</strong></p>
+<p><img src="screenshots/key-popover-key.png" alt="Key Popover — Key Tab">
+<img src="screenshots/key-popover-key.png" alt="按键弹出层 — 按键选项卡"></p>
+<ul>
+<li>The search input is pre-filled with the current keycode name</li>
+<li>搜索输入框预填了当前的键码名称</li>
+<li>Type to search by name, keycode name, or alias — results are ranked by relevance</li>
+<li>输入名称、键码名称或别名进行搜索 —— 结果按相关性排序</li>
+<li>Click a result to assign it immediately</li>
+<li>点击结果即可立即分配</li>
+<li>The popover also appears when double-clicking key fields in detail editors (Tap Dance, Combo, Key Override, etc.)</li>
+<li>在详细编辑器（点按跳舞、组合键、按键覆盖等）中双击按键字段时，也会出现弹出层。</li>
+</ul>
+<p><strong>Code Tab</strong>
+<strong>代码选项卡</strong></p>
+<p><img src="screenshots/key-popover-code.png" alt="Key Popover — Code Tab">
+<img src="screenshots/key-popover-code.png" alt="按键弹出层 — 代码选项卡"></p>
+<ul>
+<li>Enter a keycode value directly in hexadecimal (e.g., <code>0x0029</code> for Escape)</li>
+<li>直接输入十六进制的键码值（例如，<code>0x0029</code> 代表 Escape）</li>
+<li>The resolved keycode name is displayed below the hex input</li>
+<li>解析后的键码名称显示在十六进制输入框下方</li>
+<li>Click <strong>Apply</strong> to assign the entered keycode</li>
+<li>点击<strong>应用</strong>以分配输入的键码</li>
+</ul>
+<p><strong>Wrapper Modes</strong>
+<strong>包装模式</strong></p>
+<p>The mode buttons at the top of the popover let you build composite keycodes:
+<br>弹出层顶部的模式按钮允许您构建复合键码：</p>
+<p><img src="screenshots/key-popover-modifier.png" alt="Key Popover — Modifier Mode">
+<img src="screenshots/key-popover-modifier.png" alt="按键弹出层 — 修饰键模式"></p>
+<ul>
+<li><strong>Mod Mask</strong>: Combine a modifier with a key (e.g., <code>LSFT(KC_ESCAPE)</code>)</li>
+<li><strong>修饰键掩码 (Mod Mask)</strong>：将修饰键与按键组合（例如，<code>LSFT(KC_ESCAPE)</code>）</li>
+<li><strong>Mod-Tap</strong>: Modifier on hold, key on tap (e.g., <code>LSFT_T(KC_ESCAPE)</code>)</li>
+<li><strong>修饰键点按 (Mod-Tap)</strong>：长按为修饰键，短按为普通键（例如，<code>LSFT_T(KC_ESCAPE)</code>）</li>
+</ul>
+<p>Both modes show the modifier checkbox strip to select Left/Right Ctrl, Shift, Alt, or GUI. Left and Right modifiers cannot be mixed — selecting one side disables the other.
+<br>两种模式都显示修饰键复选框条，用于选择左/右 Ctrl、Shift、Alt 或 GUI。左侧和右侧修饰键不能混合 —— 选择一侧会禁用另一侧。</p>
+<p><img src="screenshots/key-popover-lt.png" alt="Key Popover — LT Mode">
+<img src="screenshots/key-popover-lt.png" alt="按键弹出层 — LT 模式"></p>
+<ul>
+<li><strong>LT</strong>: Layer-Tap — activate a layer on hold, send a key on tap (e.g., <code>LT0(KC_ESCAPE)</code>). A layer selector appears to choose the target layer.</li>
+<li><strong>LT</strong>：层点按 (Layer-Tap) —— 长按激活层，短按发送按键（例如，<code>LT0(KC_ESCAPE)</code>）。会出现一个层选择器用于选择目标层。</li>
+<li><strong>SH_T</strong>: Swap Hands Tap — swap hands on hold, send a key on tap (e.g., <code>SH_T(KC_ESCAPE)</code>)</li>
+<li><strong>SH_T</strong>：换手点按 (Swap Hands Tap) —— 长按切换换手模式，短按发送按键（例如，<code>SH_T(KC_ESCAPE)</code>）</li>
+<li><strong>LM</strong>: Layer-Mod — activate a layer with modifiers (e.g., <code>LM(0, MOD_LSFT)</code>). Shows both the layer selector and the modifier checkbox strip.</li>
+<li><strong>LM</strong>：层修饰键 (Layer-Mod) —— 激活带有修饰键的层（例如，<code>LM(0, MOD_LSFT)</code>）。同时显示层选择器和修饰键复选框条。</li>
+</ul>
+<p>Click an active mode button to toggle it off and revert to a basic keycode.
+<br>点击已激活的模式按钮可将其关闭并恢复为基本键码。</p>
+<p><strong>Undo / Redo</strong>: The popover footer shows context-sensitive <strong>Undo</strong> and <strong>Redo</strong> buttons. Undo displays the previous keycode and reverts to it; Redo displays the next keycode and re-applies it. These buttons only appear when the most recent undo/redo history entry matches the key currently open in the popover (i.e., the last single change). For multi-step history navigation, use the toolbar buttons or keyboard shortcuts (see §4.2).
+<br><strong>撤销 / 重做</strong>：弹出层底部显示上下文相关的<strong>撤销</strong>和<strong>重做</strong>按钮。撤销显示前一个键码并恢复；重做显示下一个键码并重新应用。这些按钮仅在最近的撤销/重做历史条目与弹出层中当前打开的按键匹配时（即最后一次单一更改）才会出现。对于多步骤历史导航，请使用工具栏按钮或键盘快捷键（见 §4.2）。</p>
+<p><img src="screenshots/key-popover-undo.png" alt="Key Popover — Undo">
+<img src="screenshots/key-popover-undo.png" alt="按键弹出层 — 撤销"></p>
+<p><strong>Confirmation</strong>: Press <strong>Enter</strong> to confirm the current selection and close the popover. Press <strong>Escape</strong> or click outside the popover to close it without changes.
+<br><strong>确认</strong>：按 <strong>Enter</strong> 确认当前选择并关闭弹出层。按 <strong>Escape</strong> 或点击弹出层外部可关闭且不保存更改。</p>
+<h3 id="25-layout-options">2.5 Layout Options</h3>
+<h3 id="25-%E5%B8%83%E5%B1%80%E9%80%89%E9%A1%B9">2.5 布局选项</h3>
+<p>Some keyboards support multiple physical layouts (e.g., split backspace, ISO enter, different bottom row configurations). When a keyboard has layout options, a Layout Options button (grid icon) appears at the right end of the keycode palette tab bar.
+<br>某些键盘支持多种物理布局（例如，分裂退格键、ISO 回车键、不同的底行配置）。当键盘具有布局选项时，键码调色板选项卡栏的右端会出现一个布局选项按钮（网格图标）。</p>
+<p><img src="screenshots/layout-options-open.png" alt="Layout Options Panel">
+<img src="screenshots/layout-options-open.png" alt="布局选项面板"></p>
+<ul>
+<li>Click the grid icon to open the Layout Options panel</li>
+<li>点击网格图标以打开布局选项面板</li>
+<li><strong>Checkbox options</strong>: Toggle a layout variant on or off (e.g., &quot;Macro Pad&quot;, &quot;Split Backspace&quot;, &quot;ISO Enter&quot;)</li>
+<li><strong>复选框选项</strong>：切换布局变体的开启或关闭（例如，“宏按键板”、“分裂退格键”、“ISO 回车”）</li>
+<li><strong>Dropdown options</strong>: Select from multiple layout variants (e.g., &quot;Bottom Section&quot; with Full Grid / Macro Pad / Arrow Keys choices)</li>
+<li><strong>下拉选项</strong>：从多个布局变体中选择（例如，“底部分区”有完整网格 / 宏按键板 / 方向键选项）</li>
+<li>Changes are applied immediately — the keyboard layout display updates in real time to reflect the selected options</li>
+<li>更改会立即应用 —— 键盘布局显示会实时更新以反映所选选项</li>
+</ul>
+<p><img src="screenshots/layout-options-changed.png" alt="Layout Options Changed">
+<img src="screenshots/layout-options-changed.png" alt="布局选项已更改"></p>
+<ul>
+<li>Selecting a different option updates the visible keys on the keyboard layout</li>
+<li>选择不同的选项会更新键盘布局上可见的按键</li>
+<li>Layout options are saved to the keyboard and persist across sessions</li>
+<li>布局选项保存在键盘中，并在不同会话之间持久化</li>
+<li>Click outside the panel or press Escape to close it</li>
+<li>点击面板外部或按 Escape 关闭它</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: The Layout Options button only appears for keyboards that define multiple layout variants. Most keyboards with a single fixed layout do not show this button. Screenshots in this section were taken using a dummy JSON definition loaded via &quot;Load from JSON file&quot;.
+<br><strong>注意</strong>：布局选项按钮仅出现在定义了多个布局变体的键盘上。大多数具有单一固定布局的键盘不会显示此按钮。本节中的截图是使用通过“从 JSON 文件加载”加载的虚拟 JSON 定义拍摄的。</p>
+</blockquote>
+<hr>
+<h2 id="3-keycode-palette">3. Keycode Palette</h2>
+<h2 id="3-%E9%94%AE%E7%A0%81%E8%B0%83%E8%89%B2%E6%9D%BF">3. 键码调色板</h2>
+<p>Select keycodes from different categories using the tabbed palette at the bottom of the screen.
+<br>使用屏幕底部的选项卡式调色板从不同类别中选择键码。</p>
+<h3 id="31-basic">3.1 Basic</h3>
+<h3 id="31-%E5%9F%BA%E7%A1%80">3.1 基础</h3>
+<p>Standard character keys, function keys, modifier keys, and navigation keys. The Basic tab supports four view types, selectable from the Keycodes Overlay Panel (§3.14):
+<br>标准字符键、功能键、修饰键和导航键。“基础”选项卡支持四种视图类型，可在键码覆盖面板 (§3.14) 中选择：</p>
+<p><strong>ANSI Keyboard View</strong> (default)
+<strong>ANSI 键盘视图</strong>（默认）</p>
+<p><img src="screenshots/basic-ansi-view.png" alt="Basic Tab — ANSI View">
+<img src="screenshots/basic-ansi-view.png" alt="基础选项卡 — ANSI 视图"></p>
+<p>Displays keycodes as an ANSI keyboard layout. Click a key on the visual keyboard to assign it.
+<br>将键码显示为 ANSI 键盘布局。点击虚拟键盘上的按键即可分配。</p>
+<p><strong>ISO Keyboard View</strong>
+<strong>ISO 键盘视图</strong></p>
+<p>Displays keycodes as an ISO keyboard layout with the ISO-specific keys.
+<br>将键码显示为带有 ISO 特定按键的 ISO 键盘布局。</p>
+<p><strong>JIS Keyboard View</strong>
+<strong>JIS 键盘视图</strong></p>
+<p>Displays keycodes as a JIS keyboard layout with JIS-specific keys (Yen, Ro, Henkan, Muhenkan, Katakana/Hiragana).
+<br>将键码显示为带有 JIS 特定按键（日元、Ro、变换、无变换、片假名/平假名）的 JIS 键盘布局。</p>
+<p><strong>List View</strong>
+<strong>列表视图</strong></p>
+<p>Displays keycodes in the traditional scrollable list format.
+<br>以传统的滚动列表格式显示键码。</p>
+<p>All views include:
+<br>所有视图均包括：</p>
+<ul>
+<li>Character keys (A-Z, 0-9, symbols)</li>
+<li>字符键</li>
+<li>Function keys (F1-F24)</li>
+<li>功能键</li>
+<li>Editing keys (Enter, Tab, Backspace, Delete)</li>
+<li>编辑键</li>
+<li>Navigation keys (arrows, Home, End, PageUp/Down)</li>
+<li>导航键</li>
+<li>Numpad keys</li>
+<li>数字小键盘键</li>
+<li>International keys (KC_INT1–KC_INT5)</li>
+<li>国际键</li>
+<li>Language keys (KC_LANG1–KC_LANG5)</li>
+<li>语言键</li>
+</ul>
+<h3 id="32-layers">3.2 Layers</h3>
+<h3 id="32-%E5%B1%82">3.2 层</h3>
+<p>Keycodes for layer operations.
+<br>用于层操作的键码。</p>
+<p><img src="screenshots/tab-layers.png" alt="Layers Tab">
+<img src="screenshots/tab-layers.png" alt="层选项卡"></p>
+<ul>
+<li><strong>MO(n)</strong>: Momentarily activate layer n while held</li>
+<li><strong>MO(n)</strong>：长按时瞬间激活层 n</li>
+<li><strong>DF(n)</strong>: Set default layer to n</li>
+<li><strong>DF(n)</strong>：将默认层设置为 n</li>
+<li><strong>TG(n)</strong>: Toggle layer n</li>
+<li><strong>TG(n)</strong>：切换层 n 的开启 / 关闭</li>
+<li><strong>LT(n, kc)</strong>: Layer on hold, keycode on tap</li>
+<li><strong>LT(n, kc)</strong>：长按切层，短按发送键码</li>
+<li><strong>OSL(n)</strong>: Activate layer n for the next keypress only</li>
+<li><strong>OSL(n)</strong>：仅为下一次按键激活层 n</li>
+<li><strong>TO(n)</strong>: Switch to layer n</li>
+<li><strong>TO(n)</strong>：切换到层 n</li>
+</ul>
+<h3 id="33-modifiers">3.3 Modifiers</h3>
+<h3 id="33-%E4%BF%AE%E9%A5%B0%E9%94%AE">3.3 修饰键</h3>
+<p>Keycodes for modifier key combinations and tap behavior settings.
+<br>用于修饰键组合和点按行为设置的键码。</p>
+<p><img src="screenshots/tab-modifiers.png" alt="Modifiers Tab">
+<img src="screenshots/tab-modifiers.png" alt="修饰键选项卡"></p>
+<ul>
+<li><strong>One-Shot Modifier (OSM)</strong>: Activate modifier for the next keypress only</li>
+<li><strong>一键修饰符 (OSM)</strong>：仅为下一次按键激活修饰键</li>
+<li><strong>Mod-Tap</strong>: Modifier on hold, regular key on tap</li>
+<li><strong>修饰键点按 (Mod-Tap)</strong>：长按为修饰键，短按为常规按键</li>
+<li><strong>Mod Mask</strong>: Modifier key combinations</li>
+<li><strong>修饰键掩码 (Mod Mask)</strong>：修饰键组合</li>
+</ul>
+<h3 id="34-system">3.4 System</h3>
+<h3 id="34-%E7%B3%BB%E7%BB%9F">3.4 系统</h3>
+<p>Keycodes for mouse control, media playback, system utilities, and audio/haptic feedback.
+<br>用于鼠标控制、媒体播放、系统实用程序以及音频/触感反馈的键码。</p>
+<p><img src="screenshots/tab-system.png" alt="System Tab">
+<img src="screenshots/tab-system.png" alt="系统选项卡"></p>
+<ul>
+<li><strong>Mouse</strong>: buttons, movement, and scrolling</li>
+<li>鼠标：按钮、移动和滚动</li>
+<li><strong>Joystick</strong>: axis and button keycodes</li>
+<li>摇杆：轴和按钮键码</li>
+<li><strong>Audio</strong>: audio toggle and control keycodes</li>
+<li>音频：音频切换和控制键码</li>
+<li><strong>Haptic</strong>: haptic feedback toggle and control keycodes</li>
+<li>触感：触感反馈切换和控制键码</li>
+<li><strong>Media Playback</strong>: play/stop/volume/track controls</li>
+<li>媒体播放：播放/停止/音量/曲目控制</li>
+<li><strong>Locking Keys</strong>: Locking Caps Lock, Num Lock, Scroll Lock</li>
+<li>锁定键：锁定大写锁定、数字锁定、滚动锁定</li>
+<li><strong>App / Browser</strong>: application launcher and browser navigation keys</li>
+<li>应用 / 浏览器：应用程序启动器和浏览器导航键</li>
+<li><strong>System Control</strong>: system power, sleep, wake</li>
+<li>系统控制：系统电源、睡眠、唤醒</li>
+<li><strong>Boot</strong>: enter bootloader mode (QK_BOOT)</li>
+<li>引导：进入引导加载程序模式 (QK_BOOT)</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: The MIDI tab is only displayed for MIDI-capable keyboards. When available, it appears between System and Lighting.
+<br><strong>注意</strong>：MIDI 选项卡仅在支持 MIDI 的键盘上显示。如果可用，它将显示在“系统”和“灯效”之间。</p>
+</blockquote>
+<h3 id="35-lighting">3.5 Lighting</h3>
+<h3 id="35-%E7%81%AF%E6%95%88">3.5 灯效</h3>
+<p>Keycodes for backlight and RGB lighting controls.
+<br>用于背光和 RGB 灯效控制的键码。</p>
+<p><img src="screenshots/tab-lighting.png" alt="Lighting Tab">
+<img src="screenshots/tab-lighting.png" alt="灯效选项卡"></p>
+<ul>
+<li>RGB Matrix controls</li>
+<li>RGB 矩阵控制</li>
+<li>RGB Lighting controls</li>
+<li>RGB 灯效控制</li>
+<li>Backlight controls</li>
+<li>背光控制</li>
+<li>LED Matrix controls</li>
+<li>LED 矩阵控制</li>
+</ul>
+<h3 id="36-tap-hold--tap-dance">3.6 Tap-Hold / Tap Dance</h3>
+<h3 id="36-%E7%82%B9%E6%8C%89-%E9%95%BF%E6%8C%89--%E7%82%B9%E6%8C%89%E8%B7%B3%E8%88%9E-tap-dance">3.6 点按-长按 / 点按跳舞 (Tap Dance)</h3>
+<p>Keycodes that assign different actions to tap and hold.
+<br>为点按和长按分配不同动作的键码。</p>
+<p>The Tap Dance section displays a <strong>tile grid preview</strong> showing all entries at a glance:
+<br>“点按跳舞”部分显示一个<strong>平铺网格预览</strong>，让所有条目一目了然：</p>
+<p><img src="screenshots/td-tile-grid.png" alt="Tap Dance Tile Grid">
+<img src="screenshots/td-tile-grid.png" alt="点按跳舞网格"></p>
+<ul>
+<li>Each tile shows the entry number and a summary of configured actions</li>
+<li>每个方块显示条目编号和已配置动作的摘要</li>
+<li>Configured entries display their tap/hold actions; unconfigured tiles show the number only</li>
+<li>已配置的条目显示其点按/长按动作；未配置的方块仅显示编号</li>
+<li>Click a tile to open the Tap Dance edit modal directly to that entry</li>
+<li>点击方块可直接打开该条目的“点按跳舞”编辑弹窗</li>
+<li>Configure tap, hold, double-tap, and other actions for each entry</li>
+<li>为每个条目配置点按、长按、双击和其他动作</li>
+<li><strong>Edit JSON</strong> button at the bottom opens a JSON editor for bulk editing all entries (see §5.6)</li>
+<li>底部的<strong>编辑 JSON</strong> 按钮可打开 JSON 编辑器以批量编辑所有条目（见 §5.6）</li>
+</ul>
+<h3 id="37-macro">3.7 Macro</h3>
+<h3 id="37-%E5%AE%8F">3.7 宏</h3>
+<p>Macro keycodes.
+<br>宏键码。</p>
+<p><img src="screenshots/tab-macro.png" alt="Macro Tab">
+<img src="screenshots/tab-macro.png" alt="宏选项卡"></p>
+<p>The Macro section displays a <strong>tile grid preview</strong> showing all entries at a glance:
+<br>“宏”部分显示一个<strong>平铺网格预览</strong>，让所有条目一目了然：</p>
+<p><img src="screenshots/macro-tile-grid.png" alt="Macro Tile Grid">
+<img src="screenshots/macro-tile-grid.png" alt="宏网格"></p>
+<ul>
+<li>Each tile shows the macro number and a preview of the recorded sequence</li>
+<li>每个方块显示宏编号和录制序列的预览</li>
+<li>Configured entries display a summary of key actions; unconfigured tiles show the number only</li>
+<li>已配置的条目显示按键动作摘要；未配置的方块仅显示编号</li>
+<li>Click a tile to open the Macro edit modal directly to that entry</li>
+<li>点击方块可直接打开该条目的宏编辑弹窗</li>
+<li>Record sequences of key inputs as macros</li>
+<li>将按键输入序列录制为宏</li>
+<li><strong>Edit JSON</strong> button at the bottom opens a JSON editor for bulk editing all entries (see §5.6)</li>
+<li>底部的<strong>编辑 JSON</strong> 按钮可打开 JSON 编辑器以批量编辑所有条目（见 §5.6）</li>
+</ul>
+<h3 id="38-combo">3.8 Combo</h3>
+<h3 id="38-%E7%BB%84%E5%90%88%E9%94%AE-combo">3.8 组合键 (Combo)</h3>
+<p>Combo keycodes for simultaneous key-press combinations.
+<br>用于同时按下的组合键键码。</p>
+<p><img src="screenshots/tab-combo.png" alt="Combo Tab">
+<img src="screenshots/tab-combo.png" alt="组合键选项卡"></p>
+<p>The Combo tab displays a <strong>tile grid preview</strong> showing all entries. A note reads: &quot;These features apply to the entire keyboard, not just the current layer.&quot;
+<br>“组合键”选项卡显示包含所有条目的<strong>平铺网格预览</strong>。注释显示：“这些功能适用于整个键盘，而不仅仅是当前层。”</p>
+<ul>
+<li>Each tile shows the combo number and a summary (e.g., &quot;A + B → C&quot;)</li>
+<li>每个方块显示组合键编号和摘要（例如，“A + B → C”）</li>
+<li>Click a tile to open the Combo edit modal directly to that entry (§5.2)</li>
+<li>点击方块可直接打开该条目的组合键编辑弹窗 (§5.2)</li>
+<li>Combo keycodes (CMB_000–CMB_031) can be assigned to keys for triggering combos</li>
+<li>组合键键码 (CMB_000–CMB_031) 可以分配给按键以触发组合键</li>
+<li><strong>Settings: Configuration</strong> button at the bottom opens a settings modal for combo-related timeout configuration (e.g., Combo time out period)</li>
+<li>底部的<strong>设置：配置</strong>按钮可打开用于组合键相关超时配置（例如，组合键超时时间）的设置弹窗</li>
+<li><strong>Edit JSON</strong> button at the bottom opens a JSON editor for bulk editing all entries (see §5.6)</li>
+<li>底部的<strong>编辑 JSON</strong> 按钮可打开 JSON 编辑器以批量编辑所有条目（见 §5.6）</li>
+</ul>
+<h3 id="39-key-override">3.9 Key Override</h3>
+<h3 id="39-%E6%8C%89%E9%94%AE%E8%A6%86%E7%9B%96-key-override">3.9 按键覆盖 (Key Override)</h3>
+<p>Key Override keycodes for replacing key outputs when specific modifiers are held.
+<br>用于在按住特定修饰键时替换按键输出的键码。</p>
+<p>The Key Override tab displays a <strong>tile grid preview</strong> showing all entries and a settings area.
+<br>“按键覆盖”选项卡显示包含所有条目的<strong>平铺网格预览</strong>和一个设置区域。</p>
+<ul>
+<li>Each tile shows the override number and a summary</li>
+<li>每个方块显示覆盖编号和摘要</li>
+<li>Click a tile to open the Key Override edit modal directly to that entry (§5.3)</li>
+<li>点击方块可直接打开该条目的按键覆盖编辑弹窗 (§5.3)</li>
+<li><strong>Edit JSON</strong> button at the bottom opens a JSON editor for bulk editing all entries (see §5.6)</li>
+<li>底部的<strong>编辑 JSON</strong> 按钮可打开 JSON 编辑器以批量编辑所有条目（见 §5.6）</li>
+</ul>
+<h3 id="310-alt-repeat-key">3.10 Alt Repeat Key</h3>
+<h3 id="310-alt-%E9%87%8D%E5%A4%8D%E9%94%AE-alt-repeat-key">3.10 Alt 重复键 (Alt Repeat Key)</h3>
+<p>Alt Repeat Key keycodes for context-aware alternate repeat key bindings.
+<br>用于上下文相关的备选重复键绑定的键码。</p>
+<p>The Alt Repeat Key tab displays a <strong>tile grid preview</strong> showing all entries and a settings area.
+<br>“Alt 重复键”选项卡显示包含所有条目的<strong>平铺网格预览</strong>和一个设置区域。</p>
+<ul>
+<li>Each tile shows the entry number and a summary</li>
+<li>每个方块显示条目编号和摘要</li>
+<li>Click a tile to open the Alt Repeat Key edit modal directly to that entry (§5.4)</li>
+<li>点击方块可直接打开该条目的 Alt 重复键编辑弹窗 (§5.4)</li>
+<li><strong>Edit JSON</strong> button at the bottom opens a JSON editor for bulk editing all entries (see §5.6)</li>
+<li>底部的<strong>编辑 JSON</strong> 按钮可打开 JSON 编辑器以批量编辑所有条目（见 §5.6）</li>
+</ul>
+<h3 id="311-behavior">3.11 Behavior</h3>
+<h3 id="311-%E8%A1%8C%E4%B8%BA">3.11 行为</h3>
+<p>Keycodes for advanced QMK behavior features.
+用于高级 QMK 行为功能的键码。</p>
+<ul>
+<li><strong>Magic</strong>: Magic keycodes for swapping and toggling keyboard behaviors</li>
+<li><strong>魔法 (Magic)</strong>：用于交换和切换键盘行为的魔法键码</li>
+<li><strong>Mode</strong>: NKRO toggle, mode switching keycodes</li>
+<li><strong>模式 (Mode)</strong>：NKRO 切换、模式切换键码</li>
+<li><strong>Auto Shift</strong>: Auto Shift toggle and configuration keycodes</li>
+<li><strong>自动上档 (Auto Shift)</strong>：自动上档切换和配置键码</li>
+<li><strong>Swap Hands</strong>: Swap Hands keycodes and Swap Hands Tap variants</li>
+<li><strong>换手 (Swap Hands)</strong>：换手键码和换手点按变体</li>
+<li><strong>Caps Word</strong>: Caps Word toggle</li>
+<li><strong>大写单词 (Caps Word)</strong>：大写单词切换</li>
+</ul>
+<h3 id="312-user">3.12 User</h3>
+<h3 id="312-%E7%94%A8%E6%88%B7">3.12 用户</h3>
+<p>User-defined keycodes.
+<br>用户自定义键码。</p>
+<p><img src="screenshots/tab-user.png" alt="User Tab">
+<img src="screenshots/tab-user.png" alt="用户选项卡"></p>
+<ul>
+<li>Custom keycodes defined in firmware (e.g., <code>CUSTOM_1</code>, <code>CUSTOM_2</code>)</li>
+<li>固件中定义的自定义键码（例如，<code>CUSTOM_1</code>，<code>CUSTOM_2</code>）</li>
+<li>When exporting <code>keymap.c</code>, custom keycodes use their configured names instead of generic <code>USER00</code>/<code>USER01</code> identifiers, and an <code>enum custom_keycodes</code> block is generated automatically</li>
+<li>导出 <code>keymap.c</code> 时，自定义键码将使用其配置的名称，而不是通用的 <code>USER00</code>/<code>USER01</code> 标识符，并会自动生成 <code>enum custom_keycodes</code> 块</li>
+</ul>
+<h3 id="313-keyboard-device-picker">3.13 Keyboard (Device Picker)</h3>
+<h3 id="313-%E9%94%AE%E7%9B%98%E8%AE%BE%E5%A4%87%E9%80%89%E6%8B%A9%E5%99%A8">3.13 键盘（设备选择器）</h3>
+<p>The Keyboard tab lets you copy keycodes from other connected keyboards or from saved files.
+<br>“键盘”选项卡允许您从其他已连接的键盘或已保存的文件中复制键码。</p>
+<blockquote>
+<p><strong>Use case:</strong> While editing a keyboard, you wonder how another keyboard's keymap is set up — but that keyboard isn't connected right now. If you've previously saved its data (via the Save panel), you can load it from the <strong>File</strong> source in this tab to browse its keymap and copy keycodes directly into your current layout.
+<br><strong>使用场景</strong>：在编辑键盘时，您想知道另一个键盘的键位图是如何设置的 —— 但那个键盘现在没连接。如果您以前保存过它的数据（通过“保存”面板），则可以从该选项卡中的<strong>文件</strong>源加载它，浏览其键位图并直接将键码复制到当前布局中。</p>
+</blockquote>
+<p><strong>Device List</strong>
+<strong>设备列表</strong></p>
+<p><img src="screenshots/keyboard-tab-device-list.png" alt="Keyboard Tab — Device List">
+<img src="screenshots/keyboard-tab-device-list.png" alt="键盘选项卡 — 设备列表"></p>
+<p>When you open the Keyboard tab, a list of all connected Vial-compatible keyboards is displayed. This list updates in real time as you plug in or unplug devices.
+<br>当您打开“键盘”选项卡时，会显示所有已连接的兼容 Vial 的键盘列表。该列表会在您插拔设备时实时更新。</p>
+<ul>
+<li>Click a device to load its keymap — the currently connected keyboard shows its live keymap instantly; other devices are probed via a temporary USB connection</li>
+<li>点击一个设备以加载其键位图 —— 当前连接的键盘会立即显示其实时键位图；其他设备通过临时 USB 连接进行探测</li>
+</ul>
+<p><img src="screenshots/keyboard-tab-keymap.png" alt="Keyboard Tab — Keymap View">
+<img src="screenshots/keyboard-tab-keymap.png" alt="键盘选项卡 — 键位图视图"></p>
+<ul>
+<li>Once loaded, click any key on the displayed keyboard to assign that keycode to the selected key on the main keymap</li>
+<li>加载后，点击所显示键盘上的任何按键，即可将该键码分配给主键位图上的选定按键</li>
+<li>Use Ctrl+click for multi-select, Shift+click for range select</li>
+<li>使用 Ctrl+点击进行多选，Shift+点击进行范围选择</li>
+<li>Layer buttons at the bottom right let you browse different layers</li>
+<li>右下角的层按钮允许您浏览不同的层</li>
+<li>Zoom controls (+ / numeric input / −) adjust the picker keyboard size (30%–200%). When viewing another keyboard, its saved zoom level is loaded automatically</li>
+<li>缩放控件（+ / 数字输入 / -）调整选择器键盘的大小 (30%–200%)。查看另一个键盘时，其保存的缩放级别会自动加载</li>
+<li>Press Escape to clear the picker selection</li>
+<li>按 Escape 清除选择器的选择</li>
+</ul>
+<p><strong>File Source</strong>
+<strong>文件源</strong></p>
+<p>Click the <strong>File</strong> button at the bottom to switch to the file source. This shows saved keyboard snapshots and allows loading <code>.pipette</code> files — the same keycode picking workflow applies.
+<br>点击底部的<strong>文件</strong>按钮切换到文件源。这会显示保存的键盘快照，并允许加载 <code>.pipette</code> 文件 —— 同样的键码选择流程也适用。</p>
+<blockquote>
+<p><strong>Note</strong>: Only V2 format (<code>.pipette</code>) files are supported in the key picker. If a legacy V1 format file is selected, a warning is displayed prompting you to connect the keyboard and open the keymap to migrate the data.
+<br><strong>注意</strong>：按键选择器仅支持 V2 格式 (<code>.pipette</code>) 文件。如果选择了旧版 V1 格式文件，将显示警告，提示您连接键盘并打开键位图以迁移数据。</p>
+</blockquote>
+<p><strong>Composite Keycodes</strong>
+<br><strong>复合键码</strong></p>
+<p>When clicking a composite key (e.g., <code>LT1(KC_SPC)</code>) in the picker, the full keycode is assigned as-is. Inner/outer parts are not split — the complete keycode is copied to the target key.
+<br>在选择器中点击复合键（例如 <code>LT1(KC_SPC)</code>）时，完整的键码将按原样分配。内部/外部部分不会拆分 —— 完整的键码将复制到目标按键。</p>
+<blockquote>
+<p><strong>Note</strong>: The Keyboard tab is hidden when editing the inner part of a mask key (e.g., choosing the <code>KC_SPC</code> inside <code>LT1(KC_SPC)</code>), since composite keycodes cannot be assigned to the inner byte.
+<br><strong>注意</strong>：在编辑掩码键的内部（例如在 <code>LT1(KC_SPC)</code> 内选择 <code>KC_SPC</code>）时，“键盘”选项卡会被隐藏，因为复合键码不能分配给内部字节。</p>
+</blockquote>
+<h3 id="314-keycodes-overlay-panel">3.14 Keycodes Overlay Panel</h3>
+<h3 id="314-%E9%94%AE%E7%A0%81%E8%A6%86%E7%9B%96%E9%9D%A2%E6%9D%BF">3.14 键码覆盖面板</h3>
+<p>The Keycodes Overlay Panel provides quick access to editor tools and save functions. Toggle it with the panel button at the right end of the keycode tab bar.
+<br>键码覆盖面板提供对编辑器工具和保存功能的快速访问。使用键码选项卡栏右端的面板按钮进行切换。</p>
+<p><strong>Settings Tab</strong>
+<strong>设置选项卡</strong></p>
+<p><img src="screenshots/overlay-tools.png" alt="Overlay Panel — Settings">
+<img src="screenshots/overlay-tools.png" alt="覆盖面板 — 设置"></p>
+<ul>
+<li><strong>Basic View Type</strong>: Switch between ANSI keyboard, ISO keyboard, JIS keyboard, and List views for the Basic tab</li>
+<li><strong>基础视图类型</strong>：在“基础”选项卡的 ANSI 键盘、ISO 键盘、JIS 键盘和列表视图之间切换</li>
+<li><strong>Keyboard Layout</strong>: Select the display layout for key labels (QWERTY, Dvorak, etc.)</li>
+<li><strong>键盘布局</strong>：选择按键标签的显示布局（QWERTY, Dvorak 等）</li>
+<li><strong>Auto Advance</strong>: Toggle automatic advancement to the next key after assigning a keycode</li>
+<li><strong>自动前进</strong>：切换在分配键码后自动前进到下一个按键的功能</li>
+<li><strong>Instant Key Selection</strong>: Toggle instant key selection mode (see §2.2 for behavior details)</li>
+<li><strong>即时按键选择</strong>：切换即时按键选择模式（行为详情见 §2.2）</li>
+<li><strong>Separate Shift in Key Picker</strong>: Toggle split display for combined keycodes (e.g., show Mod-Tap as two halves)</li>
+<li><strong>在按键选择器中分离 Shift</strong>：切换组合键码的拆分显示（例如，将 Mod-Tap 显示为两部分）</li>
+<li><strong>Key Tester</strong>: Toggle Matrix Tester mode (supported keyboards only)</li>
+<li><strong>按键测试器</strong>：切换矩阵测试器模式（仅限受支持的键盘）</li>
+<li><strong>Security</strong>: Shows lock status (Locked/Unlocked) with a Lock button</li>
+<li><strong>安全性</strong>：显示锁定状态（已锁定 / 已解锁），并带有锁定按钮</li>
+<li><strong>Import</strong>: Restore from <code>.vil</code> files or sideload custom JSON definitions</li>
+<li><strong>导入</strong>：从 <code>.vil</code> 文件恢复或侧向加载自定义 JSON 定义</li>
+<li><strong>Reset Keyboard Data</strong>: Reset keyboard to factory defaults</li>
+<li><strong>重置键盘数据</strong>：将键盘重置为出厂默认设置</li>
+</ul>
+<p><strong>Save Tab</strong>
+<strong>保存选项卡</strong></p>
+<p><img src="screenshots/overlay-save.png" alt="Overlay Panel — Save">
+<img src="screenshots/overlay-save.png" alt="覆盖面板 — 保存"></p>
+<ul>
+<li><strong>Export Current State</strong>: Download keymap as <code>.vil</code>, <code>keymap.c</code>, PDF keymap cheat sheet, or PDF layout export (key outlines with summary pages for Tap Dance, Macro, Combo, Key Override, and Alt Repeat Key entries)</li>
+<li><strong>导出当前状态</strong>：将键位图下载为 <code>.vil</code>, <code>keymap.c</code>, PDF 键位图速查表或 PDF 布局导出（包含按键轮廓以及点按跳舞、宏、组合键、按键覆盖和 Alt 重复键条目的摘要页）</li>
+<li><strong>Save Current State</strong>: Save a snapshot of the current keyboard state with a label</li>
+<li><strong>保存当前状态</strong>：保存当前键盘状态的快照并添加标签</li>
+<li><strong>Synced Data</strong>: List of saved snapshots with Load, Rename, Delete, and Export actions</li>
+<li><strong>已同步数据</strong>：已保存快照的列表，带有加载、重命名、删除和导出操作</li>
+<li>This is the same Save panel as the standalone editor settings (§6)</li>
+<li>这与独立编辑器设置 (§6) 中的“保存”面板相同</li>
+</ul>
+<p><strong>Layout Tab</strong> (when available)
+<strong>布局选项卡</strong>（可用时）</p>
+<p>Some keyboards support layout options (see §2.5). When available, a Layout tab appears as the first tab in the overlay panel, providing access to the same layout options.
+<br>某些键盘支持布局选项（见 §2.5）。如果可用，“布局”选项卡将作为覆盖面板中的第一个选项卡出现，提供对相同布局选项的访问。</p>
+<hr>
+<h2 id="4-toolbar">4. Toolbar</h2>
+<h2 id="4-%E5%B7%A5%E5%85%B7%E6%A0%8F">4. 工具栏</h2>
+<p>The toolbar on the left side of the keymap editor provides the following features.
+<br>键位编辑器左侧的工具栏提供以下功能。</p>
+<p><img src="screenshots/toolbar.png" alt="Toolbar">
+<img src="screenshots/toolbar.png" alt="工具栏"></p>
+<h3 id="41-zoom">4.1 Zoom</h3>
+<h3 id="41-%E7%BC%A9%E6%94%BE">4.1 缩放</h3>
+<p>Adjusts the keyboard layout display scale. Range: 30%–200% (default 100%).
+<br>调整键盘布局的显示比例。范围：30%–200%（默认 100%）。</p>
+<p><img src="screenshots/zoom-in.png" alt="Zoom In">
+<img src="screenshots/zoom-in.png" alt="放大"></p>
+<ul>
+<li>(+) button to zoom in</li>
+<li>(+) 按钮放大</li>
+<li>(-) button to zoom out</li>
+<li>(-) 按钮缩小</li>
+<li>Can also be adjusted in editor settings</li>
+<li>也可以在编辑器设置中调整</li>
+<li>Zoom level is saved per keyboard and restored automatically on reconnect</li>
+<li>缩放级别按键盘保存，并在重新连接时自动恢复</li>
+</ul>
+<h3 id="42-undo--redo-keymap-history">4.2 Undo / Redo (Keymap History)</h3>
+<h3 id="42-%E6%92%A4%E9%94%80--%E9%87%8D%E5%81%9A%E9%94%AE%E4%BD%8D%E5%9B%BE%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95">4.2 撤销 / 重做（键位图历史记录）</h3>
+<p>The keymap editor automatically records a history of keycode changes. You can navigate through this history to undo or redo changes.
+<br>键位编辑器会自动记录键码更改的历史记录。您可以浏览此历史记录以撤销或重做更改。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Method<br>方法</th>
+<th style="text-align:left">Scope<br>范围</th>
+<th style="text-align:left">How to use<br>如何使用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Keyboard shortcuts</strong><br>键盘快捷键</td>
+<td style="text-align:left">Full history<br>完整历史</td>
+<td style="text-align:left">Ctrl/Cmd+Z (Undo), Ctrl+Y / Ctrl/Cmd+Shift+Z (Redo)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Toolbar buttons</strong><br>工具栏按钮</td>
+<td style="text-align:left">Full history<br>完整历史</td>
+<td style="text-align:left">Undo / Redo buttons in the left toolbar<br>左侧工具栏的撤销 / 重做按钮</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Popover buttons</strong><br>弹出层按钮</td>
+<td style="text-align:left">Last single change only<br>仅最后一次更改</td>
+<td style="text-align:left">Undo / Redo buttons in the popover footer<br>弹出层底部的撤销 / 重做按钮</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>History is cleared when switching keyboards or disconnecting</li>
+<li>切换键盘或断开连接时，历史记录会被清除</li>
+<li>The maximum history size can be configured in Settings → Defaults → <strong>Max Keymap History</strong> (see §6.1)</li>
+<li>最大历史记录容量可以在“设置”→“默认值”→“<strong>最大键位图历史记录</strong>”中配置（见 §6.1）</li>
+<li>All keymap mutation paths are tracked: single key edits, popover selections, mod-mask changes, paste, and copy-layer operations</li>
+<li>所有键位图变动路径都会被跟踪：单键编辑、弹出层选择、修饰键掩码更改、粘贴和复制层操作</li>
+</ul>
+<h3 id="43-typing-test">4.3 Typing Test</h3>
+<h3 id="43-%E6%89%93%E5%AD%97%E6%B5%8B%E8%AF%95">4.3 打字测试</h3>
+<p>A typing practice feature. Test your typing with the current keymap while viewing the keyboard layout below. The layout highlights key presses in real time, so you can verify that your physical keymap matches the on-screen display.
+<br>打字练习功能。在查看下方键盘布局的同时，使用当前键位图测试您的打字。布局会实时高亮显示按键按下情况，以便您验证物理键位图是否与屏幕显示一致。</p>
+<p>Click the <strong>Typing Test</strong> button in the status bar to enter typing test mode.
+<br>点击状态栏中的<strong>打字测试</strong>按钮进入打字测试模式。</p>
+<h4 id="modes">Modes</h4>
+<h4 id="%E6%A8%A1%E5%BC%8F">模式</h4>
+<p>Three test modes are available, selectable from the mode tabs at the top:
+<br>提供三种测试模式，可从顶部的模式选项卡中选择：</p>
+<p><strong>Words Mode</strong>
+<strong>单词模式</strong></p>
+<p><img src="screenshots/typing-test-words-waiting.png" alt="Typing Test — Words Mode">
+<img src="screenshots/typing-test-words-waiting.png" alt="打字测试 — 单词模式"></p>
+<ul>
+<li>Type a fixed number of random words (15 / 30 / 60 / 120)</li>
+<li>输入固定数量的随机单词 (15 / 30 / 60 / 120)</li>
+<li>The test ends when all words are completed</li>
+<li>测试在所有单词完成后结束</li>
+</ul>
+<p><strong>Time Mode</strong>
+<strong>时间模式</strong></p>
+<p><img src="screenshots/typing-test-time-mode.png" alt="Typing Test — Time Mode">
+<img src="screenshots/typing-test-time-mode.png" alt="打字测试 — 时间模式"></p>
+<ul>
+<li>Type as many words as possible within a time limit (15 / 30 / 60 / 120 seconds)</li>
+<li>在时间限制内尽可能多地输入单词 (15 / 30 / 60 / 120 秒)</li>
+<li>A countdown timer shows remaining time</li>
+<li>倒计时器显示剩余时间</li>
+</ul>
+<p><strong>Quote Mode</strong>
+<strong>引用模式</strong></p>
+<p><img src="screenshots/typing-test-quote-mode.png" alt="Typing Test — Quote Mode">
+<img src="screenshots/typing-test-quote-mode.png" alt="打字测试 — 引用模式"></p>
+<ul>
+<li>Type a real-world quote (short / medium / long / all)</li>
+<li>输入现实世界的名言（短 / 中 / 长 / 全部）</li>
+<li>The quote source is shown after completion</li>
+<li>完成后会显示引用的来源</li>
+</ul>
+<h4 id="options">Options</h4>
+<h4 id="%E9%80%89%E9%A1%B9">选项</h4>
+<p><img src="screenshots/typing-test-words-options.png" alt="Typing Test — With Options">
+<img src="screenshots/typing-test-words-options.png" alt="打字测试 — 带有选项"></p>
+<p>In Words and Time modes, you can toggle additional options:
+<br>在“单词”和“时间”模式中，您可以切换其他选项：</p>
+<ul>
+<li><strong>Punctuation</strong>: Adds punctuation marks (commas, periods, etc.) to the word list</li>
+<li><strong>标点符号</strong>：在单词列表中添加标点符号（逗号、句号等）</li>
+<li><strong>Numbers</strong>: Adds numbers to the word list</li>
+<li><strong>数字</strong>：在单词列表中添加数字</li>
+</ul>
+<p>These toggles are not available in Quote mode, which uses the original text as-is.
+<br>这些切换开关在“引用”模式下不可用，该模式按原样使用原始文本。</p>
+<h4 id="during-a-test">During a Test</h4>
+<h4 id="%E6%B5%8B%E8%AF%95%E6%9C%9F%E9%97%B4">测试期间</h4>
+<p><img src="screenshots/typing-test-running.png" alt="Typing Test — Running">
+<img src="screenshots/typing-test-running.png" alt="打字测试 — 运行中"></p>
+<p>While typing, the following stats are displayed in real time:
+<br>输入时，以下统计数据会实时显示：</p>
+<ul>
+<li><strong>WPM</strong>: Words Per Minute (current typing speed)</li>
+<li><strong>WPM</strong>：每分钟单词数（当前打字速度）</li>
+<li><strong>Accuracy</strong>: Percentage of correctly typed characters</li>
+<li><strong>准确率</strong>：输入正确的字符百分比</li>
+<li><strong>Time</strong>: Elapsed time (or remaining time in Time mode)</li>
+<li><strong>时间</strong>：已用时间（或“时间”模式下的剩余时间）</li>
+<li><strong>Words</strong>: Current word / total words</li>
+<li><strong>单词数</strong>：当前单词 / 总单词数</li>
+</ul>
+<p>Correctly typed words turn green. Incorrect characters are highlighted in red with an underline. The cursor advances as you type, and words scroll automatically.
+<br>输入正确的单词会变绿。错误的字符会以红色高亮并带有下划线。光标随着您的输入而前进，单词会自动滚动。</p>
+<ul>
+<li>Press the restart button (↺) to restart the test at any time</li>
+<li>随时按重新启动按钮 (↺) 重新开始测试</li>
+<li>Press Escape to exit typing test mode</li>
+<li>按 Escape 退出打字测试模式</li>
+<li>The keyboard layout below the test area shows key presses in real time via the Vial matrix tester protocol</li>
+<li>测试区域下方的键盘布局通过 Vial 矩阵测试器协议实时显示按键按下情况</li>
+</ul>
+<h4 id="typing-view-view-only-mode">Typing View (View-Only Mode)</h4>
+<h4 id="%E6%89%93%E5%AD%97%E8%A7%86%E5%9B%BE%E4%BB%85%E6%9F%A5%E7%9C%8B%E6%A8%A1%E5%BC%8F">打字视图（仅查看模式）</h4>
+<p>Typing View displays only the keyboard layout in a compact, resizable window — ideal for overlaying on top of other applications while practicing.
+<br>打字视图在一个紧凑的、可缩放的窗口中仅显示键盘布局 —— 非常适合在练习时叠加在其他应用程序之上。</p>
+<p>Click the <strong>Typing View</strong> button in the status bar (visible when Typing Test is not active) to enter view-only mode.
+<br>点击状态栏中的<strong>打字视图</strong>按钮（在打字测试未激活时可见）进入仅查看模式。</p>
+<p><img src="screenshots/view-only-compact.png" alt="View-Only — Compact Window">
+<img src="screenshots/view-only-compact.png" alt="仅查看 — 紧凑窗口"></p>
+<ul>
+<li>The window shows only the keyboard layout with real-time key press highlighting</li>
+<li>窗口仅显示键盘布局，并带有实时按键高亮</li>
+<li>The toolbar, keycode palette, typing test UI, and status bar are hidden</li>
+<li>工具栏、键码调色板、打字测试 UI 和状态栏均被隐藏</li>
+<li>The window maintains its aspect ratio when resized</li>
+<li>窗口在调整大小时保持其宽高比</li>
+</ul>
+<p><strong>Controls Panel</strong>
+<strong>控制面板</strong></p>
+<p><img src="screenshots/view-only-controls.png" alt="View-Only — Controls">
+<img src="screenshots/view-only-controls.png" alt="仅查看 — 控制"></p>
+<p>Click anywhere on the keyboard area to toggle the controls panel (bottom-right popup):
+<br>点击键盘区域的任何位置以切换控制面板（右下角弹窗）：</p>
+<ul>
+<li><strong>Base</strong>: Select which layer to display (when the keyboard has multiple layers)</li>
+<li><strong>基准层</strong>：选择要显示的层（当键盘有多个层时）</li>
+<li><strong>top</strong>: Keep the window above other windows (always-on-top; not available on Wayland)</li>
+<li><strong>置顶</strong>：保持窗口在其他窗口之上（始终置顶；在 Wayland 上不可用）</li>
+<li><strong>Default Size</strong>: Reset the window to its default calculated size</li>
+<li><strong>默认大小</strong>：将窗口重置为其默认计算大小</li>
+<li><strong>Fit Size</strong>: Adjust the window height to match the current width while preserving the aspect ratio</li>
+<li><strong>适应大小</strong>：调整窗口高度以匹配当前宽度，同时保持宽高比</li>
+<li><strong>Exit Typing View</strong>: Return to the full editor</li>
+<li><strong>退出打字视图</strong>：返回完整编辑器</li>
+</ul>
+<p>Press Escape or click the keyboard area again to close the panel. A hint text appears at the bottom when hovering over the window. The window size and always-on-top preference are saved per keyboard.
+<br>按 Escape 或再次点击键盘区域可关闭面板。将鼠标悬停在窗口上时，底部会出现提示文本。窗口大小和始终置顶偏好会按键盘保存。</p>
+<blockquote>
+<p><strong>Note</strong>: Auto-lock is suspended while in Typing View mode. If the keyboard is disconnected while in view-only mode, the window automatically restores to its normal size.
+<br><strong>注意</strong>：在“打字视图”模式下，自动锁定会暂停。如果在仅查看模式下键盘断开连接，窗口会自动恢复到正常大小。</p>
+</blockquote>
+<hr>
+<h2 id="5-detail-setting-editors">5. Detail Setting Editors</h2>
+<h2 id="5-%E8%AF%A6%E7%BB%86%E8%AE%BE%E7%BD%AE%E7%BC%96%E8%BE%91%E5%99%A8">5. 详细设置编辑器</h2>
+<p>Open detail setting modals from their dedicated keycode tabs. Lighting opens via a <strong>Settings: Configuration</strong> button at the bottom of its tab; Combo, Key Override, and Alt Repeat Key detail editors open by clicking an entry on their respective tabs.
+<br>从专用的键码选项卡中打开详细设置弹窗。“灯效”通过其选项卡底部的<strong>设置：配置</strong>按钮打开；“组合键”、“按键覆盖”和“Alt 重复键”详细编辑器通过点击其各自选项卡上的条目打开。</p>
+<h3 id="51-lighting-settings">5.1 Lighting Settings</h3>
+<h3 id="51-%E7%81%AF%E6%95%88%E8%AE%BE%E7%BD%AE">5.1 灯效设置</h3>
+<p>Open from the <strong>Settings: Configuration</strong> button on the Lighting tab. Configure RGB lighting colors and effects.
+<br>从“灯效”选项卡上的<strong>设置：配置</strong>按钮打开。配置 RGB 灯效颜色和效果。</p>
+<p><img src="screenshots/lighting-modal.png" alt="Lighting Settings">
+<img src="screenshots/lighting-modal.png" alt="灯效设置"></p>
+<ul>
+<li>Select colors with the HSV color picker</li>
+<li>使用 HSV 拾色器选择颜色</li>
+<li>Choose colors from preset palette</li>
+<li>从预设调色板中选择颜色</li>
+<li>Adjust effects and speed</li>
+<li>调整效果和速度</li>
+<li>Click Save to apply</li>
+<li>点击“保存”以应用</li>
+</ul>
+<h3 id="52-combo">5.2 Combo</h3>
+<h3 id="52-%E7%BB%84%E5%90%88%E9%94%AE-combo">5.2 组合键 (Combo)</h3>
+<p>Configure simultaneous key press combinations to trigger different keys. The Combo tab displays an inline tile grid; clicking an entry opens the detail editor modal directly.
+<br>配置同时按下的按键组合以触发不同的按键。“组合键”选项卡显示内联平铺网格；点击条目可直接打开详细编辑器弹窗。</p>
+<p><strong>Tile Grid (Combo tab)</strong>
+<strong>平铺网格（组合键选项卡）</strong></p>
+<p><img src="screenshots/combo-modal.png" alt="Combo List">
+<img src="screenshots/combo-modal.png" alt="组合键列表"></p>
+<p>The Combo tab shows entries as a numbered list (0--31). Configured entries display a summary (e.g., &quot;A + B → C&quot;). Click an entry to open the detail editor. Combo keycodes (Combo On, Combo Off, Combo Toggle) are shown below the list. A <strong>Settings: Configuration</strong> button at the bottom opens a settings modal for QMK Combo timeout configuration (e.g., Combo time out period).
+<br>“组合键”选项卡将条目显示为编号列表 (0--31)。已配置的条目显示摘要（例如，“A + B → C”）。点击条目可打开详细编辑器。组合键码（开启、关闭、切换组合键）显示在列表下方。底部的<strong>设置：配置</strong>按钮可打开一个设置弹窗，用于 QMK 组合键超时配置（例如，组合键超时时间）。</p>
+<p><strong>Detail Editor</strong>
+<strong>详细编辑器</strong></p>
+<p><img src="screenshots/combo-detail.png" alt="Combo Detail">
+<img src="screenshots/combo-detail.png" alt="组合键详情"></p>
+<ul>
+<li>Left panel: Combo editor with Key 1--4 and Output fields.</li>
+<li>左侧面板：带有按键 1--4 和输出字段的组合键编辑器。</li>
+<li>Right panel: Inline favorites panel (Save Current State / Synced Data / Import / Export All)</li>
+<li>右侧面板：内联收藏夹面板（保存当前状态 / 已同步数据 / 导入 / 全部导出）</li>
+<li><strong>Clear</strong> resets all fields; <strong>Revert</strong> restores the last saved state. Both use two-step confirmation.</li>
+<li><strong>清除</strong>重置所有字段；<strong>还原</strong>恢复到上次保存的状态。两者都使用两步确认。</li>
+<li><strong>Save</strong> writes changes to the keyboard</li>
+<li><strong>保存</strong>将更改写入键盘</li>
+</ul>
+<h3 id="53-key-override">5.3 Key Override</h3>
+<h3 id="53-%E6%8C%89%E9%94%AE%E8%A6%86%E7%9B%96-key-override">5.3 按键覆盖 (Key Override)</h3>
+<p>Replace specific key inputs with different keys. The Key Override tab displays an inline tile grid; clicking an entry opens the detail editor modal directly.
+<br>使用不同的按键替换特定的按键输入。“按键覆盖”选项卡显示内联平铺网格；点击条目可直接打开详细编辑器弹窗。</p>
+<p><strong>Tile Grid (Key Override tab)</strong>
+<strong>平铺网格（按键覆盖选项卡）</strong></p>
+<p><img src="screenshots/key-override-modal.png" alt="Key Override List">
+<img src="screenshots/key-override-modal.png" alt="按键覆盖列表"></p>
+<p>Shows entries as a numbered list. Configured entries display a summary. Click an entry to open the detail editor.
+<br>将条目显示为编号列表。已配置的条目显示摘要。点击条目可打开详细编辑器。</p>
+<p><strong>Detail Editor</strong>
+<strong>详细编辑器</strong></p>
+<p><img src="screenshots/key-override-detail.png" alt="Key Override Detail">
+<img src="screenshots/key-override-detail.png" alt="按键覆盖详情"></p>
+<ul>
+<li>Left panel: Trigger Key, Replacement Key, enabled toggle, layer and modifier options</li>
+<li>左侧面板：触发键、替换键、启用开关、层和修饰键选项</li>
+<li>Right panel: Inline favorites panel (Save Current State / Synced Data / Import / Export All)</li>
+<li>右侧面板：内联收藏夹面板（保存当前状态 / 已同步数据 / 导入 / 全部导出）</li>
+<li><strong>Clear</strong> resets all fields; <strong>Revert</strong> restores the last saved state. Both use two-step confirmation.</li>
+<li><strong>清除</strong>重置所有字段；<strong>还原</strong>恢复到上次保存的状态。两者都使用两步确认。</li>
+<li><strong>Save</strong> writes changes to the keyboard</li>
+<li><strong>保存</strong>将更改写入键盘</li>
+</ul>
+<h3 id="54-alt-repeat-key">5.4 Alt Repeat Key</h3>
+<h3 id="54-alt-%E9%87%8D%E5%A4%8D%E9%94%AE-alt-repeat-key">5.4 Alt 重复键 (Alt Repeat Key)</h3>
+<p>Configure alternative actions for the Repeat Key. The Alt Repeat Key tab displays an inline tile grid; clicking an entry opens the detail editor modal directly.
+<br>为重复键配置替代动作。“Alt 重复键”选项卡显示内联平铺网格；点击条目可直接打开详细编辑器弹窗。</p>
+<p><strong>Tile Grid (Alt Repeat Key tab)</strong>
+<strong>平铺网格（Alt 重复键选项卡）</strong></p>
+<p><img src="screenshots/alt-repeat-key-modal.png" alt="Alt Repeat Key List">
+<img src="screenshots/alt-repeat-key-modal.png" alt="Alt 重复键列表"></p>
+<p>Shows entries as a numbered list. Configured entries display a summary. Click an entry to open the detail editor.
+<br>将条目显示为编号列表。已配置的条目显示摘要。点击条目可打开详细编辑器。</p>
+<p><strong>Detail Editor</strong>
+<strong>详细编辑器</strong></p>
+<p><img src="screenshots/alt-repeat-key-detail.png" alt="Alt Repeat Key Detail">
+<img src="screenshots/alt-repeat-key-detail.png" alt="Alt 重复键详情"></p>
+<ul>
+<li>Left panel: Last Key, Alt Key, enabled toggle, Allowed Mods, Options (DefaultToThisAltKey, Bidirectional, IgnoreModHandedness)</li>
+<li>左侧面板：上一个键、Alt 键、启用开关、允许的修饰键、选项（默认此 Alt 键、双向、忽略修饰键左右）</li>
+<li>Right panel: Inline favorites panel (Save Current State / Synced Data / Import / Export All)</li>
+<li>右侧面板：内联收藏夹面板（保存当前状态 / 已同步数据 / 导入 / 全部导出）</li>
+<li><strong>Clear</strong> resets all fields; <strong>Revert</strong> restores the last saved state. Both use two-step confirmation.</li>
+<li><strong>清除</strong>重置所有字段；<strong>还原</strong>恢复到上次保存的状态。两者都使用两步确认。</li>
+<li><strong>Save</strong> writes changes to the keyboard</li>
+<li><strong>保存</strong>将更改写入键盘</li>
+</ul>
+<h3 id="55-favorites">5.5 Favorites</h3>
+<h3 id="55-%E6%94%B6%E8%97%8F%E5%A4%B9">5.5 收藏夹</h3>
+<p>Each editor modal (Tap Dance, Macro, Combo, Key Override, Alt Repeat Key) includes an inline <strong>Favorites panel</strong> on the right side of the editor.
+<br>每个编辑器弹窗（点按跳舞、宏、组合键、按键覆盖、Alt 重复键）在编辑器的右侧都包含一个内联的<strong>收藏夹面板</strong>。</p>
+<p><img src="screenshots/inline-favorites.png" alt="Inline Favorites Panel">
+<img src="screenshots/inline-favorites.png" alt="内联收藏夹面板"></p>
+<p>The inline favorites panel provides:
+内联收藏夹面板提供：</p>
+<ul>
+<li><strong>Save Current State</strong>: Enter a label and click Save to store the current entry configuration</li>
+<li><strong>保存当前状态</strong>：输入标签并点击“保存”以存储当前条目配置
+<ul>
+<li><strong>Import</strong> / <strong>Export</strong> buttons: Import a <code>.pipette-fav</code> file to apply to the current entry, or export the current entry settings as a <code>.pipette-fav</code> file without saving to the store. Inline &quot;Imported&quot; / &quot;Exported&quot; feedback is shown after each action.</li>
+<li><strong>导入</strong> / <strong>导出</strong>按钮：导入 <code>.pipette-fav</code> 文件以应用于当前条目，或将当前条目设置导出为 <code>.pipette-fav</code> 文件而不保存到存储库。每次操作后都会显示“已导入” / “已导出”的内联反馈。</li>
+</ul>
+</li>
+<li><strong>Synced Data</strong>: Previously saved entries are listed with Load, Rename, Delete, and Export actions</li>
+<li><strong>已同步数据</strong>：列出以前保存的条目，带有加载、重命名、删除和导出操作</li>
+<li><strong>Import</strong> / <strong>Export All</strong>: Footer buttons for bulk import/export of favorites</li>
+<li><strong>导入</strong> / <strong>全部导出</strong>：用于批量导入/导出收藏夹的底部按钮</li>
+</ul>
+<p>Within the Synced Data list:
+在“已同步数据”列表中：</p>
+<ul>
+<li><strong>Load</strong>: Apply a saved configuration to the current entry</li>
+<li><strong>加载</strong>：将保存的配置应用于当前条目</li>
+<li><strong>Rename</strong>: Change the label of a saved entry (also synced to Hub if the entry is uploaded)</li>
+<li><strong>重命名</strong>：更改保存条目的标签（如果条目已上传，也会同步到 Hub）</li>
+<li><strong>Delete</strong>: Remove a saved entry</li>
+<li><strong>删除</strong>：移除保存的条目</li>
+<li><strong>Export</strong>: Download an individual saved entry as a file</li>
+<li><strong>导出</strong>：将单个保存的条目下载为文件</li>
+</ul>
+<p>When Pipette Hub is connected, each saved entry also shows Hub actions:
+<br>连接 Pipette Hub 时，每个保存的条目还会显示 Hub 操作：</p>
+<p><img src="screenshots/hub-fav-inline.png" alt="Inline Favorites — Hub Actions">
+<img src="screenshots/hub-fav-inline.png" alt="内联收藏夹 — Hub 操作"></p>
+<ul>
+<li><strong>Upload to Hub</strong>: Upload the favorite entry to Pipette Hub as a feature post</li>
+<li><strong>上传到 Hub</strong>：将收藏条目作为功能帖子上传到 Pipette Hub</li>
+<li><strong>Update on Hub</strong>: Re-upload the latest configuration to update the existing Hub post</li>
+<li><strong>在 Hub 上更新</strong>：重新上传最新配置以更新现有的 Hub 帖子</li>
+<li><strong>Remove from Hub</strong>: Delete the entry from Pipette Hub (two-step confirmation)</li>
+<li><strong>从 Hub 移除</strong>：从 Pipette Hub 中删除条目（两步确认）</li>
+<li><strong>Open in Browser</strong>: Open the individual Hub post page in your browser</li>
+<li><strong>在浏览器中打开</strong>：在浏览器中打开单个 Hub 帖子页面</li>
+</ul>
+<h3 id="56-json-editor">5.6 JSON Editor</h3>
+<h3 id="56-json-%E7%BC%96%E8%BE%91%E5%99%A8">5.6 JSON 编辑器</h3>
+<p>Each feature tab (Tap Dance, Macro, Combo, Key Override, Alt Repeat Key) provides an <strong>Edit JSON</strong> button at the bottom of the tab. This opens a JSON editor modal for bulk editing all entries as raw JSON text.
+<br>每个功能选项卡（点按跳舞、宏、组合键、按键覆盖、Alt 重复键）在底部都提供一个<strong>编辑 JSON</strong> 按钮。这将打开一个 JSON 编辑器弹窗，用于将所有条目作为原始 JSON 文本进行批量编辑。</p>
+<p><img src="screenshots/json-editor-tap-dance.png" alt="JSON Editor — Tap Dance">
+<img src="screenshots/json-editor-tap-dance.png" alt="JSON 编辑器 — 点按跳舞"></p>
+<ul>
+<li><strong>Text area</strong>: Edit all entries as a JSON array. Changes are validated in real time — parse errors are shown below the editor</li>
+<li><strong>文本区域</strong>：将所有条目作为 JSON 数组进行编辑。更改会实时验证 —— 解析错误显示在编辑器下方</li>
+<li><strong>Export</strong> (left): Save the current JSON as a <code>.pipette-fav</code> file for backup or sharing</li>
+<li><strong>导出</strong>（左侧）：将当前 JSON 保存为 <code>.pipette-fav</code> 文件，以便备份或共享</li>
+<li><strong>Cancel</strong> (right): Close without saving</li>
+<li><strong>取消</strong>（右侧）：关闭且不保存</li>
+<li><strong>Save</strong> (right): Apply the parsed JSON and write changes to the keyboard</li>
+<li><strong>保存</strong>（右侧）：应用解析后的 JSON 并将更改写入键盘</li>
+</ul>
+<p><img src="screenshots/json-editor-macro.png" alt="JSON Editor — Macro">
+<img src="screenshots/json-editor-macro.png" alt="JSON 编辑器 — 宏"></p>
+<p>For Macros, a warning is displayed indicating that keyboard unlock is required to save changes.
+<br>对于宏，会显示一条警告，指出需要解锁键盘才能保存更改。</p>
+<blockquote>
+<p><strong>Note</strong>: The JSON editor modifies all entries at once. Use with caution — invalid JSON will be rejected, but valid JSON with incorrect values may cause unexpected behavior.
+<br><strong>注意</strong>：JSON 编辑器会一次性修改所有条目。请谨慎使用 —— 无效的 JSON 将被拒绝，但具有错误值的有效 JSON 可能会导致意外行为。</p>
+</blockquote>
+<blockquote>
+<p><strong>Note</strong>: Favorites are not tied to a specific keyboard — saved entries can be loaded on any compatible keyboard. When Cloud Sync is enabled, favorites are also synced across devices (see §6.1). Favorites can also be managed from the Data modal on the device selection screen (see §1.3).
+<br><strong>注意</strong>：收藏夹不绑定到特定键盘 —— 保存的条目可以加载到任何兼容的键盘上。启用云同步后，收藏夹也会跨设备同步（见 §6.1）。收藏夹也可以通过设备选择屏幕上的“数据”弹窗进行管理（见 §1.3）。</p>
+</blockquote>
+<hr>
+<h2 id="6-editor-settings-panel">6. Editor Settings Panel</h2>
+<h2 id="6-%E7%BC%96%E8%BE%91%E5%99%A8%E8%AE%BE%E7%BD%AE%E9%9D%A2%E6%9D%BF">6. 编辑器设置面板</h2>
+<p>Open the editor settings panel from the save button (floppy disk icon) in the keycode tab bar, or use the Save tab in the Keycodes Overlay Panel (§3.14).
+<br>从键码选项卡栏中的保存按钮（软盘图标）打开编辑器设置面板，或使用键码覆盖面板 (§3.14) 中的“保存”选项卡。</p>
+<p><img src="screenshots/editor-settings-save.png" alt="Editor Settings — Save">
+<img src="screenshots/editor-settings-save.png" alt="编辑器设置 — 保存"></p>
+<p>The editor settings panel now provides a single <strong>Save</strong> panel with the following features:
+<br>编辑器设置面板现在提供了一个单一的<strong>保存</strong>面板，具有以下功能：</p>
+<ul>
+<li><strong>Export Current State</strong>: Download keymap as <code>.vil</code>, <code>keymap.c</code>, PDF keymap cheat sheet, or PDF layout export (key outlines with summary pages for Tap Dance, Macro, Combo, Key Override, and Alt Repeat Key entries). An &quot;Exported&quot; inline feedback message appears after a successful export.</li>
+<li><strong>导出当前状态</strong>：将键位图下载为 <code>.vil</code>, <code>keymap.c</code>, PDF 键位图速查表或 PDF 布局导出（包含按键轮廓以及点按跳舞、宏、组合键、按键覆盖和 Alt 重复键条目的摘要页）。导出成功后会显示“已导出”的内联反馈消息。</li>
+<li><strong>Save Current State</strong>: Save a snapshot of the current keyboard state with a label. Enter a name in the Label field and click Save. If the Label field is left empty, the Save button is disabled. Saved snapshots appear in the Synced Data list below and can be loaded or deleted later</li>
+<li><strong>保存当前状态</strong>：保存当前键盘状态的快照并添加标签。在标签字段中输入名称并点击“保存”。如果标签字段为空，则“保存”按钮将被禁用。保存的快照将显示在下方的“已同步数据”列表中，稍后可以加载或删除</li>
+<li><strong>Synced Data</strong>: List of saved snapshots. Click to load, rename, or delete entries</li>
+<li><strong>已同步数据</strong>：已保存快照的列表。点击可加载、重命名或删除条目</li>
+<li><strong>Reset Keyboard Data</strong>: Reset keyboard to factory defaults (use with caution)</li>
+<li><strong>重置键盘数据</strong>：将键盘重置为出厂默认设置（请谨慎使用）</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: Tool settings (keyboard layout, auto advance, key tester, security) have moved to the Keycodes Overlay Panel (§3.14). Zoom is available in the toolbar (§4.1). Layer settings are now managed directly via the layer panel on the left side of the editor.
+<br><strong>注意</strong>：工具设置（键盘布局、自动前进、按键测试器、安全性）已移动到键码覆盖面板 (§3.14)。缩放功能在工具栏中提供 (§4.1)。层设置现在直接通过编辑器左侧的层面板进行管理。</p>
+</blockquote>
+<h3 id="61-cloud-sync-google-drive-appdatafolder">6.1 Cloud Sync (Google Drive appDataFolder)</h3>
+<h3 id="61-%E4%BA%91%E5%90%8C%E6%AD%A5-google-%E4%BA%91%E7%AB%AF%E7%A1%AC%E7%9B%98-appdatafolder">6.1 云同步 (Google 云端硬盘 appDataFolder)</h3>
+<p>Pipette can sync your saved snapshots, favorites, and per-keyboard settings across multiple devices via Google Drive.
+<br>Pipette 可以通过 Google 云端硬盘在多个设备之间同步您保存的快照、收藏夹和每个键盘的设置。</p>
+<p>Sync is configured in the <strong>Settings</strong> modal (gear icon on the device selection screen), under the <strong>Data</strong> tab:
+<br>同步是在“设置”弹窗（设备选择屏幕上的齿轮图标）的<strong>数据</strong>选项卡下配置的：</p>
+<p><img src="screenshots/hub-settings-data-sync.png" alt="Data Tab">
+<img src="screenshots/hub-settings-data-sync.png" alt="数据选项卡"></p>
+<p>The Data tab contains the following sections: Google Account, Data Sync, and Pipette Hub. Additional troubleshooting and data management options are available in the separate Troubleshooting tab (see below).
+<br>“数据”选项卡包含以下部分：Google 帐号、数据同步和 Pipette Hub。其他故障排除和数据管理选项在单独的“故障排除”选项卡中提供（见下文）。</p>
+<h4 id="google-account">Google Account</h4>
+<h4 id="google-%E5%B8%90%E5%8F%B7">Google 帐号</h4>
+<ul>
+<li>Click <strong>Connect</strong> to sign in with your Google account</li>
+<li>点击<strong>连接</strong>以登录您的 Google 帐号</li>
+<li>Click <strong>Disconnect</strong> to sign out. If Pipette Hub is also connected, a warning confirms that Hub will be disconnected as well</li>
+<li>点击<strong>断开连接</strong>以注销。如果 Pipette Hub 也已连接，则会有警告确认 Hub 也将被断开连接</li>
+</ul>
+<h4 id="sync-encryption-password">Sync Encryption Password</h4>
+<h4 id="%E5%90%8C%E6%AD%A5%E5%8A%A0%E5%AF%86%E5%AF%86%E7%A0%81">同步加密密码</h4>
+<ul>
+<li>Set a password to encrypt all synced data (required). A strength indicator helps you choose a strong password</li>
+<li>设置密码以加密所有同步数据（必填）。强度指示器可帮助您选择强密码</li>
+<li>If a password already exists on the server (set from another device), a hint is shown asking you to enter the same password</li>
+<li>如果服务器上已存在密码（由另一台设备设置），则会显示提示要求您输入相同的密码</li>
+<li><strong>Change Password</strong>: Click <strong>Change Password</strong> to re-encrypt all synced files with a new password. No data is deleted — existing files are decrypted and re-encrypted in place</li>
+<li><strong>更改密码</strong>：点击<strong>更改密码</strong>以使用新密码重新加密所有同步文件。不会删除任何数据 —— 现有文件将被解密并原地重新加密</li>
+</ul>
+<h4 id="sync-controls">Sync Controls</h4>
+<h4 id="%E5%90%8C%E6%AD%A5%E6%8E%A7%E5%88%B6">同步控制</h4>
+<ul>
+<li><strong>Auto Sync</strong>: Toggle automatic sync on or off. When enabled, changes sync automatically with a 10-second debounce and periodic 3-minute polling</li>
+<li><strong>自动同步</strong>：切换自动同步的开启或关闭。启用后，更改将以 10 秒的去抖动和每 3 分钟一次的定期轮询自动同步</li>
+<li><strong>Sync</strong>: Manually sync favorites and connected keyboard data. Only favorites and the currently connected keyboard are synced (not all keyboards)</li>
+<li><strong>同步</strong>：手动同步收藏夹和已连接的键盘数据。仅同步收藏夹和当前连接的键盘（并非所有键盘）</li>
+</ul>
+<h4 id="sync-status">Sync Status</h4>
+<h4 id="%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81">同步状态</h4>
+<ul>
+<li>Displays current sync progress with the sync unit name and an item counter (current / total)</li>
+<li>显示当前同步进度，包括同步单元名称和项目计数器（当前 / 总计）</li>
+<li>Shows error or partial-sync details if any units failed</li>
+<li>如果任何单元失败，则显示错误或部分同步的详细信息</li>
+</ul>
+<h4 id="undecryptable-files">Undecryptable Files</h4>
+<h4 id="%E6%97%A0%E6%B3%95%E8%A7%A3%E5%AF%86%E7%9A%84%E6%96%87%E4%BB%B6">无法解密的文件</h4>
+<ul>
+<li>Files that cannot be decrypted with the current password or are otherwise unreadable (e.g., encrypted with a forgotten previous password)</li>
+<li>无法使用当前密码解密或以其他方式无法读取的文件（例如，使用已忘记的旧密码加密的文件）</li>
+<li>Click <strong>Scan</strong> to detect undecryptable files, select the ones to remove, then click <strong>Delete Selected</strong> to permanently delete them from Google Drive</li>
+<li>点击<strong>扫描</strong>以检测无法解密的文件，选择要删除的文件，然后点击<strong>删除所选</strong>以从 Google 云端硬盘永久删除它们</li>
+</ul>
+<h4 id="sync-unavailable-alert">Sync Unavailable Alert</h4>
+<h4 id="%E5%90%8C%E6%AD%A5%E4%B8%8D%E5%8F%AF%E7%94%A8%E8%AD%A6%E6%8A%A5">同步不可用警报</h4>
+<ul>
+<li>Displayed when the sync backend cannot be reached. Click <strong>Retry</strong> to attempt reconnection</li>
+<li>当无法连接同步后端时显示。点击<strong>重试</strong>以尝试重新连接</li>
+</ul>
+<h4 id="data-storage">Data Storage</h4>
+<h4 id="%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8">数据存储</h4>
+<p>Synced data is stored in <a href="https://developers.google.com/workspace/drive/api/guides/appdata">Google Drive appDataFolder</a> — a hidden, app-specific folder that only Pipette can access. Your personal Drive files are never touched.
+<br>同步数据存储在 <a href="https://developers.google.com/workspace/drive/api/guides/appdata">Google Drive appDataFolder</a> 中 —— 这是一个隐藏的、特定于应用程序的文件夹，只有 Pipette 可以访问。您的个人云端硬盘文件绝不会被触及。</p>
+<p>See the <a href="Data.md">Data Guide</a> for details on what is synced and how your data is protected.
+<br>有关同步内容以及如何保护数据的详细信息，请参阅<a href="Data.md">数据指南</a>。</p>
+<h4 id="data-management">Data Management</h4>
+<h4 id="%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86">数据管理</h4>
+<p>Troubleshooting and data management functions are available in the <strong>Data</strong> panel (see §1.3):
+<br>故障排除和数据管理功能在<strong>数据</strong>面板中提供（见 §1.3）：</p>
+<ul>
+<li><strong>Local &gt; Application</strong>: Import/export local data or reset selected targets (keyboard data, favorites, app settings)</li>
+<li><strong>本地 &gt; 应用程序</strong>：导入 / 导出本地数据或重置选定目标（键盘数据、收藏夹、应用程序设置）</li>
+<li><strong>Sync</strong>: Scan remote data on Google Drive and delete orphaned sync files</li>
+<li><strong>同步</strong>：扫描 Google 云端硬盘上的远程数据并删除孤立的同步文件</li>
+</ul>
+<h4 id="settings--defaults">Settings — Defaults</h4>
+<h4 id="%E8%AE%BE%E7%BD%AE--%E9%BB%98%E8%AE%A4%E5%80%BC">设置 — 默认值</h4>
+<p><img src="screenshots/settings-defaults.png" alt="Settings — Defaults">
+<img src="screenshots/settings-defaults.png" alt="设置 — 默认值"></p>
+<p>The Tools tab in the Settings modal includes a <strong>Defaults</strong> section for setting initial preferences for new keyboard connections:
+<br>“设置”弹窗中的“工具”选项卡包含一个<strong>默认值</strong>部分，用于设置新键盘连接的初始首选项：</p>
+<ul>
+<li><strong>Keyboard Layout</strong>: Default display layout (QWERTY, Dvorak, etc.)</li>
+<li><strong>键盘布局</strong>：默认显示布局（QWERTY, Dvorak 等）</li>
+<li><strong>Auto Advance</strong>: Default auto-advance behavior</li>
+<li><strong>自动前进</strong>：默认自动前进行为</li>
+<li><strong>Instant Key Selection</strong>: Default instant key selection behavior (see §2.2)</li>
+<li><strong>即时按键选择</strong>：默认即时按键选择行为（见 §2.2）</li>
+<li><strong>Layer Panel Open</strong>: Whether the layer panel starts expanded or collapsed</li>
+<li><strong>层面板展开</strong>：层面板在启动时是展开还是折叠</li>
+<li><strong>Basic View Type</strong>: Default view type for the Basic tab (ANSI/ISO/JIS/List)</li>
+<li><strong>基础视图类型</strong>：“基础”选项卡的默认视图类型 (ANSI/ISO/JIS/列表)</li>
+<li><strong>Separate Shift in Key Picker</strong>: Default setting for separating Shift in the key picker</li>
+<li><strong>在按键选择器中分离 Shift</strong>：按键选择器中分离 Shift 的默认设置</li>
+<li><strong>Max Keymap History</strong>: Maximum number of keymap changes to keep in the current keyboard's edit history (default: 100). History is cleared on disconnect or keyboard switch. See §4.2 for details.</li>
+<li><strong>最大键位图历史记录</strong>：当前键盘编辑历史记录中保留的最大更改次数（默认：100）。断开连接或切换键盘时历史记录会被清除。详见 §4.2。</li>
+</ul>
+<hr>
+<h2 id="7-pipette-hub">7. Pipette Hub</h2>
+<h2 id="7-pipette-hub">7. Pipette Hub</h2>
+<p><a href="https://pipette-hub-worker.keymaps.workers.dev/">Pipette Hub</a> is a community keymap gallery where you can upload and share your keyboard configurations and favorite entries.
+<a href="https://pipette-hub-worker.keymaps.workers.dev/">Pipette Hub</a> <br>是一个社区键位图库，您可以在这里上传并共享您的键盘配置和收藏条目。</p>
+<h3 id="71-hub-setup">7.1 Hub Setup</h3>
+<h3 id="71-hub-%E8%AE%BE%E7%BD%AE">7.1 Hub 设置</h3>
+<p>Hub features require Google account authentication. Please complete Google account authentication first. Configure Hub in the <strong>Settings</strong> modal (gear icon on the device selection screen):
+<br>Hub 功能需要 Google 帐号身份验证。请先完成 Google 帐号验证。在“设置”弹窗（设备选择屏幕上的齿轮图标）中配置 Hub：</p>
+<ol>
+<li>In the <strong>Data</strong> tab, click <strong>Connect</strong> under the Google Account section to sign in with your Google account</li>
+<li>在“数据”选项卡中，点击“Google 帐号”部分下的“连接”以登录您的 Google 帐号</li>
+<li>Scroll down to the <strong>Pipette Hub</strong> section in the same Data tab — it should show <strong>Connected</strong></li>
+<li>在同一“数据”选项卡中向下滚动到“Pipette Hub”部分 —— 它应显示“已连接”</li>
+<li>Set your <strong>Display Name</strong> — this name is shown on your Hub posts</li>
+<li>设置您的<strong>显示名称</strong> —— 此名称将显示在您的 Hub 帖子中</li>
+<li>Your uploaded keymaps appear in the <strong>My Posts</strong> list</li>
+<li>您上传的键位图将显示在“我的帖子”列表中</li>
+</ol>
+<h3 id="72-uploading-a-keymap">7.2 Uploading a Keymap</h3>
+<h3 id="72-%E4%B8%8A%E4%BC%A0%E9%94%AE%E4%BD%8D%E5%9B%BE">7.2 上传键位图</h3>
+<p>To upload a keymap to Hub:
+要上传键位图到 Hub：</p>
+<ol>
+<li>Connect to your keyboard and open the editor settings (gear icon in the keymap editor)</li>
+<li>连接键盘并打开编辑器设置（键位编辑器中的齿轮图标）</li>
+<li>Switch to the <strong>Data</strong> tab</li>
+<li>切换到<strong>数据</strong>选项卡</li>
+<li>Save the current state with a label (e.g., &quot;Default&quot;)</li>
+<li>使用标签保存当前状态（例如，“默认”）</li>
+</ol>
+<p><img src="screenshots/hub-03-upload-button.png" alt="Upload Button">
+<img src="screenshots/hub-03-upload-button.png" alt="上传按钮"></p>
+<ol start="4">
+<li>Click the <strong>Upload</strong> button on the saved snapshot entry</li>
+<li>点击保存的快照条目上的<strong>上传</strong>按钮</li>
+<li>After uploading, the entry shows <strong>Uploaded</strong> status with <strong>Open in Browser</strong>, <strong>Update</strong>, and <strong>Remove</strong> buttons</li>
+<li>上传后，该条目显示“已上传”状态，并带有“在浏览器中打开”、“更新”和“移除”按钮</li>
+</ol>
+<p><img src="screenshots/hub-04-uploaded.png" alt="Uploaded">
+<img src="screenshots/hub-04-uploaded.png" alt="已上传"></p>
+<ul>
+<li><strong>Open in Browser</strong>: Opens the Hub page for this keymap</li>
+<li><strong>在浏览器中打开</strong>：打开此键位图的 Hub 页面</li>
+<li><strong>Update</strong>: Re-uploads the current keyboard state to update the existing Hub post</li>
+<li><strong>更新</strong>：重新上传当前键盘状态以更新现有的 Hub 帖子</li>
+<li><strong>Remove</strong>: Removes the keymap from Hub</li>
+<li><strong>移除</strong>：从 Hub 中移除键位图</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: Hub uploads include a <code>.pipette</code> file alongside the standard export formats, allowing other users to load the full keyboard state directly.
+<br><strong>注意</strong>：Hub 上传除了标准导出格式外，还包含一个 <code>.pipette</code> 文件，允许其他用户直接加载完整的键盘状态。</p>
+</blockquote>
+<h3 id="73-uploading-favorite-entries">7.3 Uploading Favorite Entries</h3>
+<h3 id="73-%E4%B8%8A%E4%BC%A0%E6%94%B6%E8%97%8F%E6%9D%A1%E7%9B%AE">7.3 上传收藏条目</h3>
+<p>Individual favorite entries (Tap Dance, Macro, Combo, Key Override, Alt Repeat Key) can also be uploaded to Hub:
+<br>单个收藏条目（点按跳舞、宏、组合键、按键覆盖、Alt 重复键）也可以上传到 Hub：</p>
+<p><img src="screenshots/hub-fav-data-modal.png" alt="Data Modal — Favorites Hub Actions">
+<img src="screenshots/hub-fav-data-modal.png" alt="数据弹窗 — 收藏夹 Hub 操作"></p>
+<ol>
+<li>Open any editor modal with the inline favorites panel, or use the Data modal from the device selection screen</li>
+<li>打开任何带有内联收藏夹面板的编辑器弹窗，或者使用设备选择屏幕中的“数据”弹窗</li>
+<li>In the favorites list, each entry shows an <strong>Upload to Hub</strong> button when Hub is connected</li>
+<li>在收藏夹列表中，当 Hub 连接时，每个条目都会显示一个<strong>上传到 Hub</strong> 按钮</li>
+<li>Click <strong>Upload to Hub</strong> to share the configuration</li>
+<li>点击<strong>上传到 Hub</strong> 以分享配置</li>
+<li>After uploading, <strong>Open in Browser</strong>, <strong>Update on Hub</strong>, and <strong>Remove from Hub</strong> buttons appear</li>
+<li>上传后，会出现“在浏览器中打开”、“在 Hub 上更新”和“从 Hub 移除”按钮</li>
+<li>Renaming a favorite that is uploaded to Hub also updates the title on Hub automatically</li>
+<li>重命名已上传到 Hub 的收藏夹也会自动更新 Hub 上的标题</li>
+</ol>
+<blockquote>
+<p><strong>Note</strong>: A Display Name must be set before uploading. If no Display Name is configured, a warning is shown instead of the Upload button.
+<br><strong>注意</strong>：必须在上传前设置显示名称。如果未配置显示名称，则会显示警告而不是上传按钮。</p>
+</blockquote>
+<h3 id="74-hub-website">7.4 Hub Website</h3>
+<h3 id="74-hub-%E7%BD%91%E7%AB%99">7.4 Hub 网站</h3>
+<p>The <a href="https://pipette-hub-worker.keymaps.workers.dev/">Pipette Hub website</a> displays uploaded keymaps in a gallery format.
+<br><a href="https://pipette-hub-worker.keymaps.workers.dev/">Pipette Hub 网站</a> 以画廊格式显示上传的键位图。</p>
+<p><img src="screenshots/hub-web-top.png" alt="Hub Top Page">
+<img src="screenshots/hub-web-top.png" alt="Hub 首页"></p>
+<ul>
+<li>Browse uploaded keymaps from the community</li>
+<li>浏览来自社区的上传键位图</li>
+<li>Search by keyboard name</li>
+<li>按键盘名称搜索</li>
+<li>Download keymaps as <code>.vil</code>, <code>.c</code>, or <code>.pdf</code> files</li>
+<li>下载为 <code>.vil</code>, <code>.c</code> 或 <code>.pdf</code> 文件</li>
+</ul>
+<h4 id="individual-keymap-page">Individual Keymap Page</h4>
+<h4 id="%E5%8D%95%E4%B8%AA%E9%94%AE%E4%BD%8D%E5%9B%BE%E9%A1%B5%E9%9D%A2">单个键位图页面</h4>
+<p>Clicking a keymap card opens the detail page with a full keyboard layout visualization.
+<br>点击键位图卡片可打开带有完整键盘布局可视化的详情页面。</p>
+<p><img src="screenshots/hub-web-detail.png" alt="Hub Detail Page">
+<img src="screenshots/hub-web-detail.png" alt="Hub 详情页"></p>
+<ul>
+<li>View all layers (Layer 0–3) of the uploaded keymap</li>
+<li>查看上传键位图的所有层（层 0–3）</li>
+<li>Review Tap Dance, Macro, Combo, Alt Repeat Key, and Key Override configurations</li>
+<li>查看点按跳舞、宏、组合键、Alt 重复键和按键覆盖配置</li>
+<li><strong>Copy URL</strong> or <strong>Share on X</strong> to share with others</li>
+<li><strong>复制 URL</strong> 或 <strong>在 X 上分享</strong> 给他人</li>
+<li>Download in various formats (<code>.pdf</code>, <code>.c</code>, <code>.vil</code>)</li>
+<li>下载各种格式 (<code>.pdf</code>, <code>.c</code>, <code>.vil</code>)</li>
+</ul>
+<p>See the <a href="Data.md">Data Guide</a> for details on how Hub authentication works.
+<br>有关 Hub 身份验证如何工作的详细信息，请参阅<a href="Data.md">数据指南</a>。</p>
+<hr>
+<h2 id="8-status-bar">8. Status Bar</h2>
+<h2 id="8-%E7%8A%B6%E6%80%81%E6%A0%8F">8. 状态栏</h2>
+<p>The status bar at the bottom of the screen shows connection information and action buttons.
+<br>屏幕底部的状态栏显示连接信息和操作按钮。</p>
+<p><img src="screenshots/status-bar.png" alt="Status Bar">
+<img src="screenshots/status-bar.png" alt="状态栏"></p>
+<ul>
+<li><strong>Device name</strong>: Shows the name of the connected keyboard</li>
+<li><strong>设备名称</strong>：显示已连接键盘的名称</li>
+<li><strong>Loaded label</strong>: The label of the loaded snapshot (shown only when a snapshot is loaded)</li>
+<li><strong>已加载标签</strong>：已加载快照的标签（仅在加载快照时显示）</li>
+<li><strong>Auto Advance</strong>: Status of automatic key advancement after assigning a keycode (shown only when enabled)</li>
+<li><strong>自动前进</strong>：分配键码后自动按键前进的状态（仅在启用时显示）</li>
+<li><strong>Key Tester</strong>: Toggle button for Matrix Tester mode (requires matrix tester support; hidden when Typing Test is active)</li>
+<li><strong>按键测试器</strong>：矩阵测试器模式的切换按钮（需要矩阵测试器支持；在打字测试激活时隐藏）</li>
+<li><strong>Typing View</strong>: Toggle button to enter view-only mode — a compact window showing only the keyboard layout (see §4.3). Requires matrix tester support; hidden when Typing Test is active</li>
+<li><strong>打字视图</strong>：进入仅查看模式的切换按钮 —— 仅显示键盘布局的紧凑窗口（见 §4.3）。需要矩阵测试器支持；在打字测试激活时隐藏）</li>
+<li><strong>Typing Test</strong>: Toggle button for Typing Test mode (requires matrix tester support)</li>
+<li><strong>打字测试</strong>：打字测试模式的切换按钮（需要矩阵测试器支持）</li>
+<li><strong>Locked / Unlocked</strong>: Keyboard lock status (prevents accidental changes to dangerous keycodes)</li>
+<li><strong>已锁定 / 已解锁</strong>：键盘锁定状态（防止意外更改危险键码）</li>
+<li><strong>Sync status</strong>: Cloud sync status (shown only when sync is configured)</li>
+<li><strong>同步状态</strong>：云同步状态（仅在配置同步时显示）</li>
+<li><strong>Hub connection</strong>: Pipette Hub connection status (shown only when Hub is configured)</li>
+<li><strong>Hub 连接</strong>：Pipette Hub 连接状态（仅在配置 Hub 时显示）</li>
+<li><strong>Disconnect button</strong>: Disconnects from the keyboard and returns to the device selection screen</li>
+<li><strong>断开连接按钮</strong>：断开与键盘的连接并返回设备选择屏幕</li>
+</ul>
+</div>
+
+<button id="backToTopBtn" title="回到顶部">
+	<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<line x1="12" y1="19" x2="12" y2="5"></line>
+		<polyline points="5 12 12 5 19 12"></polyline>
+	</svg>
+</button>
+
+<script>
+	// 回到顶部按钮逻辑
+	const backToTopBtn = document.getElementById("backToTopBtn");
+
+	window.addEventListener("scroll", () => {
+		if (window.scrollY > 300) {
+			backToTopBtn.classList.add("show");
+		} else {
+			backToTopBtn.classList.remove("show");
+		}
+	});
+
+	backToTopBtn.addEventListener("click", () => {
+		window.scrollTo({
+			top: 0,
+			behavior: "smooth"
+		});
+	});
+</script>
+</body>
+</html>
