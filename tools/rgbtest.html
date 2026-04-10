@@ -71,14 +71,18 @@
         button:active { transform: scale(0.98); }
         button:disabled { background-color: #aaa; cursor: not-allowed; }
         button.danger { background-color: #d9534f; }
-        button.danger:hover { background-color: #c9302c; }
+        button.danger:hover { background-color: #a339a5; }
         button.success { background-color: #28a745; }
-        button.success:hover { background-color: #218838; }
+        button.success:hover { background-color: #a339a5; }
+        button.secondary { background-color: #39a573; }
+        button.secondary:hover { background-color: #a339a5; }
+        button.warning { background-color: #f0ad4e; }
+        button.warning:hover { background-color: #a339a5; }
         
         .status { font-size: 0.9em; color: #888; margin-left: 10px; }
         .status.connected { color: #5cb85c; font-weight: bold; }
 
-        /* 输入框样式调整 */
+        /* 输入框样式 */
         input[type="text"], input[type="number"] {
             background: #f0f0f0;
             border: 1px solid var(--border-color);
@@ -96,10 +100,8 @@
             outline: none;
         }
         
-        /* LED 网格区域 */
         .led-section { margin-bottom: 10px; position: relative; }
         
-        /* 第一行：灯珠总数与进制切换 */
         .led-controls-row1 { 
             margin-bottom: 10px; 
             display: flex; 
@@ -110,7 +112,6 @@
             border-bottom: 1px dashed #eee;
         }
         
-        /* 第二行：模式选择 */
         .mode-controls-row {
             display: flex;
             align-items: center;
@@ -135,9 +136,8 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* 指示灯参数区域 (仅在非全灯模式显示) */
         .indicator-params {
-            display: none; /* 默认隐藏 */
+            display: none; 
             align-items: center;
             gap: 10px;
             margin-left: 10px;
@@ -146,7 +146,6 @@
         }
         .indicator-params.visible { display: flex; }
 
-        /* 全灯模式下的操作按钮 */
         .all-led-actions {
             display: flex;
             gap: 10px;
@@ -183,7 +182,6 @@
             border: 2px solid transparent;
         }
 
-        /* 选中框样式 */
         .selection-marquee {
             position: fixed;
             background: rgba(30, 136, 229, 0.3);
@@ -205,7 +203,6 @@
             transform: scale(1.1);
         }
 
-        /* 效果配置区 */
         .effect-config {
             display: flex;
             gap: 30px;
@@ -359,11 +356,13 @@
             margin-left: auto;
         }
 
+        /* 动态滑动开关样式 */
         .switch {
             position: relative;
             display: inline-block;
             width: 40px;
             height: 22px;
+            flex-shrink: 0;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -371,7 +370,7 @@
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: #ccc;
-            transition: .4s;
+            transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-radius: 34px;
         }
         .slider:before {
@@ -380,16 +379,16 @@
             height: 16px; width: 16px;
             left: 3px; bottom: 3px;
             background-color: white;
-            transition: .4s;
+            transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         input:checked + .slider { background-color: var(--accent-color); }
-        input:focus + .slider { box-shadow: 0 0 1px var(--accent-color); }
+        input:focus + .slider { box-shadow: 0 0 2px var(--accent-color); }
         input:checked + .slider:before { transform: translateX(18px); }
         
         .sync-label { font-size: 0.9em; color: #666; user-select: none; }
 
-        /* 列表区域 */
         .config-list-container {
             margin-top: 20px;
             border-top: 1px solid var(--border-color);
@@ -405,7 +404,8 @@
         }
 
         .config-row {
-            grid-template-columns: 80px repeat(3, 1fr) repeat(3, 1fr) 1fr 100px 120px; 
+            /* 调整后: H/S/V变窄(0.65fr), 操作区加宽(140px)以保证按钮并排不换行 */
+            grid-template-columns: 50px minmax(100px, 1.5fr) minmax(70px, 1fr) repeat(3, minmax(45px, 0.65fr)) 50px 80px 140px; 
             display: grid;
             align-items: center;
             gap: 10px;
@@ -416,32 +416,40 @@
             transition: background 0.1s, border-left 0.1s;
         }
         
-        .config-color-display {
-            text-align: center;
-            padding: 5px 0;
-            border-radius: 4px;
-            font-weight: bold;
-            background-color: #f0f0f0;
-            color: var(--text-color);
-        }
-        
         .config-row:hover { background: #e9e9e9; cursor: pointer; }
         .config-row.selected { border-left-color: var(--highlight-color); background: #e0e0e0; }
         .config-row span { font-size: 0.85em; color: var(--text-color); }
         .config-row-controls { display: flex; gap: 5px; justify-content: flex-end; }
-        .btn-icon { padding: 5px 12px; font-size: 1.2em; line-height: 1; }
-        .config-row input { width: 100%; box-sizing: border-box; }
+        
+        /* 调整按钮大小以适应文字 */
+        .btn-icon { padding: 5px 10px; font-size: 0.9em; line-height: 1.2; }
+        
+        .config-row input[type="number"], .config-row input[type="text"] { width: 100%; box-sizing: border-box; }
+        
+        .list-preview-led {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin: 0 auto;
+            border: 1px solid #aaa;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            transition: background-color 0.2s;
+        }
 
         .footer-controls {
             margin-top: 20px;
             display: flex;
-            justify-content: flex-end;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
             border-top: 1px solid var(--border-color);
             padding-top: 20px;
         }
 
-        /* 格式切换开关样式 */
+        .footer-controls-group {
+            display: flex;
+            gap: 15px;
+        }
+
         .format-switch-container {
             display: flex;
             align-items: center;
@@ -505,14 +513,15 @@
                 <input type="text" id="indStartInput" value="0" title="起始灯珠索引">
                 <label>覆盖:</label>
                 <input type="text" id="indCountInput" value="1" title="覆盖灯珠数量">
-                <button id="saveIndicatorBtn" class="success" style="font-size: 0.9em; padding: 5px 10px;">保存配置</button>
+                <button id="addIndicatorBtn" class="success" style="font-size: 0.9em; padding: 5px 10px;">添加</button>
+                <button id="saveIndicatorBtn" class="warning" style="font-size: 0.9em; padding: 5px 10px;">应用</button>
             </div>
 
             <div id="allLedActions" class="all-led-actions">
                 <span style="font-size: 0.8em; color: #888; margin-right:5px;">(拖拽框选)</span>
                 <button id="selectAllBtn" style="font-size:0.8em; padding:6px 12px; background:#4CAF50;">全选</button>
                 <button id="clearSelectionBtn" style="font-size:0.8em; padding:6px 12px; background:#666;">清空</button>
-                <button id="saveAllBtn" class="success" style="font-size:0.8em; padding:6px 12px; margin-left: 10px;">保存配置</button>
+                <button id="saveAllBtn" class="success" style="font-size:0.8em; padding:6px 12px; margin-left: 10px;">应用</button>
             </div>
         </div>
 
@@ -593,31 +602,38 @@
                     </label>
                 </div>
 
-                <button id="addConfigBtn" class="btn-icon" title="添加到列表">+ 添加</button>
+                <button id="addConfigBtn" class="btn-icon" title="添加到列表">+ 添加配置</button>
             </div>
         </div>
     </div>
 
     <div class="config-list-container">
-        <h3>灯光配置列表 (全灯模式)</h3>
+        <h3>综合灯光配置列表</h3>
         <div class="config-row" style="background: transparent; cursor: default; font-weight: bold; color: var(--accent-color);">
-            <span style="text-align: center;">灯珠数量</span>
+            <span style="text-align: center;">开启</span>
+            <span style="text-align: center;">名称</span>
+            <span style="text-align: center;">位置/数量</span>
             <span style="text-align: center;">色相(H)</span>
             <span style="text-align: center;">饱和(S)</span>
             <span style="text-align: center;">亮度(V)</span>
-            <span style="text-align: center;">红(R)</span> 
-            <span style="text-align: center;">绿(G)</span>
-            <span style="text-align: center;">蓝(B)</span>
-            <span style="text-align: center;">速度</span>
-            <span style="text-align: right;">预计电流</span>
-            <span style="text-align: right;">操作</span>
+            <span style="text-align: center;">预览</span>
+            <span style="text-align: center;">预计电流</span>
+            <span style="text-align: center;">操作</span>
         </div>
         <div id="configList" class="config-list"></div>
     </div>
 
     <div class="footer-controls">
-        <button id="sendAllBtn" style="background-color: #3f72af;">全部发送 (列表)</button>
-        <button id="closeLightBtn" class="danger">关闭灯光</button>
+        <div class="footer-controls-group">
+            <button id="exportBtn" class="secondary">下载配置</button>
+            <button id="importBtn" class="secondary">导入配置</button>
+            <input type="file" id="importFile" accept=".json" style="display:none">
+        </div>
+        <div class="footer-controls-group">
+            <button id="sendActiveBtn" class="success" style="background-color: #28a745;">应用开启</button>
+            <button id="sendAllBtn" style="background-color: #3f72af;">应用全部</button>
+            <button id="closeLightBtn" class="danger">关闭灯光</button>
+        </div>
     </div>
 </div>
 
@@ -632,30 +648,26 @@ const PEAK_CURRENT_PER_CHANNEL = 20;
 let selectedLeds = new Set(); 
 let currentConfigId = null; 
 
-// 显示模式: 'dec' 或 'hex'
 let displayMode = 'dec';
-// 当前操作模式: 'all', 'caps', 'num', 'scr', 'layer'
 let currentMode = 'all';
 
-// 设备读取到的最大层数
 let maxLayers = 0; 
 
-// 默认配置
 let currentSettings = {
     h: 0, s: 255, v: 255, spd: 128,
     r: 255, g: 0, b: 0
 };
 
-// 指示灯单独的配置存储 (包括 Start, Count, Layer, 以及颜色 H, S, V, Spd)
 let indicatorSettings = {
     all:   { start: 0, count: 0, h: 0, s: 255, v: 255, spd: 128 },
-    caps:  { start: 0, count: 1, h: 0, s: 255, v: 255, spd: 128 },   // 默认红
-    num:   { start: 0, count: 1, h: 85, s: 255, v: 255, spd: 128 },  // 默认绿
-    scr:   { start: 0, count: 1, h: 170, s: 255, v: 255, spd: 128 }, // 默认蓝
-    layer: { start: 0, count: 1, layerIdx: 0, h: 42, s: 255, v: 255, spd: 128 } // 默认黄
+    caps:  { start: 0, count: 1, h: 0, s: 255, v: 255, spd: 128 },   
+    num:   { start: 0, count: 1, h: 85, s: 255, v: 255, spd: 128 },  
+    scr:   { start: 0, count: 1, h: 170, s: 255, v: 255, spd: 128 }, 
+    layer: { start: 0, count: 1, layerIdx: 0, h: 42, s: 255, v: 255, spd: 128 } 
 };
 
 let configList = [];
+
 let vChanged = false; 
 let isDraggingWheel = false; 
 let isRealTimeSyncSending = false;
@@ -674,8 +686,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupModeControls(); 
     setupFormatSwitch(); 
     setupIndicatorWheelSupport();
+    setupAutoReconnect();
     
-    // 初始化时加载 all 模式数据
     updateColorSettings('h', currentSettings.h); 
     syncAllInputsFromSettings(); 
     updateConnectionStatus(false); 
@@ -752,8 +764,6 @@ function setupIndicatorWheelSupport() {
     });
 }
 
-// --- 模式切换与UI逻辑 ---
-
 function setupFormatSwitch() {
     const container = document.getElementById('formatSwitch');
     const options = container.querySelectorAll('.format-option');
@@ -768,14 +778,12 @@ function setupFormatSwitch() {
 }
 
 function saveCurrentModeParams() {
-    // 保存当前 UI 上的颜色/速度到当前模式缓存
     if (indicatorSettings[currentMode]) {
         indicatorSettings[currentMode].h = currentSettings.h;
         indicatorSettings[currentMode].s = currentSettings.s;
         indicatorSettings[currentMode].v = currentSettings.v;
         indicatorSettings[currentMode].spd = currentSettings.spd;
         
-        // 如果是非 All 模式，输入框已通过 change 事件同步
         if (currentMode !== 'all') {
             const sVal = parseValue(document.getElementById('indStartInput').value);
             const cVal = parseValue(document.getElementById('indCountInput').value);
@@ -792,7 +800,6 @@ function loadModeParams(mode) {
     const conf = indicatorSettings[mode];
     if (!conf) return;
 
-    // 1. 恢复颜色和速度
     currentSettings.h = conf.h;
     currentSettings.s = conf.s;
     currentSettings.v = conf.v;
@@ -801,7 +808,6 @@ function loadModeParams(mode) {
     updateColorSettings('h', currentSettings.h); 
     syncAllInputsFromSettings();
 
-    // 2. 恢复指示灯参数 UI
     const startInput = document.getElementById('indStartInput');
     const countInput = document.getElementById('indCountInput');
     const layerInput = document.getElementById('layerIndexInput');
@@ -815,51 +821,66 @@ function loadModeParams(mode) {
     }
 }
 
-function setupModeControls() {
-    const btns = document.querySelectorAll('.mode-btn');
+function switchModeUI(newMode) {
+    currentMode = newMode;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+        if (b.dataset.mode === newMode) b.classList.add('active');
+        else b.classList.remove('active');
+    });
+
     const indicatorParams = document.getElementById('indicatorParams');
     const allLedActions = document.getElementById('allLedActions');
     const ledGrid = document.getElementById('ledGrid');
     const layerGroup = document.getElementById('layerParamGroup');
-    
+
+    if (newMode === 'all') {
+        indicatorParams.classList.remove('visible');
+        allLedActions.style.display = 'flex';
+        ledGrid.classList.remove('hidden');
+    } else {
+        indicatorParams.classList.add('visible');
+        allLedActions.style.display = 'none';
+        ledGrid.classList.add('hidden');
+        layerGroup.style.display = (newMode === 'layer') ? 'flex' : 'none';
+    }
+}
+
+function setupModeControls() {
+    const btns = document.querySelectorAll('.mode-btn');
     const startInput = document.getElementById('indStartInput');
     const countInput = document.getElementById('indCountInput');
     const layerInput = document.getElementById('layerIndexInput');
-    const saveBtn = document.getElementById('saveIndicatorBtn');
-    const saveAllBtn = document.getElementById('saveAllBtn'); // 新增
+    
+    const addIndBtn = document.getElementById('addIndicatorBtn');
+    const saveIndBtn = document.getElementById('saveIndicatorBtn');
+    const saveAllBtn = document.getElementById('saveAllBtn'); 
 
     btns.forEach(btn => {
         btn.addEventListener('click', () => {
+            const newMode = btn.dataset.mode;
+            if (currentMode === newMode) return; // 避免重复点击
+
             saveCurrentModeParams();
 
-            btns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const newMode = btn.dataset.mode;
-            currentMode = newMode;
-
-            if (newMode === 'all') {
-                indicatorParams.classList.remove('visible');
-                allLedActions.style.display = 'flex';
-                ledGrid.classList.remove('hidden');
-                document.querySelector('.config-list-container').style.opacity = '1';
-                document.querySelector('.config-list-container').style.pointerEvents = 'auto';
-            } else {
-                indicatorParams.classList.add('visible');
-                allLedActions.style.display = 'none';
-                ledGrid.classList.add('hidden');
-                document.querySelector('.config-list-container').style.opacity = '0.5';
-                document.querySelector('.config-list-container').style.pointerEvents = 'none';
-
-                if (newMode === 'layer') {
-                    layerGroup.style.display = 'flex';
-                } else {
-                    layerGroup.style.display = 'none';
+            let existingIdx = -1;
+            if (newMode === 'layer') {
+                existingIdx = configList.findIndex(c => c.type === 'layer' && c.layerIdx === indicatorSettings.layer.layerIdx);
+                if (existingIdx === -1) {
+                    existingIdx = configList.findIndex(c => c.type === 'layer');
                 }
+            } else {
+                existingIdx = configList.findIndex(c => c.type === newMode);
             }
 
-            loadModeParams(newMode);
-            triggerRealTimeSync();
+            if (existingIdx !== -1) {
+                loadConfig(existingIdx);
+            } else {
+                switchModeUI(newMode);
+                currentConfigId = null;
+                updateConfigListSelection();
+                loadModeParams(newMode);
+                triggerRealTimeSync();
+            }
         });
     });
 
@@ -880,6 +901,7 @@ function setupModeControls() {
         startInput.value = formatValue(sVal);
         countInput.value = formatValue(cVal);
         
+        autoSyncSelectedConfig(true); 
         triggerRealTimeSync(); 
     };
 
@@ -894,8 +916,15 @@ function setupModeControls() {
             if (lVal > 255) lVal = 255;
         }
 
+        if (indicatorSettings.layer.layerIdx !== lVal) {
+            currentConfigId = null;
+            updateConfigListSelection();
+        }
+
         indicatorSettings.layer.layerIdx = lVal;
         layerInput.value = formatValue(lVal);
+        
+        autoSyncSelectedConfig(true); 
         triggerRealTimeSync();
     };
 
@@ -903,20 +932,79 @@ function setupModeControls() {
     countInput.addEventListener('change', handleIndInputChange);
     layerInput.addEventListener('change', handleLayerInputChange);
 
-    // 指示灯保存按钮
-    saveBtn.addEventListener('click', () => {
+    // 独立保存到设备EEPROM
+    saveIndBtn.addEventListener('click', async () => {
         if (currentMode === 'all') return;
-        sendIndicatorCommand(true); 
+        let cfg = {
+            type: currentMode,
+            start: indicatorSettings[currentMode].start,
+            count: indicatorSettings[currentMode].count,
+            layerIdx: currentMode === 'layer' ? indicatorSettings.layer.layerIdx : 0,
+            h: currentSettings.h, s: currentSettings.s, v: currentSettings.v, spd: currentSettings.spd
+        };
+        await sendSingleConfigItem(cfg, false); // 发送到 RAM 预览
+        
+        // 发送 0x80 保存到 EEPROM
+        if (!device || !device.opened) {
+            showCustomAlert("设备未连接", "请先连接设备");
+            return;
+        }
+        const data = new Uint8Array(32);
+        data[0] = 0xAB; data[1] = 0x80;
+        try {
+            await device.sendReport(0, data);
+            showCustomAlert("指示灯已保存", "配置成功写入键盘主板", false);
+            setTimeout(() => document.getElementById('customAlert').style.display='none', 1000);
+        } catch(e) {
+            showCustomAlert("保存失败", "发送保存指令时出错");
+        }
     });
 
-    // 全灯模式保存按钮
+    // 加入到底部列表
+    addIndBtn.addEventListener('click', () => {
+        if (currentMode === 'all') return;
+        
+        let existingIdx = -1;
+        if (currentMode === 'layer') {
+            const lIdx = indicatorSettings.layer.layerIdx;
+            existingIdx = configList.findIndex(c => c.type === 'layer' && c.layerIdx === lIdx);
+        } else {
+            existingIdx = configList.findIndex(c => c.type === currentMode);
+        }
+
+        const nameMap = { caps: 'Caps Lock', num: 'Num Lock', scr: 'Scroll Lock' };
+        const cfgName = currentMode === 'layer' ? `Layer ${indicatorSettings.layer.layerIdx}` : nameMap[currentMode];
+
+        const newItem = {
+            id: existingIdx >= 0 ? configList[existingIdx].id : Date.now(),
+            type: currentMode,
+            enabled: true,
+            name: existingIdx >= 0 ? configList[existingIdx].name : cfgName,
+            start: indicatorSettings[currentMode].start,
+            count: indicatorSettings[currentMode].count,
+            layerIdx: currentMode === 'layer' ? indicatorSettings.layer.layerIdx : undefined,
+            h: currentSettings.h,
+            s: currentSettings.s,
+            v: currentSettings.v,
+            spd: currentSettings.spd
+        };
+
+        if (existingIdx >= 0) {
+            configList[existingIdx] = newItem;
+        } else {
+            configList.push(newItem);
+            existingIdx = configList.length - 1;
+        }
+        
+        renderConfigList();
+        loadConfig(existingIdx); // 选中它
+    });
+
     saveAllBtn.addEventListener('click', () => {
         if (currentMode !== 'all') return;
         saveAllConfig();
     });
 }
-
-// --- 核心逻辑 ---
 
 function hsvToRgb(h, s, v) {
     h /= 255; s /= 255; v /= 255;
@@ -1026,74 +1114,21 @@ function updateCurrentDrawDisplay() {
     document.getElementById('currentDrawDisplay').textContent = `预计电流: ${current} mA`;
 }
 
-// --- 数据发送与同步 ---
-
-async function sendIndicatorCommand(isSave) {
-    if (!device || !device.opened) return;
-    if (currentMode === 'all') return;
-
-    const config = indicatorSettings[currentMode];
-    let cmd = 0;
-
-    if (isSave) {
-        cmd = 0x80;
-    } else {
-        switch(currentMode) {
-            case 'caps':  cmd = 0x82; break;
-            case 'num':   cmd = 0x83; break;
-            case 'scr':   cmd = 0x84; break;
-            case 'layer': cmd = 0x81; break; 
-        }
-    }
-
-    const data = new Uint8Array(32);
-    data[0] = 0xAB;
-    data[1] = cmd;
-
-    if (!isSave) {
-        if (currentMode === 'layer') {
-            data[2] = config.layerIdx; 
-        } else {
-            data[2] = 0x00; 
-        }
-        data[3] = config.start; 
-        data[4] = config.count;
-        data[5] = currentSettings.h;
-        data[6] = currentSettings.s;
-        data[7] = currentSettings.v;
-    }
-
-    try {
-        await device.sendReport(0, data);
-        if (isSave) {
-            showCustomAlert("指示灯配置保存成功", `配置已保存！(Command: 0x${cmd.toString(16).toUpperCase()})`, false);
-            setTimeout(() => document.getElementById('customAlert').style.display='none', 1000);
-        }
-    } catch (e) {
-        console.error(e);
-        if (isSave) showCustomAlert("保存失败", "发送指令时出错");
-    }
-}
-
-// 新增：全灯模式保存逻辑
 async function saveAllConfig() {
     if (!device || !device.opened) {
         showCustomAlert("设备未连接", "请先连接设备");
         return;
     }
-    
-    // 1. 强制发送一次当前的颜色数据，确保设备 RAM 中是最新的
     const mask = generateBitmask(selectedLeds);
     await sendDataToDevice(0x90, currentSettings.h, currentSettings.s, currentSettings.v, currentSettings.spd, mask);
 
-    // 2. 发送保存指令 0x90 (复用指示灯保存的指令，通常 0x90 为全局保存)
     const data = new Uint8Array(32);
     data[0] = 0xAB;
-    data[1] = 0x80; // Save Command
+    data[1] = 0x80; 
 
     try {
         await device.sendReport(0, data);
-        showCustomAlert("全灯配置保存成功", "配置数据已发送并保存！", false);
+        showCustomAlert("写入主板成功", "配置数据已发送并保存！", false);
         setTimeout(() => document.getElementById('customAlert').style.display='none', 1500);
     } catch (e) {
         console.error(e);
@@ -1103,8 +1138,15 @@ async function saveAllConfig() {
 
 async function triggerRealTimeSync() {
     if (currentMode !== 'all') {
-        if (device && device.opened) {
-            sendIndicatorCommand(false); // 发送预览
+        if (device && device.opened && document.getElementById('realtimeSyncToggle').checked) {
+            let cfg = {
+                type: currentMode,
+                start: indicatorSettings[currentMode].start,
+                count: indicatorSettings[currentMode].count,
+                layerIdx: currentMode === 'layer' ? indicatorSettings.layer.layerIdx : 0,
+                h: currentSettings.h, s: currentSettings.s, v: currentSettings.v, spd: currentSettings.spd
+            };
+            sendSingleConfigItem(cfg, false);
         }
         updateCurrentDrawDisplay();
         return;
@@ -1170,7 +1212,7 @@ function syncLightweightUIFromSettings() {
 
 function syncHeavyUIFromSettings() {
     updateWheelIndicator(currentSettings.h, currentSettings.s);
-    if (currentMode === 'all') autoSyncSelectedConfig(true);
+    autoSyncSelectedConfig(true); 
 }
 
 function syncAllInputsFromSettings() {
@@ -1184,7 +1226,7 @@ function syncAllInputsFromSettings() {
     syncHeavyUIFromSettings();
 }
 
-// --- WebHID ---
+// --- WebHID 设备通信 ---
 
 function handleInputReport(e) {
     const data = e.data;
@@ -1224,52 +1266,67 @@ function updateConnectionStatus(connected) {
     }
 }
 
+async function doConnect(newDevice) {
+    try {
+        if (device) {
+            if (disconnectListener) navigator.hid.removeEventListener('disconnect', disconnectListener);
+            if (device.opened) {
+                device.removeEventListener('inputreport', handleInputReport);
+                await device.close();
+            }
+        }
+        device = newDevice;
+        if (!device.opened) await device.open();
+        
+        device.addEventListener('inputreport', handleInputReport);
+
+        disconnectListener = (e) => {
+            if (e.device === device) {
+                navigator.hid.removeEventListener('disconnect', disconnectListener); 
+                device.removeEventListener('inputreport', handleInputReport);
+                updateConnectionStatus(false);
+            }
+        };
+        navigator.hid.addEventListener('disconnect', disconnectListener);
+        
+        updateConnectionStatus(true);
+        
+        const infoData = new Uint8Array(32);
+        infoData[0] = 0x11;
+        await device.sendReport(0, infoData);
+    } catch(err) {
+        console.error("连接内部错误", err);
+        updateConnectionStatus(false);
+    }
+}
+
 async function connectDevice() {
     try {
         const filters = [{ usagePage: 0xFF60 }];
         const devices = await navigator.hid.requestDevice({ filters });
         if (devices.length > 0) {
-            const newDevice = devices[0];
-            if (device) {
-                if (disconnectListener) navigator.hid.removeEventListener('disconnect', disconnectListener);
-                if (device.opened) {
-                    device.removeEventListener('inputreport', handleInputReport);
-                    await device.close();
-                }
-            }
-            device = newDevice;
-            if (!device.opened) await device.open();
-            
-            device.addEventListener('inputreport', handleInputReport);
-
-            disconnectListener = (e) => {
-                if (e.device === device) {
-                    navigator.hid.removeEventListener('disconnect', disconnectListener); 
-                    device.removeEventListener('inputreport', handleInputReport);
-                    updateConnectionStatus(false);
-                }
-            };
-            navigator.hid.addEventListener('disconnect', disconnectListener);
-            
-            updateConnectionStatus(true);
-            
-            const infoData = new Uint8Array(32);
-            infoData[0] = 0x11;
-            await device.sendReport(0, infoData);
-
-        } else {
-            if (device && device.opened) {
-                if (disconnectListener) navigator.hid.removeEventListener('disconnect', disconnectListener);
-                device.removeEventListener('inputreport', handleInputReport);
-                await device.close();
-                updateConnectionStatus(false);
-            }
+            await doConnect(devices[0]);
         }
     } catch (error) {
         console.error(error);
         showCustomAlert("连接失败", "请确保键盘已连接: " + error.message);
         updateConnectionStatus(false);
     }
+}
+
+function setupAutoReconnect() {
+    navigator.hid.getDevices().then(devices => {
+        const qmkDevices = devices.filter(d => d.collections && d.collections.some(c => c.usagePage === 0xFF60));
+        if (qmkDevices.length > 0) {
+            doConnect(qmkDevices[0]);
+        }
+    });
+
+    navigator.hid.addEventListener('connect', (e) => {
+        if (e.device.collections && e.device.collections.some(c => c.usagePage === 0xFF60)) {
+            doConnect(e.device);
+        }
+    });
 }
 
 async function sendDataToDevice(cmd, h, s, v, spd, maskBytes) {
@@ -1282,7 +1339,6 @@ async function sendDataToDevice(cmd, h, s, v, spd, maskBytes) {
         for (let i = 0; i < 26; i++) {
             data[6 + i] = (maskBytes && maskBytes[i] !== undefined) ? maskBytes[i] : 0;
         }
-    } else if (cmd === 0x91) {
     }
     try {
         await device.sendReport(0, data);
@@ -1310,7 +1366,7 @@ function toggleLed(index) {
     else selectedLeds.add(index);
     const ledEl = document.querySelector(`.led-item[data-index="${index}"]`);
     if (ledEl) updateLedVisuals(ledEl, index);
-    autoSyncSelectedLedMask();
+    autoSyncSelectedConfig(true);
     updateCurrentDrawDisplay();
     triggerRealTimeSync();
 }
@@ -1330,7 +1386,7 @@ function initLedGrid() {
         
         selectedLeds = new Set([...selectedLeds].filter(i => i < ledTotal));
         renderGrid();
-        autoSyncSelectedLedMask();
+        autoSyncSelectedConfig(true);
         updateCurrentDrawDisplay(); 
         triggerRealTimeSync();
     };
@@ -1428,16 +1484,6 @@ function renderGrid() {
         updateLedVisuals(led, i); 
         grid.appendChild(led);
     }
-}
-
-function autoSyncSelectedLedMask(forceRender = false) {
-    if (!currentConfigId || currentMode !== 'all') return;
-    const idx = configList.findIndex(c => c.id === currentConfigId);
-    if (idx !== -1) {
-        configList[idx].leds = new Set(selectedLeds); 
-        if (forceRender) renderConfigList();
-    }
-    updateCurrentDrawDisplay(); 
 }
 
 // --- Color Wheel ---
@@ -1566,58 +1612,202 @@ function setupSyncInputs() {
 }
 
 function autoSyncSelectedConfig(forceRender = false) {
-    if (!currentConfigId || currentMode !== 'all') return;
+    if (!currentConfigId) return;
     const idx = configList.findIndex(c => c.id === currentConfigId);
     if (idx !== -1) {
-        configList[idx].h = currentSettings.h;
-        configList[idx].s = currentSettings.s;
-        configList[idx].v = currentSettings.v;
-        configList[idx].spd = currentSettings.spd;
-        if (forceRender) renderConfigList();
+        const cfg = configList[idx];
+        cfg.h = currentSettings.h;
+        cfg.s = currentSettings.s;
+        cfg.v = currentSettings.v;
+        cfg.spd = currentSettings.spd;
+        
+        if (cfg.type === 'all') {
+            cfg.leds = new Set(selectedLeds);
+        } else {
+            cfg.start = indicatorSettings[cfg.type].start;
+            cfg.count = indicatorSettings[cfg.type].count;
+            if (cfg.type === 'layer') {
+                cfg.layerIdx = indicatorSettings.layer.layerIdx;
+            }
+        }
+        
+        if (forceRender) updateConfigListDOM(idx);
     }
 }
 
+function updateConfigListDOM(idx) {
+    const cfg = configList[idx];
+    const listEl = document.getElementById('configList');
+    const row = listEl.children[idx];
+    if (!row) return;
+
+    ['h', 's', 'v'].forEach(key => {
+        const input = row.querySelector(`[data-key="${key}"]`);
+        if (input && document.activeElement !== input) input.value = cfg[key];
+    });
+
+    const preview = row.querySelector('.list-preview-led');
+    if (preview) {
+        const { r, g, b } = hsvToRgb(cfg.h, cfg.s, cfg.v);
+        preview.style.backgroundColor = `rgb(${r},${g},${b})`;
+    }
+
+    const currentEl = row.querySelector('.current-display');
+    const posEl = row.querySelector('.pos-display');
+    let current = 0;
+    let posText = '';
+    
+    if (cfg.type === 'all') {
+        current = calculateCurrent(cfg.leds.size, cfg.h, cfg.s, cfg.v);
+        posText = `${cfg.leds.size} 颗`;
+    } else {
+        current = calculateCurrent(cfg.count, cfg.h, cfg.s, cfg.v);
+        posText = `[${cfg.start}~${cfg.start + cfg.count - 1}]`;
+    }
+    
+    if (currentEl) {
+        currentEl.textContent = `${current} mA`;
+        currentEl.style.color = current > 1000 ? '#d9534f' : '#f0ad4e';
+    }
+    if (posEl) posEl.textContent = posText;
+}
+
+function updateConfigListSelection() {
+    const listEl = document.getElementById('configList');
+    if (!listEl) return;
+    Array.from(listEl.children).forEach((row, idx) => {
+        if (configList[idx] && configList[idx].id === currentConfigId) {
+            row.classList.add('selected');
+        } else {
+            row.classList.remove('selected');
+        }
+    });
+}
+
 // --- Config List ---
-async function sendAllConfigs() {
-    if (currentMode !== 'all') return; 
+
+async function sendSingleConfigItem(cfg, showMsg=false) {
+    if (!device || !device.opened) return false;
+    if (cfg.type === 'all') {
+        const mask = generateBitmask(cfg.leds);
+        return await sendDataToDevice(0x90, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
+    } else {
+        let cmd = 0;
+        switch(cfg.type) {
+            case 'caps': cmd = 0x82; break;
+            case 'num': cmd = 0x83; break;
+            case 'scr': cmd = 0x84; break;
+            case 'layer': cmd = 0x81; break;
+        }
+        const data = new Uint8Array(32);
+        data[0] = 0xAB;
+        data[1] = cmd;
+        data[2] = cfg.type === 'layer' ? cfg.layerIdx : 0x00;
+        data[3] = cfg.start;
+        data[4] = cfg.count;
+        data[5] = cfg.h;
+        data[6] = cfg.s;
+        data[7] = cfg.v;
+        try {
+            await device.sendReport(0, data);
+            return true;
+        } catch(e) {
+            console.error(e);
+            return false;
+        }
+    }
+}
+
+async function sendConfigsList(onlyActive) {
     if (!device || !device.opened) { showCustomAlert("设备未连接", "请先连接设备"); return; }
     if (configList.length === 0) { showCustomAlert("列表为空", "请先添加配置"); return; }
     
-    showCustomAlert("正在发送", `发送 0/${configList.length}`, true); 
-    for (let i = 0; i < configList.length; i++) {
-        const cfg = configList[i];
-        const mask = generateBitmask(cfg.leds);
-        const res = await sendDataToDevice(0x90, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
-        if (!res) break;
-        document.getElementById('alertMessage').textContent = `发送 ${i + 1}/${configList.length}`;
-        if (i < configList.length - 1) await new Promise(r => setTimeout(r, 50));
+    const toSend = onlyActive ? configList.filter(c => c.enabled) : configList;
+    if (toSend.length === 0) { showCustomAlert("无有效项", "请勾选需要发送的配置"); return; }
+
+    showCustomAlert("正在发送", `发送 0/${toSend.length}`, true); 
+    for (let i = 0; i < toSend.length; i++) {
+        const cfg = toSend[i];
+        await sendSingleConfigItem(cfg, false);
+        document.getElementById('alertMessage').textContent = `发送 ${i + 1}/${toSend.length}`;
+        if (i < toSend.length - 1) await new Promise(r => setTimeout(r, 50));
     }
     document.getElementById('customAlert').style.display = 'none';
 }
 
 function setupEventListeners() {
     document.getElementById('connectBtn').addEventListener('click', connectDevice);
-    document.getElementById('sendAllBtn').addEventListener('click', sendAllConfigs); 
+    
+    document.getElementById('sendActiveBtn').addEventListener('click', () => sendConfigsList(true)); 
+    document.getElementById('sendAllBtn').addEventListener('click', () => sendConfigsList(false)); 
+    
     document.getElementById('selectAllBtn').addEventListener('click', () => {
         for(let i=0; i<ledTotal; i++) selectedLeds.add(i);
-        renderGrid(); autoSyncSelectedLedMask(true); updateCurrentDrawDisplay(); triggerRealTimeSync();
+        updateAllActiveLedColors(); autoSyncSelectedConfig(true); updateCurrentDrawDisplay(); triggerRealTimeSync();
     });
     document.getElementById('clearSelectionBtn').addEventListener('click', () => {
         selectedLeds.clear();
-        renderGrid(); autoSyncSelectedLedMask(true); updateCurrentDrawDisplay(); triggerRealTimeSync();
+        updateAllActiveLedColors(); autoSyncSelectedConfig(true); updateCurrentDrawDisplay(); triggerRealTimeSync();
     });
     document.getElementById('addConfigBtn').addEventListener('click', () => {
         if (currentMode !== 'all') {
-            showCustomAlert("提示", "指示灯模式下请直接使用保存按钮，不需要添加到列表。");
+            showCustomAlert("提示", "指示灯模式下请直接使用上方的【添加配置】按钮");
             return;
         }
         configList.push({
-            id: Date.now(), leds: new Set(selectedLeds), 
+            id: Date.now(), 
+            type: 'all',
+            enabled: true,
+            name: '全灯配置 ' + (configList.filter(c => c.type === 'all').length + 1),
+            leds: new Set(selectedLeds), 
             h: currentSettings.h, s: currentSettings.s, v: currentSettings.v, spd: currentSettings.spd
         });
         renderConfigList(); loadConfig(configList.length - 1);
     });
     document.getElementById('closeLightBtn').addEventListener('click', () => sendDataToDevice(0x91, 0, 0, 0, 0, null));
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        if(configList.length === 0) {
+            showCustomAlert("列表为空", "无法导出空列表"); return;
+        }
+        const exportData = configList.map(c => ({
+            ...c,
+            leds: c.type === 'all' ? Array.from(c.leds) : undefined
+        }));
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; 
+        a.download = 'qmk_light_config.json';
+        a.click(); 
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importBtn').addEventListener('click', () => {
+        document.getElementById('importFile').click();
+    });
+
+    document.getElementById('importFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                configList = data.map(c => ({
+                    ...c,
+                    leds: c.type === 'all' ? new Set(c.leds) : undefined
+                }));
+                renderConfigList();
+                if (configList.length > 0) loadConfig(0);
+                showCustomAlert("导入成功", `成功导入 ${configList.length} 个配置`);
+            } catch(err) {
+                showCustomAlert("导入失败", "配置文件格式错误");
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = ''; 
+    });
 
     function createCustomAlert() {
         const d = document.createElement('div');
@@ -1646,37 +1836,67 @@ function renderConfigList() {
         const row = document.createElement('div');
         row.className = 'config-row';
         if (config.id === currentConfigId) row.classList.add('selected');
+        
         const { r, g, b } = hsvToRgb(config.h, config.s, config.v);
-        const current = calculateCurrent(config.leds.size, config.h, config.s, config.v);
+        let current = 0;
+        let posText = '';
+        
+        if (config.type === 'all') {
+            current = calculateCurrent(config.leds.size, config.h, config.s, config.v);
+            posText = `${config.leds.size} 颗`;
+        } else {
+            current = calculateCurrent(config.count, config.h, config.s, config.v);
+            posText = `[${config.start}~${config.start + config.count - 1}]`;
+        }
         
         row.innerHTML = `
-            <span>${config.leds.size} 颗</span>
+            <div style="text-align:center; display: flex; justify-content: center;">
+                <label class="switch" style="transform: scale(0.85); margin: 0;">
+                    <input type="checkbox" class="row-switch" ${config.enabled ? 'checked' : ''} title="是否启用">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <input type="text" class="row-input-text" value="${config.name}" style="font-size: 0.9em; text-align: center;">
+            <span class="pos-display" style="text-align: center; font-family: monospace;">${posText}</span>
             <input type="number" class="row-input" data-key="h" value="${config.h}" min="0" max="255">
             <input type="number" class="row-input" data-key="s" value="${config.s}" min="0" max="255">
             <input type="number" class="row-input" data-key="v" value="${config.v}" min="0" max="255">
-            <span class="config-color-display">${r}</span> 
-            <span class="config-color-display">${g}</span>
-            <span class="config-color-display">${b}</span>
-            <input type="number" class="row-input" data-key="spd" value="${config.spd}" min="0" max="255">
-            <span style="text-align: right; color: ${current > 1000 ? '#d9534f' : '#f0ad4e'};">${current} mA</span>
+            
+            <div class="list-preview-led" style="background-color: rgb(${r},${g},${b});"></div>
+            
+            <span class="current-display" style="text-align: right; color: ${current > 1000 ? '#d9534f' : '#f0ad4e'};">${current} mA</span>
             <div class="config-row-controls">
-                <button class="btn-icon" onclick="event.stopPropagation(); window.sendConfig(${index})" title="发送">发送</button>
-                <button class="btn-icon danger" onclick="event.stopPropagation(); window.deleteConfig(${index})" title="删除">-</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); window.sendConfig(${index})" title="单独预览此项">预览</button>
+                <button class="btn-icon danger" onclick="event.stopPropagation(); window.deleteConfig(${index})" title="删除">删除</button>
             </div>
         `;
-        row.addEventListener('click', () => loadConfig(index));
+        
+        row.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() !== 'input' && e.target.tagName.toLowerCase() !== 'button') {
+                loadConfig(index);
+            }
+        });
+        
+        row.querySelector('.row-switch').addEventListener('change', (e) => {
+            config.enabled = e.target.checked;
+        });
+        
+        row.querySelector('.row-input-text').addEventListener('change', (e) => {
+            config.name = e.target.value;
+        });
         
         row.querySelectorAll('.row-input').forEach(input => {
             const key = input.dataset.key;
             input.addEventListener('change', (e) => {
                 let val = parseInt(e.target.value);
                 if (isNaN(val)) val = 0;
-                configList[index][key] = Math.min(255, Math.max(0, val));
+                config[key] = Math.min(255, Math.max(0, val));
                 if (config.id === currentConfigId) {
                     updateColorSettings(key, val); 
                     syncAllInputsFromSettings();
+                } else {
+                    updateConfigListDOM(index);
                 }
-                renderConfigList();
             });
             input.addEventListener('click', (e) => e.stopPropagation());
         });
@@ -1687,30 +1907,47 @@ function renderConfigList() {
 window.deleteConfig = (index) => {
     if (configList[index].id === currentConfigId) currentConfigId = null;
     configList.splice(index, 1);
-    renderConfigList(); updateAllActiveLedColors(); updateCurrentDrawDisplay();
+    renderConfigList(); 
+    if(currentMode === 'all') updateAllActiveLedColors(); 
+    updateCurrentDrawDisplay();
 };
 
-window.sendConfig = (index) => {
+window.sendConfig = async (index) => {
     const cfg = configList[index];
-    const mask = generateBitmask(cfg.leds);
-    sendDataToDevice(0x90, cfg.h, cfg.s, cfg.v, cfg.spd, mask);
+    await sendSingleConfigItem(cfg);
     loadConfig(index);
 };
 
 function loadConfig(index) {
-    if (currentMode !== 'all') {
-        const allBtn = document.querySelector('.mode-btn[data-mode="all"]');
-        if (allBtn) allBtn.click();
-    }
     const cfg = configList[index];
     currentConfigId = cfg.id;
-    selectedLeds = new Set(cfg.leds);
-    currentSettings.h = cfg.h; currentSettings.s = cfg.s; currentSettings.v = cfg.v; currentSettings.spd = cfg.spd;
+    
+    if (cfg.type !== currentMode) {
+        saveCurrentModeParams();
+        switchModeUI(cfg.type);
+    }
+    
+    currentSettings.h = cfg.h; 
+    currentSettings.s = cfg.s; 
+    currentSettings.v = cfg.v; 
+    currentSettings.spd = cfg.spd;
+
+    if (cfg.type === 'all') {
+        selectedLeds = new Set(cfg.leds);
+        updateAllActiveLedColors(); 
+    } else {
+        indicatorSettings[cfg.type].start = cfg.start;
+        indicatorSettings[cfg.type].count = cfg.count;
+        if (cfg.type === 'layer') {
+            indicatorSettings.layer.layerIdx = cfg.layerIdx;
+        }
+        updateAllInputFormats(); 
+    }
+    
     syncAllInputsFromSettings();
-    renderGrid(); renderConfigList();
+    updateConfigListSelection(); 
 }
 </script>
-<script>function isDevToolsOpen(){if(window.outerHeight-window.innerHeight>160)return true;if(console.firebug||window.devtools)return true;try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}return false;}if(isDevToolsOpen())window.location.href='about:blank';setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},1);document.addEventListener('contextmenu',function(e){e.preventDefault();});document.onkeydown = function(e) {if (e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) {return false;}};</script>
 <script>document.addEventListener('contextmenu',function(e){e.preventDefault();}); document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) return false; if (e.keyCode == 116) e.preventDefault(); };</script>
 </body>
 </html>
