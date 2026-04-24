@@ -1,0 +1,7 @@
+/*
+  X-Frame-Options: ALLOWALL
+  Content-Security-Policy: frame-ancestors *
+
+/tools/guide/*
+  X-Frame-Options: ALLOWALL
+  Content-Security-Policy: frame-ancestors *
