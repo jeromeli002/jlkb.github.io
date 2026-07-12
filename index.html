@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -1652,17 +1652,10 @@
 
         /* ========== 炫酷介绍效果区 ========== */
         .showcase-container {
-            padding: 60px 40px;
+            padding: 60px 0;
             position: relative;
             overflow: hidden;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            box-shadow: var(--card-shadow);
-            max-width: 1100px;
-            margin: 0 auto;
+            width: 100%;
             opacity: 0;
             transform: translateY(60px) scale(0.95);
             transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
@@ -3048,98 +3041,88 @@
             <h2 class="section-title">在线<span class="accent">改键驱动</span></h2>
             <p class="section-desc">可视化配置，实时生效，专业级固件支持</p>
         </div>
-        <div class="showcase-container reveal">
-            <div class="showcase-hero">
-                <div class="showcase-icon-pulse">🔧</div>
-                <h3 class="showcase-title">在线改键工具</h3>
-                <p class="showcase-subtitle">可视化配置 · 实时生效 · 无需重启 · 专业级固件</p>
-            </div>
 
-            <!-- 改键流程步骤 -->
-            <div class="driver-steps">
-                <div class="driver-step" data-step="1">
-                    <div class="driver-step-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v12"/>
-                            <circle cx="12" cy="2" r="1.5" fill="white" stroke="none"/>
-                            <path d="M12 14l-4-4"/>
-                            <circle cx="8" cy="10" r="2.5" fill="none"/>
-                            <path d="M12 14l4-4"/>
-                            <rect x="14.5" y="8.5" width="3" height="3" fill="none"/>
-                            <path d="M8 17a4 4 0 0 0 8 0"/>
-                            <circle cx="12" cy="21" r="2" fill="white" stroke="none"/>
-                        </svg>
-                    </div>
-                    <div class="driver-step-content">
-                        <h4>连接键盘</h4>
-                        <p>USB 或蓝牙连接你的键盘</p>
-                    </div>
-                    <div class="driver-step-number">01</div>
-                </div>
-                <div class="driver-step-connector"></div>
-                <div class="driver-step" data-step="2">
-                    <div class="driver-step-icon">⌨️</div>
-                    <div class="driver-step-content">
-                        <h4>选择键盘</h4>
-                        <p>从设备列表中识别并选择</p>
-                    </div>
-                    <div class="driver-step-number">02</div>
-                </div>
-                <div class="driver-step-connector"></div>
-                <div class="driver-step" data-step="3">
-                    <div class="driver-step-icon">✨</div>
-                    <div class="driver-step-content">
-                        <h4>开始改键</h4>
-                        <p>可视化配置，实时保存生效</p>
-                    </div>
-                    <div class="driver-step-number">03</div>
-                </div>
-            </div>
+        <!-- 动态图标展示 -->
+        <div class="showcase-hero reveal">
+            <div class="showcase-icon-pulse">🔧</div>
+            <h3 class="showcase-title">在线改键工具</h3>
+            <p class="showcase-subtitle">可视化配置 · 实时生效 · 无需重启 · 专业级固件</p>
+        </div>
 
-            <div class="showcase-features">
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">🎨</span>
-                    <div>
-                        <h4>可视化界面</h4>
-                        <p>直观的键盘布局图，拖拽式按键映射操作</p>
-                    </div>
+        <!-- 改键流程步骤 -->
+        <div class="driver-steps reveal">
+            <div class="driver-step" data-step="1">
+                <div class="driver-step-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v12"/>
+                        <circle cx="12" cy="2" r="1.5" fill="white" stroke="none"/>
+                        <path d="M12 14l-4-4"/>
+                        <circle cx="8" cy="10" r="2.5" fill="none"/>
+                        <path d="M12 14l4-4"/>
+                        <rect x="14.5" y="8.5" width="3" height="3" fill="none"/>
+                        <path d="M8 17a4 4 0 0 0 8 0"/>
+                        <circle cx="12" cy="21" r="2" fill="white" stroke="none"/>
+                    </svg>
                 </div>
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">⚡</span>
-                    <div>
-                        <h4>实时生效</h4>
-                        <p>修改即刻写入固件，无需重启立即体验新布局（RBG灯效需要点击保存）</p>
-                    </div>
+                <div class="driver-step-content">
+                    <h4>连接键盘</h4>
+                    <p>USB 或蓝牙连接你的键盘</p>
                 </div>
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">🔐</span>
-                    <div>
-                        <h4>多层配置</h4>
-                        <p>支持多图层切换、宏命令、自定义快捷键</p>
-                    </div>
-                </div>
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">💾</span>
-                    <div>
-                        <h4>配置备份</h4>
-                        <p>一键导出导入配置文件，多设备同步无忧</p>
-                    </div>
-                </div>
-                <a href="tools/oled.html" target="_blank" class="showcase-feature-link">
-                    <div class="showcase-feature">
-                        <span class="showcase-feature-icon">🖥️</span>
-                        <div>
-                            <h4>OLED 设置</h4>
-                            <p>自定义 OLED 屏幕显示内容。</p>
-                        </div>
-                    </div>
-                </a>
+                <div class="driver-step-number">01</div>
             </div>
-            <div class="showcase-cta">
-                <a href="https://vial.jlkb.top/" target="_blank" class="btn btn-primary showcase-btn">
-                    🔧 打开改键驱动
-                </a>
+            <div class="driver-step-connector"></div>
+            <div class="driver-step" data-step="2">
+                <div class="driver-step-icon">⌨️</div>
+                <div class="driver-step-content">
+                    <h4>选择键盘</h4>
+                    <p>从设备列表中识别并选择</p>
+                </div>
+                <div class="driver-step-number">02</div>
             </div>
+            <div class="driver-step-connector"></div>
+            <div class="driver-step" data-step="3">
+                <div class="driver-step-icon">✨</div>
+                <div class="driver-step-content">
+                    <h4>开始改键</h4>
+                    <p>可视化配置，实时保存生效</p>
+                </div>
+                <div class="driver-step-number">03</div>
+            </div>
+        </div>
+
+        <div class="features-grid reveal">
+            <div class="feature-card">
+                <span class="feature-icon">🎨</span>
+                <h3>可视化界面</h3>
+                <p>直观的键盘布局图，拖拽式按键映射操作</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>实时生效</h3>
+                <p>修改即刻写入固件，无需重启立即体验新布局</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔐</span>
+                <h3>多层配置</h3>
+                <p>支持多图层切换、宏命令、自定义快捷键</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">💾</span>
+                <h3>配置备份</h3>
+                <p>一键导出导入配置文件，多设备同步无忧</p>
+            </div>
+            <a href="tools/oled.html" target="_blank" class="feature-card-link">
+                <div class="feature-card">
+                    <span class="feature-icon">🖥️</span>
+                    <h3>OLED 设置</h3>
+                    <p>自定义 OLED 屏幕显示内容</p>
+                </div>
+            </a>
+        </div>
+        <div style="text-align:center; margin-top:36px;" class="reveal">
+            <a href="https://vial.jlkb.top/" target="_blank" class="btn btn-primary">
+                🔧 打开改键驱动
+            </a>
         </div>
     </section>
 
@@ -3150,76 +3133,68 @@
             <h2 class="section-title">专业<span class="accent2">键盘测试</span></h2>
             <p class="section-desc">全键无冲检测，音效反馈，KPM实时监控</p>
         </div>
-        <div class="showcase-container reveal">
-            <div class="showcase-hero">
-                <div class="showcase-icon-pulse">⌨️</div>
-                <h3 class="showcase-title">专业键盘测试工具</h3>
-                <p class="showcase-subtitle">全键无冲检测 · 音效反馈 · KPM实时监控 · 测试日志</p>
+
+        <!-- 动态图标展示 -->
+        <div class="showcase-hero reveal">
+            <div class="showcase-icon-pulse">⌨️</div>
+            <h3 class="showcase-title">专业键盘测试工具</h3>
+            <p class="showcase-subtitle">全键无冲检测 · 音效反馈 · KPM实时监控 · 测试日志</p>
+        </div>
+
+        <!-- 测试动态演示面板 -->
+        <div class="test-demo-panel reveal">
+            <!-- 左侧：模拟键盘按键 -->
+            <div class="test-demo-col">
+                <div class="test-demo-label">🎯 按键检测</div>
+                <div class="test-keyboard-grid" id="testKeyboardGrid"></div>
+                <div class="test-key-info" id="testKeyInfo">等待按键...</div>
             </div>
 
-            <!-- 测试动态演示面板 -->
-            <div class="test-demo-panel">
-                <!-- 左侧：模拟键盘按键 -->
-                <div class="test-demo-col">
-                    <div class="test-demo-label">🎯 按键检测</div>
-                    <div class="test-keyboard-grid" id="testKeyboardGrid"></div>
-                    <div class="test-key-info" id="testKeyInfo">等待按键...</div>
+            <!-- 中间：KPM曲线 -->
+            <div class="test-demo-col">
+                <div class="test-demo-label">📊 KPM 实时监控</div>
+                <div class="test-kpm-display">
+                    <div class="test-kpm-value" id="testKpmValue">0</div>
+                    <div class="test-kpm-unit">KPM</div>
                 </div>
-
-                <!-- 中间：KPM曲线 -->
-                <div class="test-demo-col">
-                    <div class="test-demo-label">📊 KPM 实时监控</div>
-                    <div class="test-kpm-display">
-                        <div class="test-kpm-value" id="testKpmValue">0</div>
-                        <div class="test-kpm-unit">KPM</div>
-                    </div>
-                    <canvas id="testKpmCanvas" width="280" height="120"></canvas>
-                </div>
-
-                <!-- 右侧：日志输出 -->
-                <div class="test-demo-col">
-                    <div class="test-demo-label">📝 测试日志</div>
-                    <div class="test-log-output" id="testLogOutput">
-                        <div class="test-log-line test-log-header">[ 等待测试开始... ]</div>
-                    </div>
-                </div>
+                <canvas id="testKpmCanvas" width="280" height="120"></canvas>
             </div>
 
-            <div class="showcase-features">
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">🎯</span>
-                    <div>
-                        <h4>全键检测</h4>
-                        <p>支持104+按键、鼠标按键、滚轮、媒体键全面测试</p>
-                    </div>
-                </div>
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">🎵</span>
-                    <div>
-                        <h4>音效反馈</h4>
-                        <p>钢琴、吉他、鼓组等多种乐器音效，打字如演奏</p>
-                    </div>
-                </div>
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">📊</span>
-                    <div>
-                        <h4>KPM监控</h4>
-                        <p>实时每分钟按键次数统计，可视化曲线图表</p>
-                    </div>
-                </div>
-                <div class="showcase-feature">
-                    <span class="showcase-feature-icon">📝</span>
-                    <div>
-                        <h4>测试日志</h4>
-                        <p>精确到毫秒的按键记录，按下抬起完整追踪</p>
-                    </div>
+            <!-- 右侧：日志输出 -->
+            <div class="test-demo-col">
+                <div class="test-demo-label">📝 测试日志</div>
+                <div class="test-log-output" id="testLogOutput">
+                    <div class="test-log-line test-log-header">[ 等待测试开始... ]</div>
                 </div>
             </div>
-            <div class="showcase-cta">
-                <a href="tools/kbtest.html" target="_blank" class="btn btn-primary showcase-btn">
-                    🚀 启动测试工具
-                </a>
+        </div>
+
+        <div class="features-grid reveal">
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3>全键检测</h3>
+                <p>支持104+按键、鼠标按键、滚轮、媒体键全面测试</p>
             </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎵</span>
+                <h3>音效反馈</h3>
+                <p>钢琴、吉他、鼓组等多种乐器音效，打字如演奏</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>KPM监控</h3>
+                <p>实时每分钟按键次数统计，可视化曲线图表</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📝</span>
+                <h3>测试日志</h3>
+                <p>精确到毫秒的按键记录，按下抬起完整追踪</p>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top:36px;" class="reveal">
+            <a href="tools/kbtest.html" target="_blank" class="btn btn-primary">
+                🚀 启动测试工具
+            </a>
         </div>
     </section>
 
