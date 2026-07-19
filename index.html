@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -2031,7 +2031,7 @@
             display: block;
         }
         .test-key-cell {
-            height: 28px;
+            height: 20px;
             border-radius: 4px;
             background: var(--remap-key-bg, rgba(0, 0, 0, 0.08));
             border: 1px solid var(--border);
@@ -3190,10 +3190,18 @@
                 <h3>测试日志</h3>
                 <p>精确到毫秒的按键记录，按下抬起完整追踪</p>
             </div>
+            <div class="feature-card" onclick="window.open('tools/gamepad-tester.html','_blank')" style="cursor:pointer;">
+                <span class="feature-icon">🎮</span>
+                <h3>手柄测试</h3>
+                <p>支持多手柄连接、按键检测、摇杆轴值实时显示</p>
+            </div>
         </div>
         <div style="text-align:center; margin-top:36px;" class="reveal">
             <a href="tools/kbtest.html" target="_blank" class="btn btn-primary">
-                🚀 启动测试工具
+                🚀 启动键盘测试
+            </a>
+            <a href="tools/gamepad-tester.html" target="_blank" class="btn btn-primary" style="margin-left:12px; background: linear-gradient(135deg, var(--accent3), var(--accent2));">
+                🎮 启动手柄测试
             </a>
         </div>
     </section>
@@ -3753,11 +3761,12 @@
 
                 // 真实键盘布局
                 const keyLayout = [
+                    ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
                     ['Esc', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '⌫'],
                     ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'],
                     ['Caps', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'", '↵'],
                     ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Shift'],
-                    ['Ctrl', 'Alt', '⌘', 'Space', '⌘', 'Alt', 'Fn', 'Ctrl']
+                    ['Ctrl', '⌘', 'Alt', 'Space', 'Alt', '⌘', 'Fn', 'Ctrl']
                 ];
 
                 keyLayout.forEach((row) => {
@@ -3792,7 +3801,7 @@
 
                 // 按键按下
                 cell.classList.add('test-key-pressed');
-                const keyName = ['A', 'S', 'D', 'F', 'J', 'K', 'L', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'][randomIndex % 17];
+                const keyName = ['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12','A', 'S', 'D', 'F', 'J', 'K', 'L', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'][randomIndex % 29];
                 if (keyInfo) {
                     keyInfo.textContent = `按键: ${keyName}`;
                     keyInfo.style.color = 'var(--accent)';
@@ -3810,7 +3819,7 @@
 
             // KPM曲线绘制
             let kpmData = [];
-            const maxKpmPoints = 30;
+            const maxKpmPoints = 50;
 
             function drawKpmCurve() {
                 const canvas = document.getElementById('testKpmCanvas');
@@ -3876,8 +3885,8 @@
                 if (!kpmValue) return;
 
                 // 模拟KPM值（150-350之间波动）
-                const baseKpm = 250;
-                const variation = Math.sin(Date.now() / 2000) * 50 + Math.random() * 50;
+                const baseKpm = 150;
+                const variation = Math.sin(Date.now() / 1000) * 50 + Math.random() * 50;
                 const currentKpm = Math.round(baseKpm + variation);
 
                 kpmValue.textContent = currentKpm;
@@ -3904,7 +3913,7 @@
 
                 const keys = ['A', 'S', 'D', 'F', 'J', 'K', 'L', 'Q', 'W', 'E', 'R', 'T'];
                 const randomKey = keys[Math.floor(Math.random() * keys.length)];
-                const timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false }) + '.' + String(Date.now() % 1000).padStart(3, '0');
+                const timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false }) + '.' + String(Date.now() % 500).padStart(3, '0');
 
                 // 按键按下日志
                 const pressLog = document.createElement('div');
@@ -3934,13 +3943,13 @@
                 initTestKeyboard();
 
                 // 每0.8秒模拟一次按键
-                testAnimInterval = setInterval(simulateKeyPress, 800);
+                testAnimInterval = setInterval(simulateKeyPress, 300);
 
                 // 每0.4秒更新KPM
-                testKpmInterval = setInterval(updateKpm, 400);
+                testKpmInterval = setInterval(updateKpm, 150);
 
                 // 每0.7秒添加日志
-                testLogInterval = setInterval(addTestLog, 700);
+                testLogInterval = setInterval(addTestLog, 500);
 
                 // 立即执行一次
                 simulateKeyPress();

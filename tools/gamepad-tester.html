@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手柄测试器</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #0f1923;
+  color: #e0e0e0;
+  line-height: 1.6;
+}
+a { color: #4fc3f7; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 50px 20px 30px;
+  background: linear-gradient(180deg, #1a2a3a 0%, #0f1923 100%);
+}
+.hero h1 {
+  font-size: 38px;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.hero > p {
+  font-size: 17px;
+  color: #a0b4c8;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Status Bar */
+.status-bar {
+  background: #162533;
+  border: 1px solid #1e3a5f;
+  border-radius: 10px;
+  padding: 15px 25px;
+  max-width: 700px;
+  margin: 25px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 15px;
+}
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f44336;
+}
+.status-dot.connected { background: #4caf50; }
+
+/* Player Slots */
+.player-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  max-width: 800px;
+  margin: 25px auto;
+}
+.player-slot {
+  background: #162533;
+  border: 2px solid #1e3a5f;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.player-slot:hover {
+  border-color: #3a5a7a;
+}
+.player-slot.active {
+  border-color: #4fc3f7;
+  box-shadow: 0 0 12px rgba(79, 195, 247, 0.2);
+}
+.player-slot.selected {
+  border-color: #ff9800;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.3);
+}
+.player-slot h3 {
+  font-size: 14px;
+  color: #4fc3f7;
+  margin-bottom: 6px;
+}
+.player-slot .status {
+  font-size: 12px;
+  color: #607d8b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.player-slot.active .status {
+  color: #4caf50;
+}
+
+/* Gamepad Tester Area */
+.gamepad-tester-area {
+  max-width: 95%;
+  margin: 30px auto;
+  text-align: center;
+}
+.no-gamepad-msg {
+  padding: 50px 20px;
+}
+.no-gamepad-msg h2 {
+  font-size: 26px;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.no-gamepad-msg p {
+  color: #a0b4c8;
+  margin-bottom: 6px;
+}
+.no-gamepad-msg .steps {
+  list-style: none;
+  margin-top: 18px;
+}
+.no-gamepad-msg .steps li {
+  padding: 8px 0;
+  color: #a0b4c8;
+  font-size: 14px;
+}
+.no-gamepad-msg .steps li::before {
+  content: '✓ ';
+  color: #4fc3f7;
+  font-weight: bold;
+}
+
+/* Connected Gamepad Display */
+.gamepad-connected {
+  display: none;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.gamepad-connected.active {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+/* Left column - Button status and axes */
+.gamepad-connected .button-status,
+.gamepad-connected .analog-axes {
+  margin-bottom: 0;
+}
+
+/* Right column - Gamepad SVG */
+.gamepad-connected .gamepad-image {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Responsive layout */
+@media (max-width: 1024px) {
+  .gamepad-connected.active {
+    grid-template-columns: 1fr;
+  }
+  .gamepad-connected .gamepad-image {
+    order: -1;
+  }
+}
+.gamepad-svg {
+  width: 100%;
+  margin: 0 auto;
+}
+.gamepad-svg svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* SVG Button styles */
+.button-active {
+  fill: #8A4FFF !important;
+  filter: drop-shadow(0 0 15px #8A4FFF) drop-shadow(0 0 25px #8A4FFF);
+  transition: all 0.1s ease;
+}
+.button-inactive {
+  fill: #374151;
+  transition: all 0.2s ease;
+}
+.fill-gray-500 {
+  fill: #6B7280;
+  transition: all 0.2s ease;
+}
+.fill-gray-600 {
+  fill: #4B5563;
+  transition: all 0.2s ease;
+}
+.fill-\[\#1B1C1E\] {
+  fill: #1B1C1E;
+  transition: all 0.2s ease;
+}
+.fill-\[\#8A4FFF\] {
+  fill: #8A4FFF;
+  filter: drop-shadow(0 0 15px #8A4FFF) drop-shadow(0 0 25px #8A4FFF);
+  transition: all 0.1s ease;
+}
+
+/* Joystick glow effect */
+.stick-active {
+  fill: #8A4FFF !important;
+  filter: drop-shadow(0 0 15px #8A4FFF) drop-shadow(0 0 25px #8A4FFF);
+  transition: all 0.1s ease;
+}
+.stick-inactive {
+  fill: #2a3a4a;
+  transition: all 0.2s ease;
+}
+
+/* Stick Visualizers */
+.stick-visualizers {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.stick-viz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.stick-label {
+  color: #8aa;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stick-circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: #1a2a3a;
+  border: 2px solid #3a5a7a;
+  position: relative;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.stick-cross {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.stick-cross::before,
+.stick-cross::after {
+  content: '';
+  position: absolute;
+  background: #3a5a7a;
+}
+
+.stick-cross::before {
+  width: 1px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-0.5px);
+}
+
+.stick-cross::after {
+  height: 1px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-0.5px);
+}
+
+.stick-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #8A4FFF;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px #8A4FFF, 0 0 40px #8A4FFF;
+  transition: all 0.05s ease;
+  pointer-events: none;
+}
+
+/* Gamepad Info */
+.gamepad-info {
+  background: #162533;
+  border: 1px solid #1e3a5f;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.gamepad-info h3 {
+  color: #4fc3f7;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.gamepad-info .gamepad-name {
+  color: #fff;
+  font-size: 14px;
+}
+
+/* Button Status */
+.button-status {
+  background: #162533;
+  border: 1px solid #1e3a5f;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.button-status h4 {
+  color: #fff;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+}
+.button-item {
+  background: #1a2a3a;
+  border: 1px solid #2a4a6b;
+  border-radius: 6px;
+  padding: 10px 5px;
+  font-size: 12px;
+  color: #8aa;
+  text-align: center;
+  transition: all 0.1s;
+}
+.button-item.pressed {
+  background: #4fc3f7;
+  border-color: #4fc3f7;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+}
+
+/* Analog Axes */
+.analog-axes {
+  background: #162533;
+  border: 1px solid #1e3a5f;
+  border-radius: 10px;
+  padding: 20px;
+}
+.analog-axes h4 {
+  color: #fff;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.axes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+.axis-item {
+  background: #1a2a3a;
+  border: 1px solid #2a4a6b;
+  border-radius: 8px;
+  padding: 12px;
+}
+.axis-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.axis-label span:first-child {
+  color: #a0b4c8;
+}
+.axis-label span:last-child {
+  color: #4fc3f7;
+  font-weight: 600;
+}
+.axis-bar {
+  height: 8px;
+  background: #0f1923;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.axis-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4fc3f7, #0288d1);
+  transition: width 0.05s;
+  position: absolute;
+  left: 0;
+}
+
+/* CTA */
+.cta-section {
+  text-align: center;
+  padding: 50px 20px;
+}
+.cta-btn {
+  display: inline-block;
+  padding: 12px 35px;
+  background: linear-gradient(135deg, #4fc3f7, #0288d1);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 195, 247, 0.3);
+  text-decoration: none;
+}
+
+/* Footer */
+.footer {
+  background: #0a1520;
+  border-top: 1px solid #1e3a5f;
+  padding: 25px 20px;
+  text-align: center;
+  color: #607d8b;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 26px; }
+  .hero > p { font-size: 14px; }
+  .player-slots { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>🎮 手柄测试器</h1>  
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span>已连接: <strong id="connectedCount">0</strong>/4</span>
+  </div>
+
+  <div class="player-slots">
+    <div class="player-slot" id="slot0" data-index="0">
+      <h3>玩家 1 控制器</h3>
+      <div class="status">等待中...</div>
+    </div>
+    <div class="player-slot" id="slot1" data-index="1">
+      <h3>玩家 2 控制器</h3>
+      <div class="status">等待中...</div>
+    </div>
+    <div class="player-slot" id="slot2" data-index="2">
+      <h3>玩家 3 控制器</h3>
+      <div class="status">等待中...</div>
+    </div>
+    <div class="player-slot" id="slot3" data-index="3">
+      <h3>玩家 4 控制器</h3>
+      <div class="status">等待中...</div>
+    </div>
+  </div>
+</section>
+
+<!-- Gamepad Tester Area -->
+<section class="gamepad-tester-area">
+  <div class="no-gamepad-msg" id="noGamepadMsg">
+    <h2>未检测到手柄</h2>
+    <p>连接最多 4 个控制器开始测试</p>
+    <ul class="steps">
+      <li>通过 USB 或蓝牙连接您的手柄</li>
+      <li>按下控制器上的任何按钮</li>
+      <li>观察实时反馈</li>
+    </ul>
+  </div>
+
+  <div class="gamepad-connected" id="gamepadConnected">
+    <!-- Left Column: Info + Buttons + Axes -->
+    <div class="left-column">
+    <div class="gamepad-info">
+      <h3>控制器 <span id="controllerNum">1</span></h3>
+      <div class="gamepad-name" id="gamepadName">-</div>
+    </div>
+
+    <div class="button-status">
+      <h4>按钮状态</h4>
+      <div class="button-grid" id="buttonGrid">
+        <div class="button-item" data-btn="0">A (0)</div>
+        <div class="button-item" data-btn="1">B (1)</div>
+        <div class="button-item" data-btn="2">X (2)</div>
+        <div class="button-item" data-btn="3">Y (3)</div>
+        <div class="button-item" data-btn="4">LB (4)</div>
+        <div class="button-item" data-btn="5">RB (5)</div>
+        <div class="button-item" data-btn="6">LT (6)</div>
+        <div class="button-item" data-btn="7">RT (7)</div>
+        <div class="button-item" data-btn="8">Select (8)</div>
+        <div class="button-item" data-btn="9">Start (9)</div>
+        <div class="button-item" data-btn="10">LS (10)</div>
+        <div class="button-item" data-btn="11">RS (11)</div>
+        <div class="button-item" data-btn="12">↑ (12)</div>
+        <div class="button-item" data-btn="13">↓ (13)</div>
+        <div class="button-item" data-btn="14">← (14)</div>
+        <div class="button-item" data-btn="15">→ (15)</div>
+        <div class="button-item" data-btn="16">Home (16)</div>
+        <div class="button-item" data-btn="17">按钮 17</div>
+        <div class="button-item" data-btn="18">按钮 18</div>
+        <div class="button-item" data-btn="19">按钮 19</div>
+        <div class="button-item" data-btn="20">按钮 20</div>
+        <div class="button-item" data-btn="21">按钮 21</div>
+        <div class="button-item" data-btn="22">按钮 22</div>
+        <div class="button-item" data-btn="23">按钮 23</div>
+        <div class="button-item" data-btn="24">按钮 24</div>
+        <div class="button-item" data-btn="25">按钮 25</div>
+        <div class="button-item" data-btn="26">按钮 26</div>
+        <div class="button-item" data-btn="27">按钮 27</div>
+        <div class="button-item" data-btn="28">按钮 28</div>
+        <div class="button-item" data-btn="29">按钮 29</div>
+        <div class="button-item" data-btn="30">按钮 30</div>
+        <div class="button-item" data-btn="31">按钮 31</div>
+      </div>
+    </div>
+
+    <div class="analog-axes">
+      <h4>模拟轴</h4>
+      <div class="axes-grid" id="axesGrid">
+        <div class="axis-item">
+          <div class="axis-label">
+            <span>左摇杆 X</span>
+            <span id="axis0Val">0.00</span>
+          </div>
+          <div class="axis-bar">
+            <div class="axis-fill" id="axis0Fill" style="width: 50%;"></div>
+          </div>
+        </div>
+        <div class="axis-item">
+          <div class="axis-label">
+            <span>左摇杆 Y</span>
+            <span id="axis1Val">0.00</span>
+          </div>
+          <div class="axis-bar">
+            <div class="axis-fill" id="axis1Fill" style="width: 50%;"></div>
+          </div>
+        </div>
+        <div class="axis-item">
+          <div class="axis-label">
+            <span>右摇杆 X</span>
+            <span id="axis2Val">0.00</span>
+          </div>
+          <div class="axis-bar">
+            <div class="axis-fill" id="axis2Fill" style="width: 50%;"></div>
+          </div>
+        </div>
+        <div class="axis-item">
+          <div class="axis-label">
+            <span>右摇杆 Y</span>
+            <span id="axis3Val">0.00</span>
+          </div>
+          <div class="axis-bar">
+            <div class="axis-fill" id="axis3Fill" style="width: 50%;"></div>
+          </div>
+        </div>
+        <div class="axis-item">
+          <div class="axis-label">
+            <span>LT 扳机</span>
+            <span id="ltVal">0.00</span>
+          </div>
+          <div class="axis-bar">
+            <div class="axis-fill" id="ltFill" style="width: 0%;"></div>
+          </div>
+        </div>
+        <div class="axis-item">
+          <div class="axis-label">
+            <span>RT 扳机</span>
+            <span id="rtVal">0.00</span>
+          </div>
+          <div class="axis-bar">
+            <div class="axis-fill" id="rtFill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- end left-column -->
+
+    <!-- Right Column: Gamepad SVG Visual -->
+    <div class="gamepad-image">
+      <div class="gamepad-svg">
+        <svg width="100%" aria-label="手柄已连接图片"
+          role="img" viewBox="0 30 496 340" preserveAspectRatio="xMidYMid meet">
+          <g>
+            <path style="fill: #45484F"
+              d="M441.1,317c-16.5-151.8-50.6-179.2-50.6-179.2s-8.7-1.2-24.8-1.2s-26.4,1.2-26.4,1.2l-4.9,4.3 l-86.3,0.6l-86.3-0.6l-4.9-4.3c0,0-10.4-1.2-26.4-1.2s-24.8,1.2-24.8,1.2S71.5,165.2,55.1,317c0,0-2.4,44.5,29.3,50.6 c0,0,35.4,11.6,56.1-45.1l12.8-32.3c0,0,4.3-9.1,17.7-7.3h74.3h5.7h74.3c13.4-1.8,17.7,7.3,17.7,7.3l12.8,32.3 c20.7,56.7,56.1,45.1,56.1,45.1C443.6,361.5,441.1,361.5,441.1,317z" />
+
+            <!-- Left Trigger -->
+            <path id="svg-lt" d="M107.7,137.4v-3c0,0,10.2-7.1,24.8-6.7c0,0,17.5,0.4,21.7,4.5v5.3h-46.5V137.4z" class="button-inactive" />
+            <polygon style="fill: #ABADBA" points="107.7,137.4 107.7,134.3 154.2,132.1 154.2,137.4" />
+            <polygon id="svg-lb" points="123.4,133.6 137.7,132.9 138,137.4 123.7,137.4" class="button-inactive" />
+
+            <!-- Left Joystick (Axis 0, 1) -->
+            <circle cx="187.4" cy="253" r="24.4" />
+            <circle style="fill: #5C5E6A" cx="187.4" cy="253" r="22.3" />
+            <circle style="fill: #4F5159" cx="187.4" cy="253" r="15.9" />
+            <circle id="svg-left-stick" cx="187.4" cy="253" r="12.8" class="button-inactive" />
+
+            <!-- Left Joystick Button (L3) - Index 10 -->
+            <circle id="svg-ls" cx="187.4" cy="253" r="8" fill="transparent" stroke="rgba(138, 79, 255, 0.5)" stroke-width="2" />
+
+            <!-- Additional left area elements -->
+            <path style="fill: #5F6266"
+              d="M55.1,317c0,0-2.4,44.5,29.3,50.6c0,0,24.6,8,44.8-22.2c0,0-22.8-1.6-41.7-10.1s-32.1-19.8-32.1-19.8 C55.2,316,55.1,316.5,55.1,317z" />
+
+            <!-- D-Pad -->
+            <g>
+              <!-- D-Pad Up -->
+              <path id="svg-dpad-up"
+                d="M138.1,185.3c0,2.9-7.6,9.9-9.5,9.9c-1.9,0-9.5-7-9.5-9.9v-10.9c0-2.9,2.3-5.2,5.2-5.2h8.5 c2.9,0,5.2,2.3,5.2,5.2v10.9H138.1z" class="fill-[#1B1C1E]" />
+              <!-- D-Pad Down -->
+              <path id="svg-dpad-down"
+                d="M119.2,214.3c0-2.9,7.6-9.9,9.4-9.9c1.8,0,9.5,7,9.5,9.9v10.9c0,2.9-2.3,5.2-5.2,5.2h-8.5 c-2.9,0-5.2-2.3-5.2-5.2C119.2,225.2,119.2,214.3,119.2,214.3z" class="fill-[#1B1C1E]" />
+              <!-- D-Pad Right -->
+              <path id="svg-dpad-right"
+                d="M143.1,209.3c-2.9,0-9.9-7.6-9.9-9.4c0-1.8,7-9.5,9.9-9.5h11c2.9,0,5.2,2.3,5.2,5.2v8.5 c0,2.9-2.3,5.2-5.2,5.2H143.1z" class="fill-[#1B1C1E]" />
+              <!-- D-Pad Left -->
+              <path id="svg-dpad-left"
+                d="M114.1,190.4c2.9,0,9.9,7.6,9.9,9.4s-7,9.4-9.9,9.4h-10.9c-2.9,0-5.2-2.3-5.2-5.2v-8.5 c0-2.9,2.3-5.2,5.2-5.2h10.9V190.4z" class="fill-[#1B1C1E]" />
+            </g>
+
+            <!-- Right Trigger -->
+            <path id="svg-rt" d="M388.5,137.4v-3c0,0-10.2-7.1-24.8-6.7c0,0-17.5,0.4-21.7,4.5v5.3h46.5V137.4z" class="button-inactive" />
+            <polygon style="fill: #ABADBA" points="388.5,137.4 388.5,134.3 342,132.1 342,137.4" />
+            <polygon id="svg-rb" points="372.8,133.6 358.5,132.9 358.2,137.4 372.5,137.4" class="button-inactive" />
+
+            <!-- Right Joystick Area -->
+            <circle cx="367.5" cy="200.1" r="44" />
+            <circle cx="308.8" cy="253" r="24.4" />
+            <circle style="fill: #5C5E6A" cx="308.8" cy="253" r="22.3" />
+            <circle style="fill: #4F5159" cx="308.8" cy="253" r="15.9" />
+
+            <!-- Right Joystick (Axis 2, 3) -->
+            <circle id="svg-right-stick" cx="308.8" cy="253" r="12.8" class="button-inactive" />
+
+            <!-- Right Joystick Button (R3) - Index 11 -->
+            <circle id="svg-rs" cx="308.8" cy="253" r="8" fill="transparent" stroke="rgba(138, 79, 255, 0.5)" stroke-width="2" />
+
+            <!-- Additional right area elements -->
+            <path style="fill: #5F6266"
+              d="M441.1,317c0,0,2.4,44.5-29.3,50.6c0,0-24.6,8-44.8-22.2c0,0,22.8-1.6,41.7-10.1 c18.9-8.5,32.1-19.8,32.1-19.8C441,316,441.1,316.5,441.1,317z" />
+
+            <!-- Face Buttons (A, B, X, Y) - Standard Xbox/Generic layout -->
+            <g>
+              <!-- Button Y (Top) - Index 3 -->
+              <circle id="svg-y" cx="369.5" cy="173.1" r="12.2" class="fill-gray-500" />
+              <!-- Button A (Bottom) - Index 0 -->
+              <circle id="svg-a" cx="369.5" cy="229.6" r="12.2" class="fill-gray-500" />
+              <!-- Button B (Right) - Index 1 -->
+              <circle id="svg-b" cx="397.7" cy="201.4" r="12.2" class="fill-gray-500" />
+              <!-- Button X (Left) - Index 2 -->
+              <circle id="svg-x" cx="341.2" cy="201.4" r="12.2" class="fill-gray-500" />
+            </g>
+
+            <!-- Button Labels -->
+            <text x="369.5" y="178" text-anchor="middle" fill="white" font-size="8" font-weight="bold">Y</text>
+            <text x="369.5" y="235" text-anchor="middle" fill="white" font-size="8" font-weight="bold">A</text>
+            <text x="397.7" y="206" text-anchor="middle" fill="white" font-size="8" font-weight="bold">B</text>
+            <text x="341.2" y="206" text-anchor="middle" fill="white" font-size="8" font-weight="bold">X</text>
+
+            <!-- Center Buttons -->
+            <path style="fill: #181819"
+              d="M193.7,213.8h111.8c4,0,7.3-3.3,7.3-7.3v-64.3l-64.7,0.4l-61.8-0.4v64.3 C186.3,210.5,189.6,213.8,193.7,213.8z" />
+            <path style="fill: #2B2B2D"
+              d="M196.4,209.9h106.4c3.8,0,7-3.1,7-7v-60.7l-61.6,0.4l-58.7-0.4v60.7 C189.4,206.7,192.5,209.9,196.4,209.9z" />
+
+            <!-- Select/Back Button (Index 8) -->
+            <rect id="svg-select" x="220" y="175" width="20" height="8" rx="4" class="fill-gray-500" />
+
+            <!-- Start/Menu Button (Index 9) -->
+            <rect id="svg-start" x="256" y="175" width="20" height="8" rx="4" class="fill-gray-500" />
+
+            <!-- Home/Guide Button (Index 16) -->
+            <circle id="svg-home" cx="248.3" cy="200" r="8" class="fill-gray-600" />
+          </g>
+        </svg>
+      </div>
+      
+      <!-- Stick Visualizers -->
+      <div class="stick-visualizers">
+        <div class="stick-viz">
+          <div class="stick-label">左摇杆</div>
+          <div class="stick-circle">
+            <div class="stick-cross"></div>
+            <div class="stick-dot" id="leftStickDot"></div>
+          </div>
+        </div>
+        <div class="stick-viz">
+          <div class="stick-label">右摇杆</div>
+          <div class="stick-circle">
+            <div class="stick-cross"></div>
+            <div class="stick-dot" id="rightStickDot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <a href="#" class="cta-btn" onclick="document.querySelector('.hero').scrollIntoView({behavior:'smooth'});return false;">测试手柄</a>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>快速测试。即时结果。无需下载。</p>
+  <p style="margin-top:8px;">© 2026 手柄测试器 - 在线游戏控制器诊断工具</p>
+</footer>
+
+<script>
+// Gamepad Tester Logic
+let selectedIndex = null;
+
+// Elements
+const statusDot = document.getElementById('statusDot');
+const connectedCount = document.getElementById('connectedCount');
+const noGamepadMsg = document.getElementById('noGamepadMsg');
+const gamepadConnected = document.getElementById('gamepadConnected');
+const controllerNum = document.getElementById('controllerNum');
+const gamepadName = document.getElementById('gamepadName');
+
+// Button mapping to SVG elements
+const svgButtonMap = {
+  0: 'svg-a',
+  1: 'svg-b',
+  2: 'svg-x',
+  3: 'svg-y',
+  4: 'svg-lb',
+  5: 'svg-rb',
+  6: 'svg-lt',
+  7: 'svg-rt',
+  8: 'svg-select',
+  9: 'svg-start',
+  10: 'svg-ls',
+  11: 'svg-rs',
+  12: 'svg-dpad-up',
+  13: 'svg-dpad-down',
+  14: 'svg-dpad-left',
+  15: 'svg-dpad-right',
+  16: 'svg-home'
+};
+
+// Player slot click handlers
+document.querySelectorAll('.player-slot').forEach(slot => {
+  slot.addEventListener('click', () => {
+    const index = parseInt(slot.dataset.index);
+    const gp = navigator.getGamepads ? navigator.getGamepads()[index] : null;
+    if (gp) {
+      selectedIndex = index;
+      updateSelectedSlot();
+      showGamepad();
+    }
+  });
+});
+
+function updateSelectedSlot() {
+  document.querySelectorAll('.player-slot').forEach(slot => {
+    slot.classList.remove('selected');
+  });
+  if (selectedIndex !== null) {
+    const slot = document.getElementById(`slot${selectedIndex}`);
+    if (slot) {
+      slot.classList.add('selected');
+    }
+  }
+}
+
+// Gamepad events
+window.addEventListener('gamepadconnected', (e) => {
+  updateSlots();
+  if (selectedIndex === null) {
+    selectedIndex = e.gamepad.index;
+    updateSelectedSlot();
+    showGamepad();
+  }
+  console.log(`Gamepad connected: ${e.gamepad.id} (index: ${e.gamepad.index})`);
+});
+
+window.addEventListener('gamepaddisconnected', (e) => {
+  updateSlots();
+  
+  const gamepads = navigator.getGamepads();
+  const connected = Array.from(gamepads).filter(g => g !== null);
+  if (connected.length === 0) {
+    selectedIndex = null;
+    hideGamepad();
+  } else if (e.gamepad.index === selectedIndex) {
+    selectedIndex = Array.from(gamepads).findIndex(g => g !== null);
+    updateSelectedSlot();
+  }
+  console.log(`Gamepad disconnected: ${e.gamepad.id} (index: ${e.gamepad.index})`);
+});
+
+function updateSlots() {
+  const gamepads = navigator.getGamepads();
+  let count = 0;
+  for (let i = 0; i < 4; i++) {
+    const slot = document.getElementById(`slot${i}`);
+    const gp = gamepads[i];
+    if (gp) {
+      count++;
+      slot.classList.add('active');
+      slot.querySelector('.status').textContent = gp.id.substring(0, 25);
+    } else {
+      slot.classList.remove('active');
+      slot.querySelector('.status').textContent = '等待中...';
+    }
+  }
+  connectedCount.textContent = count;
+  statusDot.classList.toggle('connected', count > 0);
+}
+
+function showGamepad() {
+  noGamepadMsg.style.display = 'none';
+  gamepadConnected.classList.add('active');
+}
+
+function hideGamepad() {
+  noGamepadMsg.style.display = 'block';
+  gamepadConnected.classList.remove('active');
+  resetAllVisuals();
+}
+
+function resetAllVisuals() {
+  // Reset button grid
+  document.querySelectorAll('.button-item').forEach(el => el.classList.remove('pressed'));
+  
+  // Reset all SVG buttons to their inactive states
+  const inactiveMap = {
+    'svg-a': 'fill-gray-500', 'svg-b': 'fill-gray-500', 'svg-x': 'fill-gray-500', 'svg-y': 'fill-gray-500',
+    'svg-lb': 'button-inactive', 'svg-rb': 'button-inactive', 'svg-lt': 'button-inactive', 'svg-rt': 'button-inactive',
+    'svg-select': 'fill-gray-500', 'svg-start': 'fill-gray-500',
+    'svg-home': 'fill-gray-600',
+    'svg-dpad-up': 'fill-[#1B1C1E]', 'svg-dpad-down': 'fill-[#1B1C1E]',
+    'svg-dpad-left': 'fill-[#1B1C1E]', 'svg-dpad-right': 'fill-[#1B1C1E]',
+    'svg-ls': null, 'svg-rs': null
+  };
+  for (const [id, cls] of Object.entries(inactiveMap)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.className = el.className.replace(/button-active|fill-\[\#8A4FFF\]/g, '').trim();
+    if (cls) el.classList.add(cls);
+    if (id === 'svg-ls' || id === 'svg-rs') el.setAttribute('fill', 'transparent');
+  }
+  
+  // Reset axes
+  for (let i = 0; i < 4; i++) {
+    const valEl = document.getElementById(`axis${i}Val`);
+    const fillEl = document.getElementById(`axis${i}Fill`);
+    if (valEl) valEl.textContent = '0.00';
+    if (fillEl) fillEl.style.width = '50%';
+  }
+  
+  // Reset triggers
+  ['lt', 'rt'].forEach(t => {
+    const valEl = document.getElementById(`${t}Val`);
+    const fillEl = document.getElementById(`${t}Fill`);
+    if (valEl) valEl.textContent = '0.00';
+    if (fillEl) fillEl.style.width = '0%';
+  });
+  
+  // Reset sticks to original positions
+  [['svg-left-stick', 187.4, 253], ['svg-right-stick', 308.8, 253]].forEach(([id, cx, cy]) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.setAttribute('cx', cx);
+      el.setAttribute('cy', cy);
+      el.classList.remove('stick-active');
+      el.classList.add('stick-inactive');
+    }
+  });
+  
+  // Reset stick visualizer dots
+  ['leftStickDot', 'rightStickDot'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.transform = 'translate(-50%, -50%)';
+  });
+}
+
+// SVG button class mappings: [activeClass, inactiveClass]
+const svgClassMap = {
+  'svg-dpad-up': ['button-active', 'fill-[#1B1C1E]'],
+  'svg-dpad-down': ['button-active', 'fill-[#1B1C1E]'],
+  'svg-dpad-left': ['button-active', 'fill-[#1B1C1E]'],
+  'svg-dpad-right': ['button-active', 'fill-[#1B1C1E]'],
+  'svg-a': ['fill-[#8A4FFF]', 'fill-gray-500'],
+  'svg-b': ['fill-[#8A4FFF]', 'fill-gray-500'],
+  'svg-x': ['fill-[#8A4FFF]', 'fill-gray-500'],
+  'svg-y': ['fill-[#8A4FFF]', 'fill-gray-500'],
+  'svg-select': ['fill-[#8A4FFF]', 'fill-gray-500'],
+  'svg-start': ['fill-[#8A4FFF]', 'fill-gray-500'],
+  'svg-home': ['fill-[#8A4FFF]', 'fill-gray-600'],
+  'svg-lb': ['button-active', 'button-inactive'],
+  'svg-rb': ['button-active', 'button-inactive'],
+  'svg-lt': ['button-active', 'button-inactive'],
+  'svg-rt': ['button-active', 'button-inactive']
+};
+
+// Helper to set SVG button state
+function setSvgButton(btnIndex, pressed) {
+  const svgId = svgButtonMap[btnIndex];
+  if (!svgId) return;
+  const el = document.getElementById(svgId);
+  if (!el) return;
+  
+  // Stick buttons (L3/R3) use fill attribute
+  if (svgId === 'svg-ls' || svgId === 'svg-rs') {
+    el.setAttribute('fill', pressed ? '#8A4FFF' : 'transparent');
+    return;
+  }
+  
+  const [activeCls, inactiveCls] = svgClassMap[svgId] || [];
+  if (activeCls && inactiveCls) {
+    el.classList.remove(pressed ? inactiveCls : activeCls);
+    el.classList.add(pressed ? activeCls : inactiveCls);
+  }
+}
+
+// Main polling loop
+function pollGamepads() {
+  const gamepadList = navigator.getGamepads ? navigator.getGamepads() : [];
+  
+  if (selectedIndex !== null && gamepadList[selectedIndex]) {
+    const gp = gamepadList[selectedIndex];
+    
+    // Update controller info
+    controllerNum.textContent = selectedIndex + 1;
+    gamepadName.textContent = gp.id;
+    
+    // Update buttons (both grid and SVG)
+    document.querySelectorAll('.button-item').forEach(item => {
+      const btnIndex = parseInt(item.dataset.btn);
+      if (gp.buttons[btnIndex]) {
+        const pressed = gp.buttons[btnIndex].pressed;
+        if (pressed) {
+          item.classList.add('pressed');
+        } else {
+          item.classList.remove('pressed');
+        }
+        setSvgButton(btnIndex, pressed);
+      }
+    });
+    
+    // Update axes
+    for (let i = 0; i < gp.axes.length && i < 4; i++) {
+      const val = gp.axes[i];
+      const valEl = document.getElementById(`axis${i}Val`);
+      const fillEl = document.getElementById(`axis${i}Fill`);
+      
+      if (valEl) valEl.textContent = val.toFixed(2);
+      if (fillEl) {
+        const percent = ((val + 1) / 2) * 100;
+        fillEl.style.width = percent + '%';
+      }
+    }
+    
+    // Update sticks visual
+    function updateStick(axisX, axisY, stickId, dotId, baseCx, baseCy) {
+      const stick = document.getElementById(stickId);
+      if (stick) {
+        stick.setAttribute('cx', baseCx + axisX * 10);
+        stick.setAttribute('cy', baseCy + axisY * 10);
+        stick.classList.toggle('stick-active', Math.abs(axisX) > 0.1 || Math.abs(axisY) > 0.1);
+        stick.classList.toggle('stick-inactive', Math.abs(axisX) <= 0.1 && Math.abs(axisY) <= 0.1);
+      }
+      const dot = document.getElementById(dotId);
+      if (dot) {
+        const maxOffset = 80;
+        dot.style.transform = `translate(calc(-50% + ${axisX * maxOffset}px), calc(-50% + ${axisY * maxOffset}px))`;
+      }
+    }
+    
+    if (gp.axes.length >= 2) updateStick(gp.axes[0], gp.axes[1], 'svg-left-stick', 'leftStickDot', 187.4, 253);
+    if (gp.axes.length >= 4) updateStick(gp.axes[2], gp.axes[3], 'svg-right-stick', 'rightStickDot', 308.8, 253);
+    
+    // Update triggers
+    function updateTrigger(btnIndex, valId, fillId) {
+      const btn = gp.buttons[btnIndex];
+      const valEl = document.getElementById(valId);
+      const fillEl = document.getElementById(fillId);
+      if (btn) {
+        if (valEl) valEl.textContent = btn.value.toFixed(2);
+        if (fillEl) fillEl.style.width = (btn.value * 100) + '%';
+      }
+    }
+    updateTrigger(6, 'ltVal', 'ltFill');
+    updateTrigger(7, 'rtVal', 'rtFill');
+  }
+  
+  requestAnimationFrame(pollGamepads);
+}
+
+requestAnimationFrame(pollGamepads);
+
+// Initial slot update
+updateSlots();
+</script>
+</body>
+</html>
