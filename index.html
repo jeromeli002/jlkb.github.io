@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -755,6 +755,26 @@
         }
         .theme-toggle:hover .tooltip-text {
             opacity: 1;
+        }
+
+        /* 语言切换按钮 */
+        .lang-toggle {
+            cursor: pointer;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            letter-spacing: 0.02em;
+            line-height: 1.4;
+        }
+        .lang-toggle:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--key-bg);
         }
 
         /* 导航栏 */
@@ -2870,14 +2890,15 @@
             <span class="brand-name">JLKB</span>
         </a>
         <ul class="nav-links" id="navLinks">
-            <li><a href="#" id="navShop">选购</a></li>
-            <li><a href="#custom">定制</a></li>
-            <li><a href="#driver">驱动</a></li>
-            <li><a href="#tutorials">教程</a></li>
-            <li><a href="#test">测试</a></li>
-            <li><a href="#more">更多</a></li>
-            <li><a href="#about">关于</a></li>
-            <li><a href="#custom" class="nav-cta">立即定制</a></li>
+            <li><a href="#" id="navShop" data-i18n="nav.shop">选购</a></li>
+            <li><a href="#custom" data-i18n="nav.custom">定制</a></li>
+            <li><a href="#driver" data-i18n="nav.driver">驱动</a></li>
+            <li><a href="#tutorials" data-i18n="nav.tutorials">教程</a></li>
+            <li><a href="#test" data-i18n="nav.test">测试</a></li>
+            <li><a href="#more" data-i18n="nav.more">更多</a></li>
+            <li><a href="#about" data-i18n="nav.about">关于</a></li>
+            <li><button class="lang-toggle" id="langToggle" title="切换语言 / Switch Language"><span id="langLabel">EN</span></button></li>
+            <li><a href="#custom" class="nav-cta" data-i18n="nav.cta">立即定制</a></li>
         </ul>
         <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
             <span></span><span></span><span></span>
@@ -2890,12 +2911,12 @@
         <div class="hero-glow g2"></div>
         <div class="hero-glow g3"></div>
         <div class="hero-content">
-            <div class="hero-badge">⌨️ &nbsp;非标客制化键盘先驱</div>
-            <h1 class="hero-title">你的<span class="gradient-text">专属键盘</span><br>由你定义</h1>
-            <p class="hero-subtitle">从选购成品到深度定制，从在线改键到按键测试——打造独一无二的键盘体验，每一处细节都为你而生。</p>
+            <div class="hero-badge" data-i18n="hero.badge">⌨️ &nbsp;非标客制化键盘先驱</div>
+            <h1 class="hero-title" data-i18n-html="hero.title">你的<span class="gradient-text">专属键盘</span><br>由你定义</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">从选购成品到深度定制，从在线改键到按键测试——打造独一无二的键盘体验，每一处细节都为你而生。</p>
             <div class="hero-buttons">
-                <a href="jlkb.taobao.com/" class="btn btn-primary" id="heroShop">🛒 前往淘宝选购</a>
-                <a href="#custom" class="btn btn-outline" id="heroTest">⌨️ 立即定制键盘</a>
+                <a href="jlkb.taobao.com/" class="btn btn-primary" id="heroShop" data-i18n="hero.btnShop">🛒 前往淘宝选购</a>
+                <a href="#custom" class="btn btn-outline" id="heroTest" data-i18n="hero.btnCustom">⌨️ 立即定制键盘</a>
             </div>
         </div>
     </section>
@@ -2912,39 +2933,39 @@
     <section class="section" id="features">
         <div class="section-header reveal">
             <span class="section-tag">Explore</span>
-            <h2 class="section-title">一切<span class="accent">尽在掌握</span></h2>
-            <p class="section-desc">六大核心模块，覆盖你的全部键盘需求</p>
+            <h2 class="section-title" data-i18n-html="features.title">一切<span class="accent">尽在掌握</span></h2>
+            <p class="section-desc" data-i18n="features.desc">六大核心模块，覆盖你的全部键盘需求</p>
         </div>
         <div class="features-grid">
             <a href="#" class="feature-card reveal" target="_blank" id="cardShop">
                 <span class="feature-icon">🛍️</span>
-                <h3>选购成品</h3>
-                <p>进入淘宝官方店铺，挑选心仪的键盘与配件。</p>
+                <h3 data-i18n="features.cardShop.title">选购成品</h3>
+                <p data-i18n="features.cardShop.desc">进入淘宝官方店铺，挑选心仪的键盘与配件。</p>
             </a>
             <a href="#custom" class="feature-card reveal">
                 <span class="feature-icon">⚙️</span>
-                <h3>深度定制</h3>
-                <p>查看非标定制流程，把你的创意变成现实。</p>
+                <h3 data-i18n="features.cardCustom.title">深度定制</h3>
+                <p data-i18n="features.cardCustom.desc">查看非标定制流程，把你的创意变成现实。</p>
             </a>
             <a href="#" class="feature-card reveal" id="cardDriver">
                 <span class="feature-icon">🔧</span>
-                <h3>在线驱动</h3>
-                <p>可视化改键工具，实时自定义你的按键布局。</p>
+                <h3 data-i18n="features.cardDriver.title">在线驱动</h3>
+                <p data-i18n="features.cardDriver.desc">可视化改键工具，实时自定义你的按键布局。</p>
             </a>
             <a href="#tutorials" class="feature-card reveal">
                 <span class="feature-icon">📖</span>
-                <h3>图文教程</h3>
-                <p>简易改键指南，轻松上手客制化玩法。</p>
+                <h3 data-i18n="features.cardTutorial.title">图文教程</h3>
+                <p data-i18n="features.cardTutorial.desc">简易改键指南，轻松上手客制化玩法。</p>
             </a>
             <a href="#" class="feature-card reveal" id="cardTest">
                 <span class="feature-icon">🎯</span>
-                <h3>按键测试</h3>
-                <p>在线检测每个按键，确保自定义零缺陷。</p>
+                <h3 data-i18n="features.cardTest.title">按键测试</h3>
+                <p data-i18n="features.cardTest.desc">在线检测每个按键，确保自定义零缺陷。</p>
             </a>
             <a href="#more" class="feature-card reveal">
                 <span class="feature-icon">✨</span>
-                <h3>了解更多</h3>
-                <p>关于品牌故事、玩家社区与联系方式。</p>
+                <h3 data-i18n="features.cardMore.title">了解更多</h3>
+                <p data-i18n="features.cardMore.desc">关于品牌故事、玩家社区与联系方式。</p>
             </a>
         </div>
     </section>
@@ -2953,8 +2974,8 @@
     <section class="section" id="custom">
         <div class="section-header reveal">
             <span class="section-tag">Custom</span>
-            <h2 class="section-title">定制<span class="accent2">流程</span></h2>
-            <p class="section-desc">每一步都精益求精，只为交付你的专属键盘</p>
+            <h2 class="section-title" data-i18n-html="custom.title">定制<span class="accent2">流程</span></h2>
+            <p class="section-desc" data-i18n="custom.desc">每一步都精益求精，只为交付你的专属键盘</p>
         </div>
         <div class="custom-timeline">
             <svg class="timeline-svg-path" viewBox="0 0 1100 300" preserveAspectRatio="none">
@@ -2981,8 +3002,8 @@
                         </div>
                         <div class="step-content">
                             <div class="step-icon">💡</div>
-                            <h3>需求沟通</h3>
-                            <p>大胆描述你的想法，布局、功能……，任何天马行空的需求都欢迎。</p>
+                            <h3 data-i18n="custom.step1.title">需求沟通</h3>
+                            <p data-i18n="custom.step1.desc">大胆描述你的想法，布局、功能……，任何天马行空的需求都欢迎。</p>
                         </div>
                     </div>
                 </a>
@@ -2993,8 +3014,8 @@
                     </div>
                     <div class="step-content">
                         <div class="step-icon">🎨</div>
-                        <h3>方案设计</h3>
-                        <p>专属设计与结构方案呈现，反复打磨直至完美。</p>
+                        <h3 data-i18n="custom.step2.title">方案设计</h3>
+                        <p data-i18n="custom.step2.desc">专属设计与结构方案呈现，反复打磨直至完美。</p>
                     </div>
                 </div>
                 <div class="timeline-step" data-step="3">
@@ -3004,8 +3025,8 @@
                     </div>
                     <div class="step-content">
                         <div class="step-icon">🔩</div>
-                        <h3>生产制作</h3>
-                        <p>精工生产，手工组装，逐个调试，只为你的极致体验。</p>
+                        <h3 data-i18n="custom.step3.title">生产制作</h3>
+                        <p data-i18n="custom.step3.desc">精工生产，手工组装，逐个调试，只为你的极致体验。</p>
                     </div>
                 </div>
                 <div class="timeline-step" data-step="4">
@@ -3015,8 +3036,8 @@
                     </div>
                     <div class="step-content">
                         <div class="step-icon">✅</div>
-                        <h3>品质检验</h3>
-                        <p>逐把检测功能完整与外观……，确保零缺陷。</p>
+                        <h3 data-i18n="custom.step4.title">品质检验</h3>
+                        <p data-i18n="custom.step4.desc">逐把检测功能完整与外观……，确保零缺陷。</p>
                     </div>
                 </div>
                 <div class="timeline-step" data-step="5">
@@ -3026,8 +3047,8 @@
                     </div>
                     <div class="step-content">
                         <div class="step-icon">📦</div>
-                        <h3>专属交付</h3>
-                        <p>安全包装，使命必达，不负每一份信赖与重托。</p>
+                        <h3 data-i18n="custom.step5.title">专属交付</h3>
+                        <p data-i18n="custom.step5.desc">安全包装，使命必达，不负每一份信赖与重托。</p>
                     </div>
                 </div>
             </div>
@@ -3038,15 +3059,15 @@
     <section class="section" id="driver">
         <div class="section-header reveal">
             <span class="section-tag">Driver</span>
-            <h2 class="section-title">在线<span class="accent">改键驱动</span></h2>
-            <p class="section-desc">可视化配置，实时生效，专业级固件支持</p>
+            <h2 class="section-title" data-i18n-html="driver.title">在线<span class="accent">改键驱动</span></h2>
+            <p class="section-desc" data-i18n="driver.desc">可视化配置，实时生效，专业级固件支持</p>
         </div>
 
         <!-- 动态图标展示 -->
         <div class="showcase-hero reveal">
             <div class="showcase-icon-pulse">🔧</div>
-            <h3 class="showcase-title">在线改键工具</h3>
-            <p class="showcase-subtitle">可视化配置 · 实时生效 · 无需重启 · 专业级固件</p>
+            <h3 class="showcase-title" data-i18n="driver.showcaseTitle">在线改键工具</h3>
+            <p class="showcase-subtitle" data-i18n="driver.showcaseSubtitle">可视化配置 · 实时生效 · 无需重启 · 专业级固件</p>
         </div>
 
         <!-- 改键流程步骤 -->
@@ -3065,8 +3086,8 @@
                     </svg>
                 </div>
                 <div class="driver-step-content">
-                    <h4>连接键盘</h4>
-                    <p>USB 或蓝牙连接你的键盘</p>
+                    <h4 data-i18n="driver.step1.title">连接键盘</h4>
+                    <p data-i18n="driver.step1.desc">USB 或蓝牙连接你的键盘</p>
                 </div>
                 <div class="driver-step-number">01</div>
             </div>
@@ -3074,8 +3095,8 @@
             <div class="driver-step" data-step="2">
                 <div class="driver-step-icon">⌨️</div>
                 <div class="driver-step-content">
-                    <h4>选择键盘</h4>
-                    <p>从设备列表中识别并选择</p>
+                    <h4 data-i18n="driver.step2.title">选择键盘</h4>
+                    <p data-i18n="driver.step2.desc">从设备列表中识别并选择</p>
                 </div>
                 <div class="driver-step-number">02</div>
             </div>
@@ -3083,8 +3104,8 @@
             <div class="driver-step" data-step="3">
                 <div class="driver-step-icon">✨</div>
                 <div class="driver-step-content">
-                    <h4>开始改键</h4>
-                    <p>可视化配置，实时保存生效</p>
+                    <h4 data-i18n="driver.step3.title">开始改键</h4>
+                    <p data-i18n="driver.step3.desc">可视化配置，实时保存生效</p>
                 </div>
                 <div class="driver-step-number">03</div>
             </div>
@@ -3093,34 +3114,34 @@
         <div class="features-grid reveal">
             <div class="feature-card">
                 <span class="feature-icon">🎨</span>
-                <h3>可视化界面</h3>
-                <p>直观的键盘布局图，拖拽式按键映射操作</p>
+                <h3 data-i18n="driver.card1.title">可视化界面</h3>
+                <p data-i18n="driver.card1.desc">直观的键盘布局图，拖拽式按键映射操作</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">⚡</span>
-                <h3>实时生效</h3>
-                <p>修改即刻写入固件，无需重启立即体验新布局</p>
+                <h3 data-i18n="driver.card2.title">实时生效</h3>
+                <p data-i18n="driver.card2.desc">修改即刻写入固件，无需重启立即体验新布局</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">🔐</span>
-                <h3>多层配置</h3>
-                <p>支持多图层切换、宏命令、自定义快捷键</p>
+                <h3 data-i18n="driver.card3.title">多层配置</h3>
+                <p data-i18n="driver.card3.desc">支持多图层切换、宏命令、自定义快捷键</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">💾</span>
-                <h3>配置备份</h3>
-                <p>一键导出导入配置文件，多设备同步无忧</p>
+                <h3 data-i18n="driver.card4.title">配置备份</h3>
+                <p data-i18n="driver.card4.desc">一键导出导入配置文件，多设备同步无忧</p>
             </div>
             <a href="tools/oled.html" target="_blank" class="feature-card-link">
                 <div class="feature-card">
                     <span class="feature-icon">🖥️</span>
-                    <h3>OLED 设置</h3>
-                    <p>自定义 OLED 屏幕显示内容</p>
+                    <h3 data-i18n="driver.card5.title">OLED 设置</h3>
+                    <p data-i18n="driver.card5.desc">自定义 OLED 屏幕显示内容</p>
                 </div>
             </a>
         </div>
         <div style="text-align:center; margin-top:36px;" class="reveal">
-            <a href="https://vial.jlkb.top/" target="_blank" class="btn btn-primary">
+            <a href="https://vial.jlkb.top/" target="_blank" class="btn btn-primary" data-i18n="driver.btnOpen">
                 🔧 打开改键驱动
             </a>
         </div>
@@ -3130,29 +3151,29 @@
     <section class="section" id="test">
         <div class="section-header reveal">
             <span class="section-tag">Test</span>
-            <h2 class="section-title">专业<span class="accent2">键盘测试</span></h2>
-            <p class="section-desc">全键无冲检测，音效反馈，KPM实时监控</p>
+            <h2 class="section-title" data-i18n-html="test.title">专业<span class="accent2">键盘测试</span></h2>
+            <p class="section-desc" data-i18n="test.desc">全键无冲检测，音效反馈，KPM实时监控</p>
         </div>
 
         <!-- 动态图标展示 -->
         <div class="showcase-hero reveal">
             <div class="showcase-icon-pulse">⌨️</div>
-            <h3 class="showcase-title">专业键盘测试工具</h3>
-            <p class="showcase-subtitle">全键无冲检测 · 音效反馈 · KPM实时监控 · 测试日志</p>
+            <h3 class="showcase-title" data-i18n="test.showcaseTitle">专业键盘测试工具</h3>
+            <p class="showcase-subtitle" data-i18n="test.showcaseSubtitle">全键无冲检测 · 音效反馈 · KPM实时监控 · 测试日志</p>
         </div>
 
         <!-- 测试动态演示面板 -->
         <div class="test-demo-panel reveal">
             <!-- 左侧：模拟键盘按键 -->
             <div class="test-demo-col">
-                <div class="test-demo-label">🎯 按键检测</div>
+                <div class="test-demo-label" data-i18n="test.labelKey">🎯 按键检测</div>
                 <div class="test-keyboard-grid" id="testKeyboardGrid"></div>
-                <div class="test-key-info" id="testKeyInfo">等待按键...</div>
+                <div class="test-key-info" id="testKeyInfo" data-i18n="test.waitKey">等待按键...</div>
             </div>
 
             <!-- 中间：KPM曲线 -->
             <div class="test-demo-col">
-                <div class="test-demo-label">📊 KPM 实时监控</div>
+                <div class="test-demo-label" data-i18n="test.labelKpm">📊 KPM 实时监控</div>
                 <div class="test-kpm-display">
                     <div class="test-kpm-value" id="testKpmValue">0</div>
                     <div class="test-kpm-unit">KPM</div>
@@ -3162,9 +3183,9 @@
 
             <!-- 右侧：日志输出 -->
             <div class="test-demo-col">
-                <div class="test-demo-label">📝 测试日志</div>
+                <div class="test-demo-label" data-i18n="test.labelLog">📝 测试日志</div>
                 <div class="test-log-output" id="testLogOutput">
-                    <div class="test-log-line test-log-header">[ 等待测试开始... ]</div>
+                    <div class="test-log-line test-log-header" data-i18n="test.logHeader">[ 等待测试开始... ]</div>
                 </div>
             </div>
         </div>
@@ -3172,35 +3193,35 @@
         <div class="features-grid reveal">
             <div class="feature-card">
                 <span class="feature-icon">🎯</span>
-                <h3>全键检测</h3>
-                <p>支持104+按键、鼠标按键、滚轮、媒体键全面测试</p>
+                <h3 data-i18n="test.card1.title">全键检测</h3>
+                <p data-i18n="test.card1.desc">支持104+按键、鼠标按键、滚轮、媒体键全面测试</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">🎵</span>
-                <h3>音效反馈</h3>
-                <p>钢琴、吉他、鼓组等多种乐器音效，打字如演奏</p>
+                <h3 data-i18n="test.card2.title">音效反馈</h3>
+                <p data-i18n="test.card2.desc">钢琴、吉他、鼓组等多种乐器音效，打字如演奏</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">📊</span>
-                <h3>KPM监控</h3>
-                <p>实时每分钟按键次数统计，可视化曲线图表</p>
+                <h3 data-i18n="test.card3.title">KPM监控</h3>
+                <p data-i18n="test.card3.desc">实时每分钟按键次数统计，可视化曲线图表</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">📝</span>
-                <h3>测试日志</h3>
-                <p>精确到毫秒的按键记录，按下抬起完整追踪</p>
+                <h3 data-i18n="test.card4.title">测试日志</h3>
+                <p data-i18n="test.card4.desc">精确到毫秒的按键记录，按下抬起完整追踪</p>
             </div>
             <div class="feature-card" onclick="window.open('tools/gamepad-tester.html','_blank')" style="cursor:pointer;">
                 <span class="feature-icon">🎮</span>
-                <h3>手柄测试</h3>
-                <p>支持多手柄连接、按键检测、摇杆轴值实时显示</p>
+                <h3 data-i18n="test.card5.title">手柄测试</h3>
+                <p data-i18n="test.card5.desc">支持多手柄连接、按键检测、摇杆轴值实时显示</p>
             </div>
         </div>
         <div style="text-align:center; margin-top:36px;" class="reveal">
-            <a href="tools/kbtest.html" target="_blank" class="btn btn-primary">
+            <a href="tools/kbtest.html" target="_blank" class="btn btn-primary" data-i18n="test.btnKeyboard">
                 🚀 启动键盘测试
             </a>
-            <a href="tools/gamepad-tester.html" target="_blank" class="btn btn-primary" style="margin-left:12px; background: linear-gradient(135deg, var(--accent3), var(--accent2));">
+            <a href="tools/gamepad-tester.html" target="_blank" class="btn btn-primary" style="margin-left:12px; background: linear-gradient(135deg, var(--accent3), var(--accent2));" data-i18n="test.btnGamepad">
                 🎮 启动手柄测试
             </a>
         </div>
@@ -3210,35 +3231,35 @@
     <section class="section" id="tutorials">
         <div class="section-header reveal">
             <span class="section-tag">Tutorials</span>
-            <h2 class="section-title">快速<span class="accent">上手指南</span></h2>
-            <p class="section-desc">从入门到精通，轻松掌握客制化键盘玩法</p>
+            <h2 class="section-title" data-i18n-html="tutorials.title">快速<span class="accent">上手指南</span></h2>
+            <p class="section-desc" data-i18n="tutorials.desc">从入门到精通，轻松掌握客制化键盘玩法</p>
         </div>
         <div class="features-grid reveal">
             <div class="feature-card">
                 <span class="feature-icon">📦</span>
-                <h3>开箱准备</h3>
-                <p>检查配件完整性，断开驱动，连接键盘进入就绪状态。</p>
+                <h3 data-i18n="tutorials.card1.title">开箱准备</h3>
+                <p data-i18n="tutorials.card1.desc">检查配件完整性，断开驱动，连接键盘进入就绪状态。</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">🎨</span>
-                <h3>个性化配置</h3>
-                <p>自定义按键映射、RGB灯效、宏命令，打造专属操作逻辑。</p>
+                <h3 data-i18n="tutorials.card2.title">个性化配置</h3>
+                <p data-i18n="tutorials.card2.desc">自定义按键映射、RGB灯效、宏命令，打造专属操作逻辑。</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">⚡</span>
-                <h3>高级技巧</h3>
-                <p>多层配置切换、组合键设置、游戏模式优化，释放键盘全部潜能。</p>
+                <h3 data-i18n="tutorials.card3.title">高级技巧</h3>
+                <p data-i18n="tutorials.card3.desc">多层配置切换、组合键设置、游戏模式优化，释放键盘全部潜能。</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">🛠️</span>
-                <h3>维护保养</h3>
-                <p>键帽清洁、轴体更换、固件升级，延长键盘使用寿命。</p>
+                <h3 data-i18n="tutorials.card4.title">维护保养</h3>
+                <p data-i18n="tutorials.card4.desc">键帽清洁、轴体更换、固件升级，延长键盘使用寿命。</p>
             </div>
             <a href="tools/guide/index.html" target="_blank" class="feature-card-link">
                 <div class="feature-card">
                     <span class="feature-icon">📖</span>
-                    <h3>驱动使用教程</h3>
-                    <p>详细图文指南，从安装到配置，手把手教你玩转改键。</p>
+                    <h3 data-i18n="tutorials.card5.title">驱动使用教程</h3>
+                    <p data-i18n="tutorials.card5.desc">详细图文指南，从安装到配置，手把手教你玩转改键。</p>
                 </div>
             </a>
         </div>
@@ -3248,24 +3269,24 @@
     <section class="section" id="more">
         <div class="section-header reveal">
             <span class="section-tag">More</span>
-            <h2 class="section-title">更多</h2>
-            <p class="section-desc">与全球键盘爱好者交流心得，分享创意作品</p>
+            <h2 class="section-title" data-i18n="more.title">更多</h2>
+            <p class="section-desc" data-i18n="more.desc">与全球键盘爱好者交流心得，分享创意作品</p>
         </div>
         <div class="features-grid reveal">
             <div class="feature-card">
                 <span class="feature-icon">💬</span>
-                <h3>Discord 社区</h3>
-                <p>实时交流配置方案，获取技术支持，参与专属活动。</p>
+                <h3 data-i18n="more.card1.title">Discord 社区</h3>
+                <p data-i18n="more.card1.desc">实时交流配置方案，获取技术支持，参与专属活动。</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">📸</span>
-                <h3>作品展示</h3>
-                <p>分享你的定制作品，获取灵感，见证创意变为现实。</p>
+                <h3 data-i18n="more.card2.title">作品展示</h3>
+                <p data-i18n="more.card2.desc">分享你的定制作品，获取灵感，见证创意变为现实。</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">🏆</span>
-                <h3>活动赛事</h3>
-                <p>参与打字速度挑战、设计比赛，赢取限量周边礼品。</p>
+                <h3 data-i18n="more.card3.title">活动赛事</h3>
+                <p data-i18n="more.card3.desc">参与打字速度挑战、设计比赛，赢取限量周边礼品。</p>
             </div>
         </div>
     </section>
@@ -3274,24 +3295,24 @@
     <section class="section" id="about">
         <div class="section-header reveal">
             <span class="section-tag">About</span>
-            <h2 class="section-title">关于<span class="accent">JLKB</span></h2>
-            <p class="section-desc">专注非标客制化键盘，让每个想法都能触手可及</p>
+            <h2 class="section-title" data-i18n-html="about.title">关于<span class="accent">JLKB</span></h2>
+            <p class="section-desc" data-i18n="about.desc">专注非标客制化键盘，让每个想法都能触手可及</p>
         </div>
         <div class="features-grid reveal">
             <div class="feature-card">
                 <span class="feature-icon">🎯</span>
-                <h3>品牌理念</h3>
-                <p>由键盘极客创立于2020年，致力于打破量产键盘的局限，为每位用户提供真正个性化的输入体验。</p>
+                <h3 data-i18n="about.card1.title">品牌理念</h3>
+                <p data-i18n="about.card1.desc">由键盘极客创立于2020年，致力于打破量产键盘的局限，为每位用户提供真正个性化的输入体验。</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">✨</span>
-                <h3>品质承诺</h3>
-                <p>严选优质材料与顶级轴体，每一把键盘经过严格品控测试，确保手感与耐用性俱佳。</p>
+                <h3 data-i18n="about.card2.title">品质承诺</h3>
+                <p data-i18n="about.card2.desc">严选优质材料与顶级轴体，每一把键盘经过严格品控测试，确保手感与耐用性俱佳。</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">📧</span>
-                <h3>联系我们</h3>
-                <p>邮箱：532192607@qq.com<br>
+                <h3 data-i18n="about.card3.title">联系我们</h3>
+                <p data-i18n-html="about.card3.desc">邮箱：532192607@qq.com<br>
                 <span class="wechat-hover">客服微信：JLKB<span class="wechat-qr"><img src="style/wx.png" alt="微信二维码"></span></span><br>
                 <span class="wechat-hover">QQ：532192607<span class="wechat-qr"><img src="style/qq.png" alt="QQ二维码"></span></span><br>
                 <span class="wechat-hover">淘宝店铺<span class="wechat-qr"><img src="style/tb.png" alt="淘宝二维码"></span></span><br>
@@ -3303,14 +3324,14 @@
     <!-- 页脚 -->
     <footer class="footer">
         <div class="footer-brand">JLKB</div>
-        <p class="footer-tagline">非标客制化键盘品牌 · 你的想法，我们来造</p>
+        <p class="footer-tagline" data-i18n="footer.tagline">非标客制化键盘品牌 · 你的想法，我们来造</p>
         <ul class="footer-links">
-            <li><a href="#">隐私政策</a></li>
-            <li><a href="#">服务条款</a></li>
-            <li><a href="#">定制协议</a></li>
-            <li><a href="#">联系我们</a></li>
+            <li><a href="#" data-i18n="footer.privacy">隐私政策</a></li>
+            <li><a href="#" data-i18n="footer.terms">服务条款</a></li>
+            <li><a href="#" data-i18n="footer.agreement">定制协议</a></li>
+            <li><a href="#" data-i18n="footer.contact">联系我们</a></li>
         </ul>
-        <p class="footer-copy">© 2026 JLKB. All rights reserved. &nbsp;每一把键盘，都是一个故事。</p>
+        <p class="footer-copy" data-i18n="footer.copy">© 2026 JLKB. All rights reserved. &nbsp;每一把键盘，都是一个故事。</p>
     </footer>
 
     <script>
@@ -3803,7 +3824,9 @@
                 cell.classList.add('test-key-pressed');
                 const keyName = ['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12','A', 'S', 'D', 'F', 'J', 'K', 'L', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'][randomIndex % 29];
                 if (keyInfo) {
-                    keyInfo.textContent = `按键: ${keyName}`;
+                    const currentLang = localStorage.getItem('jlkb-lang') || 'zh';
+                    const pressText = i18nDict[currentLang]['test.keyPress'] || '按键: ';
+                    keyInfo.textContent = `${pressText}${keyName}`;
                     keyInfo.style.color = 'var(--accent)';
                 }
 
@@ -3811,7 +3834,9 @@
                 setTimeout(() => {
                     cell.classList.remove('test-key-pressed');
                     if (keyInfo) {
-                        keyInfo.textContent = `释放: ${keyName}`;
+                        const currentLang = localStorage.getItem('jlkb-lang') || 'zh';
+                        const releaseText = i18nDict[currentLang]['test.keyRelease'] || '释放: ';
+                        keyInfo.textContent = `${releaseText}${keyName}`;
                         keyInfo.style.color = 'var(--text-muted)';
                     }
                 }, 300);
@@ -3914,18 +3939,21 @@
                 const keys = ['A', 'S', 'D', 'F', 'J', 'K', 'L', 'Q', 'W', 'E', 'R', 'T'];
                 const randomKey = keys[Math.floor(Math.random() * keys.length)];
                 const timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false }) + '.' + String(Date.now() % 500).padStart(3, '0');
+                const currentLang = localStorage.getItem('jlkb-lang') || 'zh';
+                const pressText = i18nDict[currentLang]['test.logPress'] || '按下: ';
+                const releaseText = i18nDict[currentLang]['test.logRelease'] || '释放: ';
 
                 // 按键按下日志
                 const pressLog = document.createElement('div');
                 pressLog.className = 'test-log-line test-log-press';
-                pressLog.textContent = `[${timestamp}] 按下: ${randomKey}`;
+                pressLog.textContent = `[${timestamp}] ${pressText}${randomKey}`;
                 logOutput.appendChild(pressLog);
 
                 // 0.2秒后添加释放日志
                 setTimeout(() => {
                     const releaseLog = document.createElement('div');
                     releaseLog.className = 'test-log-line test-log-release';
-                    releaseLog.textContent = `[${timestamp}] 释放: ${randomKey}`;
+                    releaseLog.textContent = `[${timestamp}] ${releaseText}${randomKey}`;
                     logOutput.appendChild(releaseLog);
 
                     // 保持最多20条日志
@@ -4210,7 +4238,323 @@
                 'font-size:15px;color:#e83a5c;font-weight:bold;', 'color:#0ea5e9;');
             console.log('%c💡 点击右上角三角形切换主题 | 悬停3D键盘互动',
             'color:var(--text-muted);');
+
+            // ========== 国际化 (i18n) ==========
+            const i18nDict = {
+                zh: {
+                    'nav.shop': '选购',
+                    'nav.custom': '定制',
+                    'nav.driver': '驱动',
+                    'nav.tutorials': '教程',
+                    'nav.test': '测试',
+                    'nav.more': '更多',
+                    'nav.about': '关于',
+                    'nav.cta': '立即定制',
+                    'hero.badge': '⌨️ \u00a0非标客制化键盘先驱',
+                    'hero.title': '你的<span class="gradient-text">专属键盘</span><br>由你定义',
+                    'hero.subtitle': '从选购成品到深度定制，从在线改键到按键测试——打造独一无二的键盘体验，每一处细节都为你而生。',
+                    'hero.btnShop': '🛒 前往淘宝选购',
+                    'hero.btnCustom': '⌨️ 立即定制键盘',
+                    'features.title': '一切<span class="accent">尽在掌握</span>',
+                    'features.desc': '六大核心模块，覆盖你的全部键盘需求',
+                    'features.cardShop.title': '选购成品',
+                    'features.cardShop.desc': '进入淘宝官方店铺，挑选心仪的键盘与配件。',
+                    'features.cardCustom.title': '深度定制',
+                    'features.cardCustom.desc': '查看非标定制流程，把你的创意变成现实。',
+                    'features.cardDriver.title': '在线驱动',
+                    'features.cardDriver.desc': '可视化改键工具，实时自定义你的按键布局。',
+                    'features.cardTutorial.title': '图文教程',
+                    'features.cardTutorial.desc': '简易改键指南，轻松上手客制化玩法。',
+                    'features.cardTest.title': '按键测试',
+                    'features.cardTest.desc': '在线检测每个按键，确保自定义零缺陷。',
+                    'features.cardMore.title': '了解更多',
+                    'features.cardMore.desc': '关于品牌故事、玩家社区与联系方式。',
+                    'custom.title': '定制<span class="accent2">流程</span>',
+                    'custom.desc': '每一步都精益求精，只为交付你的专属键盘',
+                    'custom.step1.title': '需求沟通',
+                    'custom.step1.desc': '大胆描述你的想法，布局、功能……，任何天马行空的需求都欢迎。',
+                    'custom.step2.title': '方案设计',
+                    'custom.step2.desc': '专属设计与结构方案呈现，反复打磨直至完美。',
+                    'custom.step3.title': '生产制作',
+                    'custom.step3.desc': '精工生产，手工组装，逐个调试，只为你的极致体验。',
+                    'custom.step4.title': '品质检验',
+                    'custom.step4.desc': '逐把检测功能完整与外观……，确保零缺陷。',
+                    'custom.step5.title': '专属交付',
+                    'custom.step5.desc': '安全包装，使命必达，不负每一份信赖与重托。',
+                    'driver.title': '在线<span class="accent">改键驱动</span>',
+                    'driver.desc': '可视化配置，实时生效，专业级固件支持',
+                    'driver.showcaseTitle': '在线改键工具',
+                    'driver.showcaseSubtitle': '可视化配置 · 实时生效 · 无需重启 · 专业级固件',
+                    'driver.step1.title': '连接键盘',
+                    'driver.step1.desc': 'USB 或蓝牙连接你的键盘',
+                    'driver.step2.title': '选择键盘',
+                    'driver.step2.desc': '从设备列表中识别并选择',
+                    'driver.step3.title': '开始改键',
+                    'driver.step3.desc': '可视化配置，实时保存生效',
+                    'driver.card1.title': '可视化界面',
+                    'driver.card1.desc': '直观的键盘布局图，拖拽式按键映射操作',
+                    'driver.card2.title': '实时生效',
+                    'driver.card2.desc': '修改即刻写入固件，无需重启立即体验新布局',
+                    'driver.card3.title': '多层配置',
+                    'driver.card3.desc': '支持多图层切换、宏命令、自定义快捷键',
+                    'driver.card4.title': '配置备份',
+                    'driver.card4.desc': '一键导出导入配置文件，多设备同步无忧',
+                    'driver.card5.title': 'OLED 设置',
+                    'driver.card5.desc': '自定义 OLED 屏幕显示内容',
+                    'driver.btnOpen': '🔧 打开改键驱动',
+                    'test.title': '专业<span class="accent2">键盘测试</span>',
+                    'test.desc': '全键无冲检测，音效反馈，KPM实时监控',
+                    'test.showcaseTitle': '专业键盘测试工具',
+                    'test.showcaseSubtitle': '全键无冲检测 · 音效反馈 · KPM实时监控 · 测试日志',
+                    'test.labelKey': '🎯 按键检测',
+                    'test.waitKey': '等待按键...',
+                    'test.labelKpm': '📊 KPM 实时监控',
+                    'test.labelLog': '📝 测试日志',
+                    'test.logHeader': '[ 等待测试开始... ]',
+                    'test.card1.title': '全键检测',
+                    'test.card1.desc': '支持104+按键、鼠标按键、滚轮、媒体键全面测试',
+                    'test.card2.title': '音效反馈',
+                    'test.card2.desc': '钢琴、吉他、鼓组等多种乐器音效，打字如演奏',
+                    'test.card3.title': 'KPM监控',
+                    'test.card3.desc': '实时每分钟按键次数统计，可视化曲线图表',
+                    'test.card4.title': '测试日志',
+                    'test.card4.desc': '精确到毫秒的按键记录，按下抬起完整追踪',
+                    'test.card5.title': '手柄测试',
+                    'test.card5.desc': '支持多手柄连接、按键检测、摇杆轴值实时显示',
+                    'test.btnKeyboard': '🚀 启动键盘测试',
+                    'test.btnGamepad': '🎮 启动手柄测试',
+                    'tutorials.title': '快速<span class="accent">上手指南</span>',
+                    'tutorials.desc': '从入门到精通，轻松掌握客制化键盘玩法',
+                    'tutorials.card1.title': '开箱准备',
+                    'tutorials.card1.desc': '检查配件完整性，断开驱动，连接键盘进入就绪状态。',
+                    'tutorials.card2.title': '个性化配置',
+                    'tutorials.card2.desc': '自定义按键映射、RGB灯效、宏命令，打造专属操作逻辑。',
+                    'tutorials.card3.title': '高级技巧',
+                    'tutorials.card3.desc': '多层配置切换、组合键设置、游戏模式优化，释放键盘全部潜能。',
+                    'tutorials.card4.title': '维护保养',
+                    'tutorials.card4.desc': '键帽清洁、轴体更换、固件升级，延长键盘使用寿命。',
+                    'tutorials.card5.title': '驱动使用教程',
+                    'tutorials.card5.desc': '详细图文指南，从安装到配置，手把手教你玩转改键。',
+                    'more.title': '更多',
+                    'more.desc': '与全球键盘爱好者交流心得，分享创意作品',
+                    'more.card1.title': 'Discord 社区',
+                    'more.card1.desc': '实时交流配置方案，获取技术支持，参与专属活动。',
+                    'more.card2.title': '作品展示',
+                    'more.card2.desc': '分享你的定制作品，获取灵感，见证创意变为现实。',
+                    'more.card3.title': '活动赛事',
+                    'more.card3.desc': '参与打字速度挑战、设计比赛，赢取限量周边礼品。',
+                    'about.title': '关于<span class="accent">JLKB</span>',
+                    'about.desc': '专注非标客制化键盘，让每个想法都能触手可及',
+                    'about.card1.title': '品牌理念',
+                    'about.card1.desc': '由键盘极客创立于2020年，致力于打破量产键盘的局限，为每位用户提供真正个性化的输入体验。',
+                    'about.card2.title': '品质承诺',
+                    'about.card2.desc': '严选优质材料与顶级轴体，每一把键盘经过严格品控测试，确保手感与耐用性俱佳。',
+                    'about.card3.title': '联系我们',
+                    'about.card3.desc': '邮箱：532192607@qq.com<br><span class="wechat-hover">客服微信：JLKB<span class="wechat-qr"><img src="style/wx.png" alt="微信二维码"></span></span><br><span class="wechat-hover">QQ：532192607<span class="wechat-qr"><img src="style/qq.png" alt="QQ二维码"></span></span><br><span class="wechat-hover">淘宝店铺<span class="wechat-qr"><img src="style/tb.png" alt="淘宝二维码"></span></span><br>工作时间：工作日 9:00-18:00',
+                    'footer.tagline': '非标客制化键盘品牌 · 你的想法，我们来造',
+                    'footer.privacy': '隐私政策',
+                    'footer.terms': '服务条款',
+                    'footer.agreement': '定制协议',
+                    'footer.contact': '联系我们',
+                    'footer.copy': '© 2026 JLKB. All rights reserved. \u00a0每一把键盘，都是一个故事。',
+                    'test.keyPress': '按键: ',
+                    'test.keyRelease': '释放: ',
+                    'test.logPress': '按下: ',
+                    'test.logRelease': '释放: '
+                },
+                en: {
+                    'nav.shop': 'Shop',
+                    'nav.custom': 'Custom',
+                    'nav.driver': 'Driver',
+                    'nav.tutorials': 'Guide',
+                    'nav.test': 'Test',
+                    'nav.more': 'More',
+                    'nav.about': 'About',
+                    'nav.cta': 'Customize Now',
+                    'hero.badge': '⌨️ \u00a0Pioneer of Custom Keyboards',
+                    'hero.title': 'Your <span class="gradient-text">Custom Keyboard</span><br>Defined by You',
+                    'hero.subtitle': 'From ready-made products to deep customization, from online key remapping to key testing—create a unique keyboard experience, every detail is made for you.',
+                    'hero.btnShop': '🛒 Shop on Taobao',
+                    'hero.btnCustom': '⌨️ Customize Keyboard',
+                    'features.title': 'Everything <span class="accent">Under Control</span>',
+                    'features.desc': 'Six core modules covering all your keyboard needs',
+                    'features.cardShop.title': 'Shop Products',
+                    'features.cardShop.desc': 'Visit our official Taobao store, pick your favorite keyboards and accessories.',
+                    'features.cardCustom.title': 'Deep Custom',
+                    'features.cardCustom.desc': 'Explore our custom process, turn your ideas into reality.',
+                    'features.cardDriver.title': 'Online Driver',
+                    'features.cardDriver.desc': 'Visual key remapping tool, customize your key layout in real-time.',
+                    'features.cardTutorial.title': 'Tutorials',
+                    'features.cardTutorial.desc': 'Easy remapping guide, get started with custom keyboards.',
+                    'features.cardTest.title': 'Key Testing',
+                    'features.cardTest.desc': 'Test each key online, ensure zero defects in your customization.',
+                    'features.cardMore.title': 'Learn More',
+                    'features.cardMore.desc': 'About brand story, community and contact information.',
+                    'custom.title': 'Custom <span class="accent2">Process</span>',
+                    'custom.desc': 'Every step is refined to deliver your exclusive keyboard',
+                    'custom.step1.title': 'Requirement',
+                    'custom.step1.desc': 'Describe your ideas freely, layout, features... any creative needs are welcome.',
+                    'custom.step2.title': 'Design',
+                    'custom.step2.desc': 'Exclusive design and structure plans, refined repeatedly until perfect.',
+                    'custom.step3.title': 'Production',
+                    'custom.step3.desc': 'Precision manufacturing, hand assembly, individual debugging for ultimate experience.',
+                    'custom.step4.title': 'Quality Check',
+                    'custom.step4.desc': 'Each unit tested for function and appearance, ensuring zero defects.',
+                    'custom.step5.title': 'Delivery',
+                    'custom.step5.desc': 'Safe packaging, reliable delivery, honoring every trust and commission.',
+                    'driver.title': 'Online <span class="accent">Key Remapping</span>',
+                    'driver.desc': 'Visual configuration, real-time effect, professional firmware support',
+                    'driver.showcaseTitle': 'Online Key Remapping Tool',
+                    'driver.showcaseSubtitle': 'Visual Config · Real-time Effect · No Restart · Professional Firmware',
+                    'driver.step1.title': 'Connect Keyboard',
+                    'driver.step1.desc': 'Connect your keyboard via USB or Bluetooth',
+                    'driver.step2.title': 'Select Keyboard',
+                    'driver.step2.desc': 'Identify and select from device list',
+                    'driver.step3.title': 'Start Remapping',
+                    'driver.step3.desc': 'Visual configuration, save and apply in real-time',
+                    'driver.card1.title': 'Visual Interface',
+                    'driver.card1.desc': 'Intuitive keyboard layout, drag-and-drop key mapping',
+                    'driver.card2.title': 'Real-time Effect',
+                    'driver.card2.desc': 'Changes written to firmware instantly, no restart needed',
+                    'driver.card3.title': 'Multi-layer Config',
+                    'driver.card3.desc': 'Support for multiple layers, macros, custom shortcuts',
+                    'driver.card4.title': 'Config Backup',
+                    'driver.card4.desc': 'One-click export/import, multi-device sync',
+                    'driver.card5.title': 'OLED Settings',
+                    'driver.card5.desc': 'Customize OLED screen display content',
+                    'driver.btnOpen': '🔧 Open Key Remapping Driver',
+                    'test.title': 'Professional <span class="accent2">Keyboard Testing</span>',
+                    'test.desc': 'NKRO detection, sound feedback, KPM real-time monitoring',
+                    'test.showcaseTitle': 'Professional Keyboard Testing Tool',
+                    'test.showcaseSubtitle': 'NKRO Detection · Sound Feedback · KPM Monitoring · Test Logs',
+                    'test.labelKey': '🎯 Key Detection',
+                    'test.waitKey': 'Waiting for key...',
+                    'test.labelKpm': '📊 KPM Real-time Monitor',
+                    'test.labelLog': '📝 Test Log',
+                    'test.logHeader': '[ Waiting for test to start... ]',
+                    'test.card1.title': 'Full Key Detection',
+                    'test.card1.desc': 'Support 104+ keys, mouse buttons, scroll wheel, media keys',
+                    'test.card2.title': 'Sound Feedback',
+                    'test.card2.desc': 'Piano, guitar, drums and other instrument sounds, typing like playing',
+                    'test.card3.title': 'KPM Monitor',
+                    'test.card3.desc': 'Real-time keystrokes per minute statistics, visual curve charts',
+                    'test.card4.title': 'Test Logs',
+                    'test.card4.desc': 'Millisecond-precision key records, full press/release tracking',
+                    'test.card5.title': 'Gamepad Test',
+                    'test.card5.desc': 'Multi-gamepad connection, button detection, joystick axis display',
+                    'test.btnKeyboard': '🚀 Launch Keyboard Test',
+                    'test.btnGamepad': '🎮 Launch Gamepad Test',
+                    'tutorials.title': 'Quick <span class="accent">Start Guide</span>',
+                    'tutorials.desc': 'From beginner to expert, easily master custom keyboard usage',
+                    'tutorials.card1.title': 'Unboxing Prep',
+                    'tutorials.card1.desc': 'Check accessories, disconnect driver, connect keyboard to ready state.',
+                    'tutorials.card2.title': 'Personal Config',
+                    'tutorials.card2.desc': 'Custom key mapping, RGB lighting, macros, create your own logic.',
+                    'tutorials.card3.title': 'Advanced Tips',
+                    'tutorials.card3.desc': 'Multi-layer switching, combo keys, game mode optimization.',
+                    'tutorials.card4.title': 'Maintenance',
+                    'tutorials.card4.desc': 'Keycap cleaning, switch replacement, firmware upgrade.',
+                    'tutorials.card5.title': 'Driver Tutorial',
+                    'tutorials.card5.desc': 'Detailed visual guide, from installation to configuration.',
+                    'more.title': 'More',
+                    'more.desc': 'Exchange ideas with keyboard enthusiasts worldwide, share creative works',
+                    'more.card1.title': 'Discord Community',
+                    'more.card1.desc': 'Real-time config exchange, technical support, exclusive events.',
+                    'more.card2.title': 'Showcase',
+                    'more.card2.desc': 'Share your custom builds, get inspiration, see ideas come to life.',
+                    'more.card3.title': 'Events & Contests',
+                    'more.card3.desc': 'Join typing speed challenges, design contests, win limited merch.',
+                    'about.title': 'About <span class="accent">JLKB</span>',
+                    'about.desc': 'Focused on non-standard custom keyboards, making every idea within reach',
+                    'about.card1.title': 'Brand Philosophy',
+                    'about.card1.desc': 'Founded by keyboard geeks in 2020, dedicated to breaking the limits of mass-produced keyboards, providing truly personalized input experience for every user.',
+                    'about.card2.title': 'Quality Promise',
+                    'about.card2.desc': 'Premium materials and top switches, each keyboard undergoes strict QC testing to ensure excellent feel and durability.',
+                    'about.card3.title': 'Contact Us',
+                    'about.card3.desc': 'Email: 532192607@qq.com<br><span class="wechat-hover">WeChat: JLKB<span class="wechat-qr"><img src="style/wx.png" alt="WeChat QR"></span></span><br><span class="wechat-hover">QQ: 532192607<span class="wechat-qr"><img src="style/qq.png" alt="QQ QR"></span></span><br><span class="wechat-hover">Taobao Store<span class="wechat-qr"><img src="style/tb.png" alt="Taobao QR"></span></span><br>Hours: Weekdays 9:00-18:00',
+                    'footer.tagline': 'Custom Keyboard Brand · Your Ideas, We Build',
+                    'footer.privacy': 'Privacy Policy',
+                    'footer.terms': 'Terms of Service',
+                    'footer.agreement': 'Custom Agreement',
+                    'footer.contact': 'Contact Us',
+                    'footer.copy': '© 2026 JLKB. All rights reserved. \u00a0Every keyboard tells a story.',
+                    'test.keyPress': 'Key: ',
+                    'test.keyRelease': 'Release: ',
+                    'test.logPress': 'Press: ',
+                    'test.logRelease': 'Release: '
+                }
+            };
+
+            function applyLanguage(lang) {
+                const dict = i18nDict[lang];
+                if (!dict) return;
+
+                // 处理纯文本翻译
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (dict[key] !== undefined) {
+                        el.textContent = dict[key];
+                    }
+                });
+
+                // 处理包含HTML的翻译
+                document.querySelectorAll('[data-i18n-html]').forEach(el => {
+                    const key = el.getAttribute('data-i18n-html');
+                    if (dict[key] !== undefined) {
+                        el.innerHTML = dict[key];
+                    }
+                });
+
+                // 更新语言标签
+                const langLabel = document.getElementById('langLabel');
+                if (langLabel) {
+                    langLabel.textContent = lang === 'zh' ? 'EN' : '中';
+                }
+
+                // 更新页面语言属性
+                document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+                // 保存语言偏好
+                localStorage.setItem('jlkb-lang', lang);
+            }
+
+            // 语言切换按钮事件
+            const langToggle = document.getElementById('langToggle');
+            if (langToggle) {
+                langToggle.addEventListener('click', () => {
+                    const currentLang = localStorage.getItem('jlkb-lang') || 'zh';
+                    const newLang = currentLang === 'zh' ? 'en' : 'zh';
+                    applyLanguage(newLang);
+                });
+            }
+
+            // 初始化语言：优先使用保存的语言，否则根据浏览器语言自动选择
+            const savedLang = localStorage.getItem('jlkb-lang');
+            if (savedLang && i18nDict[savedLang]) {
+                applyLanguage(savedLang);
+            } else {
+                const browserLang = navigator.language || navigator.userLanguage || '';
+                const autoLang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+                applyLanguage(autoLang);
+            }
         })();
     </script>
+    <script>
+    // 禁用开发者工具和右键
+    function isDevToolsOpen(){
+        if(window.outerHeight-window.innerHeight>160)return true;
+        try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}
+        return false;
+    }
+    if(isDevToolsOpen())window.location.href='about:blank';
+    setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},100);
+    
+    document.addEventListener('contextmenu',function(e){e.preventDefault();});
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
+            return false;
+        }
+    };
+</script>
 </body>
 </html>

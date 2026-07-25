@@ -1854,5 +1854,23 @@
             }
         };
     </script>
+    
+    <script>
+    // 禁用开发者工具和右键
+    function isDevToolsOpen(){
+        if(window.outerHeight-window.innerHeight>160)return true;
+        try{console.profile();console.profileEnd();return console.clear&&console.clear();}catch(e){return true;}
+        return false;
+    }
+    if(isDevToolsOpen())window.location.href='about:blank';
+    setInterval(function(){if(isDevToolsOpen())window.location.href='about:blank';},100);
+    
+    document.addEventListener('contextmenu',function(e){e.preventDefault();});
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85)) {
+            return false;
+        }
+    };
+</script>
 </body>
 </html>
