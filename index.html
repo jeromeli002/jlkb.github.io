@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -3332,7 +3332,24 @@
             <li><a href="#" data-i18n="footer.contact">联系我们</a></li>
         </ul>
         <p class="footer-copy" data-i18n="footer.copy">© 2026 JLKB. All rights reserved. &nbsp;每一把键盘，都是一个故事。</p>
+        <p style="margin-top:8px;"><a href="#" id="devToolsLink" style="color:var(--text-muted); font-size:0.75rem; text-decoration:none; opacity:0.5; transition:opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'" data-i18n="footer.devTools">开发者工具</a></p>
     </footer>
+
+    <!-- 开发者工具密码浮动窗口 -->
+    <div id="devToolsOverlay" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease;">
+        <div id="devToolsModal" style="background:var(--card-bg,#1a1a2e);border:1px solid var(--border,#333);border-radius:16px;padding:32px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.4);transform:translateY(30px) scale(0.95);opacity:0;transition:transform 0.4s cubic-bezier(0.22,1,0.36,1),opacity 0.4s ease;">
+            <div style="text-align:center;margin-bottom:24px;">
+                <div style="font-size:2rem;margin-bottom:8px;">🔐</div>
+                <h3 id="devToolsModalTitle" style="margin:0 0 8px;font-size:1.1rem;color:var(--text,#fff);" data-i18n="footer.devToolsPrompt">请输入访问密码：</h3>
+                <p id="devToolsModalError" style="margin:0;font-size:0.8rem;color:#e83a5c;opacity:0;transition:opacity 0.3s;height:1.2em;" data-i18n="footer.devToolsError">密码错误，访问被拒绝。</p>
+            </div>
+            <input id="devToolsPassword" type="password" placeholder="••••••••" autocomplete="off" style="width:100%;padding:12px 16px;border:1px solid var(--border,#333);border-radius:10px;background:var(--key-bg,#0d0d1a);color:var(--text,#fff);font-size:0.95rem;outline:none;box-sizing:border-box;transition:border-color 0.3s;" onfocus="this.style.borderColor='var(--accent,#0ea5e9)'" onblur="this.style.borderColor='var(--border,#333)'">
+            <div style="display:flex;gap:10px;margin-top:20px;">
+                <button id="devToolsCancel" style="flex:1;padding:10px;border:1px solid var(--border,#333);border-radius:10px;background:transparent;color:var(--text-secondary,#aaa);font-size:0.9rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='var(--text-secondary,#aaa)'" onmouseout="this.style.borderColor='var(--border,#333)'">取消</button>
+                <button id="devToolsSubmit" style="flex:1;padding:10px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent,#0ea5e9),var(--accent2,#e83a5c));color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(14,165,233,0.3);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(14,165,233,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(14,165,233,0.3)'">确认</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         (function() {
@@ -4357,6 +4374,9 @@
                     'footer.agreement': '定制协议',
                     'footer.contact': '联系我们',
                     'footer.copy': '© 2026 JLKB. All rights reserved. \u00a0每一把键盘，都是一个故事。',
+                    'footer.devTools': '开发者工具',
+                    'footer.devToolsPrompt': '请输入访问密码：',
+                    'footer.devToolsError': '密码错误，访问被拒绝。',
                     'test.keyPress': '按键: ',
                     'test.keyRelease': '释放: ',
                     'test.logPress': '按下: ',
@@ -4478,6 +4498,9 @@
                     'footer.agreement': 'Custom Agreement',
                     'footer.contact': 'Contact Us',
                     'footer.copy': '© 2026 JLKB. All rights reserved. \u00a0Every keyboard tells a story.',
+                    'footer.devTools': 'Developer Tools',
+                    'footer.devToolsPrompt': 'Enter access password:',
+                    'footer.devToolsError': 'Wrong password, access denied.',
                     'test.keyPress': 'Key: ',
                     'test.keyRelease': 'Release: ',
                     'test.logPress': 'Press: ',
@@ -4536,6 +4559,86 @@
                 const browserLang = navigator.language || navigator.userLanguage || '';
                 const autoLang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
                 applyLanguage(autoLang);
+            }
+
+            // ========== 开发者工具密码验证 ==========
+            const devToolsLink = document.getElementById('devToolsLink');
+            const DEVTOOLS_HASH = '1ed9b1ba739deb1660ba7831fdcf664731ea5e1dc11f7f16869420e60ff37b3c';
+            const devToolsOverlay = document.getElementById('devToolsOverlay');
+            const devToolsModal = document.getElementById('devToolsModal');
+            const devToolsPassword = document.getElementById('devToolsPassword');
+            const devToolsCancel = document.getElementById('devToolsCancel');
+            const devToolsSubmit = document.getElementById('devToolsSubmit');
+            const devToolsModalError = document.getElementById('devToolsModalError');
+            
+            function showDevToolsModal() {
+                devToolsOverlay.style.opacity = '1';
+                devToolsOverlay.style.visibility = 'visible';
+                setTimeout(() => {
+                    devToolsModal.style.transform = 'translateY(0) scale(1)';
+                    devToolsModal.style.opacity = '1';
+                }, 50);
+                setTimeout(() => devToolsPassword.focus(), 400);
+            }
+            
+            function hideDevToolsModal() {
+                devToolsModal.style.transform = 'translateY(30px) scale(0.95)';
+                devToolsModal.style.opacity = '0';
+                setTimeout(() => {
+                    devToolsOverlay.style.opacity = '0';
+                    devToolsOverlay.style.visibility = 'hidden';
+                    devToolsPassword.value = '';
+                    devToolsModalError.style.opacity = '0';
+                }, 300);
+            }
+            
+            async function verifyPassword() {
+                const password = devToolsPassword.value;
+                if (!password) return;
+                
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                if (hashHex === DEVTOOLS_HASH) {
+                    hideDevToolsModal();
+                    setTimeout(() => window.open('tools/dwb/', '_blank'), 350);
+                } else {
+                    devToolsModalError.style.opacity = '1';
+                    devToolsPassword.value = '';
+                    devToolsPassword.focus();
+                    setTimeout(() => devToolsModalError.style.opacity = '0', 3000);
+                }
+            }
+            
+            if (devToolsLink) {
+                devToolsLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showDevToolsModal();
+                });
+            }
+            
+            if (devToolsCancel) {
+                devToolsCancel.addEventListener('click', hideDevToolsModal);
+            }
+            
+            if (devToolsSubmit) {
+                devToolsSubmit.addEventListener('click', verifyPassword);
+            }
+            
+            if (devToolsPassword) {
+                devToolsPassword.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') verifyPassword();
+                    if (e.key === 'Escape') hideDevToolsModal();
+                });
+            }
+            
+            if (devToolsOverlay) {
+                devToolsOverlay.addEventListener('click', (e) => {
+                    if (e.target === devToolsOverlay) hideDevToolsModal();
+                });
             }
         })();
     </script>
