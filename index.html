@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -3351,6 +3351,124 @@
         </div>
     </div>
 
+
+    <!-- 开发者工具九宫格菜单 -->
+    <div id="devMenuOverlay" style="position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease;">
+        <div id="devMenuModal" style="background:var(--card-bg,#1a1a2e);border:1px solid var(--border,#333);border-radius:24px;padding:28px 24px 24px;width:min(420px,92vw);box-shadow:0 25px 80px rgba(0,0,0,0.45),0 0 0 1px rgba(255,255,255,0.04);transform:translateY(40px) scale(0.92);opacity:0;transition:transform 0.45s cubic-bezier(0.22,1,0.36,1),opacity 0.4s ease;position:relative;">
+            <button id="devMenuClose" aria-label="关闭" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--key-bg);color:var(--text);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s;line-height:1;">×</button>
+            <div style="text-align:center;margin-bottom:22px;">
+                <div style="font-size:1.8rem;margin-bottom:6px;">🛠️</div>
+                <h3 style="margin:0;font-size:1.15rem;font-weight:700;color:var(--text);letter-spacing:0.03em;" data-i18n="footer.devMenuTitle">开发者工具</h3>
+                <p style="margin:6px 0 0;font-size:0.78rem;color:var(--text-muted);" data-i18n="footer.devMenuSub">选择要打开的工具</p>
+            </div>
+            <div class="dev-menu-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                <a href="tools/dwb/" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">📐</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem1">定位板生成</span>
+                </a>
+                <a href="tools/oled.html" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">📺</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem2">OLED 设置</span>
+                </a>
+                <a href="tools/kbtest.html" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">⌨️</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem3">键盘测试</span>
+                </a>
+                <a href="tools/gamepad-tester.html" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">🎮</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem4">手柄测试</span>
+                </a>
+                <a href="tools/guide/index.html" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">📖</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem5">驱动教程</span>
+                </a>
+                <a href="https://vial.jlkb.top/" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">🔧</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem6">改键驱动</span>
+                </a>
+                <a href="https://www.keyboard-layout-editor.com/" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">📐</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem7">布局编辑</span>
+                </a>
+                <a href="https://jlkb.taobao.com" target="_blank" rel="noopener" class="dev-menu-item">
+                    <span class="dev-menu-icon">🛒</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem8">淘宝店铺</span>
+                </a>
+                <a href="#about" class="dev-menu-item" id="devMenuContact">
+                    <span class="dev-menu-icon">📧</span>
+                    <span class="dev-menu-label" data-i18n="footer.devItem9">联系方式</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .dev-menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 18px 8px;
+            border-radius: 16px;
+            background: var(--key-bg);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .dev-menu-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-glow), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .dev-menu-item:hover {
+            transform: translateY(-4px) scale(1.03);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px var(--accent-glow), 0 2px 8px rgba(0,0,0,0.1);
+            background: var(--card-bg-hover);
+        }
+        .dev-menu-item:hover::before { opacity: 1; }
+        .dev-menu-item:active { transform: translateY(-1px) scale(0.98); }
+        .dev-menu-icon {
+            font-size: 1.7rem;
+            line-height: 1;
+            filter: drop-shadow(0 2px 6px var(--accent-glow));
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 1;
+        }
+        .dev-menu-item:hover .dev-menu-icon { transform: scale(1.2) rotate(-6deg); }
+        .dev-menu-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            color: var(--text-secondary);
+            transition: color 0.25s;
+        }
+        .dev-menu-item:hover .dev-menu-label { color: var(--accent); }
+        #devMenuClose:hover {
+            background: var(--accent) !important;
+            color: #fff !important;
+            border-color: var(--accent) !important;
+        }
+        @media (max-width: 400px) {
+            .dev-menu-item { padding: 14px 6px; }
+            .dev-menu-icon { font-size: 1.4rem; }
+            .dev-menu-label { font-size: 0.7rem; }
+        }
+    </style>
+
+
     <script>
         (function() {
             const canvas = document.getElementById('particlesCanvas');
@@ -4376,7 +4494,18 @@
                     'footer.copy': '© 2026 JLKB. All rights reserved. \u00a0每一把键盘，都是一个故事。',
                     'footer.devTools': '开发者工具',
                     'footer.devToolsPrompt': '请输入访问密码：',
-                    'footer.devToolsError': '密码错误，访问被拒绝。',
+                                        'footer.devToolsError': '密码错误，访问被拒绝。',
+                    'footer.devMenuTitle': '开发者工具',
+                    'footer.devMenuSub': '选择要打开的工具',
+                    'footer.devItem1': '定位板生成',
+                    'footer.devItem2': 'OLED 设置',
+                    'footer.devItem3': '键盘测试',
+                    'footer.devItem4': '手柄测试',
+                    'footer.devItem5': '驱动教程',
+                    'footer.devItem6': '改键驱动',
+                    'footer.devItem7': '布局编辑',
+                    'footer.devItem8': '淘宝店铺',
+                    'footer.devItem9': '联系方式',
                     'test.keyPress': '按键: ',
                     'test.keyRelease': '释放: ',
                     'test.logPress': '按下: ',
@@ -4500,7 +4629,18 @@
                     'footer.copy': '© 2026 JLKB. All rights reserved. \u00a0Every keyboard tells a story.',
                     'footer.devTools': 'Developer Tools',
                     'footer.devToolsPrompt': 'Enter access password:',
-                    'footer.devToolsError': 'Wrong password, access denied.',
+                                        'footer.devToolsError': 'Wrong password, access denied.',
+                    'footer.devMenuTitle': 'Developer Tools',
+                    'footer.devMenuSub': 'Select a tool to open',
+                    'footer.devItem1': 'Workbench',
+                    'footer.devItem2': 'OLED Setup',
+                    'footer.devItem3': 'Keyboard Test',
+                    'footer.devItem4': 'Gamepad Test',
+                    'footer.devItem5': 'Driver Guide',
+                    'footer.devItem6': 'Key Remap',
+                    'footer.devItem7': 'Layout Editor',
+                    'footer.devItem8': 'Taobao Store',
+                    'footer.devItem9': 'Contact',
                     'test.keyPress': 'Key: ',
                     'test.keyRelease': 'Release: ',
                     'test.logPress': 'Press: ',
@@ -4604,7 +4744,7 @@
                 
                 if (hashHex === DEVTOOLS_HASH) {
                     hideDevToolsModal();
-                    setTimeout(() => window.open('tools/dwb/', '_blank'), 350);
+                    setTimeout(function() { showDevMenu(); }, 350);
                 } else {
                     devToolsModalError.style.opacity = '1';
                     devToolsPassword.value = '';
@@ -4640,6 +4780,66 @@
                     if (e.target === devToolsOverlay) hideDevToolsModal();
                 });
             }
+
+            // ========== 开发者工具九宫格菜单 ==========
+            const devMenuOverlay = document.getElementById('devMenuOverlay');
+            const devMenuModal = document.getElementById('devMenuModal');
+            const devMenuClose = document.getElementById('devMenuClose');
+
+            function showDevMenu() {
+                if (!devMenuOverlay || !devMenuModal) return;
+                devMenuOverlay.style.opacity = '1';
+                devMenuOverlay.style.visibility = 'visible';
+                setTimeout(function() {
+                    devMenuModal.style.transform = 'translateY(0) scale(1)';
+                    devMenuModal.style.opacity = '1';
+                }, 40);
+            }
+
+            function hideDevMenu() {
+                if (!devMenuOverlay || !devMenuModal) return;
+                devMenuModal.style.transform = 'translateY(40px) scale(0.92)';
+                devMenuModal.style.opacity = '0';
+                setTimeout(function() {
+                    devMenuOverlay.style.opacity = '0';
+                    devMenuOverlay.style.visibility = 'hidden';
+                }, 320);
+            }
+
+            if (devMenuClose) {
+                devMenuClose.addEventListener('click', hideDevMenu);
+            }
+            if (devMenuOverlay) {
+                devMenuOverlay.addEventListener('click', function(e) {
+                    if (e.target === devMenuOverlay) hideDevMenu();
+                });
+            }
+
+            // 菜单项：点击后关闭菜单（target=_blank 会自动新窗口打开）
+            document.querySelectorAll('.dev-menu-item').forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    if (item.id === 'devMenuContact') {
+                        e.preventDefault();
+                        hideDevMenu();
+                        setTimeout(function() {
+                            var target = document.getElementById('about');
+                            if (target) {
+                                window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+                            }
+                        }, 350);
+                    } else {
+                        // 新窗口打开，同时关闭菜单
+                        setTimeout(hideDevMenu, 100);
+                    }
+                });
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && devMenuOverlay && devMenuOverlay.style.visibility === 'visible') {
+                    hideDevMenu();
+                }
+            });
+
         })();
     </script>
     <script>
