@@ -28783,7 +28783,16 @@
 									try {
 										l = decodeURIComponent(s)
 									} catch (u) {}
-									if (!l.includes("SECTION") && !l.includes("ENTITIES") && !l.trimStart().startsWith("{")) {
+									if (l.startsWith("blob:")) {
+										try {
+											const resp = yield fetch(l);
+											l = yield resp.text()
+										} catch (u) {
+											console.error("[JLcad] failed to fetch blob data", u);
+											window.__kulmanExternalOpen = !1;
+											return
+										}
+									} else if (!l.includes("SECTION") && !l.includes("ENTITIES") && !l.trimStart().startsWith("{")) {
 										try {
 											l = atob(s.replace(/-/g, "+").replace(/_/g, "/"))
 										} catch (u) {
