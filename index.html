@@ -2838,6 +2838,236 @@
                 font-size: 0.5rem;
             }
         }
+
+        /* ========== 改键驱动选择弹窗（孔雀开屏） ========== */
+        .driver-select-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .driver-select-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .driver-select-modal {
+            position: relative;
+            width: min(520px, 92vw);
+            padding: 36px 28px 32px;
+            background: var(--modal-bg);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow: var(--modal-shadow), 0 0 0 1px rgba(255,255,255,0.04);
+            transform: scale(0.6) rotateX(18deg);
+            opacity: 0;
+            transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+            transform-origin: center bottom;
+            overflow: hidden;
+        }
+        .driver-select-overlay.active .driver-select-modal {
+            transform: scale(1) rotateX(0deg);
+            opacity: 1;
+        }
+        .driver-select-modal::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -40%;
+            width: 180%;
+            height: 180%;
+            background: conic-gradient(from 0deg at 50% 50%,
+                transparent 0deg,
+                var(--accent-glow) 50deg,
+                transparent 100deg,
+                var(--accent2-glow) 160deg,
+                transparent 210deg,
+                var(--accent3-glow) 270deg,
+                transparent 320deg,
+                transparent 360deg);
+            opacity: 0;
+            animation: none;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .driver-select-overlay.active .driver-select-modal::before {
+            opacity: 0.35;
+            animation: driver-fan-rotate 12s linear infinite;
+        }
+        @keyframes driver-fan-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .driver-select-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--key-bg);
+            color: var(--text);
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 2;
+            line-height: 1;
+        }
+        .driver-select-close:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: rotate(90deg);
+        }
+        .driver-select-header {
+            text-align: center;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+        .driver-select-header .icon {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            display: block;
+            filter: drop-shadow(0 0 18px var(--accent-glow));
+            animation: driver-icon-bounce 2.5s ease-in-out infinite;
+        }
+        @keyframes driver-icon-bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.08); }
+        }
+        .driver-select-header h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            margin: 0 0 6px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradient-shift 5s ease infinite;
+        }
+        .driver-select-header p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin: 0;
+            letter-spacing: 0.03em;
+        }
+        .driver-select-options {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        .driver-option {
+            flex: 1;
+            max-width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 28px 18px 24px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.3) translateY(40px);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--card-shadow);
+        }
+        .driver-select-overlay.active .driver-option {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .driver-select-overlay.active .driver-option:nth-child(1) {
+            transition-delay: 0.18s;
+        }
+        .driver-select-overlay.active .driver-option:nth-child(2) {
+            transition-delay: 0.32s;
+        }
+        .driver-option::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-glow), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .driver-option:hover::before {
+            opacity: 1;
+        }
+        .driver-option:hover {
+            transform: translateY(-8px) scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 12px 36px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .driver-option:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+        .driver-option-icon {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            line-height: 1;
+            filter: drop-shadow(0 4px 12px var(--accent-glow));
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 1;
+        }
+        .driver-option:hover .driver-option-icon {
+            transform: scale(1.2) rotate(-8deg);
+        }
+        .driver-option-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        .driver-option-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            position: relative;
+            z-index: 1;
+        }
+        .driver-option.vial:hover {
+            border-color: var(--accent);
+        }
+        .driver-option.via:hover {
+            border-color: var(--accent2);
+        }
+        .driver-option.via .driver-option-icon {
+            filter: drop-shadow(0 4px 12px var(--accent2-glow));
+        }
+        @media (max-width: 480px) {
+            .driver-select-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            .driver-option {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3141,9 +3371,9 @@
             </a>
         </div>
         <div style="text-align:center; margin-top:36px;" class="reveal">
-            <a href="keymap/" target="_blank" class="btn btn-primary" data-i18n="driver.btnOpen">
+            <button type="button" class="btn btn-primary" id="openDriverBtn" data-i18n="driver.btnOpen">
                 🔧 打开改键驱动
-            </a>
+            </button>
         </div>
     </section>
 
@@ -3335,6 +3565,30 @@
         <p class="footer-copy" data-i18n="footer.copy">© 2026 JLKB. All rights reserved. &nbsp;每一把键盘，都是一个故事。</p>
         
     </footer>
+
+    <!-- 改键驱动选择弹窗（孔雀开屏） -->
+    <div class="driver-select-overlay" id="driverSelectOverlay" aria-hidden="true">
+        <div class="driver-select-modal" role="dialog" aria-labelledby="driverSelectTitle">
+            <button type="button" class="driver-select-close" id="driverSelectClose" aria-label="关闭">×</button>
+            <div class="driver-select-header">
+                <span class="icon">🔧</span>
+                <h3 id="driverSelectTitle" data-i18n="driver.selectTitle">选择改键驱动</h3>
+                <p data-i18n="driver.selectSubtitle">请选择你要使用的配置工具</p>
+            </div>
+            <div class="driver-select-options">
+                <a href="keymap/" target="_blank" rel="noopener" class="driver-option vial" id="driverOptVial">
+                    <span class="driver-option-icon">💎</span>
+                    <span class="driver-option-name" data-i18n="driver.optVial">Vial</span>
+                    <span class="driver-option-desc" data-i18n="driver.optVialDesc">可视化改键 · 实时写入生效</span>
+                </a>
+                <a href="via/" target="_blank" rel="noopener" class="driver-option via" id="driverOptVia">
+                    <span class="driver-option-icon">⚡</span>
+                    <span class="driver-option-name" data-i18n="driver.optVia">Via</span>
+                    <span class="driver-option-desc" data-i18n="driver.optViaDesc">经典改键工具 · 兼容主流固件</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- 开发者工具密码浮动窗口 -->
     <div id="devToolsOverlay" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease;">
@@ -4438,6 +4692,12 @@
                     'driver.card5.title': 'OLED 设置',
                     'driver.card5.desc': '自定义 OLED 屏幕显示内容',
                     'driver.btnOpen': '🔧 打开改键驱动',
+                    'driver.selectTitle': '选择改键驱动',
+                    'driver.selectSubtitle': '请选择你要使用的配置工具',
+                    'driver.optVial': 'Vial',
+                    'driver.optVialDesc': '开源可视化改键 · 实时写入固件',
+                    'driver.optVia': 'Via',
+                    'driver.optViaDesc': '经典改键工具 · 兼容主流固件',
                     'test.title': '专业<span class="accent2">键盘测试</span>',
                     'test.desc': '全键无冲检测，音效反馈，KPM实时监控',
                     'test.showcaseTitle': '专业键盘测试工具',
@@ -4573,6 +4833,12 @@
                     'driver.card5.title': 'OLED Settings',
                     'driver.card5.desc': 'Customize OLED screen display content',
                     'driver.btnOpen': '🔧 Open Key Remapping Driver',
+                    'driver.selectTitle': 'Select Key Remapping Driver',
+                    'driver.selectSubtitle': 'Choose the configuration tool you want to use',
+                    'driver.optVial': 'Vial',
+                    'driver.optVialDesc': 'Open-source visual remapping · Real-time firmware write',
+                    'driver.optVia': 'Via',
+                    'driver.optViaDesc': 'Classic remapping tool · Compatible with mainstream firmware',
                     'test.title': 'Professional <span class="accent2">Keyboard Testing</span>',
                     'test.desc': 'NKRO detection, sound feedback, KPM real-time monitoring',
                     'test.showcaseTitle': 'Professional Keyboard Testing Tool',
@@ -4701,6 +4967,48 @@
                 const autoLang = browserLang.toLowerCase().startsWith('zh') ? 'zh' : 'en';
                 applyLanguage(autoLang);
             }
+
+            // ========== 改键驱动选择弹窗（孔雀开屏） ==========
+            const openDriverBtn = document.getElementById('openDriverBtn');
+            const driverSelectOverlay = document.getElementById('driverSelectOverlay');
+            const driverSelectClose = document.getElementById('driverSelectClose');
+
+            function showDriverSelect() {
+                if (!driverSelectOverlay) return;
+                driverSelectOverlay.classList.add('active');
+                driverSelectOverlay.setAttribute('aria-hidden', 'false');
+            }
+
+            function hideDriverSelect() {
+                if (!driverSelectOverlay) return;
+                driverSelectOverlay.classList.remove('active');
+                driverSelectOverlay.setAttribute('aria-hidden', 'true');
+            }
+
+            if (openDriverBtn) {
+                openDriverBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showDriverSelect();
+                });
+            }
+            if (driverSelectClose) {
+                driverSelectClose.addEventListener('click', hideDriverSelect);
+            }
+            if (driverSelectOverlay) {
+                driverSelectOverlay.addEventListener('click', (e) => {
+                    if (e.target === driverSelectOverlay) hideDriverSelect();
+                });
+            }
+            document.querySelectorAll('#driverSelectOverlay .driver-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    setTimeout(hideDriverSelect, 150);
+                });
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && driverSelectOverlay && driverSelectOverlay.classList.contains('active')) {
+                    hideDriverSelect();
+                }
+            });
 
             // ========== 开发者工具密码验证 ==========
             const devToolsLink = document.getElementById('devToolsLink');
