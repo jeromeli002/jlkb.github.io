@@ -1184,30 +1184,89 @@
             inset: 10px;
             border-radius: 14px;
             background: var(--surface-alt);
-            display: grid;
-            grid-template-columns: repeat(14, 1fr);
-            grid-template-rows: repeat(5, 1fr);
+            display: flex;
+            flex-direction: column;
             gap: 3px;
-            padding: 5px;
+            padding: 6px 7px;
             border: 1px solid var(--divider);
+            box-sizing: border-box;
+        }
+        .kb-row {
+            display: flex;
+            gap: 3px;
+            flex: 1;
+            min-height: 0;
         }
         .kb-key {
-            border-radius: 3px;
+            border-radius: 4px;
             background: var(--key-bg);
             transition: all 0.15s ease;
             position: relative;
             cursor: pointer;
+            flex: 1 1 0;
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(0.45rem, 1.1vw, 0.72rem);
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+            user-select: none;
+            overflow: hidden;
         }
+        .kb-key .kb-label {
+            pointer-events: none;
+            line-height: 1;
+            white-space: nowrap;
+            opacity: 0.85;
+            transition: color 0.15s ease, opacity 0.15s ease;
+        }
+        .kb-key:hover .kb-label {
+            color: var(--text);
+            opacity: 1;
+        }
+        .kb-key.sim-pressed .kb-label {
+            color: #fff;
+            opacity: 1;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 60, 120, 0.9), 0 0 4px #ff3c78;
+        }
+        /* 点击触发的 RGB 灯效：字符保持白色以便在亮色键上可读 */
+        .kb-key[class*="rgb-"] .kb-label {
+            color: #fff;
+            opacity: 1;
+            text-shadow: 0 0 6px rgba(255,255,255,0.5);
+        }
+        /* 按真实键比设置宽度单位（1u = 基准） */
+        .kb-key.u1 { flex: 1 1 0; }
+        .kb-key.u1_25 { flex: 1.25 1 0; }
+        .kb-key.u1_5 { flex: 1.5 1 0; }
+        .kb-key.u1_75 { flex: 1.75 1 0; }
+        .kb-key.u2 { flex: 2 1 0; }
+        .kb-key.u2_25 { flex: 2.25 1 0; }
+        .kb-key.u2_75 { flex: 2.75 1 0; }
+        .kb-key.u6_25 { flex: 6.25 1 0; }
         .kb-key:hover {
             background: rgba(255, 255, 255, 0.08);
             transform: translateY(-1px);
         }
         .kb-key.pressed {
-            animation: key-press 0.4s ease-out;
+            animation: key-press 0.28s ease-out;
+        }
+        /* 仅自动模拟使用，不影响手动点击与 RGB 灯效 */
+        .kb-key.sim-pressed {
+            animation: key-press 0.28s ease-out;
+            background: rgba(255, 60, 120, 0.5);
+            box-shadow: 0 0 14px rgba(255, 60, 120, 0.7), 0 0 4px rgba(255, 255, 255, 0.2), inset 0 0 8px rgba(255, 60, 120, 0.4);
+            outline: 1px solid rgba(255, 60, 120, 0.55);
+            outline-offset: -1px;
+            z-index: 2;
         }
         @keyframes key-press {
             0% { transform: scale(1) translateY(0); }
-            50% { transform: scale(0.92) translateY(2px); }
+            50% { transform: scale(0.9) translateY(2px); }
             100% { transform: scale(1) translateY(0); }
         }
         .kb-key .ripple {
@@ -1283,12 +1342,6 @@
             background: rgba(168, 85, 247, 0.55);
             box-shadow: 0 0 20px rgba(168, 85, 247, 0.55), 0 0 4px rgba(255, 255, 255, 0.3);
         }
-        .kb-spacebar {
-            grid-column: 4 / 11;
-            grid-row: 5;
-            border-radius: 3px;
-            background: var(--key-bg);
-        }
         @keyframes key-glow {
             0%,
             100% {
@@ -1310,6 +1363,87 @@
         }
         body.dark-theme .kb-reflection {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+        }
+
+        /* 打字机模拟输入 */
+        .typewriter-box {
+            margin: 28px auto 8px;
+            max-width: min(640px, 92vw);
+            min-height: 2.6em;
+            padding: 14px 22px;
+            border-radius: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            text-align: left;
+            font-family: 'SF Mono', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+            font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            position: relative;
+            overflow: hidden;
+        }
+        .typewriter-box::before {
+            content: '>_';
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            color: var(--accent);
+            font-weight: 700;
+            opacity: 0.85;
+        }
+        .typewriter-text {
+            display: inline;
+            margin-left: 1.6em;
+            word-break: break-word;
+        }
+        .typewriter-char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.18s ease, transform 0.18s ease, color 0.2s ease;
+        }
+        .typewriter-char.visible {
+            opacity: 1;
+            transform: translateY(0);
+            color: var(--text);
+        }
+        .typewriter-char.fading {
+            opacity: 0;
+            transform: translateY(-4px);
+            color: var(--accent);
+        }
+        .typewriter-cursor {
+            display: inline-block;
+            width: 0.55em;
+            height: 1.1em;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            background: var(--accent);
+            border-radius: 1px;
+            animation: tw-blink 0.85s steps(1) infinite;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .typewriter-cursor.hidden {
+            opacity: 0;
+            animation: none;
+        }
+        @keyframes tw-blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        @media (max-width: 480px) {
+            .typewriter-box {
+                padding: 12px 14px;
+                min-height: 2.4em;
+            }
+            .typewriter-box::before {
+                left: 10px;
+                top: 12px;
+            }
         }
 
         /* 通用区块 */
@@ -3157,6 +3291,9 @@
             <div class="kb-surface" id="kbSurface"></div>
             <div class="kb-reflection"></div>
         </div>
+        <div class="typewriter-box" aria-live="polite">
+            <span class="typewriter-text" id="typewriterText"></span><span class="typewriter-cursor" id="typewriterCursor"></span>
+        </div>
     </div>
 
     <!-- 栏目导航 -->
@@ -3164,7 +3301,7 @@
         <div class="section-header reveal">
             <span class="section-tag">Explore</span>
             <h2 class="section-title" data-i18n-html="features.title">一切<span class="accent">尽在掌握</span></h2>
-            <p class="section-desc" data-i18n="features.desc">六大核心模块，覆盖你的全部键盘需求</p>
+            <p class="section-desc" data-i18n="features.desc">七大核心模块，覆盖你的全部键盘需求</p>
         </div>
         <div class="features-grid">
             <a href="#" class="feature-card reveal" target="_blank" id="cardShop">
@@ -3191,6 +3328,11 @@
                 <span class="feature-icon">🎯</span>
                 <h3 data-i18n="features.cardTest.title">按键测试</h3>
                 <p data-i18n="features.cardTest.desc">在线检测每个按键，确保自定义零缺陷。</p>
+            </a>
+            <a href="#more" class="feature-card reveal" id="cardWireless">
+                <span class="feature-icon">📶</span>
+                <h3 data-i18n="features.cardWireless.title">无线自由</h3>
+                <p data-i18n="features.cardWireless.desc">支持 2.4G / 蓝牙双模无线，低延迟稳定连接，摆脱线材束缚。</p>
             </a>
             <a href="#more" class="feature-card reveal">
                 <span class="feature-icon">✨</span>
@@ -3907,23 +4049,61 @@
                 navLinks.classList.remove('active');
             }));
 
-            // 3D键盘
-            function genKeys(containerId, total, highlights) {
+            // 3D键盘 — 按真实 ANSI 键比与行列位置生成，并显示键帽字符
+            function genRealisticKeyboard(containerId) {
                 const c = document.getElementById(containerId);
                 if (!c) return;
                 c.innerHTML = '';
-                for (let i = 0; i < total; i++) {
-                    const k = document.createElement('div');
-                    k.className = 'kb-key';
-                    if (highlights) Object.entries(highlights).forEach(([cls, idxs]) => { if (idxs.includes(
-                            i)) k.classList.add(cls); });
-                    c.appendChild(k);
-                }
-                const sb = document.createElement('div');
-                sb.className = 'kb-spacebar';
-                c.appendChild(sb);
+                // 每行: [宽度单位类, 键帽文字]
+                const layout = [
+                    // 数字行
+                    [
+                        ['u1','`'],['u1','1'],['u1','2'],['u1','3'],['u1','4'],['u1','5'],['u1','6'],
+                        ['u1','7'],['u1','8'],['u1','9'],['u1','0'],['u1','-'],['u1','='],['u2','⌫']
+                    ],
+                    // QWERTY
+                    [
+                        ['u1_5','Tab'],['u1','Q'],['u1','W'],['u1','E'],['u1','R'],['u1','T'],['u1','Y'],
+                        ['u1','U'],['u1','I'],['u1','O'],['u1','P'],['u1','['],['u1',']'],['u1_5','\\']
+                    ],
+                    // ASDF
+                    [
+                        ['u1_75','Caps'],['u1','A'],['u1','S'],['u1','D'],['u1','F'],['u1','G'],['u1','H'],
+                        ['u1','J'],['u1','K'],['u1','L'],['u1',';'],['u1','\''],['u2_25','↵']
+                    ],
+                    // ZXCV
+                    [
+                        ['u2_25','Shift'],['u1','Z'],['u1','X'],['u1','C'],['u1','V'],['u1','B'],['u1','N'],
+                        ['u1','M'],['u1',','],['u1','.'],['u1','/'],['u2_75','Shift']
+                    ],
+                    // 底行
+                    [
+                        ['u1_25','Ctrl'],['u1_25','Win'],['u1_25','Alt'],['u6_25','Space'],
+                        ['u1_25','Alt'],['u1_25','Fn'],['u1_25','☰'],['u1_25','Ctrl']
+                    ]
+                ];
+                layout.forEach((row, rowIndex) => {
+                    const rowEl = document.createElement('div');
+                    rowEl.className = 'kb-row';
+                    rowEl.dataset.row = String(rowIndex);
+                    row.forEach((item, colIndex) => {
+                        const uClass = item[0];
+                        const label = item[1];
+                        const k = document.createElement('div');
+                        k.className = 'kb-key ' + uClass;
+                        k.dataset.row = String(rowIndex);
+                        k.dataset.col = String(colIndex);
+                        k.dataset.key = label;
+                        const span = document.createElement('span');
+                        span.className = 'kb-label';
+                        span.textContent = label;
+                        k.appendChild(span);
+                        rowEl.appendChild(k);
+                    });
+                    c.appendChild(rowEl);
+                });
             }
-            genKeys('kbSurface', 70, null);
+            genRealisticKeyboard('kbSurface');
             const kb3d = document.getElementById('keyboard3d');
             kb3d?.addEventListener('mousemove', function(e) {
                 const r = this.getBoundingClientRect();
@@ -3935,12 +4115,12 @@
                 'rotateX(7deg) rotateY(-4deg)'; });
 
             // 键盘点击反馈效果
-            const kbKeys = document.querySelectorAll('#kbSurface .kb-key');
+            let kbKeys = Array.from(document.querySelectorAll('#kbSurface .kb-key'));
             const rgbColors = ['rgb-1', 'rgb-2', 'rgb-3', 'rgb-4', 'rgb-5', 'rgb-6'];
             let lastClickTime = Date.now();
             let idleTimer = null;
+            let lastRgbMode = -1;
 
-            // 获取按键的RGB颜色对应的rgba值
             function getColorRgba(colorClass) {
                 const colors = {
                     'rgb-1': 'rgba(255, 60, 120, 0.8)',
@@ -3953,141 +4133,331 @@
                 return colors[colorClass] || colors['rgb-1'];
             }
 
-            // QMK矩阵RGB灯效（点击触发，随机4种炫酷灯效）
+            function clearKeyRgb(key) {
+                rgbColors.forEach(c => key.classList.remove(c));
+            }
+
+            function lightKey(key, color, duration) {
+                if (!key) return;
+                clearKeyRgb(key);
+                key.classList.add(color);
+                setTimeout(() => clearKeyRgb(key), duration);
+            }
+
+            // QMK 风格 RGB Matrix：每次点击随机不同灯效
             function triggerQmkMatrixRgb(clickedKey, clickedColor) {
                 const total = kbKeys.length;
-                const mode = Math.floor(Math.random() * 4); // 随机选择0-3
+                if (total === 0) return;
+                const rows = Array.from(document.querySelectorAll('#kbSurface .kb-row'));
+                const rowCount = rows.length;
+                const getRowKeys = (r) => Array.from(rows[r]?.querySelectorAll('.kb-key') || []);
+                const clickRow = parseInt(clickedKey.dataset.row || '0', 10);
+                const clickCol = parseInt(clickedKey.dataset.col || '0', 10);
+
+                // 8 种 QMK 常见矩阵灯效，强制与上次不同
+                let mode = Math.floor(Math.random() * 8);
+                if (mode === lastRgbMode) mode = (mode + 1 + Math.floor(Math.random() * 6)) % 8;
+                lastRgbMode = mode;
 
                 if (mode === 0) {
-                    // 灯效1：彩虹波浪（从左到右）
-                    kbKeys.forEach((key, index) => {
-                        if (key === clickedKey) return;
-                        setTimeout(() => {
-                            const color = rgbColors[index % rgbColors.length];
-                            key.classList.add(color);
-                            setTimeout(() => {
-                                key.classList.remove(color);
-                            }, 600);
-                        }, index * 25);
+                    // SOLID_REACTIVE / 彩虹波浪：按行列从左到右
+                    let delay = 0;
+                    rows.forEach((row) => {
+                        const keys = Array.from(row.querySelectorAll('.kb-key'));
+                        keys.forEach((key, i) => {
+                            if (key === clickedKey) return;
+                            setTimeout(() => lightKey(key, rgbColors[i % rgbColors.length], 550), delay);
+                            delay += 18;
+                        });
                     });
                 } else if (mode === 1) {
-                    // 灯效2：随机闪烁（15个按键随机位置）
-                    for (let i = 0; i < 15; i++) {
+                    // RAINDROPS：随机雨点
+                    for (let i = 0; i < 22; i++) {
                         setTimeout(() => {
-                            const randomIndex = Math.floor(Math.random() * total);
-                            const key = kbKeys[randomIndex];
+                            const key = kbKeys[Math.floor(Math.random() * total)];
                             if (key === clickedKey) return;
-
-                            const color = rgbColors[Math.floor(Math.random() * rgbColors.length)];
-                            key.classList.add(color);
-                            setTimeout(() => {
-                                key.classList.remove(color);
-                            }, 400);
-                        }, i * 50);
+                            lightKey(key, rgbColors[Math.floor(Math.random() * rgbColors.length)], 380);
+                        }, i * 45);
                     }
                 } else if (mode === 2) {
-                    // 灯效3：螺旋扩散（从中心向两侧）
-                    const center = Math.floor(total / 2);
-                    const radius = 10;
-                    for (let r = 0; r <= radius; r++) {
+                    // CYCLE_ALL：全键同色轮换
+                    for (let s = 0; s < 6; s++) {
                         setTimeout(() => {
-                            kbKeys.forEach((key, index) => {
+                            const color = rgbColors[s % rgbColors.length];
+                            kbKeys.forEach(key => {
                                 if (key === clickedKey) return;
-                                const distance = Math.abs(index - center);
-                                if (distance === r) {
-                                    const color = rgbColors[r % rgbColors.length];
-                                    key.classList.add(color);
-                                    setTimeout(() => {
-                                        key.classList.remove(color);
-                                    }, 500);
+                                clearKeyRgb(key);
+                                key.classList.add(color);
+                            });
+                            setTimeout(() => kbKeys.forEach(clearKeyRgb), 280);
+                        }, s * 320);
+                    }
+                } else if (mode === 3) {
+                    // BREATHING 波浪：按行呼吸
+                    rows.forEach((row, r) => {
+                        setTimeout(() => {
+                            const color = rgbColors[r % rgbColors.length];
+                            getRowKeys(r).forEach(key => {
+                                if (key === clickedKey) return;
+                                lightKey(key, color, 500);
+                            });
+                        }, r * 120);
+                    });
+                    // 回扫
+                    setTimeout(() => {
+                        for (let r = rowCount - 1; r >= 0; r--) {
+                            setTimeout(() => {
+                                const color = rgbColors[(r + 3) % rgbColors.length];
+                                getRowKeys(r).forEach(key => {
+                                    if (key === clickedKey) return;
+                                    lightKey(key, color, 450);
+                                });
+                            }, (rowCount - 1 - r) * 100);
+                        }
+                    }, rowCount * 120 + 80);
+                } else if (mode === 4) {
+                    // REACTIVE_SPLASH：以点击键为中心向外扩散
+                    const maxDist = 12;
+                    for (let d = 0; d <= maxDist; d++) {
+                        setTimeout(() => {
+                            kbKeys.forEach(key => {
+                                if (key === clickedKey) return;
+                                const r = parseInt(key.dataset.row || '0', 10);
+                                const col = parseInt(key.dataset.col || '0', 10);
+                                const dist = Math.abs(r - clickRow) + Math.abs(col - clickCol);
+                                if (dist === d) {
+                                    lightKey(key, rgbColors[d % rgbColors.length], 480);
                                 }
                             });
-                        }, r * 60);
+                        }, d * 55);
                     }
+                } else if (mode === 5) {
+                    // COLUMN_SCAN：列扫描（按 col 索引）
+                    const maxCol = Math.max(...kbKeys.map(k => parseInt(k.dataset.col || '0', 10)));
+                    for (let col = 0; col <= maxCol; col++) {
+                        setTimeout(() => {
+                            kbKeys.forEach(key => {
+                                if (key === clickedKey) return;
+                                if (parseInt(key.dataset.col || '0', 10) === col) {
+                                    lightKey(key, rgbColors[col % rgbColors.length], 400);
+                                }
+                            });
+                        }, col * 50);
+                    }
+                } else if (mode === 6) {
+                    // SPIRAL：从点击位置螺旋
+                    const ordered = kbKeys
+                        .map(key => {
+                            const r = parseInt(key.dataset.row || '0', 10);
+                            const col = parseInt(key.dataset.col || '0', 10);
+                            const angle = Math.atan2(r - clickRow, col - clickCol);
+                            const dist = Math.hypot(r - clickRow, col - clickCol);
+                            return { key, score: dist * 10 + angle };
+                        })
+                        .sort((a, b) => a.score - b.score);
+                    ordered.forEach((item, i) => {
+                        if (item.key === clickedKey) return;
+                        setTimeout(() => {
+                            lightKey(item.key, rgbColors[i % rgbColors.length], 420);
+                        }, i * 28);
+                    });
                 } else {
-                    // 灯效4：列扫描（按列依次点亮）
-                    const cols = 14;
-                    for (let col = 0; col < cols; col++) {
+                    // GRADIENT_UP_DOWN：上下渐变扫
+                    rows.forEach((row, r) => {
                         setTimeout(() => {
-                            kbKeys.forEach((key, index) => {
+                            const keys = getRowKeys(r);
+                            keys.forEach((key, i) => {
                                 if (key === clickedKey) return;
-                                if (index % cols === col) {
-                                    const color = rgbColors[col % rgbColors.length];
-                                    key.classList.add(color);
-                                    setTimeout(() => {
-                                        key.classList.remove(color);
-                                    }, 400);
-                                }
+                                setTimeout(() => {
+                                    lightKey(key, rgbColors[(r + i) % rgbColors.length], 520);
+                                }, i * 20);
                             });
-                        }, col * 40);
-                    }
+                        }, r * 90);
+                    });
                 }
             }
 
-            // 随机按键模拟（无RGB灯效）
+            function pressKeyVisual(keyEl, ms) {
+                if (!keyEl) return;
+                if (keyEl.className.match(/rgb-\d/)) return;
+                keyEl.classList.add('sim-pressed');
+                setTimeout(() => keyEl.classList.remove('sim-pressed'), ms || 220);
+            }
+
+            function findKeyByChar(ch) {
+                if (!ch) return null;
+                const map = {
+                    ' ': 'Space',
+                    '\n': '↵',
+                    '\t': 'Tab',
+                    '\\': '\\',
+                    '`': '`',
+                    "'": "'",
+                    '"': "'",
+                    ';': ';',
+                    ':': ';',
+                    '[': '[',
+                    ']': ']',
+                    '{': '[',
+                    '}': ']',
+                    '-': '-',
+                    '_': '-',
+                    '=': '=',
+                    '+': '=',
+                    ',': ',',
+                    '<': ',',
+                    '.': '.',
+                    '>': '.',
+                    '/': '/',
+                    '?': '/',
+                    '!': '1',
+                    '@': '2',
+                    '#': '3',
+                    '$': '4',
+                    '%': '5',
+                    '^': '6',
+                    '&': '7',
+                    '*': '8',
+                    '(': '9',
+                    ')': '0'
+                };
+                let label = map[ch];
+                if (!label) {
+                    const up = ch.toUpperCase();
+                    if (/^[A-Z0-9]$/.test(up)) label = up;
+                    else return null;
+                }
+                return kbKeys.find(k => k.dataset.key === label) || null;
+            }
+
             function simulateRandomKey() {
                 if (kbKeys.length === 0) return;
-
-                const randomIndex = Math.floor(Math.random() * kbKeys.length);
-                const key = kbKeys[randomIndex];
-
-                // 添加按下动画
-                key.classList.add('pressed');
-
-                setTimeout(() => {
-                    key.classList.remove('pressed');
-                }, 400);
+                const candidates = kbKeys.filter(k => !k.className.match(/rgb-\d/) && !k.classList.contains('sim-pressed'));
+                const pool = candidates.length ? candidates : kbKeys;
+                const key = pool[Math.floor(Math.random() * pool.length)];
+                pressKeyVisual(key, 220);
             }
 
-            // 空闲检测 - 500ms无点击则模拟随机按键
+            // —— 打字机效果：逐字出现，再依次消失 ——
+            const typewriterPhrases = [
+                'Hello, JLKB Custom Keyboard.',
+                'Type your own story.',
+                'RGB Matrix · Wireless · NKRO',
+                'Every key is uniquely yours.',
+                'From idea to reality — click by click.',
+                'QMK / VIA / Vial ready.',
+                'Build. Remap. Play.'
+            ];
+            const twTextEl = document.getElementById('typewriterText');
+            const twCursorEl = document.getElementById('typewriterCursor');
+            let twPhraseIndex = 0;
+            let twRunning = false;
+
+            function clearTypewriter() {
+                if (twTextEl) twTextEl.innerHTML = '';
+            }
+
+            function typePhrase(phrase) {
+                return new Promise(resolve => {
+                    clearTypewriter();
+                    if (twCursorEl) twCursorEl.classList.remove('hidden');
+                    const chars = Array.from(phrase);
+                    let i = 0;
+                    function step() {
+                        if (i >= chars.length) {
+                            setTimeout(resolve, 900);
+                            return;
+                        }
+                        const ch = chars[i];
+                        const span = document.createElement('span');
+                        span.className = 'typewriter-char';
+                        span.textContent = ch === ' ' ? '\u00a0' : ch;
+                        twTextEl.appendChild(span);
+                        // 触发重绘后再加 visible
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => span.classList.add('visible'));
+                        });
+                        // 同步点亮对应按键
+                        pressKeyVisual(findKeyByChar(ch), 200);
+                        lastClickTime = Date.now();
+                        i++;
+                        setTimeout(step, 70 + Math.random() * 50);
+                    }
+                    step();
+                });
+            }
+
+            function erasePhrase() {
+                return new Promise(resolve => {
+                    const spans = Array.from(twTextEl.querySelectorAll('.typewriter-char'));
+                    if (!spans.length) {
+                        resolve();
+                        return;
+                    }
+                    let i = spans.length - 1;
+                    function step() {
+                        if (i < 0) {
+                            clearTypewriter();
+                            setTimeout(resolve, 350);
+                            return;
+                        }
+                        const span = spans[i];
+                        span.classList.remove('visible');
+                        span.classList.add('fading');
+                        // 删除时也可轻微点亮对应键
+                        const ch = span.textContent === '\u00a0' ? ' ' : span.textContent;
+                        pressKeyVisual(findKeyByChar(ch), 160);
+                        lastClickTime = Date.now();
+                        setTimeout(() => {
+                            if (span.parentNode) span.parentNode.removeChild(span);
+                        }, 180);
+                        i--;
+                        setTimeout(step, 36);
+                    }
+                    step();
+                });
+            }
+
+            async function runTypewriterLoop() {
+                if (twRunning || !twTextEl) return;
+                twRunning = true;
+                while (twRunning) {
+                    const phrase = typewriterPhrases[twPhraseIndex % typewriterPhrases.length];
+                    twPhraseIndex++;
+                    await typePhrase(phrase);
+                    await erasePhrase();
+                    await new Promise(r => setTimeout(r, 400));
+                }
+            }
+
+            // 空闲时偶尔随机点键（打字机未占用时作补充）
             function checkIdle() {
-                if (Date.now() - lastClickTime >= 500) {
+                if (Date.now() - lastClickTime >= 900) {
                     simulateRandomKey();
                 }
-                idleTimer = setTimeout(checkIdle, 500);
+                idleTimer = setTimeout(checkIdle, 400);
             }
+            idleTimer = setTimeout(checkIdle, 600);
+            // 启动打字机循环
+            setTimeout(runTypewriterLoop, 800);
 
-            // 启动空闲检测
-            idleTimer = setTimeout(checkIdle, 500);
-
-            // 点击按键效果
             kbKeys.forEach(key => {
-                key.addEventListener('click', function() {
-                    // 更新最后点击时间
+                key.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     lastClickTime = Date.now();
-
-                    // 添加按下动画
                     this.classList.add('pressed');
-
-                    // 分配RGB颜色
                     const color = rgbColors[Math.floor(Math.random() * rgbColors.length)];
                     this.classList.add(color);
-
-                    // 创建扩散发光效果
                     const ripple = document.createElement('div');
                     ripple.className = 'ripple';
                     ripple.style.background = getColorRgba(color);
                     this.appendChild(ripple);
-
-                    // 触发QMK矩阵灯效
                     triggerQmkMatrixRgb(this, color);
-
-                    // 移除动画
+                    setTimeout(() => this.classList.remove('pressed'), 280);
                     setTimeout(() => {
-                        this.classList.remove('pressed');
-                    }, 400);
-
-                    // 移除扩散效果
-                    setTimeout(() => {
-                        if (ripple.parentNode) {
-                            ripple.parentNode.removeChild(ripple);
-                        }
+                        if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
                     }, 800);
-
-                    // 保持RGB灯效1.5秒后移除
-                    setTimeout(() => {
-                        this.classList.remove(color);
-                    }, 1500);
+                    setTimeout(() => clearKeyRgb(this), 1500);
                 });
             });
 
@@ -4646,7 +5016,7 @@
                     'hero.btnShop': '🛒 前往淘宝选购',
                     'hero.btnCustom': '⌨️ 立即定制键盘',
                     'features.title': '一切<span class="accent">尽在掌握</span>',
-                    'features.desc': '六大核心模块，覆盖你的全部键盘需求',
+                    'features.desc': '七大核心模块，覆盖你的全部键盘需求',
                     'features.cardShop.title': '选购成品',
                     'features.cardShop.desc': '进入淘宝官方店铺，挑选心仪的键盘与配件。',
                     'features.cardCustom.title': '深度定制',
@@ -4657,6 +5027,8 @@
                     'features.cardTutorial.desc': '简易改键指南，轻松上手客制化玩法。',
                     'features.cardTest.title': '按键测试',
                     'features.cardTest.desc': '在线检测每个按键，确保自定义零缺陷。',
+                    'features.cardWireless.title': '无线自由',
+                    'features.cardWireless.desc': '支持 2.4G / 蓝牙双模无线，低延迟稳定连接，摆脱线材束缚。',
                     'features.cardMore.title': '了解更多',
                     'features.cardMore.desc': '关于品牌故事、玩家社区与联系方式。',
                     'custom.title': '定制<span class="accent2">流程</span>',
@@ -4787,7 +5159,7 @@
                     'hero.btnShop': '🛒 Shop on Taobao',
                     'hero.btnCustom': '⌨️ Customize Keyboard',
                     'features.title': 'Everything <span class="accent">Under Control</span>',
-                    'features.desc': 'Six core modules covering all your keyboard needs',
+                    'features.desc': 'Seven core modules covering all your keyboard needs',
                     'features.cardShop.title': 'Shop Products',
                     'features.cardShop.desc': 'Visit our official Taobao store, pick your favorite keyboards and accessories.',
                     'features.cardCustom.title': 'Deep Custom',
@@ -4798,6 +5170,8 @@
                     'features.cardTutorial.desc': 'Easy remapping guide, get started with custom keyboards.',
                     'features.cardTest.title': 'Key Testing',
                     'features.cardTest.desc': 'Test each key online, ensure zero defects in your customization.',
+                    'features.cardWireless.title': 'Wireless Freedom',
+                    'features.cardWireless.desc': '2.4G / Bluetooth dual-mode wireless, low-latency stable connection, free from cables.',
                     'features.cardMore.title': 'Learn More',
                     'features.cardMore.desc': 'About brand story, community and contact information.',
                     'custom.title': 'Custom <span class="accent2">Process</span>',
